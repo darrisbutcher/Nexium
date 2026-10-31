@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DDD",
+    "DGD",
+    "DDD"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "G": "minecraft:gold_block"
+  },
+  "result": {
+    "id": "storagenexus:diamond_barrel_upgrade",
+    "count": 1
+  }
+}

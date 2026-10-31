@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NDN",
+    "DBD",
+    "NDN"
+  ],
+  "key": {
+    "N": "minecraft:netherite_ingot",
+    "D": "minecraft:diamond",
+    "B": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "storagenexus:netherite_barrel_upgrade",
+    "count": 1
+  }
+}

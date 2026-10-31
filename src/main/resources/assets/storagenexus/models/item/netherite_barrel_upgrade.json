@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "storagenexus:item/netherite_barrel_upgrade"
+  }
+}

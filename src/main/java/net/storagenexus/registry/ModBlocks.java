@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.barrel.BarrelTier;
+import net.storagenexus.barrel.TieredBarrelBlock;
 import net.storagenexus.conduit.ConduitBundleBlock;
 import net.storagenexus.dimension.DimensionalAnchorBlock;
 import net.storagenexus.dimension.DimensionalInputBlock;
@@ -20,9 +22,11 @@ import net.storagenexus.drawer.DrawerControllerBlock;
 import net.storagenexus.drawer.DrawerWood;
 import net.storagenexus.fluid.FluidDrawerBlock;
 import net.storagenexus.fluid.FluidIntakeBlock;
-import net.storagenexus.fluid.FluidTankBlock;
+import net.storagenexus.fluid.LavaSpringBlock;
 import net.storagenexus.network.FilteredConnectorBlock;
 import net.storagenexus.network.InventoryCableBlock;
+import net.storagenexus.network.LevelEmitterBlock;
+import net.storagenexus.network.NetworkBusBlock;
 import net.storagenexus.network.StorageConnectorBlock;
 import net.storagenexus.network.TerminalBlock;
 
@@ -55,19 +59,30 @@ public final class ModBlocks {
         }
     }
 
+    /** Iron, gold, diamond and netherite barrels. */
+    public static final Map<BarrelTier, TieredBarrelBlock> BARRELS = new EnumMap<>(BarrelTier.class);
+
+    static {
+        for (BarrelTier tier : BarrelTier.values()) {
+            BARRELS.put(tier, register(tier.id() + "_barrel", p -> new TieredBarrelBlock(p, tier),
+                    BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.5f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true));
+        }
+    }
+
     public static final CompactingDrawerBlock COMPACTING_DRAWER = register("compacting_drawer", CompactingDrawerBlock::new, storageStone(), true);
     public static final DrawerControllerBlock DRAWER_CONTROLLER = register("drawer_controller", DrawerControllerBlock::new, stone(), true);
     public static final ControllerSlaveBlock CONTROLLER_SLAVE = register("controller_slave", ControllerSlaveBlock::new, stone(), true);
 
     public static final FluidDrawerBlock FLUID_DRAWER_1X1 = register("fluid_drawer_1x1", p -> new FluidDrawerBlock(p, 1), glassy(), true);
-    public static final FluidDrawerBlock FLUID_DRAWER_2X2 = register("fluid_drawer_2x2", p -> new FluidDrawerBlock(p, 4), glassy(), true);
-    public static final FluidTankBlock FLUID_TANK = register("fluid_tank", FluidTankBlock::new, glassy(), true);
+    public static final LavaSpringBlock LAVA_SPRING = register("lava_spring", LavaSpringBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.FIRE).strength(5.0f, 1200.0f).sound(SoundType.STONE).lightLevel(s -> 15).requiresCorrectToolForDrops(), true);
     public static final FluidIntakeBlock FLUID_INTAKE = register("fluid_intake", FluidIntakeBlock::new, metal(), true);
 
     public static final StorageConnectorBlock STORAGE_CONNECTOR = register("storage_connector", StorageConnectorBlock::new, metal(), true);
     public static final FilteredConnectorBlock FILTERED_CONNECTOR = register("filtered_connector", FilteredConnectorBlock::new, metal(), true);
+    public static final NetworkBusBlock NETWORK_BUS = register("import_export_bus", NetworkBusBlock::new, metal(), true);
+    public static final LevelEmitterBlock LEVEL_EMITTER = register("level_emitter", LevelEmitterBlock::new, metal(), true);
     public static final InventoryCableBlock INVENTORY_CABLE = register("inventory_cable", InventoryCableBlock::new, cable(), true);
-    public static final TerminalBlock STORAGE_TERMINAL = register("storage_terminal", p -> new TerminalBlock(p, false), metal(), true);
     public static final TerminalBlock CRAFTING_TERMINAL = register("crafting_terminal", p -> new TerminalBlock(p, true), metal(), true);
 
     public static final DimensionalAnchorBlock DIMENSIONAL_ANCHOR = register("dimensional_anchor", DimensionalAnchorBlock::new, heavy(), true);

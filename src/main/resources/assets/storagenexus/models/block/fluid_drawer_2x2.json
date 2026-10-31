@@ -1,8 +1,0 @@
-{
-  "parent": "storagenexus:block/drawer_2x2_template",
-  "textures": {
-    "front": "storagenexus:block/fluid_drawer_front",
-    "side": "storagenexus:block/fluid_drawer_side",
-    "trim": "minecraft:block/iron_block"
-  }
-}

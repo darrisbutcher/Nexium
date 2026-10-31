@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "storagenexus:block/storage_connector"
+    "model": "storagenexus:block/storage_connector_item"
   }
 }

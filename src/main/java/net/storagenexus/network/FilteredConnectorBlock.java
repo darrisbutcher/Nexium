@@ -2,6 +2,9 @@ package net.storagenexus.network;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -32,18 +35,39 @@ public class FilteredConnectorBlock extends StorageConnectorBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FACING);
+    }
+
+    /** The side it reads always has its own snout, so it never gets an ordinary arm too. */
+    @Override
+    protected BlockState withArms(BlockState state, Level level, BlockPos pos) {
+        state = super.withArms(state, level, pos);
+        return state.setValue(PROPS.get(state.getValue(FACING)), false);
     }
 
     /** Faces the block it was placed against. */
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite());
+        return withArms(defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite()), context.getLevel(), context.getClickedPos());
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+                                     Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+        if (direction == state.getValue(FACING)) return state;
+        return super.updateShape(state, level, ticks, pos, direction, neighborPos, neighborState, random);
+    }
+
+    @Override
+    protected int shapeMask(BlockState state) {
+        return super.shapeMask(state) | 1 << state.getValue(FACING).get3DDataValue();
     }
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        Direction facing = rotation.rotate(state.getValue(FACING));
+        return state.setValue(PROPS.get(state.getValue(FACING)), false).setValue(FACING, facing);
     }
 
     @Override

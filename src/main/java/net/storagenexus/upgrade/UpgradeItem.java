@@ -5,7 +5,7 @@ import net.minecraft.world.item.Item;
 
 public class UpgradeItem extends Item {
     public enum Kind {
-        CAPACITY, VOID, LOCK, TRANSFER_SPEED, INTAKE_RANGE, CONDUIT_SPEED;
+        CAPACITY, VOID, LOCK, TRANSFER_SPEED, CONDUIT_SPEED;
 
         /** Upgrades that go in drawer / tank upgrade slots. */
         public boolean isStorageUpgrade() {

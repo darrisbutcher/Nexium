@@ -6,11 +6,13 @@
   "description": "In-game tests for Storage Nexus. Not shipped with the mod.",
   "environment": "*",
   "entrypoints": {
+    "fabric-client-gametest": ["net.storagenexus.gametest.client.TerminalClientTest"],
     "fabric-gametest": [
       "net.storagenexus.gametest.CableGameTest",
       "net.storagenexus.gametest.CompactingCapacityGameTest",
       "net.storagenexus.gametest.ConduitGameTest",
       "net.storagenexus.gametest.ControllerGameTest",
+      "net.storagenexus.gametest.FeaturesGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
       "net.storagenexus.gametest.OutputGameTest",
       "net.storagenexus.gametest.TerminalGameTest",

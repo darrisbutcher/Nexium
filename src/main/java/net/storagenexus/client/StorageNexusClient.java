@@ -12,11 +12,13 @@ import net.storagenexus.client.render.FacadeRenderer;
 import net.storagenexus.client.render.FluidDrawerRenderer;
 import net.storagenexus.client.render.LinkLabelRenderer;
 import net.storagenexus.client.screen.ConduitConfigScreen;
+import net.storagenexus.client.screen.BarrelScreen;
 import net.storagenexus.client.screen.ConnectorScreen;
+import net.storagenexus.client.screen.LevelEmitterScreen;
+import net.storagenexus.client.screen.NetworkBusScreen;
 import net.storagenexus.client.screen.CraftingTerminalScreen;
 import net.storagenexus.client.screen.DimensionalScreen;
 import net.storagenexus.client.screen.FilterScreen;
-import net.storagenexus.client.screen.TerminalScreen;
 import net.storagenexus.client.screen.UpgradeScreen;
 import net.storagenexus.guide.GuideBookItem;
 import net.storagenexus.registry.ModBlockEntities;
@@ -29,10 +31,10 @@ public class StorageNexusClient implements ClientModInitializer {
     public void onInitializeClient() {
         MenuScreens.register(ModMenus.UPGRADES, UpgradeScreen::new);
         MenuScreens.register(ModMenus.CONNECTOR, ConnectorScreen::new);
-        MenuScreens.<TerminalMenu, AbstractContainerScreen<TerminalMenu>>register(ModMenus.TERMINAL,
-                (menu, inventory, title) -> menu.isCrafting()
-                        ? new CraftingTerminalScreen(menu, inventory, title)
-                        : new TerminalScreen(menu, inventory, title));
+        MenuScreens.register(ModMenus.NETWORK_BUS, NetworkBusScreen::new);
+        MenuScreens.register(ModMenus.BARREL, BarrelScreen::new);
+        MenuScreens.register(ModMenus.LEVEL_EMITTER, LevelEmitterScreen::new);
+        MenuScreens.<TerminalMenu, AbstractContainerScreen<TerminalMenu>>register(ModMenus.TERMINAL, CraftingTerminalScreen::new);
         // Terminals show as many rows as fit the window
         TerminalMenu.clientRows = crafting -> TerminalMenu.rowsFor(crafting,
                 Minecraft.getInstance().getWindow().getGuiScaledHeight());

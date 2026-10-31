@@ -28,11 +28,8 @@ import java.util.function.Consumer;
  * Dimensional Anchor set to on-demand).
  */
 public class StorageTabletItem extends Item {
-    private final boolean crafting;
-
-    public StorageTabletItem(Properties properties, boolean crafting) {
+    public StorageTabletItem(Properties properties) {
         super(properties);
-        this.crafting = crafting;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class StorageTabletItem extends Item {
             return InteractionResult.FAIL;
         }
         final Runnable onClose = release;
-        TerminalBlock.open((ServerPlayer) player, target, pos, crafting,
+        TerminalBlock.open((ServerPlayer) player, target, pos, true,
                 p -> holdsLinkedTablet(p, link) && target.isLoaded(pos) && target.getBlockState(pos).getBlock() instanceof TerminalBlock,
                 onClose);
         return InteractionResult.SUCCESS;
@@ -110,6 +107,5 @@ public class StorageTabletItem extends Item {
         } else {
             tooltip.accept(Component.translatable("tooltip.storagenexus.tablet_linked", describe(link)).withStyle(ChatFormatting.AQUA));
         }
-        if (crafting) tooltip.accept(Component.translatable("tooltip.storagenexus.tablet_crafting").withStyle(ChatFormatting.GRAY));
     }
 }

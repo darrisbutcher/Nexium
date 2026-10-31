@@ -9,6 +9,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.barrel.BarrelTier;
+import net.storagenexus.barrel.BarrelUpgradeItem;
 import net.storagenexus.conduit.ConduitItem;
 import net.storagenexus.conduit.ConduitType;
 import net.storagenexus.conduit.ConduitWrenchItem;
@@ -29,18 +31,26 @@ public final class ModItems {
 
     public static final GuideBookItem GUIDE = register("guide", GuideBookItem::new, new Item.Properties().stacksTo(1));
 
-    public static final CapacityUpgradeItem IRON_UPGRADE = register("iron_capacity_upgrade", p -> new CapacityUpgradeItem(p, 2), new Item.Properties());
-    public static final CapacityUpgradeItem GOLD_UPGRADE = register("gold_capacity_upgrade", p -> new CapacityUpgradeItem(p, 4), new Item.Properties());
-    public static final CapacityUpgradeItem DIAMOND_UPGRADE = register("diamond_capacity_upgrade", p -> new CapacityUpgradeItem(p, 8), new Item.Properties());
-    public static final CapacityUpgradeItem NETHERITE_UPGRADE = register("netherite_capacity_upgrade", p -> new CapacityUpgradeItem(p, 16), new Item.Properties().fireResistant());
+    public static final CapacityUpgradeItem IRON_UPGRADE = register("iron_capacity_upgrade", p -> new CapacityUpgradeItem(p, 4), new Item.Properties());
+    public static final CapacityUpgradeItem GOLD_UPGRADE = register("gold_capacity_upgrade", p -> new CapacityUpgradeItem(p, 8), new Item.Properties());
+    public static final CapacityUpgradeItem DIAMOND_UPGRADE = register("diamond_capacity_upgrade", p -> new CapacityUpgradeItem(p, 16), new Item.Properties());
+    public static final CapacityUpgradeItem NETHERITE_UPGRADE = register("netherite_capacity_upgrade", p -> new CapacityUpgradeItem(p, 32), new Item.Properties().fireResistant());
+    /** Barrel upgrades, one per tier. */
+    public static final java.util.Map<BarrelTier, BarrelUpgradeItem> BARREL_UPGRADES = new java.util.EnumMap<>(BarrelTier.class);
+
+    static {
+        for (BarrelTier tier : BarrelTier.values()) {
+            BARREL_UPGRADES.put(tier, register(tier.id() + "_barrel_upgrade", p -> new BarrelUpgradeItem(p, tier),
+                    tier == BarrelTier.NETHERITE ? new Item.Properties().fireResistant() : new Item.Properties()));
+        }
+    }
+
     public static final UpgradeItem VOID_UPGRADE = register("void_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.VOID), new Item.Properties());
     public static final UpgradeItem LOCK_UPGRADE = register("lock_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.LOCK), new Item.Properties());
     public static final UpgradeItem TRANSFER_SPEED_UPGRADE = register("transfer_speed_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.TRANSFER_SPEED), new Item.Properties());
-    public static final UpgradeItem INTAKE_RANGE_UPGRADE = register("intake_range_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.INTAKE_RANGE), new Item.Properties());
     public static final UpgradeItem CONDUIT_SPEED_UPGRADE = register("conduit_speed_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.CONDUIT_SPEED), new Item.Properties());
 
-    public static final StorageTabletItem STORAGE_TABLET = register("storage_tablet", p -> new StorageTabletItem(p, false), new Item.Properties().stacksTo(1));
-    public static final StorageTabletItem CRAFTING_TABLET = register("crafting_storage_tablet", p -> new StorageTabletItem(p, true), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final StorageTabletItem CRAFTING_TABLET = register("crafting_storage_tablet", p -> new StorageTabletItem(p), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DimensionalLinkCardItem LINK_CARD = register("dimensional_link_card", DimensionalLinkCardItem::new, new Item.Properties().stacksTo(1));
 
     public static final ConduitItem ITEM_CONDUIT = register("item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 1), new Item.Properties());

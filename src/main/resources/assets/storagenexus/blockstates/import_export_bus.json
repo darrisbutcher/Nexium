@@ -1,0 +1,180 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "storagenexus:block/bus_core"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_arm",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "export": "false"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_import",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "export": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/bus_snout_export",
+        "x": 90
+      }
+    }
+  ]
+}

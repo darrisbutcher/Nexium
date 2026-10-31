@@ -27,7 +27,7 @@ fabricApi {
         createSourceSet = true
         modId = "storagenexus-gametest"
         enableGameTests = true
-        enableClientGameTests = false
+        enableClientGameTests = true
     }
 }
 

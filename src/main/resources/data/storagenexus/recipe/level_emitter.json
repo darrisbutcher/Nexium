@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IRI",
+    "RSR",
+    "IGI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "G": "minecraft:glass",
+    "S": "storagenexus:storage_connector"
+  },
+  "result": {
+    "id": "storagenexus:level_emitter",
+    "count": 1
+  }
+}

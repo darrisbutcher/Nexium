@@ -1,6 +1,10 @@
 package net.storagenexus.dimension;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.FilteringStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -22,12 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Accepts items (hoppers, pipes, players) into a 9-slot buffer and sends them to its linked
- * Outputs, in any dimension. If no Output can take an item it stays in the buffer, so the
+ * Accepts items (hoppers, pipes, players) into a 9-slot buffer, and fluids into a small tank,
+ * and sends them to its linked Outputs, in any dimension. If no Output can take an item it stays in the buffer, so the
  * hopper line backs up instead of anything being lost.
  */
 public class DimensionalInputBlockEntity extends LinkedBlockEntity {
     public static final int BUFFER_SLOTS = 9;
+    public static final long FLUID_CAPACITY = 8 * FluidConstants.BUCKET;
 
     private final SimpleContainer buffer = new SimpleContainer(BUFFER_SLOTS) {
         @Override public void setChanged() { super.setChanged(); DimensionalInputBlockEntity.this.setChanged(); }
@@ -41,6 +46,17 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
     };
     private final ContainerStorage storage = ContainerStorage.of(buffer, null);
 
+    /** Fluids pushed in (by pipes, conduits or a Fluid Intake) wait here for the Outputs. */
+    private final SingleVariantStorage<FluidVariant> fluidBuffer = new SingleVariantStorage<>() {
+        @Override protected FluidVariant getBlankVariant() { return FluidVariant.blank(); }
+        @Override protected long getCapacity(FluidVariant variant) { return FLUID_CAPACITY; }
+        @Override protected void onFinalCommit() { DimensionalInputBlockEntity.this.setChanged(); }
+    };
+    /** Outside view: fluid can be put in but not taken back out. */
+    private final Storage<FluidVariant> fluidView = new FilteringStorage<>(fluidBuffer) {
+        @Override protected boolean canExtract(FluidVariant resource) { return false; }
+    };
+
     private int cooldown;
     private int roundRobin;
     private int onlineOutputs;
@@ -51,6 +67,9 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
     }
 
     public Storage<ItemVariant> getItemStorage() { return storage; }
+    public Storage<FluidVariant> getFluidStorage() { return fluidView; }
+    public long fluidAmount() { return fluidBuffer.amount; }
+    public FluidVariant fluidVariant() { return fluidBuffer.variant; }
     public SimpleContainer buffer() { return buffer; }
     public SimpleContainer upgradeSlot() { return upgradeSlot; }
     public int onlineOutputs() { return onlineOutputs; }
@@ -65,7 +84,7 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
         int upgrades = be.upgradeSlot.getItem(0).getCount();
         be.cooldown = upgrades >= 2 ? 4 : 8;
         int batch = upgrades == 0 ? 1 : upgrades == 1 ? 16 : 64;
-        be.transfer((ServerLevel) level, batch);
+        be.transfer((ServerLevel) level, batch, FluidConstants.BUCKET * (upgrades == 0 ? 1 : upgrades == 1 ? 4 : 16));
     }
 
     /** If another Input has taken over this link, drop it. */
@@ -90,7 +109,7 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
         return out;
     }
 
-    private void transfer(ServerLevel level, int batch) {
+    private void transfer(ServerLevel level, int batch, long fluidBatch) {
         if (linkId == null) {
             onlineOutputs = 0;
             totalOutputs = 0;
@@ -121,8 +140,26 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
             }
             if (stack.isEmpty()) buffer.setItem(slot, ItemStack.EMPTY);
         }
+        transferFluid(outputs, fluidBatch);
         roundRobin = (roundRobin + 1) % Math.max(1, outputs.size());
         if (remaining != batch) buffer.setChanged();
+    }
+
+    private void transferFluid(List<DimensionalOutputBlockEntity> outputs, long batch) {
+        if (fluidBuffer.isResourceBlank() || fluidBuffer.amount <= 0) return;
+        FluidVariant variant = fluidBuffer.variant;
+        long want = Math.min(batch, fluidBuffer.amount);
+        for (int i = 0; i < outputs.size() && want > 0; i++) {
+            DimensionalOutputBlockEntity out = outputs.get((roundRobin + i) % outputs.size());
+            if (!out.acceptsFluid(variant)) continue;
+            try (Transaction tx = Transaction.openOuter()) {
+                long moved = out.receiveFluid(variant, want, tx);
+                if (moved > 0 && fluidBuffer.extract(variant, moved, tx) == moved) {
+                    tx.commit();
+                    want -= moved;
+                }
+            }
+        }
     }
 
     @Override
@@ -132,6 +169,8 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
         for (int i = 0; i < BUFFER_SLOTS; i++) items.add(buffer.getItem(i));
         output.store("buffer", ItemStack.OPTIONAL_CODEC.listOf(), items);
         output.store("upgrade", ItemStack.OPTIONAL_CODEC, upgradeSlot.getItem(0));
+        output.store("fluid", FluidVariant.CODEC, fluidBuffer.variant);
+        output.putLong("fluid_amount", fluidBuffer.amount);
     }
 
     @Override
@@ -141,6 +180,8 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
             for (int i = 0; i < BUFFER_SLOTS; i++) buffer.setItem(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
         });
         upgradeSlot.setItem(0, input.read("upgrade", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        fluidBuffer.variant = input.read("fluid", FluidVariant.CODEC).orElse(FluidVariant.blank());
+        fluidBuffer.amount = input.getLongOr("fluid_amount", 0L);
     }
 
     @Override

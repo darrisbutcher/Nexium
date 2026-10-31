@@ -60,6 +60,8 @@ final class TerminalView {
     private static Sort sort = Sort.COUNT;
     private static boolean descending = true;
     private int scroll;
+    /** True from a handled press on the grid until its release. */
+    private boolean ownsMouse;
     private int seenRevision = -1;
     private String lastQuery = "";
     private final List<Entry> visible = new ArrayList<>();
@@ -258,6 +260,7 @@ final class TerminalView {
     boolean mouseClicked(MouseButtonEvent event, int left, int top) {
         int cell = cellAt(left, top, event.x(), event.y());
         if (cell < 0) return false;
+        ownsMouse = true;
         Entry e = entryAt(scroll * TerminalMenu.COLS + cell);
         boolean right = event.button() == 1;
         ItemStack carried = menu.getCarried();
@@ -274,10 +277,24 @@ final class TerminalView {
         }
         if (e == null || e.item() == null) return true;
         ItemStack stack = e.item().stack();
-        int action = event.hasShiftDown() ? TerminalActionPayload.TAKE_TO_INVENTORY
+        int action = event.hasShiftDown() || Minecraft.getInstance().hasShiftDown() ? TerminalActionPayload.TAKE_TO_INVENTORY
                 : right ? TerminalActionPayload.TAKE_ONE : TerminalActionPayload.TAKE_STACK;
         send(action, stack, Fluids.EMPTY);
         return true;
+    }
+
+    /**
+     * The release and drag of a click on the grid belong to us: vanilla would otherwise treat the
+     * release as a click on no slot and send a stray inventory click to the server.
+     */
+    boolean mouseReleased() {
+        boolean mine = ownsMouse;
+        ownsMouse = false;
+        return mine;
+    }
+
+    boolean mouseDragged() {
+        return ownsMouse;
     }
 
     boolean mouseScrolled(double scrollY) {

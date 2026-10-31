@@ -22,7 +22,7 @@ import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.terminal.TerminalActionPayload;
 import net.storagenexus.terminal.TerminalMenu;
 
-/** Terminal actions, recipe-book placement from the network, and tank capacity. */
+/** Terminal actions, recipe-book placement from the network, and fluid drawer capacity. */
 public class TerminalGameTest {
     private static final BlockPos TERMINAL = new BlockPos(1, 1, 1);
     private static final BlockPos CONNECTOR = new BlockPos(2, 1, 1);
@@ -108,16 +108,10 @@ public class TerminalGameTest {
     }
 
     @GameTest
-    public void tankHoldsFourTimesADrawer(GameTestHelper h) {
-        h.setBlock(TERMINAL, ModBlocks.FLUID_TANK);
-        FluidDrawerBlockEntity tank = h.getBlockEntity(TERMINAL, FluidDrawerBlockEntity.class);
-        long want = 200 * FluidConstants.BUCKET;
-        try (Transaction tx = Transaction.openOuter()) {
-            h.assertValueEqual(tank.getFluidStorage().insert(FluidVariant.of(Fluids.WATER), want, tx),
-                    128 * FluidConstants.BUCKET, "water accepted by an unupgraded tank");
-        }
+    public void fluidDrawerHoldsThirtyTwoBuckets(GameTestHelper h) {
         h.setBlock(CONNECTOR, ModBlocks.FLUID_DRAWER_1X1);
         FluidDrawerBlockEntity drawer = h.getBlockEntity(CONNECTOR, FluidDrawerBlockEntity.class);
+        long want = 200 * FluidConstants.BUCKET;
         try (Transaction tx = Transaction.openOuter()) {
             h.assertValueEqual(drawer.getFluidStorage().insert(FluidVariant.of(Fluids.WATER), want, tx),
                     32 * FluidConstants.BUCKET, "water accepted by a fluid drawer");
@@ -128,12 +122,12 @@ public class TerminalGameTest {
     @GameTest
     public void terminalDepositsAndPickups(GameTestHelper h) {
         BlockPos t = new BlockPos(1, 1, 1), c = new BlockPos(2, 1, 1), chest = new BlockPos(3, 1, 1);
-        h.setBlock(t, ModBlocks.STORAGE_TERMINAL);
+        h.setBlock(t, ModBlocks.CRAFTING_TERMINAL);
         h.setBlock(c, ModBlocks.STORAGE_CONNECTOR);
         h.setBlock(chest, Blocks.CHEST);
         ServerPlayer player = h.makeMockServerPlayerInLevel();
         player.getInventory().clearContent();
-        TerminalMenu menu = new TerminalMenu(1, player.getInventory(), false, h.getLevel(), h.absolutePos(t), p -> true, null);
+        TerminalMenu menu = new TerminalMenu(1, player.getInventory(), true, h.getLevel(), h.absolutePos(t), p -> true, null);
         player.containerMenu = menu;
         ChestBlockEntity box = h.getBlockEntity(chest, ChestBlockEntity.class);
         java.util.function.IntSupplier inChest = () -> {

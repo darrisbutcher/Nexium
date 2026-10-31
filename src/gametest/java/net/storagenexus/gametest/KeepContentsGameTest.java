@@ -81,7 +81,7 @@ public class KeepContentsGameTest {
         DrawerBlockEntity placed = h.getBlockEntity(POS, DrawerBlockEntity.class);
         h.assertTrue(placed.slot(0).getResource().equals(ItemVariant.of(Items.COBBLESTONE)), "item restored");
         h.assertValueEqual(placed.slot(0).getAmount(), 5000L, "amount restored");
-        h.assertValueEqual(placed.slot(0).capacity(), 54L * 64 * 2, "iron upgrade capacity restored");
+        h.assertValueEqual(placed.slot(0).capacity(), 54L * 64 * 4, "iron upgrade capacity restored");
         h.succeed();
     }
 
@@ -134,13 +134,13 @@ public class KeepContentsGameTest {
     public void allRecipesLoad(GameTestHelper h) {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
                 .filter(r -> r.id().identifier().getNamespace().equals("storagenexus")).count();
-        h.assertValueEqual(ours, 71L, "storagenexus recipes loaded");
+        h.assertValueEqual(ours, 73L, "storagenexus recipes loaded");
         h.succeed();
     }
 
     @GameTest
-    public void fluidTankKeepsFluid(GameTestHelper h) {
-        Block block = ModBlocks.FLUID_TANK;
+    public void fluidDrawerKeepsFluid(GameTestHelper h) {
+        Block block = ModBlocks.FLUID_DRAWER_1X1;
         h.setBlock(POS, block);
         FluidDrawerBlockEntity be = h.getBlockEntity(POS, FluidDrawerBlockEntity.class);
         long amount = 10 * FluidConstants.BUCKET;

@@ -26,7 +26,7 @@ import java.util.Map;
 /** Links connectors and terminals together. No power or channels. */
 public class InventoryCableBlock extends Block implements NetworkBlock {
     public static final Map<Direction, BooleanProperty> PROPS = PipeBlock.PROPERTY_BY_DIRECTION;
-    private static final PipeShapes SHAPES = new PipeShapes(5, 11);
+    private static final PipeShapes SHAPES = new PipeShapes(6.5, 9.5);
 
     public InventoryCableBlock(Properties properties) {
         super(properties);

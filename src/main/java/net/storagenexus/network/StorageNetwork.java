@@ -209,6 +209,18 @@ public final class StorageNetwork {
         return extracted;
     }
 
+    /** How many of one item the network holds (respecting connector filters). */
+    public long countItem(ItemVariant resource) {
+        long total = 0;
+        for (Source<ItemVariant> s : items) {
+            if (!s.valid() || !allowsItem(s, resource)) continue;
+            for (StorageView<ItemVariant> view : s.storage) {
+                if (!view.isResourceBlank() && view.getResource().equals(resource)) total += view.getAmount();
+            }
+        }
+        return total;
+    }
+
     /** Totals of every item in the network. */
     public Map<ItemVariant, Long> listItems() {
         Map<ItemVariant, Long> out = new HashMap<>();

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "storagenexus:block/netherite_barrel_top",
+    "side": "storagenexus:block/netherite_barrel_side",
+    "bottom": "storagenexus:block/netherite_barrel_bottom"
+  }
+}

@@ -12,13 +12,19 @@ public final class PipeShapes {
     private final VoxelShape[] cache = new VoxelShape[64];
 
     public PipeShapes(double min, double max) {
+        this(min, max, min, max);
+    }
+
+    /** A core from {@code min} to {@code max} with thinner (or thicker) arms from {@code armMin} to {@code armMax}. */
+    public PipeShapes(double min, double max, double armMin, double armMax) {
         core = Block.box(min, min, min, max, max, max);
-        arms[Direction.DOWN.get3DDataValue()] = Block.box(min, 0, min, max, min, max);
-        arms[Direction.UP.get3DDataValue()] = Block.box(min, max, min, max, 16, max);
-        arms[Direction.NORTH.get3DDataValue()] = Block.box(min, min, 0, max, max, min);
-        arms[Direction.SOUTH.get3DDataValue()] = Block.box(min, min, max, max, max, 16);
-        arms[Direction.WEST.get3DDataValue()] = Block.box(0, min, min, min, max, max);
-        arms[Direction.EAST.get3DDataValue()] = Block.box(max, min, min, 16, max, max);
+        double aMin = armMin, aMax = armMax;
+        arms[Direction.DOWN.get3DDataValue()] = Block.box(aMin, 0, aMin, aMax, min, aMax);
+        arms[Direction.UP.get3DDataValue()] = Block.box(aMin, max, aMin, aMax, 16, aMax);
+        arms[Direction.NORTH.get3DDataValue()] = Block.box(aMin, aMin, 0, aMax, aMax, min);
+        arms[Direction.SOUTH.get3DDataValue()] = Block.box(aMin, aMin, max, aMax, aMax, 16);
+        arms[Direction.WEST.get3DDataValue()] = Block.box(0, aMin, aMin, min, aMax, aMax);
+        arms[Direction.EAST.get3DDataValue()] = Block.box(max, aMin, aMin, 16, aMax, aMax);
     }
 
     public VoxelShape get(int mask) {

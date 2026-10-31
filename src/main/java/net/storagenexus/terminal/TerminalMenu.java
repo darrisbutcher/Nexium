@@ -64,6 +64,8 @@ public class TerminalMenu extends AbstractCraftingMenu {
 
     public static RowChooser clientRows = crafting -> ROWS;
     public static final int WIDTH = 194;
+    /** Menu button id: empty the crafting grid into the network (else your inventory, else the ground). */
+    public static final int CLEAR_GRID = 1;
     private static final int MAX_PART_BYTES = 256 * 1024;
     private static final int MAX_ENTRY_BYTES = 512 * 1024;
 
@@ -446,6 +448,18 @@ public class TerminalMenu extends AbstractCraftingMenu {
     @Override
     protected Player owner() {
         return player;
+    }
+
+    @Override
+    public boolean clickMenuButton(Player p, int id) {
+        if (id != CLEAR_GRID || !crafting) return false;
+        if (!p.level().isClientSide()) {
+            clearGrid(network(), p.getInventory());
+            slotsChanged(craftSlots);
+            forceResync();
+            broadcastChanges();
+        }
+        return true;
     }
 
     @Override

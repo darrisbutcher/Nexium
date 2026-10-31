@@ -1,13 +1,10 @@
 package net.storagenexus.network;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -16,15 +13,9 @@ import net.storagenexus.util.StorageEvents;
 import org.jetbrains.annotations.Nullable;
 
 /** Reads every inventory touching it (all six sides) into the network. */
-public class StorageConnectorBlock extends BaseEntityBlock implements NetworkBlock {
+public class StorageConnectorBlock extends ArmedNetworkBlock {
     public StorageConnectorBlock(Properties properties) {
         super(properties);
-    }
-
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Override
@@ -43,12 +34,6 @@ public class StorageConnectorBlock extends BaseEntityBlock implements NetworkBlo
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
-        StorageEvents.storageChanged();
-    }
-
-    @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
         StorageEvents.storageChanged();
     }
 

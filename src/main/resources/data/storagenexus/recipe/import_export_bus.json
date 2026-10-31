@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IHI",
+    "CSC",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "H": "minecraft:hopper",
+    "C": "minecraft:copper_ingot",
+    "S": "storagenexus:storage_connector"
+  },
+  "result": {
+    "id": "storagenexus:import_export_bus",
+    "count": 1
+  }
+}

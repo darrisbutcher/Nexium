@@ -1,5 +1,7 @@
 package net.storagenexus.dimension;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -24,7 +26,7 @@ import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModBlockEntities;
 
 /**
- * Receives items from its linked Input and pushes them into whatever is around it, on any
+ * Receives items and fluids from its linked Input and pushes them into whatever is around it, on any
  * side: chests, drawers, Drawer Controllers, item conduits, or any storage-network block
  * (then into the whole network).
  */
@@ -88,6 +90,33 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
         for (int i = 0; i < sides.length && moved < amount; i++) {
             Direction side = sides[(first + i) % sides.length];
             if (isSideEnabled(side)) moved += pushTo(side, variant, amount - moved, tx);
+        }
+        return moved;
+    }
+
+    public boolean acceptsFluid(FluidVariant variant) {
+        ItemStack f = filterSlot.getItem(0);
+        return !(f.getItem() instanceof FilterItem fi) || fi.data(f).matches(variant);
+    }
+
+    /** Fluid counterpart of {@link #receive}: storage networks and any fluid storage on the enabled sides. */
+    public long receiveFluid(FluidVariant variant, long amount, TransactionContext tx) {
+        if (level == null) return 0;
+        Direction[] sides = Direction.values();
+        int first = nextSide;
+        long moved = 0;
+        for (int i = 0; i < sides.length && moved < amount; i++) {
+            Direction side = sides[(first + i) % sides.length];
+            if (!isSideEnabled(side)) continue;
+            BlockPos target = worldPosition.relative(side);
+            if (level.getBlockEntity(target) instanceof DimensionalInputBlockEntity) continue;
+            if (level.getBlockState(target).getBlock() instanceof NetworkBlock) {
+                StorageNetwork net = StorageNetwork.find(level, target);
+                if (net != null) moved += net.insertFluid(variant, amount - moved, tx);
+                continue;
+            }
+            Storage<FluidVariant> storage = FluidStorage.SIDED.find(level, target, side.getOpposite());
+            if (storage != null) moved += storage.insert(variant, amount - moved, tx);
         }
         return moved;
     }

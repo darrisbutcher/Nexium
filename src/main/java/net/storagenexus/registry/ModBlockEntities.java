@@ -14,8 +14,10 @@ import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
 import net.storagenexus.drawer.DrawerControllerBlockEntity;
 import net.storagenexus.fluid.FluidDrawerBlockEntity;
+import net.storagenexus.barrel.TieredBarrelBlockEntity;
 import net.storagenexus.fluid.FluidIntakeBlockEntity;
-import net.storagenexus.fluid.FluidTankBlockEntity;
+import net.storagenexus.network.LevelEmitterBlockEntity;
+import net.storagenexus.network.NetworkBusBlockEntity;
 import net.storagenexus.network.ConnectorBlockEntity;
 
 import java.util.Set;
@@ -28,9 +30,13 @@ public final class ModBlockEntities {
     public static final BlockEntityType<DrawerControllerBlockEntity> DRAWER_CONTROLLER = register("drawer_controller",
             new BlockEntityType<>(DrawerControllerBlockEntity::new, Set.of(ModBlocks.DRAWER_CONTROLLER)));
     public static final BlockEntityType<FluidDrawerBlockEntity> FLUID_DRAWER = register("fluid_drawer",
-            new BlockEntityType<>(FluidDrawerBlockEntity::new, Set.<Block>of(ModBlocks.FLUID_DRAWER_1X1, ModBlocks.FLUID_DRAWER_2X2)));
-    public static final BlockEntityType<FluidTankBlockEntity> FLUID_TANK = register("fluid_tank",
-            new BlockEntityType<>(FluidTankBlockEntity::new, Set.of(ModBlocks.FLUID_TANK)));
+            new BlockEntityType<>(FluidDrawerBlockEntity::new, Set.<Block>of(ModBlocks.FLUID_DRAWER_1X1)));
+    public static final BlockEntityType<NetworkBusBlockEntity> NETWORK_BUS = register("network_bus",
+            new BlockEntityType<>(NetworkBusBlockEntity::new, Set.of(ModBlocks.NETWORK_BUS)));
+    public static final BlockEntityType<LevelEmitterBlockEntity> LEVEL_EMITTER = register("level_emitter",
+            new BlockEntityType<>(LevelEmitterBlockEntity::new, Set.of(ModBlocks.LEVEL_EMITTER)));
+    public static final BlockEntityType<TieredBarrelBlockEntity> TIERED_BARREL = register("tiered_barrel",
+            new BlockEntityType<>(TieredBarrelBlockEntity::new, new java.util.HashSet<Block>(ModBlocks.BARRELS.values())));
     public static final BlockEntityType<FluidIntakeBlockEntity> FLUID_INTAKE = register("fluid_intake",
             new BlockEntityType<>(FluidIntakeBlockEntity::new, Set.of(ModBlocks.FLUID_INTAKE)));
     public static final BlockEntityType<ConnectorBlockEntity> CONNECTOR = register("connector",

@@ -1,27 +1,115 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "storagenexus:block/filtered_connector"
+  "multipart": [
+    {
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_core"
+      }
     },
-    "facing=east": {
-      "model": "storagenexus:block/filtered_connector",
-      "y": 90
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm"
+      }
     },
-    "facing=south": {
-      "model": "storagenexus:block/filtered_connector",
-      "y": 180
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm",
+        "y": 90
+      }
     },
-    "facing=west": {
-      "model": "storagenexus:block/filtered_connector",
-      "y": 270
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm",
+        "y": 180
+      }
     },
-    "facing=up": {
-      "model": "storagenexus:block/filtered_connector",
-      "x": 270
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm",
+        "y": 270
+      }
     },
-    "facing=down": {
-      "model": "storagenexus:block/filtered_connector",
-      "x": 90
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "storagenexus:block/storage_connector_arm",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "up"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "down"
+      },
+      "apply": {
+        "model": "storagenexus:block/filtered_connector_snout",
+        "x": 90
+      }
     }
-  }
+  ]
 }

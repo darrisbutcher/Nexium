@@ -1,0 +1,227 @@
+package net.storagenexus.gametest;
+
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.storagenexus.barrel.BarrelTier;
+import net.storagenexus.barrel.TieredBarrelBlockEntity;
+import net.storagenexus.dimension.DimensionalInputBlockEntity;
+import net.storagenexus.dimension.DimensionalOutputBlockEntity;
+import net.storagenexus.dimension.LinkRegistry;
+import net.storagenexus.drawer.DrawerBlockEntity;
+import net.storagenexus.drawer.DrawerWood;
+import net.storagenexus.filter.FilterData;
+import net.storagenexus.fluid.FluidDrawerBlockEntity;
+import net.storagenexus.fluid.FluidIntakeBlockEntity;
+import net.storagenexus.network.LevelEmitterBlock;
+import net.storagenexus.network.LevelEmitterBlockEntity;
+import net.storagenexus.network.NetworkBusBlock;
+import net.storagenexus.network.NetworkBusBlockEntity;
+import net.storagenexus.registry.ModBlocks;
+import net.storagenexus.registry.ModComponents;
+import net.storagenexus.registry.ModItems;
+import net.storagenexus.terminal.TerminalMenu;
+
+import java.util.List;
+
+/** Import/Export Bus, Level Emitter, barrels, fluid links, the intake filter, the capacity cap and the clear button. */
+public class FeaturesGameTest {
+    private static final BlockPos SOURCE = new BlockPos(1, 1, 1);
+    private static final BlockPos BUS = new BlockPos(2, 1, 1);
+    private static final BlockPos CABLE = new BlockPos(3, 1, 1);
+    private static final BlockPos CONNECTOR = new BlockPos(4, 1, 1);
+    private static final BlockPos STORE = new BlockPos(5, 1, 1);
+
+    private static int count(ChestBlockEntity chest, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(item)) n += chest.getItem(i).getCount();
+        return n;
+    }
+
+    /** chest - bus (facing the chest) - cable - connector - chest: the left chest is outside the network, the right one in. */
+    private static NetworkBusBlockEntity busLayout(GameTestHelper h, boolean export) {
+        h.setBlock(SOURCE, Blocks.CHEST);
+        h.setBlock(CABLE, ModBlocks.INVENTORY_CABLE);
+        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(STORE, Blocks.CHEST);
+        h.setBlock(BUS, ModBlocks.NETWORK_BUS.defaultBlockState()
+                .setValue(NetworkBusBlock.FACING, Direction.WEST).setValue(NetworkBusBlock.EXPORT, export));
+        return h.getBlockEntity(BUS, NetworkBusBlockEntity.class);
+    }
+
+    private static void run(GameTestHelper h, NetworkBusBlockEntity bus) {
+        bus.run(h.getLevel(), h.absolutePos(BUS), h.getLevel().getBlockState(h.absolutePos(BUS)));
+    }
+
+    @GameTest
+    public void busImportsIntoTheNetwork(GameTestHelper h) {
+        NetworkBusBlockEntity bus = busLayout(h, false);
+        ChestBlockEntity source = h.getBlockEntity(SOURCE, ChestBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.OAK_PLANKS, 40));
+        run(h, bus);
+        h.assertValueEqual(count(h.getBlockEntity(STORE, ChestBlockEntity.class), Items.OAK_PLANKS), 32, "imported in one pass");
+        run(h, bus);
+        h.assertValueEqual(count(h.getBlockEntity(STORE, ChestBlockEntity.class), Items.OAK_PLANKS), 40, "imported the rest");
+        h.assertValueEqual(count(source, Items.OAK_PLANKS), 0, "source emptied");
+        h.succeed();
+    }
+
+    @GameTest
+    public void busExportsOnlyWhatTheFilterAllows(GameTestHelper h) {
+        NetworkBusBlockEntity bus = busLayout(h, true);
+        ChestBlockEntity store = h.getBlockEntity(STORE, ChestBlockEntity.class);
+        store.setItem(0, new ItemStack(Items.OAK_PLANKS, 64));
+        store.setItem(1, new ItemStack(Items.IRON_INGOT, 64));
+        ItemStack filter = new ItemStack(ModItems.BASIC_FILTER);
+        filter.set(ModComponents.FILTER, FilterData.empty(false).withEntries(List.of(new ItemStack(Items.IRON_INGOT))));
+        bus.filterContainer().setItem(0, filter);
+        run(h, bus);
+        ChestBlockEntity out = h.getBlockEntity(SOURCE, ChestBlockEntity.class);
+        h.assertValueEqual(count(out, Items.IRON_INGOT), 32, "iron exported");
+        h.assertValueEqual(count(out, Items.OAK_PLANKS), 0, "planks held back by the filter");
+        h.succeed();
+    }
+
+    @GameTest
+    public void levelEmitterFollowsTheNetworkCount(GameTestHelper h) {
+        BlockPos emitterPos = new BlockPos(1, 1, 1);
+        h.setBlock(emitterPos, ModBlocks.LEVEL_EMITTER);
+        h.setBlock(new BlockPos(2, 1, 1), ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(new BlockPos(3, 1, 1), Blocks.CHEST);
+        h.getBlockEntity(new BlockPos(3, 1, 1), ChestBlockEntity.class).setItem(0, new ItemStack(Items.OAK_PLANKS, 10));
+        LevelEmitterBlockEntity be = h.getBlockEntity(emitterPos, LevelEmitterBlockEntity.class);
+        be.setItem(new ItemStack(Items.OAK_PLANKS));
+        be.setAmount(5);
+        h.assertTrue(h.getBlockState(emitterPos).getValue(LevelEmitterBlock.POWERED), "on with 10 planks and a limit of 5");
+        be.setAmount(20);
+        h.assertTrue(!h.getBlockState(emitterPos).getValue(LevelEmitterBlock.POWERED), "off with 10 planks and a limit of 20");
+        be.toggleBelow();
+        h.assertTrue(h.getBlockState(emitterPos).getValue(LevelEmitterBlock.POWERED), "on when set to fewer than 20");
+        h.succeed();
+    }
+
+    @GameTest
+    public void barrelUpgradesKeepContents(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, Blocks.BARREL);
+        BarrelBlockEntity vanilla = h.getBlockEntity(pos, BarrelBlockEntity.class);
+        vanilla.setItem(3, new ItemStack(Items.OAK_PLANKS, 10));
+        net.minecraft.server.level.ServerLevel level = h.getLevel();
+        BlockPos abs = h.absolutePos(pos);
+        h.assertTrue(!ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD).apply(level, abs), "gold can't skip iron");
+        int[] expected = {36, 45, 54, 63};
+        for (BarrelTier tier : BarrelTier.values()) {
+            h.assertTrue(ModItems.BARREL_UPGRADES.get(tier).apply(level, abs), tier + " upgrade applies");
+            TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
+            h.assertValueEqual(be.getContainerSize(), expected[tier.ordinal()], tier + " slots");
+            h.assertValueEqual(be.getItem(3).getCount(), 10, tier + " kept the planks");
+        }
+        h.assertValueEqual(level.getEntitiesOfClass(ItemEntity.class, new AABB(abs).inflate(3)).size(), 0, "nothing dropped");
+        h.succeed();
+    }
+
+    @GameTest
+    public void fluidsTravelThroughLinks(GameTestHelper h) {
+        BlockPos in = new BlockPos(1, 1, 1), out = new BlockPos(3, 2, 3), drawer = out.east();
+        h.setBlock(in, ModBlocks.DIMENSIONAL_INPUT);
+        h.setBlock(out, ModBlocks.DIMENSIONAL_OUTPUT);
+        h.setBlock(drawer, ModBlocks.FLUID_DRAWER_1X1);
+        DimensionalInputBlockEntity input = h.getBlockEntity(in, DimensionalInputBlockEntity.class);
+        DimensionalOutputBlockEntity output = h.getBlockEntity(out, DimensionalOutputBlockEntity.class);
+        LinkRegistry reg = LinkRegistry.get(h.getLevel().getServer());
+        java.util.UUID id = reg.create(null, input.globalPos(), h.getLevel().getRandom());
+        reg.addOutput(id, output.globalPos());
+        input.setLink(id);
+        output.setLink(id);
+        try (Transaction tx = Transaction.openOuter()) {
+            h.assertValueEqual(input.getFluidStorage().insert(FluidVariant.of(Fluids.WATER), 3 * FluidConstants.BUCKET, tx),
+                    3 * FluidConstants.BUCKET, "fluid accepted by the Input");
+            tx.commit();
+        }
+        DimensionalInputBlockEntity.serverTick(h.getLevel(), h.absolutePos(in), h.getLevel().getBlockState(h.absolutePos(in)), input);
+        FluidDrawerBlockEntity d = h.getBlockEntity(drawer, FluidDrawerBlockEntity.class);
+        h.assertValueEqual(d.slot(0).getAmount(), FluidConstants.BUCKET, "a bucket arrived in the drawer next to the Output");
+        h.assertTrue(input.fluidAmount() == 2 * FluidConstants.BUCKET, "the rest is still waiting in the Input");
+        h.succeed();
+    }
+
+    @GameTest
+    public void intakeFilterAndLavaSource(GameTestHelper h) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        h.setBlock(pos, ModBlocks.FLUID_INTAKE);
+        h.setBlock(pos.east(), Blocks.WATER);
+        h.setBlock(pos.west(), ModBlocks.LAVA_SPRING);
+        FluidIntakeBlockEntity be = h.getBlockEntity(pos, FluidIntakeBlockEntity.class);
+        be.setFilter(FluidVariant.of(Fluids.LAVA));
+        be.pullNow(h.getLevel());
+        h.assertTrue(be.bufferAmount() == FluidConstants.BUCKET, "one bucket taken");
+        h.assertTrue(h.getBlockState(pos.west()).is(ModBlocks.LAVA_SPRING), "the lava source is never used up");
+        h.assertTrue(h.getBlockState(pos.east()).is(Blocks.WATER), "water left alone by a lava filter");
+        be.pullNow(h.getLevel());
+        be.pullNow(h.getLevel());
+        be.pullNow(h.getLevel());
+        be.pullNow(h.getLevel());
+        h.assertTrue(be.bufferAmount() == 4 * FluidConstants.BUCKET, "lava keeps coming");
+        h.succeed();
+    }
+
+    @GameTest
+    public void capacityNeverPassesThirtyTwoTimes(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);
+        DrawerBlockEntity be = h.getBlockEntity(pos, DrawerBlockEntity.class);
+        be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
+        h.assertValueEqual(be.capacityMultiplier(), 32, "one netherite upgrade");
+        for (int i = 0; i < 3; i++) be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
+        h.assertValueEqual(be.capacityMultiplier(), 32, "four netherite upgrades are still capped");
+        h.succeed();
+    }
+
+    @GameTest
+    public void clearButtonEmptiesTheGrid(GameTestHelper h) {
+        BlockPos terminal = new BlockPos(1, 1, 1);
+        h.setBlock(terminal, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(new BlockPos(2, 1, 1), ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(new BlockPos(3, 1, 1), Blocks.CHEST);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        player.setPos(net.minecraft.world.phys.Vec3.atCenterOf(h.absolutePos(terminal.above())));
+        TerminalMenu menu = new TerminalMenu(1, player.getInventory(), true, h.getLevel(), h.absolutePos(terminal), p -> true, null);
+        player.containerMenu = menu;
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS, 5));
+        menu.getInputGridSlots().get(4).set(new ItemStack(Items.IRON_INGOT, 3));
+        menu.clickMenuButton(player, TerminalMenu.CLEAR_GRID);
+        ChestBlockEntity chest = h.getBlockEntity(new BlockPos(3, 1, 1), ChestBlockEntity.class);
+        h.assertValueEqual(count(chest, Items.OAK_PLANKS), 5, "planks went to the network");
+        h.assertValueEqual(count(chest, Items.IRON_INGOT), 3, "iron went to the network");
+        h.assertTrue(menu.getInputGridSlots().get(0).getItem().isEmpty(), "grid emptied");
+
+        // Network full of other things: it goes to the inventory, and with that full, to the floor
+        for (int i = 0; i < chest.getContainerSize(); i++) chest.setItem(i, new ItemStack(Items.DIRT, 64));
+        menu.getInputGridSlots().get(1).set(new ItemStack(Items.GOLD_INGOT, 7));
+        menu.clickMenuButton(player, TerminalMenu.CLEAR_GRID);
+        h.assertValueEqual(player.getInventory().countItem(Items.GOLD_INGOT), 7, "gold went to the inventory");
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) player.getInventory().setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+        menu.getInputGridSlots().get(2).set(new ItemStack(Items.EMERALD, 2));
+        menu.clickMenuButton(player, TerminalMenu.CLEAR_GRID);
+        int onFloor = 0;
+        for (ItemEntity e : h.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(40))) {
+            if (e.getItem().is(Items.EMERALD)) onFloor += e.getItem().getCount();
+        }
+        h.assertValueEqual(onFloor, 2, "emeralds dropped on the ground");
+        h.succeed();
+    }
+}

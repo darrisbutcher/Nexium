@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OLO",
+    "LNL",
+    "OLO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "L": "minecraft:lava_bucket",
+    "N": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "storagenexus:lava_spring",
+    "count": 1
+  }
+}

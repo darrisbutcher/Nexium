@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Takes one bucket per second from a nearby source. Infinite water sources (two or more
- * neighbouring water sources) are never removed; everything else is drained block by block.
+ * Takes one bucket per second from a touching source block (optionally only one chosen fluid).
+ * Infinite water sources (two or more neighbouring water sources) and the Infinite Lava Source
+ * are never used up; everything else is drained block by block.
  */
 public class FluidIntakeBlockEntity extends BlockEntity {
     private static final long BUFFER = 4 * FluidConstants.BUCKET;
@@ -34,8 +35,9 @@ public class FluidIntakeBlockEntity extends BlockEntity {
     /** The buffer holds 4 buckets and fills by one a second, so pushing every half second keeps up. */
     private static final int PUSH_INTERVAL = 10;
 
-    private boolean rangeUpgrade;
     private int scanIndex;
+    /** Only this fluid is taken; blank means anything. */
+    private FluidVariant filter = FluidVariant.blank();
 
     private final SingleVariantStorage<FluidVariant> buffer = new SingleVariantStorage<>() {
         @Override protected FluidVariant getBlankVariant() { return FluidVariant.blank(); }
@@ -55,13 +57,11 @@ public class FluidIntakeBlockEntity extends BlockEntity {
 
     public Storage<FluidVariant> getFluidStorage() { return exposed; }
     public long bufferAmount() { return buffer.amount; }
-    public boolean hasRangeUpgrade() { return rangeUpgrade; }
+    public FluidVariant filter() { return filter; }
 
-    public boolean installRangeUpgrade() {
-        if (rangeUpgrade) return false;
-        rangeUpgrade = true;
+    public void setFilter(FluidVariant value) {
+        filter = value;
         setChanged();
-        return true;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidIntakeBlockEntity be) {
@@ -70,19 +70,14 @@ public class FluidIntakeBlockEntity extends BlockEntity {
         if (be.buffer.amount > 0 && time % PUSH_INTERVAL == 0) be.push(level);
     }
 
+    /** Runs one pull straight away (tests and the tick both use it). */
+    public void pullNow(Level level) {
+        pull(level);
+    }
+
     private List<BlockPos> candidates() {
         List<BlockPos> out = new ArrayList<>();
         for (Direction d : Direction.values()) out.add(worldPosition.relative(d));
-        if (rangeUpgrade) {
-            for (int dy = 0; dy >= -1; dy--) {
-                for (int dx = -2; dx <= 2; dx++) {
-                    for (int dz = -2; dz <= 2; dz++) {
-                        BlockPos p = worldPosition.offset(dx, dy, dz);
-                        if (!p.equals(worldPosition) && !out.contains(p)) out.add(p);
-                    }
-                }
-            }
-        }
         return out;
     }
 
@@ -93,14 +88,16 @@ public class FluidIntakeBlockEntity extends BlockEntity {
             BlockPos p = list.get((scanIndex + i) % list.size());
             BlockState s = level.getBlockState(p);
             FluidState fs = s.getFluidState();
-            if (!fs.isSource() || !(s.getBlock() instanceof LiquidBlock)) continue;
-            FluidVariant variant = FluidVariant.of(fs.getType());
+            boolean spring = s.getBlock() instanceof LavaSpringBlock;
+            if (!spring && (!fs.isSource() || !(s.getBlock() instanceof LiquidBlock))) continue;
+            FluidVariant variant = spring ? FluidVariant.of(Fluids.LAVA) : FluidVariant.of(fs.getType());
+            if (!filter.isBlank() && !filter.equals(variant)) continue;
             if (!buffer.isResourceBlank() && !buffer.getResource().equals(variant)) continue;
             // Fill the internal buffer directly (it refuses outside insertion).
             buffer.variant = variant;
             buffer.amount += FluidConstants.BUCKET;
             setChanged();
-            if (!isInfiniteWater(level, p, fs)) level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
+            if (!spring && !isInfiniteWater(level, p, fs)) level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
             scanIndex = (scanIndex + i + 1) % list.size();
             return;
         }
@@ -144,7 +141,7 @@ public class FluidIntakeBlockEntity extends BlockEntity {
         super.saveAdditional(output);
         output.store("fluid", FluidVariant.CODEC, buffer.variant);
         output.putLong("amount", buffer.amount);
-        output.putBoolean("range_upgrade", rangeUpgrade);
+        output.store("filter", FluidVariant.CODEC, filter);
     }
 
     @Override
@@ -152,6 +149,6 @@ public class FluidIntakeBlockEntity extends BlockEntity {
         super.loadAdditional(input);
         buffer.variant = input.read("fluid", FluidVariant.CODEC).orElse(FluidVariant.blank());
         buffer.amount = input.getLongOr("amount", 0L);
-        rangeUpgrade = input.getBooleanOr("range_upgrade", false);
+        filter = input.read("filter", FluidVariant.CODEC).orElse(FluidVariant.blank());
     }
 }

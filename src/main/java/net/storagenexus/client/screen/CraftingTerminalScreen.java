@@ -1,6 +1,9 @@
 package net.storagenexus.client.screen;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
@@ -26,6 +29,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
 
     private final TerminalView view;
     private final CraftingRecipeBookComponent recipeBook;
+    private Button clearButton;
 
     public CraftingTerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         this(menu, new CraftingRecipeBookComponent(menu), inventory, title);
@@ -57,6 +61,11 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         leftPos = panelLeft();
         titleLabelY = 6;
         view.init(this::addRenderableWidget, leftPos, topPos);
+        clearButton = Button.builder(Component.literal("X").withStyle(ChatFormatting.RED), b -> {
+            if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, TerminalMenu.CLEAR_GRID);
+        }).bounds(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()), 16, 14)
+                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.clear_grid"))).build();
+        addRenderableWidget(clearButton);
     }
 
     @Override
@@ -69,6 +78,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     protected void onRecipeBookButtonClick() {
         leftPos = panelLeft();
         view.reposition(leftPos, topPos); // the screen slides right when the book opens
+        clearButton.setPosition(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()));
     }
 
     @Override
@@ -123,6 +133,16 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         boolean bookCoversScreen = recipeBook.isVisible() && width < NARROW_WIDTH;
         if (!bookCoversScreen && view.mouseClicked(event, leftPos, topPos)) return true;
         return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        return view.mouseReleased() || super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        return view.mouseDragged() || super.mouseDragged(event, dx, dy);
     }
 
     @Override
