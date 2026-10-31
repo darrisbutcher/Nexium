@@ -25,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.UpgradeMenu;
 import net.storagenexus.upgrade.Upgradeable;
+import net.storagenexus.util.KeepContents;
 import net.storagenexus.util.Menus;
 import net.storagenexus.util.StorageEvents;
 
@@ -76,6 +77,12 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
         StorageEvents.storageChanged();
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        KeepContents.dropInCreative(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     /** Number of front slots, used for hit testing. */

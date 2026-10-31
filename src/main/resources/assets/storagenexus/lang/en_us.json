@@ -144,6 +144,8 @@
   "tooltip.storagenexus.capacity_upgrade.stack": "Several upgrades add together",
   "tooltip.storagenexus.card_blank": "Click a Dimensional Input, then Outputs. Rename in an anvil to pick the link name.",
   "tooltip.storagenexus.card_linked": "Link: %s",
+  "tooltip.storagenexus.contents": "%s × %s",
+  "tooltip.storagenexus.contents_locked": "Locked to %s (empty)",
   "tooltip.storagenexus.match_components": "Exact match (components)",
   "tooltip.storagenexus.tablet_crafting": "Includes a crafting grid",
   "tooltip.storagenexus.tablet_linked": "Linked to %s",

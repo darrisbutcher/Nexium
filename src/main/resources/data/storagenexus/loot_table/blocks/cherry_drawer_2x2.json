@@ -6,12 +6,17 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "storagenexus:cherry_drawer_2x2"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
+          "name": "storagenexus:cherry_drawer_2x2",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": [
+                "storagenexus:drawer_slots",
+                "storagenexus:upgrades"
+              ]
+            }
+          ]
         }
       ]
     }

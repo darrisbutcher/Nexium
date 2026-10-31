@@ -1,7 +1,11 @@
 package net.storagenexus.upgrade;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.storagenexus.registry.ModComponents;
 
 /**
  * Block entities with four storage-upgrade slots (drawers, fluid drawers, tanks).
@@ -43,6 +47,19 @@ public interface Upgradeable {
             if (s.getItem() instanceof UpgradeItem up && up.kind() == kind) return true;
         }
         return false;
+    }
+
+    /** Puts the upgrades on the dropped item (only if there are any, so empty blocks still stack). */
+    default void collectUpgrades(DataComponentMap.Builder components) {
+        if (getUpgrades().stream().anyMatch(s -> !s.isEmpty())) {
+            components.set(ModComponents.UPGRADES, ItemContainerContents.fromItems(getUpgrades()));
+        }
+    }
+
+    /** Restores upgrades from a placed item. Does not call {@link #onUpgradesChanged()}. */
+    default void applyUpgrades(DataComponentGetter components) {
+        ItemContainerContents contents = components.get(ModComponents.UPGRADES);
+        if (contents != null) contents.copyInto(getUpgrades());
     }
 
     /** Installs one item from the stack into a free slot. Returns true if it went in. */

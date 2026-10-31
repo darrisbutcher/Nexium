@@ -10,7 +10,8 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.Containers;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.storagenexus.registry.ModBlockEntities;
+import net.storagenexus.registry.ModComponents;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.Upgradeable;
 import net.storagenexus.util.SyncedBlockEntity;
@@ -117,8 +119,8 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
         return true;
     }
 
-    record SlotData(FluidVariant variant, long amount, FluidVariant locked) {
-        static final Codec<SlotData> CODEC = RecordCodecBuilder.create(i -> i.group(
+    public record SlotData(FluidVariant variant, long amount, FluidVariant locked) {
+        public static final Codec<SlotData> CODEC = RecordCodecBuilder.create(i -> i.group(
                 FluidVariant.CODEC.fieldOf("variant").forGetter(SlotData::variant),
                 Codec.LONG.fieldOf("amount").forGetter(SlotData::amount),
                 FluidVariant.CODEC.optionalFieldOf("locked", FluidVariant.blank()).forGetter(SlotData::locked)
@@ -128,9 +130,7 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        List<SlotData> data = new ArrayList<>();
-        for (FluidSlot s : slots) data.add(new SlotData(s.variant, s.amount, s.locked));
-        output.store("slots", SlotData.CODEC.listOf(), data);
+        output.store("slots", SlotData.CODEC.listOf(), slotData());
         output.store("upgrades", ItemStack.OPTIONAL_CODEC.listOf(), new ArrayList<>(upgrades));
     }
 
@@ -141,21 +141,51 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
             for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
         });
         multiplier = capacityMultiplier();
-        input.read("slots", SlotData.CODEC.listOf()).ifPresent(list -> {
-            for (int i = 0; i < slotCount && i < list.size(); i++) {
-                slots[i].variant = list.get(i).variant();
-                slots[i].amount = list.get(i).amount();
-                slots[i].locked = list.get(i).locked();
+        input.read("slots", SlotData.CODEC.listOf()).ifPresent(this::loadSlots);
+    }
+
+    private List<SlotData> slotData() {
+        List<SlotData> data = new ArrayList<>();
+        for (FluidSlot s : slots) data.add(new SlotData(s.variant, s.amount, s.locked));
+        return data;
+    }
+
+    private void loadSlots(List<SlotData> list) {
+        for (int i = 0; i < slotCount && i < list.size(); i++) {
+            slots[i].variant = list.get(i).variant();
+            slots[i].amount = list.get(i).amount();
+            slots[i].locked = list.get(i).locked();
+        }
+    }
+
+    // ---- Keep contents when broken -----------------------------------------------------------
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        for (FluidSlot s : slots) {
+            if (!s.variant.isBlank() || !s.locked.isBlank()) {
+                components.set(ModComponents.FLUID_SLOTS, slotData());
+                break;
             }
-        });
+        }
+        collectUpgrades(components);
     }
 
     @Override
-    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
-        if (level == null) return;
-        for (ItemStack up : upgrades) {
-            if (!up.isEmpty()) Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), up);
-        }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        applyUpgrades(components);
+        multiplier = capacityMultiplier();
+        List<SlotData> list = components.get(ModComponents.FLUID_SLOTS);
+        if (list != null) loadSlots(list);
+        dirty = true;
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("slots");
+        output.discard("upgrades");
     }
 }

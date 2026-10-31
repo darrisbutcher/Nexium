@@ -55,7 +55,7 @@ public final class ModBlocks {
         }
     }
 
-    public static final CompactingDrawerBlock COMPACTING_DRAWER = register("compacting_drawer", CompactingDrawerBlock::new, stone(), true);
+    public static final CompactingDrawerBlock COMPACTING_DRAWER = register("compacting_drawer", CompactingDrawerBlock::new, storageStone(), true);
     public static final DrawerControllerBlock DRAWER_CONTROLLER = register("drawer_controller", DrawerControllerBlock::new, stone(), true);
     public static final ControllerSlaveBlock CONTROLLER_SLAVE = register("controller_slave", ControllerSlaveBlock::new, stone(), true);
 
@@ -85,6 +85,11 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties stone() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0f).sound(SoundType.STONE).requiresCorrectToolForDrops();
+    }
+
+    /** Stone, but drops with any tool: it carries its contents in the dropped item. */
+    private static BlockBehaviour.Properties storageStone() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0f).sound(SoundType.STONE);
     }
 
     private static BlockBehaviour.Properties metal() {

@@ -1,6 +1,7 @@
 package net.storagenexus.drawer;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
@@ -9,8 +10,9 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.storagenexus.registry.ModBlockEntities;
+import net.storagenexus.registry.ModComponents;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.Upgradeable;
 import net.storagenexus.util.SyncedBlockEntity;
@@ -244,53 +247,76 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
 
     // ---- Save / load -----------------------------------------------------------------------
 
+    /** Everything stored, as kept on the dropped item. */
+    public record Contents(List<ItemVariant> tiers, List<Long> ratios, int tierCount, long units) {
+        public static final Codec<Contents> CODEC = RecordCodecBuilder.create(i -> i.group(
+                ItemVariant.CODEC.listOf().fieldOf("tiers").forGetter(Contents::tiers),
+                Codec.LONG.listOf().fieldOf("ratios").forGetter(Contents::ratios),
+                Codec.INT.fieldOf("tier_count").forGetter(Contents::tierCount),
+                Codec.LONG.fieldOf("units").forGetter(Contents::units)
+        ).apply(i, Contents::new));
+    }
+
+    private Contents contents() {
+        List<Long> r = new ArrayList<>();
+        for (long l : ratio) r.add(l);
+        return new Contents(List.of(tiers), r, tierCount, units);
+    }
+
+    private void loadContents(Contents c) {
+        for (int i = 0; i < TIERS; i++) {
+            tiers[i] = i < c.tiers().size() ? c.tiers().get(i) : ItemVariant.blank();
+            ratio[i] = i < c.ratios().size() ? Math.max(1, c.ratios().get(i)) : 1;
+        }
+        tierCount = Math.clamp(c.tierCount(), 0, TIERS);
+        units = c.units();
+    }
+
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("tiers", ItemVariant.CODEC.listOf(), List.of(tiers));
-        List<Long> r = new ArrayList<>();
-        for (long l : ratio) r.add(l);
-        output.store("ratios", Codec.LONG.listOf(), r);
-        output.putInt("tier_count", tierCount);
-        output.putLong("units", units);
+        output.store("contents", Contents.CODEC, contents());
         output.store("upgrades", ItemStack.OPTIONAL_CODEC.listOf(), new ArrayList<>(upgrades));
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        input.read("tiers", ItemVariant.CODEC.listOf()).ifPresent(list -> {
-            for (int i = 0; i < TIERS; i++) tiers[i] = i < list.size() ? list.get(i) : ItemVariant.blank();
+        input.read("contents", Contents.CODEC).ifPresentOrElse(this::loadContents, () -> {
+            // Saves from before 1.0.1 stored the fields separately.
+            List<ItemVariant> t = input.read("tiers", ItemVariant.CODEC.listOf()).orElse(List.of());
+            List<Long> r = input.read("ratios", Codec.LONG.listOf()).orElse(List.of());
+            loadContents(new Contents(t, r, input.getIntOr("tier_count", 0), input.getLongOr("units", 0L)));
         });
-        input.read("ratios", Codec.LONG.listOf()).ifPresent(list -> {
-            for (int i = 0; i < TIERS; i++) ratio[i] = i < list.size() ? Math.max(1, list.get(i)) : 1;
-        });
-        tierCount = input.getIntOr("tier_count", 0);
-        units = input.getLongOr("units", 0L);
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
             for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
         });
         multiplier = capacityMultiplier();
     }
 
+    // ---- Keep contents when broken -----------------------------------------------------------
+
     @Override
-    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
-        if (level == null || tierCount == 0) return;
-        // Drop in the largest forms first so fewer item entities spawn.
-        long left = units;
-        for (int i = 0; i < tierCount; i++) {
-            long count = left / ratio[i];
-            left -= count * ratio[i];
-            int max = tiers[i].toStack().getMaxStackSize();
-            while (count > 0) {
-                int n = (int) Math.min(count, max);
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), tiers[i].toStack(n));
-                count -= n;
-            }
-        }
-        for (ItemStack up : upgrades) {
-            if (!up.isEmpty()) Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), up);
-        }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (tierCount > 0) components.set(ModComponents.COMPACTING_CONTENTS, contents());
+        collectUpgrades(components);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        applyUpgrades(components);
+        multiplier = capacityMultiplier();
+        Contents c = components.get(ModComponents.COMPACTING_CONTENTS);
+        if (c != null) loadContents(c);
+        dirty = true;
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("contents");
+        output.discard("upgrades");
     }
 }

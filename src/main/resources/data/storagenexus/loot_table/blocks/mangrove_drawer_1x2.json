@@ -6,12 +6,17 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "storagenexus:mangrove_drawer_1x2"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
+          "name": "storagenexus:mangrove_drawer_1x2",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": [
+                "storagenexus:drawer_slots",
+                "storagenexus:upgrades"
+              ]
+            }
+          ]
         }
       ]
     }

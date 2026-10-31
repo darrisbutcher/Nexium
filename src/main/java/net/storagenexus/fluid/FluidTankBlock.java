@@ -22,6 +22,7 @@ import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.UpgradeMenu;
 import net.storagenexus.util.Fmt;
+import net.storagenexus.util.KeepContents;
 import net.storagenexus.util.Menus;
 import net.storagenexus.util.StorageEvents;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,12 @@ public class FluidTankBlock extends BaseEntityBlock {
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
         StorageEvents.storageChanged();
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        KeepContents.dropInCreative(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
