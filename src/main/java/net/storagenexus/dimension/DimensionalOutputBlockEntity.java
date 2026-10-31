@@ -12,9 +12,11 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.storagenexus.conduit.ConduitBundleBlockEntity;
 import net.storagenexus.filter.FilterData;
 import net.storagenexus.filter.FilterItem;
 import net.storagenexus.network.NetworkBlock;
@@ -22,8 +24,9 @@ import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModBlockEntities;
 
 /**
- * Receives items from its linked Input and pushes them into the block it faces: a chest,
- * drawer, Drawer Controller, or any storage-network block (then into the whole network).
+ * Receives items from its linked Input and pushes them into whatever is around it, on any
+ * side: chests, drawers, Drawer Controllers, item conduits, or any storage-network block
+ * (then into the whole network).
  */
 public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
     private final SimpleContainer filterSlot = new SimpleContainer(1) {
@@ -32,6 +35,8 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
         @Override public int getMaxStackSize() { return 1; }
     };
     private boolean inputOnline;
+    /** Which side gets the first try next time, so no single neighbour hogs everything. */
+    private int nextSide;
 
     public DimensionalOutputBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DIMENSIONAL_OUTPUT, pos, state);
@@ -66,20 +71,34 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
         return data.matches(variant);
     }
 
-    private Direction facing() {
-        return getBlockState().getValue(DimensionalOutputBlock.FACING);
-    }
-
-    /** Inserts into whatever the Output faces. Returns how many went in. */
+    /**
+     * Pushes into everything around the Output: storage networks, inventories and item
+     * conduits, on all six sides. Sides take turns going first. Dimensional Inputs are skipped
+     * so items cannot loop back into a link. Returns how many went in.
+     */
     public long receive(ItemVariant variant, long amount, TransactionContext tx) {
         if (level == null) return 0;
-        Direction facing = facing();
-        BlockPos target = worldPosition.relative(facing);
+        Direction[] sides = Direction.values();
+        int first = nextSide;
+        nextSide = (nextSide + 1) % sides.length;
+        long moved = 0;
+        for (int i = 0; i < sides.length && moved < amount; i++) {
+            Direction side = sides[(first + i) % sides.length];
+            moved += pushTo(side, variant, amount - moved, tx);
+        }
+        return moved;
+    }
+
+    private long pushTo(Direction side, ItemVariant variant, long amount, TransactionContext tx) {
+        BlockPos target = worldPosition.relative(side);
+        BlockEntity be = level.getBlockEntity(target);
+        if (be instanceof DimensionalInputBlockEntity) return 0;
+        if (be instanceof ConduitBundleBlockEntity conduit) return conduit.acceptPushed(side.getOpposite(), variant, amount, tx);
         if (level.getBlockState(target).getBlock() instanceof NetworkBlock) {
             StorageNetwork net = StorageNetwork.find(level, target);
             return net == null ? 0 : net.insertItem(variant, amount, tx);
         }
-        Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, target, facing.getOpposite());
+        Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, target, side.getOpposite());
         return storage == null ? 0 : storage.insert(variant, amount, tx);
     }
 

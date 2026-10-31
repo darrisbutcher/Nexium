@@ -37,7 +37,7 @@
   "block.storagenexus.dimensional_input.desc2": "or dimension. Link it with a Dimensional Link Card",
   "block.storagenexus.dimensional_output": "Dimensional Output",
   "block.storagenexus.dimensional_output.desc": "Receives items from its linked Input and pushes",
-  "block.storagenexus.dimensional_output.desc2": "them into the block it faces",
+  "block.storagenexus.dimensional_output.desc2": "them into inventories, networks and item conduits",
   "block.storagenexus.drawer_controller": "Drawer Controller",
   "block.storagenexus.drawer_controller.desc": "Right-click with an item: puts it in the drawer",
   "block.storagenexus.drawer_controller.desc2": "already holding it. Double-click: your inventory",
@@ -93,13 +93,13 @@
   "direction.storagenexus.west": "West",
   "guide.storagenexus.page.1": "Storage Nexus\n\nDrawers, a simple storage network, remote tablets, dimensional item links and conduits.\n\nThis book covers every block and item. Each item's tooltip also says what it does.",
   "guide.storagenexus.page.10": "Fluid Intake\nIt reaches the blocks touching it. An Intake Range Upgrade (right-click the intake) widens that to a 5x5 area around and below it.\n\nRight-click it with an empty hand to see what it holds.",
-  "guide.storagenexus.page.11": "Storage network\nStorage Connector: reads every inventory it touches.\nFiltered Connector: only the one it faces.\n\nInventory Cable links connectors, terminals, Fluid Intakes and Outputs facing it. No power needed.",
+  "guide.storagenexus.page.11": "Storage network\nStorage Connector: reads every inventory it touches.\nFiltered Connector: only the one it faces.\n\nInventory Cable links connectors, terminals, Fluid Intakes and Dimensional Outputs. No power needed.",
   "guide.storagenexus.page.12": "Terminals\nShow everything in the network, fluids first. Search with @ to search by mod.\nLeft-click: take a stack.\nRight-click: take one.\nShift-click: to your inventory.\nHolding items: left puts in all, right puts in one.",
   "guide.storagenexus.page.13": "Terminal buckets\nEmpty bucket on a fluid: fill it.\nFilled bucket: left-click pours it in, right-click stores the bucket.\n\nCrafting Terminal\nUse the recipe book: recipes you can make from the network light up, and clicking one fills the grid from it.",
   "guide.storagenexus.page.14": "Priority & filters\nRight-click a connector to set its priority. Items go into higher priority first, and come out of lower priority first.\n\nA filter in a Filtered Connector limits which items it accepts.",
   "guide.storagenexus.page.15": "Dimensional Anchor\nKeeps the 3x3 chunks around it loaded. Right-click to switch:\n\nAlways: always loaded.\nOn-demand: only while a tablet uses a terminal there.",
   "guide.storagenexus.page.16": "Dimensional Anchor\nKeeps the 3x3 chunks around it loaded.\n\nRight-click to switch:\nAlways: always loaded.\nOn-demand: loaded only while a tablet is using a terminal there.",
-  "guide.storagenexus.page.17": "Dimensional links\nClick a Dimensional Input with a Link Card, then click any Outputs.\n\nItems put in the Input (hoppers work) arrive at the Outputs, any distance or dimension. Outputs push into the block they face.",
+  "guide.storagenexus.page.17": "Dimensional links\nClick a Dimensional Input with a Link Card, then click any Outputs.\n\nItems put in the Input (hoppers work) arrive at the Outputs, any distance or dimension. Outputs push into inventories, networks and item conduits on every side.",
   "guide.storagenexus.page.18": "Links, continued\nName a link by renaming the card in an anvil first.\n\nMove an Input: break it, then click the new one with the same card.\n\nOutputs can hold a filter. Transfer Speed Upgrade (Input): 1 = 16 items, 2 = stacks.",
   "guide.storagenexus.page.19": "Conduits\nItem conduits: Tier 1 and 2. Fluid conduits: Tier 1 to 3. Higher tiers show a trim: gold for Tier 2 fluid, green for the top tier. Use a higher tier on a conduit to upgrade it.\n\nWrench: right-click a side to cycle its mode. Sneak + right-click: all its settings.",
   "guide.storagenexus.page.2": "Drawers\n1x1: 54 stacks\n1x2: 27 per slot\n2x2: 13.5 per slot\n\nRight-click the front: insert what you hold.\nDouble-click: insert all matching.\nLeft-click: take a stack. Sneak: one.",
@@ -244,5 +244,6 @@
   "block.storagenexus.inventory_cable.desc": "Joins network blocks into one network. Connects to:",
   "block.storagenexus.inventory_cable.desc2": "Storage and Filtered Connectors, Storage and",
   "block.storagenexus.inventory_cable.desc3": "Crafting Terminals, other cables, Fluid Intakes",
-  "block.storagenexus.inventory_cable.desc4": "and Dimensional Outputs facing it"
+  "block.storagenexus.inventory_cable.desc4": "and Dimensional Outputs",
+  "block.storagenexus.dimensional_output.desc3": "on any side"
 }

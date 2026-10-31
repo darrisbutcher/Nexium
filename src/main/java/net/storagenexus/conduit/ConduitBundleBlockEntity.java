@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.storagenexus.dimension.DimensionalOutputBlock;
 import net.storagenexus.filter.FilterData;
 import net.storagenexus.filter.FilterItem;
 import net.storagenexus.registry.ModBlockEntities;
@@ -106,7 +108,9 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
 
     private static boolean canAttach(ConduitType t, Level level, BlockPos pos, Direction side) {
         return switch (t) {
-            case ITEM -> ItemStorage.SIDED.find(level, pos, side) != null;
+            // Dimensional Outputs have no inventory, but push into adjacent conduits
+            case ITEM -> ItemStorage.SIDED.find(level, pos, side) != null
+                    || level.getBlockState(pos).getBlock() instanceof DimensionalOutputBlock;
             case FLUID -> FluidStorage.SIDED.find(level, pos, side) != null;
         };
     }
@@ -234,6 +238,35 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 break;
             }
         }
+    }
+
+    /**
+     * Items pushed in through {@code side} by a neighbour (a Dimensional Output) travel the
+     * item conduit line like extracted items would: to Insert sides on the same colour channel,
+     * through both sides' filters. Disabled sides refuse. Returns how many went in.
+     */
+    public long acceptPushed(Direction side, ItemVariant variant, long amount, TransactionContext tx) {
+        if (!has(ConduitType.ITEM) || level == null) return 0;
+        SideConfig cfg = config(ConduitType.ITEM, side);
+        if (cfg.mode == SideConfig.Mode.DISABLED) return 0;
+        FilterData sourceFilter = filterOf(cfg);
+        if (sourceFilter != null && !sourceFilter.matches(variant)) return 0;
+        BlockPos sourcePos = worldPosition.relative(side);
+        long moved = 0;
+        for (Target t : ordered(targets(ConduitType.ITEM, cfg.channel), sourcePos, cfg)) {
+            if (moved >= amount) break;
+            FilterData targetFilter = filterOf(t.cfg);
+            if (targetFilter != null && !targetFilter.matches(variant)) continue;
+            Storage<ItemVariant> dest = ItemStorage.SIDED.find(level, t.invPos, t.side);
+            if (dest == null) continue;
+            long n = dest.insert(variant, amount - moved, tx);
+            moved += n;
+            if (n > 0 && cfg.roundRobin) {
+                cfg.rrIndex++;
+                break;
+            }
+        }
+        return moved;
     }
 
     private void transferFluids(Direction dir, SideConfig cfg, long budget) {

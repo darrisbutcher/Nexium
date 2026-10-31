@@ -40,15 +40,10 @@ public class InventoryCableBlock extends Block implements NetworkBlock {
         PROPS.values().forEach(builder::add);
     }
 
-    /**
-     * Network blocks, plus the blocks that push into a network: a Fluid Intake on any side, and a
-     * Dimensional Output facing the cable. {@code side} points from the cable to the neighbour.
-     */
+    /** Network blocks, plus the blocks that push into a network: Fluid Intakes and Dimensional Outputs. */
     private static boolean connects(BlockState neighbor, Direction side) {
         Block block = neighbor.getBlock();
-        return block instanceof NetworkBlock
-                || block instanceof FluidIntakeBlock
-                || block instanceof DimensionalOutputBlock && neighbor.getValue(DimensionalOutputBlock.FACING) == side.getOpposite();
+        return block instanceof NetworkBlock || block instanceof FluidIntakeBlock || block instanceof DimensionalOutputBlock;
     }
 
     @Override
