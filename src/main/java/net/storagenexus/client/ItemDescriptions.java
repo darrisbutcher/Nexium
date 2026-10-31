@@ -14,8 +14,8 @@ import java.util.List;
 
 /**
  * Adds a short "what is this for" description under every Storage Nexus item, from the
- * lang keys {@code <item>.desc}, {@code <item>.desc2}, ... Wooden drawers share one
- * description per size.
+ * lang keys {@code <item>.desc}, {@code <item>.desc2}, ... and a red {@code <item>.warn}. Wooden
+ * drawers share one description per size.
  */
 public final class ItemDescriptions {
     private static final int MAX_LINES = 4;
@@ -35,6 +35,9 @@ public final class ItemDescriptions {
             if (!language.has(lineKey)) break;
             lines.add(Component.translatable(lineKey).withStyle(ChatFormatting.GRAY));
         }
+        // Optional red warning line, e.g. for the Void Upgrade
+        String warn = stack.getItem().getDescriptionId() + ".warn";
+        if (language.has(warn)) lines.add(Component.translatable(warn).withStyle(ChatFormatting.RED));
     }
 
     private ItemDescriptions() {}

@@ -77,6 +77,12 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
         } else {
             state.lockIcon.clear();
         }
+        state.voiding = be instanceof Upgradeable u && u.hasUpgrade(UpgradeItem.Kind.VOID);
+        if (state.voiding) {
+            itemModels.updateForTopItem(state.voidIcon, new ItemStack(ModItems.VOID_UPGRADE), ItemDisplayContext.GUI, be.getLevel(), null, 0);
+        } else {
+            state.voidIcon.clear();
+        }
     }
 
     @Override
@@ -116,6 +122,13 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
                         Font.DisplayMode.POLYGON_OFFSET, state.frontLight, 0xFFFFFFFF, 0, 0);
                 pose.popPose();
             }
+        }
+        if (state.voiding) {
+            pose.pushPose();
+            pose.translate(-0.44f, 0.44f, 0.001f); // top-left corner: this drawer deletes overflow
+            pose.scale(0.08f, 0.08f, 0.08f * 0.05f);
+            state.voidIcon.submit(pose, collector, state.frontLight, OverlayTexture.NO_OVERLAY, 0);
+            pose.popPose();
         }
         if (state.locked) {
             pose.pushPose();

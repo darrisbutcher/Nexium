@@ -17,4 +17,7 @@ public class FrontRenderState extends BlockEntityRenderState {
     /** A Lock Upgrade is installed: a small padlock shows in the top-right corner. */
     public boolean locked;
     public final ItemStackRenderState lockIcon = new ItemStackRenderState();
+    /** A Void Upgrade is installed: a small marker shows in the top-left corner. */
+    public boolean voiding;
+    public final ItemStackRenderState voidIcon = new ItemStackRenderState();
 }

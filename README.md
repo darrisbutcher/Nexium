@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.15.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.16.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -42,7 +42,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   a stack (sneak for one item). Break drawers from the side.
 * Right-click with an upgrade to install it. To see or remove upgrades, right-click the side or top
   of a drawer with an empty hand (or sneak + right-click it); for a Fluid Tank, right-click it. The
-  Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front.
+  Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a
+  Void Upgrade shows a marker in the opposite corner, and the upgrade's tooltip warns it destroys overflow.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Netherite x16.
 * **Fluid Drawers** hold 32 buckets (2x2: 8 per slot); a **Fluid Tank** holds 128 and has no front.
 * Breaking a drawer, fluid drawer or fluid tank keeps its contents and upgrades in the dropped item
@@ -64,6 +65,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   screen; search (`@modname` to filter by mod) and sort. Left-click takes a stack, right-click one
   item, shift-click to your inventory; holding items, left puts them all in and right puts one in.
   Empty bucket on a fluid fills it; a filled bucket is poured in with left-click.
+  The arrow button flips the sort direction, your sort is remembered for the session, and an item's
+  tooltip shows its exact amount in the network.
 * The **Crafting Terminal** has the vanilla recipe book: recipes you can make from the network show
   as craftable, and clicking one fills the grid from the network (then your inventory).
 

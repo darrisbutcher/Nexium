@@ -5,11 +5,13 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -53,8 +55,10 @@ final class TerminalView {
     private final TerminalMenu menu;
     private final Font font;
     private EditBox search;
-    private Button sortButton;
-    private Sort sort = Sort.COUNT;
+    private Button sortButton, directionButton;
+    // Remembered for the rest of the session, so reopening a terminal keeps your sort
+    private static Sort sort = Sort.COUNT;
+    private static boolean descending = true;
     private int scroll;
     private int seenRevision = -1;
     private String lastQuery = "";
@@ -69,7 +73,7 @@ final class TerminalView {
 
     void init(Consumer<AbstractWidget> add, int left, int top) {
         String query = search == null ? "" : search.getValue();
-        search = new EditBox(font, 0, 0, 72, 11, Component.translatable("screen.storagenexus.search"));
+        search = new EditBox(font, 0, 0, 54, 11, Component.translatable("screen.storagenexus.search"));
         search.setMaxLength(50);
         search.setBordered(true);
         search.setValue(query);
@@ -80,6 +84,12 @@ final class TerminalView {
             refilter();
         }).bounds(0, 0, 16, 13).build();
         add.accept(sortButton);
+        directionButton = Button.builder(directionLabel(), b -> {
+            descending = !descending;
+            b.setMessage(directionLabel());
+            refilter();
+        }).bounds(0, 0, 16, 13).tooltip(Tooltip.create(Component.translatable("screen.storagenexus.sort_direction"))).build();
+        add.accept(directionButton);
         reposition(left, top);
         refilter();
     }
@@ -87,7 +97,12 @@ final class TerminalView {
     /** Called when the screen moves (e.g. the recipe book opens). */
     void reposition(int left, int top) {
         search.setPosition(left + 100, top + 4);
+        directionButton.setPosition(left + 156, top + 3);
         sortButton.setPosition(left + 174, top + 3);
+    }
+
+    private Component directionLabel() {
+        return Component.literal(descending ? "↓" : "↑");
     }
 
     private Component sortLabel() {
@@ -115,12 +130,15 @@ final class TerminalView {
                     : e.stack().getHoverName().getString().toLowerCase(Locale.ROOT);
             if (term.isEmpty() || text.contains(term)) items.add(e);
         }
-        fluids.sort(Comparator.comparingLong((TerminalSyncPayload.FluidEntry e) -> -e.amount()));
-        items.sort(switch (sort) {
-            case COUNT -> Comparator.comparingLong((TerminalSyncPayload.ItemEntry e) -> -e.count());
-            case NAME -> Comparator.comparing(e -> e.stack().getHoverName().getString());
-            case MOD -> Comparator.comparing(e -> BuiltInRegistries.ITEM.getKey(e.stack().getItem()).toString());
-        });
+        Comparator<TerminalSyncPayload.FluidEntry> fluidOrder = Comparator.comparingLong(TerminalSyncPayload.FluidEntry::amount);
+        // Counts read biggest-first when descending; names and mods read A-Z when descending
+        Comparator<TerminalSyncPayload.ItemEntry> itemOrder = switch (sort) {
+            case COUNT -> Comparator.comparingLong(TerminalSyncPayload.ItemEntry::count);
+            case NAME -> Comparator.comparing((TerminalSyncPayload.ItemEntry e) -> e.stack().getHoverName().getString()).reversed();
+            case MOD -> Comparator.comparing((TerminalSyncPayload.ItemEntry e) -> BuiltInRegistries.ITEM.getKey(e.stack().getItem()).toString()).reversed();
+        };
+        fluids.sort(descending ? fluidOrder.reversed() : fluidOrder);
+        items.sort(descending ? itemOrder.reversed() : itemOrder);
         visible.clear();
         for (TerminalSyncPayload.FluidEntry f : fluids) visible.add(new Entry(f, null));
         for (TerminalSyncPayload.ItemEntry i : items) visible.add(new Entry(null, i));
@@ -186,7 +204,12 @@ final class TerminalView {
                 g.setComponentTooltipForNextFrame(font, List.of(fluidName(e.fluid().fluid()),
                         Component.literal(Fmt.toMb(e.fluid().amount()) + " mB").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
             } else if (e.item() != null) {
-                g.setTooltipForNextFrame(font, e.item().stack(), mouseX, mouseY);
+                // The usual item tooltip plus the exact amount (the cell shows e.g. "3.5k")
+                ItemStack stack = e.item().stack();
+                List<Component> lines = new ArrayList<>(net.minecraft.client.gui.screens.Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
+                lines.add(Component.translatable("tooltip.storagenexus.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
+                        .withStyle(ChatFormatting.AQUA));
+                g.setTooltipForNextFrame(font, lines, stack.getTooltipImage(), mouseX, mouseY);
             }
         }
     }
