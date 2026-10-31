@@ -122,7 +122,7 @@ public class FeaturesGameTest {
         net.minecraft.server.level.ServerLevel level = h.getLevel();
         BlockPos abs = h.absolutePos(pos);
         h.assertTrue(!ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD).apply(level, abs), "gold can't skip iron");
-        int[] expected = {45, 63, 81, 99};
+        int[] expected = {45, 63, 81, 99, 117};
         for (BarrelTier tier : BarrelTier.values()) {
             h.assertTrue(ModItems.BARREL_UPGRADES.get(tier).apply(level, abs), tier + " upgrade applies");
             TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
@@ -179,14 +179,18 @@ public class FeaturesGameTest {
     }
 
     @GameTest
-    public void capacityNeverPassesThirtyTwoTimes(GameTestHelper h) {
+    public void capacityUpgradesAddTogether(GameTestHelper h) {
         BlockPos pos = new BlockPos(1, 1, 1);
         h.setBlock(pos, ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);
         DrawerBlockEntity be = h.getBlockEntity(pos, DrawerBlockEntity.class);
         be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
         h.assertValueEqual(be.capacityMultiplier(), 32, "one netherite upgrade");
-        for (int i = 0; i < 3; i++) be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
-        h.assertValueEqual(be.capacityMultiplier(), 32, "four netherite upgrades are still capped");
+        be.tryInstall(new ItemStack(ModItems.EMERALD_UPGRADE));
+        h.assertValueEqual(be.capacityMultiplier(), 48, "netherite + emerald");
+        be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
+        be.tryInstall(new ItemStack(ModItems.NETHERITE_UPGRADE));
+        h.assertValueEqual(be.capacityMultiplier(), 112, "three netherite + emerald, no cap");
+        h.assertValueEqual(be.slot(0).capacity(), 54L * 64 * 112, "a 1x1 drawer then holds 112 x 54 stacks");
         h.succeed();
     }
 

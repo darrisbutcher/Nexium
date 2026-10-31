@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "NDN",
-    "DBD",
-    "NDN"
+    "NEN",
+    "EBE",
+    "NEN"
   ],
   "key": {
     "N": "minecraft:netherite_ingot",
-    "D": "minecraft:diamond",
-    "B": "minecraft:diamond_block"
+    "E": "minecraft:emerald",
+    "B": "minecraft:emerald_block"
   },
   "result": {
     "id": "storagenexus:netherite_barrel_upgrade",

@@ -31,9 +31,10 @@ public final class ModItems {
 
     public static final GuideBookItem GUIDE = register("guide", GuideBookItem::new, new Item.Properties().stacksTo(1));
 
-    public static final CapacityUpgradeItem IRON_UPGRADE = register("iron_capacity_upgrade", p -> new CapacityUpgradeItem(p, 4), new Item.Properties());
-    public static final CapacityUpgradeItem GOLD_UPGRADE = register("gold_capacity_upgrade", p -> new CapacityUpgradeItem(p, 8), new Item.Properties());
-    public static final CapacityUpgradeItem DIAMOND_UPGRADE = register("diamond_capacity_upgrade", p -> new CapacityUpgradeItem(p, 16), new Item.Properties());
+    public static final CapacityUpgradeItem IRON_UPGRADE = register("iron_capacity_upgrade", p -> new CapacityUpgradeItem(p, 2), new Item.Properties());
+    public static final CapacityUpgradeItem GOLD_UPGRADE = register("gold_capacity_upgrade", p -> new CapacityUpgradeItem(p, 4), new Item.Properties());
+    public static final CapacityUpgradeItem DIAMOND_UPGRADE = register("diamond_capacity_upgrade", p -> new CapacityUpgradeItem(p, 8), new Item.Properties());
+    public static final CapacityUpgradeItem EMERALD_UPGRADE = register("emerald_capacity_upgrade", p -> new CapacityUpgradeItem(p, 16), new Item.Properties());
     public static final CapacityUpgradeItem NETHERITE_UPGRADE = register("netherite_capacity_upgrade", p -> new CapacityUpgradeItem(p, 32), new Item.Properties().fireResistant());
     /** Barrel upgrades, one per tier. */
     public static final java.util.Map<BarrelTier, BarrelUpgradeItem> BARREL_UPGRADES = new java.util.EnumMap<>(BarrelTier.class);

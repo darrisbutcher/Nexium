@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SES",
+    "EUE",
+    "SES"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "E": "minecraft:emerald",
+    "U": "storagenexus:diamond_capacity_upgrade"
+  },
+  "result": {
+    "id": "storagenexus:emerald_capacity_upgrade",
+    "count": 1
+  }
+}

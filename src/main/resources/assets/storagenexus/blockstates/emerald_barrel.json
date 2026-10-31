@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "storagenexus:block/emerald_barrel",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "storagenexus:block/emerald_barrel",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "storagenexus:block/emerald_barrel",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/emerald_barrel",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "storagenexus:block/emerald_barrel"
+    },
+    "facing=west": {
+      "model": "storagenexus:block/emerald_barrel",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

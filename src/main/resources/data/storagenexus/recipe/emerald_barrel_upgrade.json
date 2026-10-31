@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EEE",
+    "EDE",
+    "EEE"
+  ],
+  "key": {
+    "E": "minecraft:emerald",
+    "D": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "storagenexus:emerald_barrel_upgrade",
+    "count": 1
+  }
+}

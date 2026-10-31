@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.19.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.20.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -47,7 +47,7 @@ world, or crafted from a book and any drawer) explains everything in game.
   of a drawer with an empty hand (or sneak + right-click it). The
   Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a
   Void Upgrade shows a marker in the opposite corner, and the upgrade's tooltip warns it destroys overflow.
-* Capacity upgrades add together, but never past **x32**: Iron x4, Gold x8, Diamond x16, Netherite x32.
+* Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32.
 * **Fluid Drawers** hold 32 buckets of one fluid.
 * Breaking a drawer or fluid drawer keeps its contents and upgrades in the dropped item
   (like a shulker box); the tooltip shows what is inside. Place it to get everything back.
@@ -61,10 +61,10 @@ world, or crafted from a book and any drawer) explains everything in game.
   it join too, and slaves can chain.
 
 ### Barrels
-* **Iron, Gold, Diamond and Netherite Barrels** hold 45, 63, 81 and 99 slots (a vanilla barrel has 27;
+* **Iron, Gold, Diamond, Emerald and Netherite Barrels** hold 45, 63, 81, 99 and 117 slots (a vanilla barrel has 27;
   every tier adds 18). Bigger barrels get a wider screen, never taller than a double chest, each in its tier's colour. Right-click a barrel with the matching **Barrel
   Upgrade** to upgrade it in place: Iron upgrades a vanilla barrel, Gold an Iron Barrel, Diamond a Gold
-  Barrel, Netherite a Diamond Barrel. What is inside stays inside.
+  Barrel, Emerald a Diamond Barrel, Netherite an Emerald Barrel. What is inside stays inside.
 
 ### Simple network
 * **Storage Connector** reads every inventory touching it. **Filtered Connector** reads only the one it

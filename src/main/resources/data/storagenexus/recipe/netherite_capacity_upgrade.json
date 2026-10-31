@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "storagenexus:diamond_capacity_upgrade",
+    "storagenexus:emerald_capacity_upgrade",
     "minecraft:netherite_ingot"
   ],
   "result": {

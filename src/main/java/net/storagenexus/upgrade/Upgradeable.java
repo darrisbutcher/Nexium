@@ -56,17 +56,14 @@ public interface Upgradeable {
         return multiplierFor(getUpgrades(), -1);
     }
 
-    /** No drawer holds more than this many times its normal capacity, however many upgrades it has. */
-    int MAX_MULTIPLIER = 32;
-
-    /** Multiplier with one slot ignored (-1 to ignore none), capped at {@link #MAX_MULTIPLIER}. */
+    /** Multiplier with one slot ignored (-1 to ignore none). Capacity upgrades add together. */
     static int multiplierFor(NonNullList<ItemStack> upgrades, int skipSlot) {
         int sum = 0;
         for (int i = 0; i < upgrades.size(); i++) {
             if (i == skipSlot) continue;
             if (upgrades.get(i).getItem() instanceof CapacityUpgradeItem cap) sum += cap.multiplier();
         }
-        return Math.clamp(sum, 1, MAX_MULTIPLIER);
+        return Math.max(1, sum);
     }
 
     default boolean hasUpgrade(UpgradeItem.Kind kind) {

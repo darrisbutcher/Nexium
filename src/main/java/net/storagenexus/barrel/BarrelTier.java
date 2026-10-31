@@ -5,7 +5,8 @@ public enum BarrelTier {
     IRON("iron", 45, 0xC8CDD4),
     GOLD("gold", 63, 0xF8D23C),
     DIAMOND("diamond", 81, 0x4FE6DB),
-    NETHERITE("netherite", 99, 0x4A4150);
+    EMERALD("emerald", 99, 0x41D87A),
+    NETHERITE("netherite", 117, 0x4A4150);
 
     private final String id;
     private final int slots;
