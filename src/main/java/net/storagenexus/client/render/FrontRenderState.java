@@ -14,4 +14,7 @@ public class FrontRenderState extends BlockEntityRenderState {
     };
     public final String[] counts = new String[4];
     public final boolean[] present = new boolean[4];
+    /** A Lock Upgrade is installed: a small padlock shows in the top-right corner. */
+    public boolean locked;
+    public final ItemStackRenderState lockIcon = new ItemStackRenderState();
 }

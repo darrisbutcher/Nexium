@@ -13,8 +13,10 @@ import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
 import net.storagenexus.util.SyncedBlockEntity;
 
-/** Four upgrade slots for drawers, fluid drawers and tanks. */
+/** Upgrade slots for drawers, fluid drawers and tanks: four general ones plus the lock slot. */
 public class UpgradeMenu extends BaseMenu {
+    public static final int LOCK_SLOT_X = 8, SLOT_Y = 20;
+
     private final Upgradeable target;
     private final BlockEntity blockEntity;
 
@@ -30,12 +32,14 @@ public class UpgradeMenu extends BaseMenu {
         Container container = target != null ? new UpgradeContainer(target) : new SimpleContainer(Upgradeable.UPGRADE_SLOTS);
         for (int i = 0; i < Upgradeable.UPGRADE_SLOTS; i++) {
             final int slotIndex = i;
-            addCustomSlot(new Slot(container, i, 96 + i * 18, 20) { // right-aligned, clear of the label
+            // General slots right-aligned; the lock slot on the far left
+            int x = i == Upgradeable.LOCK_SLOT ? LOCK_SLOT_X : 96 + i * 18;
+            addCustomSlot(new Slot(container, i, x, SLOT_Y) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return UpgradeMenu.this.target == null
-                            ? stack.getItem() instanceof UpgradeItem
-                            : UpgradeMenu.this.target.acceptsUpgrade(stack);
+                            ? stack.getItem() instanceof UpgradeItem && Upgradeable.fitsSlot(stack, slotIndex)
+                            : UpgradeMenu.this.target.acceptsUpgrade(stack, slotIndex);
                 }
 
                 @Override

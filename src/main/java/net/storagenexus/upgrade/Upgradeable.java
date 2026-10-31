@@ -12,7 +12,9 @@ import net.storagenexus.registry.ModComponents;
  * Capacity upgrades add together: no upgrade = x1, one iron = x2, iron + gold = x6.
  */
 public interface Upgradeable {
-    int UPGRADE_SLOTS = 4;
+    /** Four general upgrade slots, then one slot that only takes the Lock Upgrade. */
+    int UPGRADE_SLOTS = 5;
+    int LOCK_SLOT = 4;
 
     NonNullList<ItemStack> getUpgrades();
 
@@ -26,6 +28,28 @@ public interface Upgradeable {
         if (!(stack.getItem() instanceof UpgradeItem up) || !up.kind().isStorageUpgrade()) return false;
         if (up.kind() != UpgradeItem.Kind.CAPACITY && hasUpgrade(up.kind())) return false;
         return true;
+    }
+
+    /** Whether this upgrade may go in this particular slot: the Lock only in the lock slot. */
+    default boolean acceptsUpgrade(ItemStack stack, int slot) {
+        return acceptsUpgrade(stack) && fitsSlot(stack, slot);
+    }
+
+    static boolean fitsSlot(ItemStack stack, int slot) {
+        boolean lock = stack.getItem() instanceof UpgradeItem up && up.kind() == UpgradeItem.Kind.LOCK;
+        return lock == (slot == LOCK_SLOT);
+    }
+
+    /** Older saves kept the Lock in a general slot; move it to the lock slot. */
+    static void moveLockToLockSlot(NonNullList<ItemStack> upgrades) {
+        if (!upgrades.get(LOCK_SLOT).isEmpty()) return;
+        for (int i = 0; i < LOCK_SLOT; i++) {
+            if (upgrades.get(i).getItem() instanceof UpgradeItem up && up.kind() == UpgradeItem.Kind.LOCK) {
+                upgrades.set(LOCK_SLOT, upgrades.get(i));
+                upgrades.set(i, ItemStack.EMPTY);
+                return;
+            }
+        }
     }
 
     default int capacityMultiplier() {
@@ -59,7 +83,10 @@ public interface Upgradeable {
     /** Restores upgrades from a placed item. Does not call {@link #onUpgradesChanged()}. */
     default void applyUpgrades(DataComponentGetter components) {
         ItemContainerContents contents = components.get(ModComponents.UPGRADES);
-        if (contents != null) contents.copyInto(getUpgrades());
+        if (contents != null) {
+            contents.copyInto(getUpgrades());
+            moveLockToLockSlot(getUpgrades());
+        }
     }
 
     /** Installs one item from the stack into a free slot. Returns true if it went in. */
@@ -67,7 +94,7 @@ public interface Upgradeable {
         if (!acceptsUpgrade(stack)) return false;
         NonNullList<ItemStack> list = getUpgrades();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isEmpty()) {
+            if (list.get(i).isEmpty() && fitsSlot(stack, i)) {
                 list.set(i, stack.copyWithCount(1));
                 stack.shrink(1);
                 onUpgradesChanged();

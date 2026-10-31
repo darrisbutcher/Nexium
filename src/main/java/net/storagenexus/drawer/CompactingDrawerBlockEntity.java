@@ -291,6 +291,7 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         });
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
             for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
+            Upgradeable.moveLockToLockSlot(upgrades);
         });
         multiplier = capacityMultiplier();
     }

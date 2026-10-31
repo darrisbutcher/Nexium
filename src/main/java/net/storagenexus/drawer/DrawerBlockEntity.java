@@ -223,6 +223,7 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
         super.loadAdditional(input);
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
             for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
+            Upgradeable.moveLockToLockSlot(upgrades);
         });
         multiplier = capacityMultiplier();
         input.read("slots", SlotData.CODEC.listOf()).ifPresent(this::loadSlots);

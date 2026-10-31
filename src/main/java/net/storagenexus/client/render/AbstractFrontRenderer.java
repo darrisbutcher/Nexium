@@ -19,6 +19,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.drawer.DrawerInteraction;
+import net.storagenexus.registry.ModItems;
+import net.storagenexus.upgrade.UpgradeItem;
+import net.storagenexus.upgrade.Upgradeable;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -54,7 +57,8 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
         state.present[slot] = !stack.isEmpty();
         state.counts[slot] = count;
         if (stack.isEmpty()) state.items[slot].clear();
-        else itemModels.updateForTopItem(state.items[slot], stack, ItemDisplayContext.FIXED, be.getLevel(), null, 0);
+        // GUI context: blocks look like their inventory icons instead of a dim flat face
+        else itemModels.updateForTopItem(state.items[slot], stack, ItemDisplayContext.GUI, be.getLevel(), null, 0);
     }
 
     @Override
@@ -67,13 +71,19 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
                 : state.lightCoords;
         for (int i = 0; i < 4; i++) state.present[i] = false;
         fill(be, state);
+        state.locked = be instanceof Upgradeable u && u.hasUpgrade(UpgradeItem.Kind.LOCK);
+        if (state.locked) {
+            itemModels.updateForTopItem(state.lockIcon, new ItemStack(ModItems.LOCK_UPGRADE), ItemDisplayContext.GUI, be.getLevel(), null, 0);
+        } else {
+            state.lockIcon.clear();
+        }
     }
 
     @Override
     public void submit(FrontRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.slots <= 0 || state.slots > 4) return;
         double[][] layout = LAYOUT[state.slots];
-        float itemScale = state.slots == 1 ? 0.5f : 0.25f;
+        float itemScale = state.slots == 1 ? 0.5f : 0.3f;
         float textScale = state.slots == 1 ? 0.012f : 0.008f;
         float textDrop = state.slots == 1 ? 0.33f : 0.17f;
 
@@ -102,6 +112,13 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
                         Font.DisplayMode.POLYGON_OFFSET, state.frontLight, 0xFFFFFFFF, 0, 0);
                 pose.popPose();
             }
+        }
+        if (state.locked) {
+            pose.pushPose();
+            pose.translate(0.40f, 0.40f, 0.001f); // top-right corner of the front
+            pose.scale(0.12f, 0.12f, 0.12f * 0.05f);
+            state.lockIcon.submit(pose, collector, state.frontLight, OverlayTexture.NO_OVERLAY, 0);
+            pose.popPose();
         }
         pose.popPose();
     }
