@@ -67,8 +67,13 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     private boolean isLocked() { return hasUpgrade(UpgradeItem.Kind.LOCK); }
     private boolean isVoid() { return hasUpgrade(UpgradeItem.Kind.VOID); }
 
+    /** Total storage before upgrades; the tank overrides this. */
+    protected long baseCapacity() {
+        return BASE_CAPACITY;
+    }
+
     long capacityFor(int mult) {
-        return BASE_CAPACITY * mult / slotCount;
+        return baseCapacity() * mult / slotCount;
     }
 
     public class FluidSlot extends SingleVariantStorage<FluidVariant> {
