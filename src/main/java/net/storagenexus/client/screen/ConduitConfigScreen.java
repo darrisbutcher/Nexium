@@ -94,12 +94,12 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         g.fill(leftPos + 108, topPos + 52, leftPos + 122, topPos + 66, 0xFF000000);
         g.fill(leftPos + 109, topPos + 53, leftPos + 121, topPos + 65, CHANNEL_COLORS[channel]);
         String prio = Integer.toString(menu.get(ConduitConfigMenu.D_PRIORITY) - 100);
-        g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, TEXT, false);
-        g.text(font, "F", leftPos + 143, topPos + 66, TEXT, false);
-        g.text(font, "S", leftPos + 143, topPos + 88, TEXT, false);
+        g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, palette().text(), false);
+        g.text(font, "F", leftPos + 143, topPos + 66, palette().text(), false);
+        g.text(font, "S", leftPos + 143, topPos + 88, palette().text(), false);
         Component conn = Component.translatable(menu.get(ConduitConfigMenu.D_CONNECTED) == 1
                 ? "screen.storagenexus.connected" : "screen.storagenexus.not_connected");
-        g.text(font, conn, leftPos + imageWidth - 8 - font.width(conn), topPos + 6, 0xFF404040, false);
+        g.text(font, conn, leftPos + imageWidth - 8 - font.width(conn), topPos + 6, palette().text(), false);
     }
 
     @Override

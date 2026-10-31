@@ -18,11 +18,6 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
     }
 
     @Override
-    protected Palette palette() {
-        return Palette.DARK;
-    }
-
-    @Override
     protected void init() {
         super.init();
         titleLabelY = 6;

@@ -28,9 +28,9 @@ public class ConnectorScreen extends BaseScreen<ConnectorMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.storagenexus.priority"), leftPos + 8, topPos + 19, TEXT, false);
+        g.text(font, Component.translatable("screen.storagenexus.priority"), leftPos + 8, topPos + 19, palette().text(), false);
         String p = Integer.toString(menu.priority());
-        g.text(font, p, leftPos + 72 - font.width(p) / 2, topPos + 34, TEXT, false);
-        g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 24, TEXT, false);
+        g.text(font, p, leftPos + 72 - font.width(p) / 2, topPos + 34, palette().text(), false);
+        g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 24, palette().text(), false);
     }
 }

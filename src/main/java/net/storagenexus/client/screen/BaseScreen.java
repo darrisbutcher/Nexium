@@ -12,28 +12,14 @@ import net.minecraft.world.inventory.Slot;
  * are needed.
  */
 public abstract class BaseScreen<M extends AbstractContainerMenu> extends AbstractContainerScreen<M> {
-    public static final int PANEL = 0xFFC6C6C6;
-    public static final int LIGHT = 0xFFFFFFFF;
-    public static final int DARK = 0xFF555555;
-    public static final int SLOT = 0xFF8B8B8B;
-    public static final int TEXT = 0xFF404040;
-
     protected BaseScreen(M menu, Inventory inventory, Component title, int width, int height, int inventoryTop) {
         super(menu, inventory, title, width, height);
         this.inventoryLabelY = inventoryTop - 11;
     }
 
-    public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
-        Palette.LIGHT.panel(g, x, y, w, h);
-    }
-
-    public static void slot(GuiGraphicsExtractor g, int x, int y) {
-        Palette.LIGHT.slot(g, x, y);
-    }
-
-    /** The colours this screen is drawn in. */
+    /** The colours this screen is drawn in: all mod screens match vanilla's dark inventory. */
     protected Palette palette() {
-        return Palette.LIGHT;
+        return Palette.DARK;
     }
 
     /** Title and inventory labels in the palette's text colour. */

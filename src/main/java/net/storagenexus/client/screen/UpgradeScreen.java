@@ -12,6 +12,6 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, TEXT, false);
+        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, palette().text(), false);
     }
 }

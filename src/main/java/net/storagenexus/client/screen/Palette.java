@@ -5,9 +5,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 /** Colours for the plain-rectangle panels and slot frames the mod's screens draw. */
 public record Palette(int outline, int body, int highlight, int shadow,
                       int slotFill, int slotDark, int slotLight, int text) {
-    /** Vanilla-style light grey. */
-    public static final Palette LIGHT = new Palette(0xFF000000, 0xFFC6C6C6, 0xFFFFFFFF, 0xFF555555,
-            0xFF8B8B8B, 0xFF555555, 0xFFFFFFFF, 0xFF404040);
     /** Matches vanilla's dark inventory: grey panel, slots with a dark top-left and light bottom-right edge. */
     public static final Palette DARK = new Palette(0xFF000000, 0xFF535353, 0xFF6B6B6B, 0xFF262626,
             0xFF333333, 0xFF262626, 0xFF6B6B6B, 0xFFE0E0E0);

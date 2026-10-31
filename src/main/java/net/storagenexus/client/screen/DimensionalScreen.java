@@ -39,16 +39,16 @@ public class DimensionalScreen extends BaseScreen<DimensionalMenu> {
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         if (menu.isInput()) {
-            g.text(font, Component.translatable("screen.storagenexus.buffer"), leftPos + 8, topPos + 40, TEXT, false);
-            g.text(font, Component.translatable("screen.storagenexus.outputs"), leftPos + 8, topPos + 58, TEXT, false);
-            g.text(font, menu.statusA() + "/" + menu.statusB(), leftPos + 8, topPos + 68, TEXT, false);
-            g.text(font, Component.translatable("screen.storagenexus.speed"), leftPos + 136, topPos + 62, TEXT, false);
+            g.text(font, Component.translatable("screen.storagenexus.buffer"), leftPos + 8, topPos + 40, palette().text(), false);
+            g.text(font, Component.translatable("screen.storagenexus.outputs"), leftPos + 8, topPos + 58, palette().text(), false);
+            g.text(font, menu.statusA() + "/" + menu.statusB(), leftPos + 8, topPos + 68, palette().text(), false);
+            g.text(font, Component.translatable("screen.storagenexus.speed"), leftPos + 136, topPos + 62, palette().text(), false);
         } else {
             Component status = menu.statusB() == 0 ? Component.translatable("screen.storagenexus.not_linked")
                     : Component.translatable(menu.statusA() == 1 ? "screen.storagenexus.input_online" : "screen.storagenexus.input_offline");
-            g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 58, TEXT, false);
-            g.text(font, Component.translatable("screen.storagenexus.output_hint"), leftPos + 8, topPos + 40, TEXT, false);
-            g.text(font, status, leftPos + 8, topPos + 80, TEXT, false);
+            g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 58, palette().text(), false);
+            g.text(font, Component.translatable("screen.storagenexus.output_hint"), leftPos + 8, topPos + 40, palette().text(), false);
+            g.text(font, status, leftPos + 8, topPos + 80, palette().text(), false);
         }
     }
 
