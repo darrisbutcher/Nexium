@@ -10,12 +10,22 @@ import net.storagenexus.upgrade.Upgradeable;
 
 public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
     public UpgradeScreen(UpgradeMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 176, 133, 51);
+        super(menu, inventory, title, 176, UpgradeMenu.INVENTORY_Y + 82, UpgradeMenu.INVENTORY_Y);
     }
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 30, topPos + 24, palette().text(), false);
+        // Total capacity with the upgrades that are in now
+        String total = String.format("%,d", menu.totalCapacity());
+        String each = String.format("%,d", menu.totalCapacity() / menu.capacitySlots());
+        String unit = menu.holdsFluid() ? "buckets" : "stacks";
+        g.text(font, Component.translatable("screen.storagenexus.upgrades.multiplier", menu.multiplier()),
+                leftPos + 8, topPos + 42, palette().text(), false);
+        Component amount = menu.capacitySlots() > 1
+                ? Component.translatable("screen.storagenexus.upgrades.total_split." + unit, total, each)
+                : Component.translatable("screen.storagenexus.upgrades.total." + unit, total);
+        g.text(font, amount, leftPos + 8, topPos + 53, palette().text(), false);
         // Faded Lock Upgrade in the empty lock slot, so it is clear what goes there
         if (menu.getSlot(Upgradeable.LOCK_SLOT).getItem().isEmpty()) {
             int x = leftPos + UpgradeMenu.LOCK_SLOT_X, y = topPos + UpgradeMenu.SLOT_Y;

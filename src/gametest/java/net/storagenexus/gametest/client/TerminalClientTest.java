@@ -148,12 +148,18 @@ public class TerminalClientTest implements FabricClientGameTest {
                 level.setBlockAndUpdate(base.east(6), ModBlocks.BARRELS.get(net.storagenexus.barrel.BarrelTier.IRON).defaultBlockState());
                 level.setBlockAndUpdate(base.east(8), ModBlocks.DIMENSIONAL_INPUT.defaultBlockState());
                 level.setBlockAndUpdate(base.east(10), ModBlocks.COMPACTING_DRAWER.defaultBlockState());
+                BlockPos drawerPos = player.blockPosition().offset(1, 0, -2);
+                level.setBlockAndUpdate(drawerPos, ModBlocks.DRAWERS.get(net.storagenexus.drawer.DrawerWood.OAK)[2].defaultBlockState());
+                if (level.getBlockEntity(drawerPos) instanceof net.storagenexus.drawer.DrawerBlockEntity d) {
+                    d.tryInstall(new ItemStack(net.storagenexus.registry.ModItems.NETHERITE_UPGRADE));
+                    d.tryInstall(new ItemStack(net.storagenexus.registry.ModItems.EMERALD_UPGRADE));
+                }
             });
             ctx.waitTicks(5);
-            for (int dx : new int[]{0, 2, 4, 6, 8}) {
+            for (int dx : new int[]{0, 2, 4, 6, 8, 10, 12}) {
                 final int fx = dx;
                 ctx.runOnClient(mc -> {
-                    BlockPos pos = mc.player.blockPosition().offset(fx - 5, 0, 2);
+                    BlockPos pos = fx == 12 ? mc.player.blockPosition().offset(1, 0, -2) : mc.player.blockPosition().offset(fx - 5, 0, 2);
                     mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND,
                             new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false));
                 });
@@ -161,6 +167,10 @@ public class TerminalClientTest implements FabricClientGameTest {
                 ctx.waitTicks(15);
                 String name = ctx.computeOnClient(mc -> mc.gui.screen().getClass().getSimpleName());
                 System.out.println("SCREEN at +" + dx + ": " + name);
+                String info = ctx.computeOnClient(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> sc
+                        && sc.getMenu() instanceof net.storagenexus.upgrade.UpgradeMenu um
+                        ? "x" + um.multiplier() + " total " + um.totalCapacity() + " slots " + um.capacitySlots() : "-");
+                System.out.println("SCREEN info +" + dx + ": " + info);
                 ctx.takeScreenshot("screen_" + name + "_" + dx);
                 ctx.runOnClient(mc -> mc.gui.setScreen(null));
                 ctx.waitTicks(5);

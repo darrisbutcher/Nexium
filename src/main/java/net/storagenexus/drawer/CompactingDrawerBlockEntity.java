@@ -245,6 +245,11 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     }
 
     @Override
+    public long totalCapacity() {
+        return (long) DrawerBlockEntity.BASE_STACKS * multiplier;
+    }
+
+    @Override
     public boolean canRemoveUpgrade(int slot) {
         return units <= capacityUnits(Upgradeable.multiplierFor(upgrades, slot));
     }

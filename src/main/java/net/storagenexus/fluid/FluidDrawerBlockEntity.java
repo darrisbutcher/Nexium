@@ -118,6 +118,21 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     }
 
     @Override
+    public long totalCapacity() {
+        return baseCapacity() * multiplier / FluidConstants.BUCKET;
+    }
+
+    @Override
+    public boolean holdsFluid() {
+        return true;
+    }
+
+    @Override
+    public int capacitySlots() {
+        return slotCount;
+    }
+
+    @Override
     public boolean canRemoveUpgrade(int slot) {
         long cap = capacityFor(Upgradeable.multiplierFor(upgrades, slot));
         for (FluidSlot s : slots) if (s.amount > cap) return false;

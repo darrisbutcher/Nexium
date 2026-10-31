@@ -24,6 +24,21 @@ public interface Upgradeable {
     /** Whether removing the upgrade in this slot would leave contents over capacity. */
     boolean canRemoveUpgrade(int slot);
 
+    /**
+     * Everything this block holds with its current upgrades, across all its slots: in stacks
+     * (of 64, or of the largest form for a compacting drawer) or, for fluids, in buckets.
+     */
+    long totalCapacity();
+
+    default boolean holdsFluid() {
+        return false;
+    }
+
+    /** How many separate slots the total is split between. */
+    default int capacitySlots() {
+        return 1;
+    }
+
     default boolean acceptsUpgrade(ItemStack stack) {
         if (!(stack.getItem() instanceof UpgradeItem up) || !up.kind().isStorageUpgrade()) return false;
         if (up.kind() != UpgradeItem.Kind.CAPACITY && hasUpgrade(up.kind())) return false;
@@ -102,5 +117,41 @@ public interface Upgradeable {
             }
         }
         return false;
+    }
+
+    /**
+     * With no free slot, swaps the weakest capacity upgrade for a stronger one from the stack.
+     * Capacity only goes up, so this is always safe even when the drawer is full.
+     * Returns the upgrade that came out, or empty if nothing changed.
+     */
+    default ItemStack tryReplaceCapacity(ItemStack stack) {
+        if (!(stack.getItem() instanceof CapacityUpgradeItem held)) return ItemStack.EMPTY;
+        NonNullList<ItemStack> list = getUpgrades();
+        int weakest = -1;
+        int weakestMultiplier = held.multiplier();
+        for (int i = 0; i < LOCK_SLOT; i++) {
+            if (list.get(i).getItem() instanceof CapacityUpgradeItem cap && cap.multiplier() < weakestMultiplier) {
+                weakest = i;
+                weakestMultiplier = cap.multiplier();
+            }
+        }
+        if (weakest < 0) return ItemStack.EMPTY;
+        ItemStack old = list.get(weakest);
+        list.set(weakest, stack.copyWithCount(1));
+        stack.shrink(1);
+        onUpgradesChanged();
+        return old;
+    }
+
+    /** Whether the replacement is a strictly higher capacity upgrade than what is in the slot. */
+    static boolean isHigherCapacity(ItemStack replacement, ItemStack current) {
+        return replacement.getItem() instanceof CapacityUpgradeItem a && current.getItem() instanceof CapacityUpgradeItem b
+                && a.multiplier() > b.multiplier();
+    }
+
+    /** Whether the upgrade in this slot may be swapped for the given one without losing capacity. */
+    static boolean isStrongerCapacity(ItemStack replacement, ItemStack current) {
+        return replacement.getItem() instanceof CapacityUpgradeItem a && current.getItem() instanceof CapacityUpgradeItem b
+                && a.multiplier() >= b.multiplier();
     }
 }

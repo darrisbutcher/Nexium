@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.20.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.21.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -48,6 +48,10 @@ world, or crafted from a book and any drawer) explains everything in game.
   Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a
   Void Upgrade shows a marker in the opposite corner, and the upgrade's tooltip warns it destroys overflow.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32.
+  The upgrade screen shows the multiplier and the total capacity (stacks, or buckets for fluid drawers).
+* With all four slots taken, even on a full drawer, a higher capacity upgrade swaps out the weakest one:
+  right-click the drawer with it (the old upgrade drops), click a slot with a stack of them, or
+  shift-click one in (the old upgrade goes to your inventory, or drops if it is full).
 * **Fluid Drawers** hold 32 buckets of one fluid.
 * Breaking a drawer or fluid drawer keeps its contents and upgrades in the dropped item
   (like a shulker box); the tooltip shows what is inside. Place it to get everything back.

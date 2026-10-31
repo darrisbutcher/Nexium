@@ -193,6 +193,16 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
     }
 
     @Override
+    public long totalCapacity() {
+        return (long) BASE_STACKS * multiplier;
+    }
+
+    @Override
+    public int capacitySlots() {
+        return slotCount;
+    }
+
+    @Override
     public boolean canRemoveUpgrade(int slot) {
         int newMult = Upgradeable.multiplierFor(upgrades, slot);
         for (DrawerSlot s : slots) {

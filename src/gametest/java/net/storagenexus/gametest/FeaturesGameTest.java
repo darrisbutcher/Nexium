@@ -195,6 +195,86 @@ public class FeaturesGameTest {
     }
 
     @GameTest
+    public void strongerCapacityUpgradeSwapsIntoAFullDrawer(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);
+        DrawerBlockEntity be = h.getBlockEntity(pos, DrawerBlockEntity.class);
+        be.tryInstall(new ItemStack(ModItems.GOLD_UPGRADE));
+        for (int i = 0; i < 3; i++) be.tryInstall(new ItemStack(ModItems.IRON_UPGRADE));
+        h.assertValueEqual(be.capacityMultiplier(), 10, "gold + three iron");
+        // Fill it to the brim so no upgrade could normally come out
+        be.insertFromHand(0, new ItemStack(Items.COBBLESTONE, 64));
+        while (be.slot(0).getAmount() < be.slot(0).capacity()) be.insertFromHand(0, new ItemStack(Items.COBBLESTONE, 64));
+        h.assertFalse(be.canRemoveUpgrade(0), "a full drawer keeps its upgrades");
+
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.setPos(net.minecraft.world.phys.Vec3.atCenterOf(h.absolutePos(pos.above())));
+        ItemStack held = new ItemStack(ModItems.NETHERITE_UPGRADE, 2);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, held);
+        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(
+                net.minecraft.world.phys.Vec3.atCenterOf(h.absolutePos(pos)).add(0, 0.5, 0), Direction.UP, h.absolutePos(pos), false);
+        h.getLevel().getBlockState(h.absolutePos(pos)).useItemOn(held, h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        h.assertValueEqual(be.capacityMultiplier(), 40, "an iron upgrade became netherite: 4 + 2 + 2 + 32");
+        h.assertValueEqual(held.getCount(), 1, "one netherite upgrade used");
+        AABB around = new AABB(h.absolutePos(pos)).inflate(2);
+        h.assertValueEqual(h.getLevel().getEntitiesOfClass(ItemEntity.class, around).stream()
+                .filter(e -> e.getItem().is(ModItems.IRON_UPGRADE)).count(), 1L, "the iron upgrade popped out");
+
+        // Next one replaces the next weakest (another iron), never a stronger one
+        h.getLevel().getBlockState(h.absolutePos(pos)).useItemOn(held, h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        h.assertValueEqual(be.capacityMultiplier(), 70, "gold + iron + two netherite");
+        ItemStack weaker = new ItemStack(ModItems.IRON_UPGRADE);
+        h.getLevel().getBlockState(h.absolutePos(pos)).useItemOn(weaker, h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        h.assertValueEqual(weaker.getCount(), 1, "an iron upgrade can't replace anything stronger or equal");
+        h.succeed();
+    }
+
+    @GameTest
+    public void upgradeScreenSwapsInHigherCapacityAndShowsTotal(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.DRAWERS.get(DrawerWood.OAK)[1]);
+        DrawerBlockEntity be = h.getBlockEntity(pos, DrawerBlockEntity.class);
+        for (int i = 0; i < 4; i++) be.tryInstall(new ItemStack(ModItems.IRON_UPGRADE));
+        while (be.slot(0).getAmount() < be.slot(0).capacity()) be.insertFromHand(0, new ItemStack(Items.COBBLESTONE, 64));
+        h.assertFalse(be.canRemoveUpgrade(0), "the drawer is full");
+
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        player.setPos(net.minecraft.world.phys.Vec3.atCenterOf(h.absolutePos(pos.above())));
+        net.storagenexus.upgrade.UpgradeMenu menu = new net.storagenexus.upgrade.UpgradeMenu(0, player.getInventory(), be, be);
+        h.assertValueEqual(menu.multiplier(), 8, "four iron");
+        h.assertValueEqual(menu.totalCapacity(), 54L * 8, "54 stacks x8");
+        h.assertValueEqual(menu.capacitySlots(), 2, "a 1x2 drawer");
+
+        // Click a slot carrying a whole stack of netherite upgrades
+        menu.setCarried(new ItemStack(ModItems.NETHERITE_UPGRADE, 5));
+        menu.clicked(0, 0, net.minecraft.world.inventory.ContainerInput.PICKUP, player);
+        h.assertValueEqual(be.capacityMultiplier(), 38, "an iron became netherite: 32 + 3 x 2");
+        h.assertValueEqual(menu.getCarried().getCount(), 4, "one netherite used");
+        h.assertValueEqual(player.getInventory().countItem(ModItems.IRON_UPGRADE), 1, "the iron went to the inventory");
+        h.assertValueEqual(menu.totalCapacity(), 54L * 38, "the screen total follows");
+
+        // Shift-click one from the inventory: replaces the next iron
+        player.getInventory().setItem(9, new ItemStack(ModItems.EMERALD_UPGRADE, 2));
+        menu.setCarried(ItemStack.EMPTY);
+        int invSlot = -1;
+        for (int i = 0; i < menu.slots.size(); i++) {
+            var s = menu.slots.get(i);
+            if (s.container == player.getInventory() && s.getContainerSlot() == 9) invSlot = i;
+        }
+        menu.clicked(invSlot, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+        h.assertValueEqual(be.capacityMultiplier(), 52, "netherite + emerald + two iron");
+        h.assertValueEqual(player.getInventory().countItem(ModItems.EMERALD_UPGRADE), 1, "one emerald used per shift-click");
+        h.assertValueEqual(player.getInventory().countItem(ModItems.IRON_UPGRADE), 2, "second iron in the inventory");
+
+        // An equal or weaker one doesn't swap
+        menu.setCarried(new ItemStack(ModItems.IRON_UPGRADE, 3));
+        menu.clicked(2, 0, net.minecraft.world.inventory.ContainerInput.PICKUP, player);
+        h.assertValueEqual(be.capacityMultiplier(), 52, "iron over iron changes nothing");
+        h.succeed();
+    }
+
+    @GameTest
     public void clearButtonEmptiesTheGrid(GameTestHelper h) {
         BlockPos terminal = new BlockPos(1, 1, 1);
         h.setBlock(terminal, ModBlocks.CRAFTING_TERMINAL);
