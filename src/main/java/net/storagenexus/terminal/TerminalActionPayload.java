@@ -18,6 +18,7 @@ public record TerminalActionPayload(int action, ItemStack item, Fluid fluid) imp
     public static final int INSERT_ONE = 4;
     public static final int FILL_BUCKET = 5;
     public static final int EMPTY_BUCKET = 6;
+    public static final int TAKE_ONE = 7;
 
     public static final Type<TerminalActionPayload> TYPE = new Type<>(StorageNexus.id("terminal_action"));
 

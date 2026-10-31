@@ -16,6 +16,10 @@ repositories {
     mavenCentral()
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/storagenexus.accesswidener")
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"

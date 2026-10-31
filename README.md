@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.2.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.3.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -36,6 +36,7 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Right-click with an upgrade to install it. To see or remove upgrades, right-click the side or top
   of a drawer with an empty hand (or sneak + right-click it); for a Fluid Tank, right-click it.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Netherite x16.
+* **Fluid Drawers** hold 32 buckets (2x2: 8 per slot); a **Fluid Tank** holds 128 and has no front.
 * Breaking a drawer, fluid drawer or fluid tank keeps its contents and upgrades in the dropped item
   (like a shulker box); the tooltip shows what is inside. Place it to get everything back.
 * **Compacting Drawer**: nuggets/ingots/blocks (any reversible 9:1 or 4:1 recipe), 54 stacks of the
@@ -49,8 +50,12 @@ world, or crafted from a book and any drawer) explains everything in game.
 * **Storage Connector** reads every inventory touching it. **Filtered Connector** reads only the one it
   faces, through a filter. Both have a priority (click them).
 * **Inventory Cable** links connectors and terminals. No power.
-* **Storage Terminal / Crafting Terminal**: search (`@modname` to filter by mod), sort, Items and
-  Fluids tabs. Click with a bucket on the Fluids tab to fill/empty.
+* **Storage Terminal / Crafting Terminal**: fluids and items in one grid, as many rows as fit your
+  screen; search (`@modname` to filter by mod) and sort. Left-click takes a stack, right-click one
+  item, shift-click to your inventory; holding items, left puts them all in and right puts one in.
+  Empty bucket on a fluid fills it; a filled bucket is poured in with left-click.
+* The **Crafting Terminal** has the vanilla recipe book: recipes you can make from the network show
+  as craftable, and clicking one fills the grid from the network (then your inventory).
 
 ### Tablets
 * Sneak + right-click a terminal with a **Storage Tablet** to link it. No range limit, any dimension,

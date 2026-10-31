@@ -4,14 +4,21 @@
   "version": "${version}",
   "name": "Storage Nexus",
   "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item and fluid conduits.",
-  "authors": ["Darris"],
+  "authors": [
+    "Darris"
+  ],
   "license": "MIT",
   "icon": "assets/storagenexus/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": ["net.storagenexus.StorageNexus"],
-    "client": ["net.storagenexus.client.StorageNexusClient"]
+    "main": [
+      "net.storagenexus.StorageNexus"
+    ],
+    "client": [
+      "net.storagenexus.client.StorageNexusClient"
+    ]
   },
+  "accessWidener": "storagenexus.accesswidener",
   "depends": {
     "fabricloader": ">=0.20.1",
     "minecraft": "~26.3",
