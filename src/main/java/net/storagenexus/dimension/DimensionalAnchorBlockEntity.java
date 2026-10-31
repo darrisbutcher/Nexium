@@ -24,16 +24,18 @@ public class DimensionalAnchorBlockEntity extends BlockEntity {
     public void activate() {
         if (!(level instanceof ServerLevel server)) return;
         active = true;
-        AnchorRegistry.get(server.getServer()).put(GlobalPos.of(server.dimension(), worldPosition), onDemand);
-        AnchorRegistry.forceArea(server, worldPosition, !onDemand);
+        AnchorRegistry reg = AnchorRegistry.get(server.getServer());
+        reg.put(GlobalPos.of(server.dimension(), worldPosition), onDemand);
+        reg.refreshArea(server, worldPosition);
         setChanged();
     }
 
     public void toggleMode() {
         if (!(level instanceof ServerLevel server)) return;
         onDemand = !onDemand;
-        AnchorRegistry.get(server.getServer()).put(GlobalPos.of(server.dimension(), worldPosition), onDemand);
-        AnchorRegistry.forceArea(server, worldPosition, !onDemand);
+        AnchorRegistry reg = AnchorRegistry.get(server.getServer());
+        reg.put(GlobalPos.of(server.dimension(), worldPosition), onDemand);
+        reg.refreshArea(server, worldPosition);
         setChanged();
     }
 
@@ -41,8 +43,9 @@ public class DimensionalAnchorBlockEntity extends BlockEntity {
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (level instanceof ServerLevel server && active) {
-            AnchorRegistry.get(server.getServer()).remove(GlobalPos.of(server.dimension(), pos));
-            AnchorRegistry.forceArea(server, pos, false);
+            AnchorRegistry reg = AnchorRegistry.get(server.getServer());
+            reg.remove(GlobalPos.of(server.dimension(), pos));
+            reg.refreshArea(server, pos);
         }
     }
 

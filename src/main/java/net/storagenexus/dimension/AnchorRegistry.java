@@ -57,13 +57,43 @@ public class AnchorRegistry extends SavedData {
         demand.remove(pos);
     }
 
-    /** Forces (or releases) the 3x3 chunks around an anchor. */
-    public static void forceArea(ServerLevel level, BlockPos anchor, boolean force) {
+    /**
+     * Re-decides forcing for the 3x3 chunks around an anchor. A chunk stays forced while any
+     * always-on anchor, or any on-demand anchor a tablet is using, covers it, so overlapping
+     * anchors never release each other's chunks. Call after any anchor change.
+     */
+    public void refreshArea(ServerLevel level, BlockPos anchor) {
         ChunkPos center = new ChunkPos(anchor);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                level.setChunkForced(center.x + dx, center.z + dz, force);
+                ChunkPos chunk = new ChunkPos(center.x + dx, center.z + dz);
+                level.setChunkForced(chunk.x, chunk.z, wanted(level, chunk));
             }
+        }
+    }
+
+    private boolean wanted(ServerLevel level, ChunkPos chunk) {
+        for (Entry e : anchors.values()) {
+            if (!e.pos().dimension().equals(level.dimension()) || !covers(e.pos().pos(), chunk)) continue;
+            if (!e.onDemand() || demand.getOrDefault(e.pos(), 0) > 0) return true;
+        }
+        return false;
+    }
+
+    private static boolean covers(BlockPos anchor, ChunkPos chunk) {
+        ChunkPos ac = new ChunkPos(anchor);
+        return Math.abs(ac.x - chunk.x) <= 1 && Math.abs(ac.z - chunk.z) <= 1;
+    }
+
+    /**
+     * On server start no tablet is open, so on-demand areas are released. Vanilla saves forced
+     * chunks, so this repairs any left forced by a crash while a tablet was open.
+     */
+    public void reconcile(MinecraftServer server) {
+        demand.clear();
+        for (Entry e : List.copyOf(anchors.values())) {
+            ServerLevel level = server.getLevel(e.pos().dimension());
+            if (level != null) refreshArea(level, e.pos().pos());
         }
     }
 
@@ -74,19 +104,16 @@ public class AnchorRegistry extends SavedData {
     public @Nullable Runnable loadOnDemand(ServerLevel level, BlockPos target) {
         ChunkPos tc = new ChunkPos(target);
         for (Entry e : anchors.values()) {
-            if (!e.onDemand() || !e.pos().dimension().equals(level.dimension())) continue;
-            ChunkPos ac = new ChunkPos(e.pos().pos());
-            if (Math.abs(ac.x - tc.x) > 1 || Math.abs(ac.z - tc.z) > 1) continue;
+            if (!e.onDemand() || !e.pos().dimension().equals(level.dimension()) || !covers(e.pos().pos(), tc)) continue;
             GlobalPos key = e.pos();
             int count = demand.merge(key, 1, Integer::sum);
-            if (count == 1) forceArea(level, key.pos(), true);
+            if (count == 1) refreshArea(level, key.pos());
             level.getChunk(tc.x, tc.z); // load now, synchronously
             return () -> {
                 int left = demand.merge(key, -1, Integer::sum);
                 if (left <= 0) {
                     demand.remove(key);
-                    Entry still = anchors.get(key);
-                    if (still != null && still.onDemand()) forceArea(level, key.pos(), false);
+                    refreshArea(level, key.pos());
                 }
             };
         }
