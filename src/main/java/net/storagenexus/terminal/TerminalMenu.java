@@ -1,5 +1,6 @@
 package net.storagenexus.terminal;
 
+import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -7,6 +8,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.storagenexus.StorageNexus;
 import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
@@ -44,6 +47,8 @@ import java.util.function.Predicate;
 public class TerminalMenu extends BaseMenu {
     public static final int GRID_X = 8, GRID_Y = 18, COLS = 9, ROWS = 6;
     public static final int WIDTH = 194;
+    private static final int MAX_PART_BYTES = 256 * 1024;
+    private static final int MAX_ENTRY_BYTES = 512 * 1024;
 
     private final boolean crafting;
     private final Player player;
@@ -65,6 +70,8 @@ public class TerminalMenu extends BaseMenu {
     private List<TerminalSyncPayload.FluidEntry> clientFluids = new ArrayList<>();
     private boolean clientOnline = true;
     private int clientRevision;
+    private @Nullable List<TerminalSyncPayload.ItemEntry> pendingItems;
+    private List<TerminalSyncPayload.FluidEntry> pendingFluids = List.of();
 
     /** Client constructor. */
     public TerminalMenu(int id, Inventory inventory, Boolean crafting) {
@@ -139,7 +146,38 @@ public class TerminalMenu extends BaseMenu {
         for (TerminalSyncPayload.FluidEntry e : fluids) hash = 31 * hash + e.fluid().hashCode() + Long.hashCode(e.amount());
         if (hash == lastHash) return;
         lastHash = hash;
-        ServerPlayNetworking.send(sp, new TerminalSyncPayload(net != null, items, fluids));
+        sendInParts(sp, net != null, items, fluids);
+    }
+
+    /** Splits the item list by encoded size so no payload gets near the 1 MiB limit. */
+    private static void sendInParts(ServerPlayer sp, boolean online, List<TerminalSyncPayload.ItemEntry> items,
+                                    List<TerminalSyncPayload.FluidEntry> fluids) {
+        RegistryFriendlyByteBuf scratch = new RegistryFriendlyByteBuf(Unpooled.buffer(), sp.registryAccess());
+        List<TerminalSyncPayload.ItemEntry> part = new ArrayList<>();
+        int partBytes = 0;
+        boolean first = true;
+        try {
+            for (TerminalSyncPayload.ItemEntry e : items) {
+                scratch.clear();
+                TerminalSyncPayload.ItemEntry.STREAM_CODEC.encode(scratch, e);
+                int size = scratch.writerIndex();
+                if (size > MAX_ENTRY_BYTES) {
+                    StorageNexus.LOG.warn("Not showing {} in a terminal: its data is {} bytes", e.stack().getItem(), size);
+                    continue;
+                }
+                if (!part.isEmpty() && partBytes + size > MAX_PART_BYTES) {
+                    ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, false, part, first ? fluids : List.of()));
+                    first = false;
+                    part = new ArrayList<>();
+                    partBytes = 0;
+                }
+                part.add(e);
+                partBytes += size;
+            }
+        } finally {
+            scratch.release();
+        }
+        ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, true, part, first ? fluids : List.of()));
     }
 
     private void forceResync() {
@@ -150,9 +188,17 @@ public class TerminalMenu extends BaseMenu {
     // ---- Client ------------------------------------------------------------------------------
 
     public void receiveSync(TerminalSyncPayload payload) {
+        if (payload.first()) {
+            pendingItems = new ArrayList<>();
+            pendingFluids = payload.fluids();
+        }
+        if (pendingItems == null) return; // opened mid-update; the next full update fixes it
+        pendingItems.addAll(payload.items());
+        if (!payload.last()) return;
         clientOnline = payload.online();
-        clientItems = new ArrayList<>(payload.items());
-        clientFluids = new ArrayList<>(payload.fluids());
+        clientItems = pendingItems;
+        clientFluids = new ArrayList<>(pendingFluids);
+        pendingItems = null;
         clientRevision++;
     }
 

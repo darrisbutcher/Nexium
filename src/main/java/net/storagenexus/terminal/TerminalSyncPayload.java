@@ -11,8 +11,13 @@ import net.storagenexus.StorageNexus;
 
 import java.util.List;
 
-/** Server -> client: the full contents of the network a terminal is viewing. */
-public record TerminalSyncPayload(boolean online, List<ItemEntry> items, List<FluidEntry> fluids) implements CustomPacketPayload {
+/**
+ * Server -> client: the contents of the network a terminal is viewing. Large networks are
+ * split over several payloads so none hits the packet size limit: the first one carries the
+ * fluids and starts a new list, the last one completes it.
+ */
+public record TerminalSyncPayload(boolean online, boolean first, boolean last, List<ItemEntry> items,
+                                  List<FluidEntry> fluids) implements CustomPacketPayload {
     public static final Type<TerminalSyncPayload> TYPE = new Type<>(StorageNexus.id("terminal_sync"));
 
     public record ItemEntry(ItemStack stack, long count) {
@@ -31,6 +36,8 @@ public record TerminalSyncPayload(boolean online, List<ItemEntry> items, List<Fl
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TerminalSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, TerminalSyncPayload::online,
+            ByteBufCodecs.BOOL, TerminalSyncPayload::first,
+            ByteBufCodecs.BOOL, TerminalSyncPayload::last,
             ItemEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalSyncPayload::items,
             FluidEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalSyncPayload::fluids,
             TerminalSyncPayload::new);
