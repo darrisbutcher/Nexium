@@ -36,6 +36,8 @@ public class LinkRegistry extends SavedData {
         public String name() { return name; }
         public @Nullable GlobalPos input() { return input; }
         public List<GlobalPos> outputs() { return outputs; }
+
+        boolean isEmpty() { return input == null && outputs.isEmpty(); }
     }
 
     private record Entry(UUID id, String name, Optional<GlobalPos> input, List<GlobalPos> outputs) {
@@ -58,6 +60,7 @@ public class LinkRegistry extends SavedData {
 
     private LinkRegistry(List<Entry> entries) {
         for (Entry e : entries) links.put(e.id(), new Link(e.name(), e.input().orElse(null), e.outputs()));
+        links.values().removeIf(Link::isEmpty);
     }
 
     private List<Entry> toEntries() {
@@ -104,10 +107,11 @@ public class LinkRegistry extends SavedData {
 
     /** Adds an output (removing it from any other link). Returns its 1-based number. */
     public int addOutput(UUID id, GlobalPos output) {
-        removeOutput(output);
         Link l = links.get(id);
         if (l == null) return 0;
+        for (Link other : links.values()) other.outputs.remove(output);
         l.outputs.add(output);
+        pruneEmpty();
         setDirty();
         return l.outputs.size();
     }
@@ -116,6 +120,7 @@ public class LinkRegistry extends SavedData {
         for (Link l : links.values()) {
             if (l.outputs.remove(output)) setDirty();
         }
+        pruneEmpty();
     }
 
     public void removeInput(GlobalPos input) {
@@ -125,6 +130,12 @@ public class LinkRegistry extends SavedData {
                 setDirty();
             }
         }
+        pruneEmpty();
+    }
+
+    /** Forgets links with neither an Input nor any Outputs left, so the save does not grow forever. */
+    private void pruneEmpty() {
+        if (links.values().removeIf(Link::isEmpty)) setDirty();
     }
 
     /** Renames a link; false if the name is blank or used by another link. */

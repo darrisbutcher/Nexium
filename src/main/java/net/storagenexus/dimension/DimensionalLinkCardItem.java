@@ -40,12 +40,19 @@ public class DimensionalLinkCardItem extends Item {
         if (linked instanceof DimensionalInputBlockEntity input) {
             UUID id = input.linkId();
             if (id == null || reg.get(id) == null) {
-                Component custom = card.get(DataComponents.CUSTOM_NAME);
-                String requested = custom != null ? custom.getString() : null;
-                id = reg.create(requested, input.globalPos(), server.getRandom());
-                if (id == null) {
-                    player.displayClientMessage(Component.translatable("message.storagenexus.name_taken", requested).withStyle(ChatFormatting.RED), false);
-                    return InteractionResult.FAIL;
+                UUID carried = card.get(ModComponents.LINK_ID);
+                LinkRegistry.Link orphan = reg.get(carried);
+                if (orphan != null && orphan.input() == null) {
+                    // The card's link lost its Input (broken or moved): this Input takes it over.
+                    id = carried;
+                } else {
+                    Component custom = card.get(DataComponents.CUSTOM_NAME);
+                    String requested = custom != null ? custom.getString() : null;
+                    id = reg.create(requested, input.globalPos(), server.getRandom());
+                    if (id == null) {
+                        player.displayClientMessage(Component.translatable("message.storagenexus.name_taken", requested).withStyle(ChatFormatting.RED), false);
+                        return InteractionResult.FAIL;
+                    }
                 }
                 input.setLink(id);
             }
