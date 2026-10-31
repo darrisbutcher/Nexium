@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "storagenexus:block/bamboo_drawer_2x2"
+    },
+    "facing=east": {
+      "model": "storagenexus:block/bamboo_drawer_2x2",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/bamboo_drawer_2x2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "storagenexus:block/bamboo_drawer_2x2",
+      "y": 270
+    }
+  }
+}

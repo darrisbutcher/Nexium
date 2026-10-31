@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IRI",
+    "CHC",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "C": "minecraft:chest",
+    "H": "minecraft:hopper"
+  },
+  "result": {
+    "id": "storagenexus:storage_connector",
+    "count": 1
+  }
+}

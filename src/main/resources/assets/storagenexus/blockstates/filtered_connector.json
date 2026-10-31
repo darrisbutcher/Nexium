@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "storagenexus:block/filtered_connector"
+    },
+    "facing=east": {
+      "model": "storagenexus:block/filtered_connector",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/filtered_connector",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "storagenexus:block/filtered_connector",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "storagenexus:block/filtered_connector",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "storagenexus:block/filtered_connector",
+      "x": 90
+    }
+  }
+}

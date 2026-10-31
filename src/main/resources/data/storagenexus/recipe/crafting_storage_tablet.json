@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:storage_tablet",
+    "minecraft:crafting_table"
+  ],
+  "result": {
+    "id": "storagenexus:crafting_storage_tablet",
+    "count": 1
+  }
+}

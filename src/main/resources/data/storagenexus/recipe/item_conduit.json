@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "GHG",
+    "NNN"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "G": "minecraft:glass",
+    "H": "minecraft:hopper"
+  },
+  "result": {
+    "id": "storagenexus:item_conduit",
+    "count": 6
+  }
+}

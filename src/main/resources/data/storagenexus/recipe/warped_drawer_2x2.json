@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CPC",
+    "PPP",
+    "CPC"
+  ],
+  "key": {
+    "P": "minecraft:warped_planks",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "storagenexus:warped_drawer_2x2",
+    "count": 4
+  }
+}

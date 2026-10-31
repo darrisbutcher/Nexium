@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "storagenexus:block/dimensional_input"
+    }
+  }
+}

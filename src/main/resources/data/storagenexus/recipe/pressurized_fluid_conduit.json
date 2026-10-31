@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CGC",
+    "CCC"
+  ],
+  "key": {
+    "C": "storagenexus:fluid_conduit",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "storagenexus:pressurized_fluid_conduit",
+    "count": 8
+  }
+}

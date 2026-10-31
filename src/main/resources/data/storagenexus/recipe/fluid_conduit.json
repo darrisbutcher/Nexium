@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "GBG",
+    "NNN"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "G": "minecraft:glass",
+    "B": "minecraft:bucket"
+  },
+  "result": {
+    "id": "storagenexus:fluid_conduit",
+    "count": 6
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:basic_filter",
+    "minecraft:comparator",
+    "minecraft:gold_ingot"
+  ],
+  "result": {
+    "id": "storagenexus:advanced_filter",
+    "count": 1
+  }
+}

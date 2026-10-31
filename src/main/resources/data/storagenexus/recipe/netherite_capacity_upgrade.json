@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:diamond_capacity_upgrade",
+    "minecraft:netherite_ingot"
+  ],
+  "result": {
+    "id": "storagenexus:netherite_capacity_upgrade",
+    "count": 1
+  }
+}

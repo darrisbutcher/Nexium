@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OEO",
+    "ELE",
+    "OEO"
+  ],
+  "key": {
+    "O": "minecraft:crying_obsidian",
+    "E": "minecraft:ender_eye",
+    "L": "minecraft:lodestone"
+  },
+  "result": {
+    "id": "storagenexus:dimensional_anchor",
+    "count": 1
+  }
+}

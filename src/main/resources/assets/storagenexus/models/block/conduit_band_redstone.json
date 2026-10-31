@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "storagenexus:block/conduit_band_redstone",
+    "all": "storagenexus:block/conduit_band_redstone"
+  },
+  "elements": [
+    {
+      "from": [
+        4.8,
+        5.5,
+        4.8
+      ],
+      "to": [
+        11.2,
+        6.5,
+        11.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "down": {
+          "texture": "#all"
+        }
+      }
+    }
+  ]
+}

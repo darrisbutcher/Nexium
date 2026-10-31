@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "storagenexus:block/crimson_drawer_1x1"
+    },
+    "facing=east": {
+      "model": "storagenexus:block/crimson_drawer_1x1",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/crimson_drawer_1x1",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "storagenexus:block/crimson_drawer_1x1",
+      "y": 270
+    }
+  }
+}

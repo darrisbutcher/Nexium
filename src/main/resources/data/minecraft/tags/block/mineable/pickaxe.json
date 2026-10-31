@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "storagenexus:compacting_drawer",
+    "storagenexus:drawer_controller",
+    "storagenexus:controller_slave",
+    "storagenexus:fluid_drawer_1x1",
+    "storagenexus:fluid_drawer_2x2",
+    "storagenexus:fluid_tank",
+    "storagenexus:fluid_intake",
+    "storagenexus:storage_connector",
+    "storagenexus:filtered_connector",
+    "storagenexus:inventory_cable",
+    "storagenexus:storage_terminal",
+    "storagenexus:crafting_terminal",
+    "storagenexus:dimensional_anchor",
+    "storagenexus:dimensional_input",
+    "storagenexus:dimensional_output",
+    "storagenexus:conduit_bundle"
+  ]
+}

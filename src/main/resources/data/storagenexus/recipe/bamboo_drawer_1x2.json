@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "PPP",
+    "PCP"
+  ],
+  "key": {
+    "P": "minecraft:bamboo_planks",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "storagenexus:bamboo_drawer_1x2",
+    "count": 2
+  }
+}

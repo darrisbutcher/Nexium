@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "storagenexus:block/storage_connector",
+    "north": "storagenexus:block/filtered_connector_front",
+    "south": "storagenexus:block/storage_connector",
+    "east": "storagenexus:block/storage_connector",
+    "west": "storagenexus:block/storage_connector",
+    "up": "storagenexus:block/storage_connector",
+    "down": "storagenexus:block/storage_connector"
+  }
+}

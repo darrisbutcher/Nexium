@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "storagenexus:block/dimensional_side",
+    "north": "storagenexus:block/dimensional_output_front",
+    "south": "storagenexus:block/dimensional_side",
+    "east": "storagenexus:block/dimensional_side",
+    "west": "storagenexus:block/dimensional_side",
+    "up": "storagenexus:block/dimensional_side",
+    "down": "storagenexus:block/dimensional_side"
+  }
+}

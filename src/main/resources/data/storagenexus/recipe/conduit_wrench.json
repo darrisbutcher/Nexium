@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "I I",
+    " N ",
+    " I "
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "storagenexus:conduit_wrench",
+    "count": 1
+  }
+}

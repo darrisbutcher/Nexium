@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "storagenexus:item/dimensional_link_card"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "storagenexus:block/crafting_terminal"
+    },
+    "facing=east": {
+      "model": "storagenexus:block/crafting_terminal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/crafting_terminal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "storagenexus:block/crafting_terminal",
+      "y": 270
+    }
+  }
+}

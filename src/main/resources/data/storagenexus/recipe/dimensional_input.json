@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OHO",
+    "PEP",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "H": "minecraft:hopper",
+    "P": "minecraft:ender_pearl",
+    "E": "minecraft:ender_eye"
+  },
+  "result": {
+    "id": "storagenexus:dimensional_input",
+    "count": 1
+  }
+}

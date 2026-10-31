@@ -1,0 +1,8 @@
+{
+  "parent": "storagenexus:block/drawer_1x1_template",
+  "textures": {
+    "front": "minecraft:block/acacia_planks",
+    "side": "minecraft:block/acacia_planks",
+    "trim": "minecraft:block/stripped_acacia_log"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "storagenexus:block/dark_oak_drawer_1x2"
+    },
+    "facing=east": {
+      "model": "storagenexus:block/dark_oak_drawer_1x2",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "storagenexus:block/dark_oak_drawer_1x2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "storagenexus:block/dark_oak_drawer_1x2",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,118 @@
+package net.storagenexus.registry;
+
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.storagenexus.StorageNexus;
+import net.storagenexus.conduit.ConduitBundleBlock;
+import net.storagenexus.dimension.DimensionalAnchorBlock;
+import net.storagenexus.dimension.DimensionalInputBlock;
+import net.storagenexus.dimension.DimensionalOutputBlock;
+import net.storagenexus.drawer.CompactingDrawerBlock;
+import net.storagenexus.drawer.ControllerSlaveBlock;
+import net.storagenexus.drawer.DrawerBlock;
+import net.storagenexus.drawer.DrawerControllerBlock;
+import net.storagenexus.drawer.DrawerWood;
+import net.storagenexus.fluid.FluidDrawerBlock;
+import net.storagenexus.fluid.FluidIntakeBlock;
+import net.storagenexus.fluid.FluidTankBlock;
+import net.storagenexus.network.FilteredConnectorBlock;
+import net.storagenexus.network.InventoryCableBlock;
+import net.storagenexus.network.StorageConnectorBlock;
+import net.storagenexus.network.TerminalBlock;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+public final class ModBlocks {
+    /** Every block that gets a BlockItem, in creative-tab order. */
+    public static final Map<String, Block> WITH_ITEMS = new LinkedHashMap<>();
+
+    /** Drawers per wood type: index 0 = 1x1, 1 = 1x2, 2 = 2x2. */
+    public static final Map<DrawerWood, DrawerBlock[]> DRAWERS = new EnumMap<>(DrawerWood.class);
+    public static final List<DrawerBlock> ALL_DRAWERS = new ArrayList<>();
+
+    static {
+        for (DrawerWood wood : DrawerWood.values()) {
+            DrawerBlock[] set = new DrawerBlock[3];
+            int[] sizes = {1, 2, 4};
+            String[] names = {"1x1", "1x2", "2x2"};
+            for (int i = 0; i < 3; i++) {
+                final int slots = sizes[i];
+                set[i] = register(wood.id() + "_drawer_" + names[i], p -> new DrawerBlock(p, slots), wood(), true);
+                ALL_DRAWERS.add(set[i]);
+            }
+            DRAWERS.put(wood, set);
+        }
+    }
+
+    public static final CompactingDrawerBlock COMPACTING_DRAWER = register("compacting_drawer", CompactingDrawerBlock::new, stone(), true);
+    public static final DrawerControllerBlock DRAWER_CONTROLLER = register("drawer_controller", DrawerControllerBlock::new, stone(), true);
+    public static final ControllerSlaveBlock CONTROLLER_SLAVE = register("controller_slave", ControllerSlaveBlock::new, stone(), true);
+
+    public static final FluidDrawerBlock FLUID_DRAWER_1X1 = register("fluid_drawer_1x1", p -> new FluidDrawerBlock(p, 1), glassy(), true);
+    public static final FluidDrawerBlock FLUID_DRAWER_2X2 = register("fluid_drawer_2x2", p -> new FluidDrawerBlock(p, 4), glassy(), true);
+    public static final FluidTankBlock FLUID_TANK = register("fluid_tank", FluidTankBlock::new, glassy(), true);
+    public static final FluidIntakeBlock FLUID_INTAKE = register("fluid_intake", FluidIntakeBlock::new, metal(), true);
+
+    public static final StorageConnectorBlock STORAGE_CONNECTOR = register("storage_connector", StorageConnectorBlock::new, metal(), true);
+    public static final FilteredConnectorBlock FILTERED_CONNECTOR = register("filtered_connector", FilteredConnectorBlock::new, metal(), true);
+    public static final InventoryCableBlock INVENTORY_CABLE = register("inventory_cable", InventoryCableBlock::new, cable(), true);
+    public static final TerminalBlock STORAGE_TERMINAL = register("storage_terminal", p -> new TerminalBlock(p, false), metal(), true);
+    public static final TerminalBlock CRAFTING_TERMINAL = register("crafting_terminal", p -> new TerminalBlock(p, true), metal(), true);
+
+    public static final DimensionalAnchorBlock DIMENSIONAL_ANCHOR = register("dimensional_anchor", DimensionalAnchorBlock::new, heavy(), true);
+    public static final DimensionalInputBlock DIMENSIONAL_INPUT = register("dimensional_input", DimensionalInputBlock::new, heavy(), true);
+    public static final DimensionalOutputBlock DIMENSIONAL_OUTPUT = register("dimensional_output", DimensionalOutputBlock::new, heavy(), true);
+
+    /** Placed by conduit items, so it has no BlockItem of its own. */
+    public static final ConduitBundleBlock CONDUIT_BUNDLE = register("conduit_bundle", ConduitBundleBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5f).sound(SoundType.METAL)
+                    .noOcclusion().dynamicShape(), false);
+
+    private static BlockBehaviour.Properties wood() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD);
+    }
+
+    private static BlockBehaviour.Properties stone() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0f).sound(SoundType.STONE).requiresCorrectToolForDrops();
+    }
+
+    private static BlockBehaviour.Properties metal() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f).sound(SoundType.METAL).requiresCorrectToolForDrops();
+    }
+
+    private static BlockBehaviour.Properties heavy() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(5.0f, 1200f).sound(SoundType.NETHERITE_BLOCK).requiresCorrectToolForDrops();
+    }
+
+    private static BlockBehaviour.Properties glassy() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.0f).sound(SoundType.GLASS).noOcclusion();
+    }
+
+    private static BlockBehaviour.Properties cable() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5f).sound(SoundType.METAL).noOcclusion();
+    }
+
+    private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory,
+                                                BlockBehaviour.Properties props, boolean withItem) {
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, StorageNexus.id(name));
+        T block = factory.apply(props.setId(key));
+        Registry.register(BuiltInRegistries.BLOCK, key, block);
+        if (withItem) WITH_ITEMS.put(name, block);
+        return block;
+    }
+
+    public static void init() {}
+
+    private ModBlocks() {}
+}

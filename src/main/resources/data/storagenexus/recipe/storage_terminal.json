@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IGI",
+    "RSR",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass",
+    "R": "minecraft:redstone",
+    "S": "storagenexus:storage_connector"
+  },
+  "result": {
+    "id": "storagenexus:storage_terminal",
+    "count": 1
+  }
+}

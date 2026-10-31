@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "PDP",
+    "SIS"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "P": "minecraft:piston",
+    "D": "#storagenexus:drawers",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "storagenexus:compacting_drawer",
+    "count": 1
+  }
+}

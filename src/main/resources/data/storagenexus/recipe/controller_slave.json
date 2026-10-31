@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "CDC",
+    "SGS"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "C": "minecraft:comparator",
+    "D": "#storagenexus:drawers",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "storagenexus:controller_slave",
+    "count": 1
+  }
+}

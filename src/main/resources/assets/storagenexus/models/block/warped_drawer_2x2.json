@@ -1,0 +1,8 @@
+{
+  "parent": "storagenexus:block/drawer_2x2_template",
+  "textures": {
+    "front": "minecraft:block/warped_planks",
+    "side": "minecraft:block/warped_planks",
+    "trim": "minecraft:block/stripped_warped_stem"
+  }
+}

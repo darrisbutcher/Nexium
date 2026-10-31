@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RIR",
+    "IGI",
+    "RIR"
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "storagenexus:conduit_speed_upgrade",
+    "count": 1
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "storagenexus:block/drawer_2x2_template",
+  "textures": {
+    "front": "minecraft:block/birch_planks",
+    "side": "minecraft:block/birch_planks",
+    "trim": "minecraft:block/stripped_birch_log"
+  }
+}

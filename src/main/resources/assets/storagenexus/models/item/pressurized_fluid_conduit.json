@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "storagenexus:item/pressurized_fluid_conduit"
+  }
+}

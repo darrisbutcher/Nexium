@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SDS",
+    "DUD",
+    "SDS"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "D": "minecraft:diamond",
+    "U": "storagenexus:gold_capacity_upgrade"
+  },
+  "result": {
+    "id": "storagenexus:diamond_capacity_upgrade",
+    "count": 1
+  }
+}

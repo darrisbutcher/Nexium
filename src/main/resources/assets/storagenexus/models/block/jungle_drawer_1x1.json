@@ -1,0 +1,8 @@
+{
+  "parent": "storagenexus:block/drawer_1x1_template",
+  "textures": {
+    "front": "minecraft:block/jungle_planks",
+    "side": "minecraft:block/jungle_planks",
+    "trim": "minecraft:block/stripped_jungle_log"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:storage_connector",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "storagenexus:filtered_connector",
+    "count": 1
+  }
+}

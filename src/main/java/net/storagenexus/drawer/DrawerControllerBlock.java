@@ -1,0 +1,85 @@
+package net.storagenexus.drawer;
+
+import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.storagenexus.util.StorageEvents;
+import org.jetbrains.annotations.Nullable;
+
+/** One input for a whole drawer wall: right-click to sort items into matching drawers. */
+public class DrawerControllerBlock extends BaseEntityBlock {
+    public DrawerControllerBlock(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(DrawerControllerBlock::new);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new DrawerControllerBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        StorageEvents.storageChanged();
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        StorageEvents.storageChanged();
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                          InteractionHand hand, BlockHitResult hit) {
+        if (!(level.getBlockEntity(pos) instanceof DrawerControllerBlockEntity be)) return InteractionResult.PASS;
+        if (stack.getItem() instanceof BucketItem || stack.is(Items.BUCKET)) {
+            if (!level.isClientSide()) FluidStorageUtil.interactWithFluidStorage(be.getFluidStorage(), player, hand);
+            return InteractionResult.SUCCESS;
+        }
+        if (!level.isClientSide()) {
+            boolean dbl = DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
+            int moved = dbl ? be.insertAllFromInventory(player) : be.insertFromHand(stack);
+            if (moved == 0 && !dbl) {
+                player.displayClientMessage(Component.translatable("message.storagenexus.no_matching_drawer"), true);
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DrawerControllerBlockEntity be) {
+            if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
+                be.insertAllFromInventory(player);
+            } else {
+                player.displayClientMessage(Component.translatable("message.storagenexus.controller_info", be.drawerCount()), true);
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
+}
