@@ -59,7 +59,6 @@
   "block.storagenexus.fluid_tank.desc": "Holds 128 buckets of one fluid",
   "block.storagenexus.fluid_tank.desc2": "Empty hand: contents and upgrade slots",
   "block.storagenexus.inventory_cable": "Inventory Cable",
-  "block.storagenexus.inventory_cable.desc": "Links connectors and terminals into one network",
   "block.storagenexus.jungle_drawer_1x1": "Jungle Drawer (1x1)",
   "block.storagenexus.jungle_drawer_1x2": "Jungle Drawer (1x2)",
   "block.storagenexus.jungle_drawer_2x2": "Jungle Drawer (2x2)",
@@ -94,7 +93,7 @@
   "direction.storagenexus.west": "West",
   "guide.storagenexus.page.1": "Storage Nexus\n\nDrawers, a simple storage network, remote tablets, dimensional item links and conduits.\n\nThis book covers every block and item. Each item's tooltip also says what it does.",
   "guide.storagenexus.page.10": "Fluid Intake\nIt reaches the blocks touching it. An Intake Range Upgrade (right-click the intake) widens that to a 5x5 area around and below it.\n\nRight-click it with an empty hand to see what it holds.",
-  "guide.storagenexus.page.11": "Storage network\nStorage Connector: reads every inventory it touches.\nFiltered Connector: reads only the one it faces.\n\nJoin connectors and terminals with Inventory Cable. No power needed.",
+  "guide.storagenexus.page.11": "Storage network\nStorage Connector: reads every inventory it touches.\nFiltered Connector: only the one it faces.\n\nInventory Cable links connectors, terminals, Fluid Intakes and Outputs facing it. No power needed.",
   "guide.storagenexus.page.12": "Terminals\nShow everything in the network, fluids first. Search with @ to search by mod.\nLeft-click: take a stack.\nRight-click: take one.\nShift-click: to your inventory.\nHolding items: left puts in all, right puts in one.",
   "guide.storagenexus.page.13": "Terminal buckets\nEmpty bucket on a fluid: fill it.\nFilled bucket: left-click pours it in, right-click stores the bucket.\n\nCrafting Terminal\nUse the recipe book: recipes you can make from the network light up, and clicking one fills the grid from it.",
   "guide.storagenexus.page.14": "Priority & filters\nRight-click a connector to set its priority. Items go into higher priority first, and come out of lower priority first.\n\nA filter in a Filtered Connector limits which items it accepts.",
@@ -241,5 +240,9 @@
   "item.storagenexus.pressurized_fluid_conduit.desc3": "Use on a lower tier to upgrade it",
   "item.storagenexus.ender_fluid_conduit.desc": "Moves fluids: 2000 mB per tick",
   "item.storagenexus.ender_fluid_conduit.desc2": "Green trim when placed",
-  "item.storagenexus.ender_fluid_conduit.desc3": "Use on a lower tier to upgrade it"
+  "item.storagenexus.ender_fluid_conduit.desc3": "Use on a lower tier to upgrade it",
+  "block.storagenexus.inventory_cable.desc": "Joins network blocks into one network. Connects to:",
+  "block.storagenexus.inventory_cable.desc2": "Storage and Filtered Connectors, Storage and",
+  "block.storagenexus.inventory_cable.desc3": "Crafting Terminals, other cables, Fluid Intakes",
+  "block.storagenexus.inventory_cable.desc4": "and Dimensional Outputs facing it"
 }

@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.6.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.7.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -68,6 +68,7 @@ world, or crafted from a book and any drawer) explains everything in game.
   (random, or rename the card in an anvil first). Rename later in either block's screen.
 * To move an Input, break it and click the new one with the same card: it takes over the link and
   all its Outputs.
+* Look straight at an Input or Output to see its link name for 3 seconds.
 * Outputs push into the block they face, including any storage-network block. Outputs can have a filter
   so one Input can split items by type. If nothing can take an item, the Input's buffer backs up.
 * Transfer Speed Upgrade in the Input: 1 = 16 items per move, 2 = full stacks.
