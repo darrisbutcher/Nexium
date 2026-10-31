@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.7.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.8.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -40,7 +40,7 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Breaking a drawer, fluid drawer or fluid tank keeps its contents and upgrades in the dropped item
   (like a shulker box); the tooltip shows what is inside. Place it to get everything back.
 * **Compacting Drawer**: nuggets/ingots/blocks (any reversible 9:1 or 4:1 recipe), 54 stacks of the
-  smallest form.
+  largest form (e.g. 54 stacks of iron blocks).
 * **Drawer Controller**: drawers touching it or each other within **16 blocks** form a cluster.
   Right-click to send items into the drawer already holding them; double-click dumps your inventory.
   Right-click with an empty hand to see how many drawers it controls and outline its reach.

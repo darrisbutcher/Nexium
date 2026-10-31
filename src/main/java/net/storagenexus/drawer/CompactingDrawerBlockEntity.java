@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * Stores everything as a count of the smallest form ("units"). Each tier shows
- * units / ratio. Holds 54 stacks of the smallest form, times capacity upgrades.
+ * units / ratio. Holds 54 stacks of the largest form, times capacity upgrades.
  */
 public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer {
     public static final int TIERS = 3;
@@ -73,10 +73,11 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     private boolean isLocked() { return hasUpgrade(UpgradeItem.Kind.LOCK); }
     private boolean isVoid() { return hasUpgrade(UpgradeItem.Kind.VOID); }
 
+    /** 54 stacks of the largest form (e.g. 54 stacks of iron blocks), times upgrades, in units. */
     private long capacityUnits(int mult) {
         if (tierCount == 0) return 0;
-        ItemVariant smallest = tiers[tierCount - 1];
-        return (long) DrawerBlockEntity.BASE_STACKS * smallest.toStack().getMaxStackSize() * mult;
+        ItemVariant largest = tiers[0];
+        return (long) DrawerBlockEntity.BASE_STACKS * largest.toStack().getMaxStackSize() * ratio[0] * mult;
     }
 
     private int tierOf(ItemVariant resource) {
