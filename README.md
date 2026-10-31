@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.1.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.2.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -26,11 +26,15 @@ https://fabricmc.net/develop.
 
 ## How it works in game
 
+Every item's tooltip says what it does, and the **Storage Nexus Guide** (given once when you join a
+world, or crafted from a book and any drawer) explains everything in game.
+
 ### Drawers
 * 1x1 holds **54 stacks**, 1x2 holds **27 stacks** per slot, 2x2 holds **13.5 stacks** per slot.
 * Right-click the front to insert, double-click to insert everything matching, left-click to take
   a stack (sneak for one item). Break drawers from the side.
-* Right-click with an upgrade to install it; sneak + empty hand opens the 4 upgrade slots.
+* Right-click with an upgrade to install it. To see or remove upgrades, right-click the side or top
+  of a drawer with an empty hand (or sneak + right-click it); for a Fluid Tank, right-click it.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Netherite x16.
 * Breaking a drawer, fluid drawer or fluid tank keeps its contents and upgrades in the dropped item
   (like a shulker box); the tooltip shows what is inside. Place it to get everything back.
@@ -38,6 +42,7 @@ https://fabricmc.net/develop.
   smallest form.
 * **Drawer Controller**: drawers touching it or each other within **16 blocks** form a cluster.
   Right-click to send items into the drawer already holding them; double-click dumps your inventory.
+  Right-click with an empty hand to see how many drawers it controls and outline its reach.
   **Controller Slave** restarts the 16-block reach.
 
 ### Simple network

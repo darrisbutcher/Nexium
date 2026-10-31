@@ -14,6 +14,7 @@ import net.storagenexus.conduit.ConduitType;
 import net.storagenexus.conduit.ConduitWrenchItem;
 import net.storagenexus.dimension.DimensionalLinkCardItem;
 import net.storagenexus.filter.FilterItem;
+import net.storagenexus.guide.GuideBookItem;
 import net.storagenexus.tablet.StorageTabletItem;
 import net.storagenexus.upgrade.CapacityUpgradeItem;
 import net.storagenexus.upgrade.UpgradeItem;
@@ -25,6 +26,8 @@ import java.util.function.Function;
 
 public final class ModItems {
     public static final List<Item> TAB_ORDER = new ArrayList<>();
+
+    public static final GuideBookItem GUIDE = register("guide", GuideBookItem::new, new Item.Properties().stacksTo(1));
 
     public static final CapacityUpgradeItem IRON_UPGRADE = register("iron_capacity_upgrade", p -> new CapacityUpgradeItem(p, 2), new Item.Properties());
     public static final CapacityUpgradeItem GOLD_UPGRADE = register("gold_capacity_upgrade", p -> new CapacityUpgradeItem(p, 4), new Item.Properties());
@@ -59,6 +62,8 @@ public final class ModItems {
             blockItems.add(item);
         }
         TAB_ORDER.addAll(0, blockItems);
+        TAB_ORDER.remove(GUIDE);
+        TAB_ORDER.add(0, GUIDE); // the guide comes first
     }
 
     public static ConduitItem conduitFor(ConduitType type, int tier) {

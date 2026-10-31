@@ -15,6 +15,7 @@ import net.storagenexus.client.screen.DimensionalScreen;
 import net.storagenexus.client.screen.FilterScreen;
 import net.storagenexus.client.screen.TerminalScreen;
 import net.storagenexus.client.screen.UpgradeScreen;
+import net.storagenexus.guide.GuideBookItem;
 import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.terminal.TerminalMenu;
@@ -39,7 +40,9 @@ public class StorageNexusClient implements ClientModInitializer {
         BlockEntityRenderers.register(ModBlockEntities.DIMENSIONAL_OUTPUT, LinkLabelRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.CONDUIT_BUNDLE, FacadeRenderer::new);
 
+        ItemDescriptions.init();
         ContentsTooltip.init();
+        GuideBookItem.openScreen = GuideScreen::open;
 
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {

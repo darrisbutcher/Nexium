@@ -1,16 +1,12 @@
 package net.storagenexus.conduit;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -19,7 +15,6 @@ import net.storagenexus.drawer.DrawerInteraction;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModItems;
 
-import java.util.function.Consumer;
 
 /**
  * Places a conduit. Clicking an existing conduit bundle adds this conduit type to it (several
@@ -77,9 +72,4 @@ public class ConduitItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
-                                Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable(getDescriptionId() + ".desc").withStyle(ChatFormatting.GRAY));
-    }
 }
