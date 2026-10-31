@@ -1,0 +1,6 @@
+{
+  "parent": "storagenexus:block/conduit_trim_item",
+  "textures": {
+    "all": "storagenexus:block/conduit_trim_top"
+  }
+}

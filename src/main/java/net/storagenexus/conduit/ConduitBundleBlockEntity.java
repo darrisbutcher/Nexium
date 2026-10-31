@@ -132,6 +132,11 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ConduitBundleBlockEntity be) {
         long time = level.getGameTime();
+        // Bundles saved before tiers were part of the block state show up untiered; fix once.
+        if (time % 20 == 0 && (state.getValue(ConduitBundleBlock.ITEM_TIER) != be.tier(ConduitType.ITEM)
+                || state.getValue(ConduitBundleBlock.FLUID_TIER) != be.tier(ConduitType.FLUID))) {
+            be.changed();
+        }
         int phase = (int) Math.floorMod(pos.asLong(), 20L);
         boolean powered = level.hasNeighborSignal(pos);
 

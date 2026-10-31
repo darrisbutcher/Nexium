@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -37,13 +38,14 @@ import java.util.Map;
 /** The block that conduit items place. Holds item and/or fluid conduits. */
 public class ConduitBundleBlock extends BaseEntityBlock {
     public static final Map<Direction, BooleanProperty> CONNECTIONS = PipeBlock.PROPERTY_BY_DIRECTION;
-    public static final BooleanProperty ITEMS = BooleanProperty.create("items");
-    public static final BooleanProperty FLUIDS = BooleanProperty.create("fluids");
+    /** Tier of each conduit type (0 = none), so the model can show it. */
+    public static final IntegerProperty ITEM_TIER = IntegerProperty.create("item_tier", 0, 2);
+    public static final IntegerProperty FLUID_TIER = IntegerProperty.create("fluid_tier", 0, 3);
     public static final PipeShapes SHAPES = new PipeShapes(5, 11);
 
     public ConduitBundleBlock(Properties properties) {
         super(properties);
-        BlockState s = stateDefinition.any().setValue(ITEMS, false).setValue(FLUIDS, false);
+        BlockState s = stateDefinition.any().setValue(ITEM_TIER, 0).setValue(FLUID_TIER, 0);
         for (BooleanProperty p : CONNECTIONS.values()) s = s.setValue(p, false);
         registerDefaultState(s);
     }
@@ -52,7 +54,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         CONNECTIONS.values().forEach(builder::add);
-        builder.add(ITEMS, FLUIDS);
+        builder.add(ITEM_TIER, FLUID_TIER);
     }
 
     @Override
@@ -72,8 +74,8 @@ public class ConduitBundleBlock extends BaseEntityBlock {
 
     public static BlockState computeState(BlockState state, Level level, BlockPos pos, ConduitBundleBlockEntity be) {
         int mask = be.connectionMask();
-        BlockState s = state.setValue(ITEMS, be.has(ConduitType.ITEM))
-                .setValue(FLUIDS, be.has(ConduitType.FLUID));
+        BlockState s = state.setValue(ITEM_TIER, be.tier(ConduitType.ITEM))
+                .setValue(FLUID_TIER, be.tier(ConduitType.FLUID));
         for (Direction d : Direction.values()) s = s.setValue(CONNECTIONS.get(d), (mask & (1 << d.get3DDataValue())) != 0);
         return s;
     }

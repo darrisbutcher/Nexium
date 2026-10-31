@@ -60,7 +60,7 @@
     },
     {
       "when": {
-        "items": "true"
+        "item_tier": "1|2"
       },
       "apply": {
         "model": "storagenexus:block/conduit_band_item"
@@ -68,10 +68,34 @@
     },
     {
       "when": {
-        "fluids": "true"
+        "item_tier": "2"
+      },
+      "apply": {
+        "model": "storagenexus:block/conduit_trim_item_top"
+      }
+    },
+    {
+      "when": {
+        "fluid_tier": "1|2|3"
       },
       "apply": {
         "model": "storagenexus:block/conduit_band_fluid"
+      }
+    },
+    {
+      "when": {
+        "fluid_tier": "2"
+      },
+      "apply": {
+        "model": "storagenexus:block/conduit_trim_fluid_tier2"
+      }
+    },
+    {
+      "when": {
+        "fluid_tier": "3"
+      },
+      "apply": {
+        "model": "storagenexus:block/conduit_trim_fluid_top"
       }
     }
   ]
