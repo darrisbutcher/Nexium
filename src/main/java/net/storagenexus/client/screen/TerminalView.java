@@ -46,6 +46,10 @@ final class TerminalView {
     /** One grid cell: a fluid or an item. */
     private record Entry(TerminalSyncPayload.@Nullable FluidEntry fluid, TerminalSyncPayload.@Nullable ItemEntry item) {}
 
+    private static final float COUNT_SCALE = 0.5f;
+    private static final int COUNT_COLOR = 0xFFFFFFFF;
+    private static final int COUNT_BACKING = 0x99000000;
+
     private final TerminalMenu menu;
     private final Font font;
     private EditBox search;
@@ -164,11 +168,11 @@ final class TerminalView {
             Entry e = visible.get(idx);
             if (e.fluid() != null) {
                 fluidIcon(g, e.fluid().fluid(), x, y);
-                String amt = Fmt.fluid(e.fluid().amount());
-                g.text(font, amt, x + 17 - font.width(amt), y + 9, 0xFFFFFFFF, true);
+                count(g, Fmt.fluid(e.fluid().amount()), x, y);
             } else if (e.item() != null) {
                 g.item(e.item().stack(), x, y);
-                g.itemDecorations(font, e.item().stack(), x, y, Fmt.compact(e.item().count()));
+                g.itemDecorations(font, e.item().stack(), x, y); // durability bar; count drawn below
+                count(g, Fmt.compact(e.item().count()), x, y);
             }
             if (i == hovered) g.fill(x, y, x + 16, y + 16, 0x80FFFFFF);
         }
@@ -185,6 +189,18 @@ final class TerminalView {
                 g.setTooltipForNextFrame(font, e.item().stack(), mouseX, mouseY);
             }
         }
+    }
+
+    /** Half-size count in the cell's bottom-right corner, on a faint dark backing so it stays readable. */
+    private void count(GuiGraphicsExtractor g, String text, int x, int y) {
+        int w = font.width(text);
+        g.pose().pushMatrix();
+        g.pose().translate(x + 16, y + 16);
+        g.pose().scale(COUNT_SCALE, COUNT_SCALE);
+        int left = -w - 1, top = -font.lineHeight;
+        g.fill(left - 1, top, 0, 0, COUNT_BACKING);
+        g.text(font, text, left, top + 1, COUNT_COLOR, false);
+        g.pose().popMatrix();
     }
 
     private void fluidIcon(GuiGraphicsExtractor g, Fluid fluid, int x, int y) {

@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.4.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.5.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -73,7 +73,8 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Transfer Speed Upgrade in the Input: 1 = 16 items per move, 2 = full stacks.
 
 ### Conduits
-* Item (basic, ender) and Fluid (basic, pressurized, ender) conduits share one block.
+* Item conduits (Tier 1-2) and Fluid conduits (Tier 1-3) share one block. Placed conduits show their
+  tier: a gold trim for Tier 2 fluid, green for the top tier of each.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings
   (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades).
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.
