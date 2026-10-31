@@ -3,7 +3,7 @@
   "id": "storagenexus",
   "version": "${version}",
   "name": "Storage Nexus",
-  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item, fluid and redstone conduits.",
+  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item and fluid conduits.",
   "authors": ["Darris"],
   "license": "MIT",
   "icon": "assets/storagenexus/icon.png",

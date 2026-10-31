@@ -6,7 +6,6 @@ import net.minecraft.world.item.ItemStack;
 
 /** Per-side, per-conduit-type settings set with the Conduit Wrench. */
 public class SideConfig {
-    /** For redstone conduits INSERT means "output" and EXTRACT means "input". */
     public enum Mode {
         DISABLED, INSERT, EXTRACT, BOTH;
 
@@ -43,7 +42,7 @@ public class SideConfig {
     public int rrIndex;
 
     public SideConfig(ConduitType type) {
-        this.mode = type == ConduitType.REDSTONE ? Mode.BOTH : Mode.INSERT;
+        this.mode = Mode.INSERT;
     }
 
     private record Data(int mode, int channel, int redstone, int priority, boolean roundRobin, ItemStack filter, ItemStack upgrades) {}

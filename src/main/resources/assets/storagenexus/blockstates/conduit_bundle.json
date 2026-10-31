@@ -73,14 +73,6 @@
       "apply": {
         "model": "storagenexus:block/conduit_band_fluid"
       }
-    },
-    {
-      "when": {
-        "redstone": "true"
-      },
-      "apply": {
-        "model": "storagenexus:block/conduit_band_redstone"
-      }
     }
   ]
 }

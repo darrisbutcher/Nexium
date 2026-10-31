@@ -28,7 +28,7 @@ public class ConduitConfigMenu extends BaseMenu {
     public static final int INVENTORY_TOP = 112;
 
     public static final int BTN_SIDE = 0;      // 0..5
-    public static final int BTN_TYPE = 10;     // 10..12
+    public static final int BTN_TYPE = 10;     // 10..11
     public static final int BTN_MODE = 20;
     public static final int BTN_CHANNEL_NEXT = 21;
     public static final int BTN_CHANNEL_PREV = 22;
@@ -123,7 +123,7 @@ public class ConduitConfigMenu extends BaseMenu {
             side = id - BTN_SIDE;
             return true;
         }
-        if (id >= BTN_TYPE && id < BTN_TYPE + 3) {
+        if (id >= BTN_TYPE && id < BTN_TYPE + ConduitType.VALUES.length) {
             if (be.has(ConduitType.VALUES[id - BTN_TYPE])) type = id - BTN_TYPE;
             return true;
         }

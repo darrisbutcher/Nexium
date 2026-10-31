@@ -12,7 +12,6 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -27,18 +26,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * One block space holding item, fluid and/or redstone conduits (Ender IO style).
+ * One block space holding item and/or fluid conduits (Ender IO style).
  * Every side has its own settings per conduit type: mode, colour channel, redstone control,
  * priority, round-robin, filter and speed upgrades.
  */
@@ -47,12 +43,9 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     private static final int FLUID_INTERVAL = 5;
     private static final long DROPLETS_PER_MB = 81;
 
-    private final int[] tiers = new int[3];
-    private final SideConfig[][] configs = new SideConfig[3][6];
+    private final int[] tiers = new int[ConduitType.VALUES.length];
+    private final SideConfig[][] configs = new SideConfig[ConduitType.VALUES.length][6];
     private @Nullable BlockState facade;
-
-    private int[] signals = new int[16];
-    private long redstoneTick = -1;
 
     private record Target(BlockPos invPos, Direction side, SideConfig cfg, int distance) {}
 
@@ -72,7 +65,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     public int tier(ConduitType t) { return tiers[t.ordinal()]; }
     public SideConfig config(ConduitType t, Direction d) { return configs[t.ordinal()][d.get3DDataValue()]; }
     public @Nullable BlockState facade() { return facade; }
-    public int typeMask() { return (has(ConduitType.ITEM) ? 1 : 0) | (has(ConduitType.FLUID) ? 2 : 0) | (has(ConduitType.REDSTONE) ? 4 : 0); }
+    public int typeMask() { return (has(ConduitType.ITEM) ? 1 : 0) | (has(ConduitType.FLUID) ? 2 : 0); }
 
     /** Adds or upgrades a conduit. Returns the tier that was there before (0 = none). */
     public int addConduit(ConduitType t, int tier) {
@@ -115,10 +108,6 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         return switch (t) {
             case ITEM -> ItemStorage.SIDED.find(level, pos, side) != null;
             case FLUID -> FluidStorage.SIDED.find(level, pos, side) != null;
-            case REDSTONE -> {
-                BlockState s = level.getBlockState(pos);
-                yield s.isSignalSource() || s.isRedstoneConductor(level, pos);
-            }
         };
     }
 
@@ -166,7 +155,6 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 be.transferFluids(d, cfg, mbPerTick * FLUID_INTERVAL * DROPLETS_PER_MB);
             }
         }
-        if (be.has(ConduitType.REDSTONE) && time % 2 == 0) be.updateRedstone(time);
     }
 
     private List<Target> targets(ConduitType type, int channel) {
@@ -262,56 +250,6 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 break;
             }
         }
-    }
-
-    // ---- Redstone -----------------------------------------------------------------------------
-
-    private void updateRedstone(long time) {
-        if (redstoneTick == time) return;
-        List<ConduitBundleBlockEntity> network = new ArrayList<>();
-        Set<BlockPos> seen = new HashSet<>();
-        Deque<ConduitBundleBlockEntity> queue = new ArrayDeque<>();
-        seen.add(worldPosition);
-        queue.add(this);
-        int[] sig = new int[16];
-        while (!queue.isEmpty() && seen.size() < MAX_NETWORK) {
-            ConduitBundleBlockEntity b = queue.poll();
-            network.add(b);
-            for (Direction d : Direction.values()) {
-                if (!b.connectsTo(ConduitType.REDSTONE, d)) continue;
-                BlockPos np = b.worldPosition.relative(d);
-                if (level.getBlockEntity(np) instanceof ConduitBundleBlockEntity nb) {
-                    if (seen.add(np)) queue.add(nb);
-                    continue;
-                }
-                SideConfig cfg = b.config(ConduitType.REDSTONE, d);
-                if (!cfg.mode.extracts()) continue;
-                // Don't read back our own output through adjacent dust.
-                if (cfg.mode.inserts() && level.getBlockState(np).getBlock() instanceof RedStoneWireBlock) continue;
-                sig[cfg.channel] = Math.max(sig[cfg.channel], level.getSignal(np, d));
-            }
-        }
-        for (ConduitBundleBlockEntity b : network) {
-            b.redstoneTick = time;
-            if (!Arrays.equals(b.signals, sig)) {
-                b.signals = sig.clone();
-                Block block = b.getBlockState().getBlock();
-                level.updateNeighborsAt(b.worldPosition, block);
-                for (Direction d : Direction.values()) {
-                    if (!(level.getBlockEntity(b.worldPosition.relative(d)) instanceof ConduitBundleBlockEntity)) {
-                        level.updateNeighborsAt(b.worldPosition.relative(d), block);
-                    }
-                }
-            }
-        }
-    }
-
-    /** Signal this bundle outputs on the given side of itself. */
-    public int outputSignal(Direction side) {
-        if (!has(ConduitType.REDSTONE)) return 0;
-        SideConfig cfg = config(ConduitType.REDSTONE, side);
-        if (!cfg.mode.inserts() || isBundle(worldPosition.relative(side))) return 0;
-        return signals[cfg.channel];
     }
 
     // ---- Save / load / drops ------------------------------------------------------------------

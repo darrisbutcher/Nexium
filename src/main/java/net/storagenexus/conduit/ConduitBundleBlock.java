@@ -35,17 +35,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-/** The block that conduit items place. Holds any mix of item, fluid and redstone conduits. */
+/** The block that conduit items place. Holds item and/or fluid conduits. */
 public class ConduitBundleBlock extends BaseEntityBlock {
     public static final Map<Direction, BooleanProperty> CONNECTIONS = PipeBlock.PROPERTY_BY_DIRECTION;
     public static final BooleanProperty ITEMS = BooleanProperty.create("items");
     public static final BooleanProperty FLUIDS = BooleanProperty.create("fluids");
-    public static final BooleanProperty REDSTONE = BooleanProperty.create("redstone");
     public static final PipeShapes SHAPES = new PipeShapes(5, 11);
 
     public ConduitBundleBlock(Properties properties) {
         super(properties);
-        BlockState s = stateDefinition.any().setValue(ITEMS, false).setValue(FLUIDS, false).setValue(REDSTONE, false);
+        BlockState s = stateDefinition.any().setValue(ITEMS, false).setValue(FLUIDS, false);
         for (BooleanProperty p : CONNECTIONS.values()) s = s.setValue(p, false);
         registerDefaultState(s);
     }
@@ -58,7 +57,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         CONNECTIONS.values().forEach(builder::add);
-        builder.add(ITEMS, FLUIDS, REDSTONE);
+        builder.add(ITEMS, FLUIDS);
     }
 
     @Override
@@ -79,8 +78,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     public static BlockState computeState(BlockState state, Level level, BlockPos pos, ConduitBundleBlockEntity be) {
         int mask = be.connectionMask();
         BlockState s = state.setValue(ITEMS, be.has(ConduitType.ITEM))
-                .setValue(FLUIDS, be.has(ConduitType.FLUID))
-                .setValue(REDSTONE, be.has(ConduitType.REDSTONE));
+                .setValue(FLUIDS, be.has(ConduitType.FLUID));
         for (Direction d : Direction.values()) s = s.setValue(CONNECTIONS.get(d), (mask & (1 << d.get3DDataValue())) != 0);
         return s;
     }
@@ -118,23 +116,6 @@ public class ConduitBundleBlock extends BaseEntityBlock {
             StorageEvents.conduitsChanged();
             level.setBlock(pos, updated, Block.UPDATE_ALL);
         }
-    }
-
-    // ---- Redstone ---------------------------------------------------------------------------
-
-    @Override
-    protected boolean isSignalSource(BlockState state) {
-        return state.getValue(REDSTONE);
-    }
-
-    @Override
-    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity be ? be.outputSignal(direction.getOpposite()) : 0;
-    }
-
-    @Override
-    protected int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return getSignal(state, level, pos, direction);
     }
 
     // ---- Facades ----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 package net.storagenexus.conduit;
 
 public enum ConduitType {
-    ITEM, FLUID, REDSTONE;
+    ITEM, FLUID;
 
     public static final ConduitType[] VALUES = values();
 

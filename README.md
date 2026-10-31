@@ -1,7 +1,7 @@
 # Storage Nexus (Fabric, Minecraft 26.3)
 
 Drawers + a Tom's Simple Storage-style network + cross-dimensional tablets and item links +
-Ender IO-style item, fluid and redstone conduits.
+Ender IO-style item and fluid conduits.
 
 ## Building
 
@@ -69,7 +69,7 @@ The most likely spots, in order:
 * Transfer Speed Upgrade in the Input: 1 = 16 items per move, 2 = full stacks.
 
 ### Conduits
-* Item (basic, ender), Fluid (basic, pressurized, ender) and Redstone conduits share one block.
+* Item (basic, ender) and Fluid (basic, pressurized, ender) conduits share one block.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings
   (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades).
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.

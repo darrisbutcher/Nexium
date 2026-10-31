@@ -19,8 +19,10 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     private static final String[] COLOR_KEYS = {"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
             "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"};
 
+    private static final String[] TYPE_KEYS = {"item", "fluid"};
+
     private final Button[] sideButtons = new Button[6];
-    private final Button[] typeButtons = new Button[3];
+    private final Button[] typeButtons = new Button[TYPE_KEYS.length];
     private Button modeButton, redstoneButton, rrButton;
 
     public ConduitConfigScreen(ConduitConfigMenu menu, Inventory inventory, Component title) {
@@ -39,10 +41,9 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
             sideButtons[i] = addRenderableWidget(Button.builder(Component.literal(SIDES[i]), b -> click(ConduitConfigMenu.BTN_SIDE + id))
                     .bounds(leftPos + 8 + i * 24, topPos + 16, 22, 14).build());
         }
-        String[] typeKeys = {"item", "fluid", "redstone"};
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < TYPE_KEYS.length; i++) {
             final int id = i;
-            typeButtons[i] = addRenderableWidget(Button.builder(Component.translatable("conduit.storagenexus." + typeKeys[i]),
+            typeButtons[i] = addRenderableWidget(Button.builder(Component.translatable("conduit.storagenexus." + TYPE_KEYS[i]),
                     b -> click(ConduitConfigMenu.BTN_TYPE + id)).bounds(leftPos + 8 + i * 46, topPos + 34, 44, 14).build());
         }
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_MODE))
@@ -68,23 +69,17 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         int type = menu.get(ConduitConfigMenu.D_TYPE);
         int types = menu.get(ConduitConfigMenu.D_TYPES);
         for (int i = 0; i < 6; i++) sideButtons[i].setMessage(Component.literal(i == side ? "[" + SIDES[i] + "]" : SIDES[i]));
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < TYPE_KEYS.length; i++) {
             typeButtons[i].active = (types & (1 << i)) != 0;
-        }
-        String[] typeKeys = {"item", "fluid", "redstone"};
-        for (int i = 0; i < 3; i++) {
-            Component name = Component.translatable("conduit.storagenexus." + typeKeys[i]);
+            Component name = Component.translatable("conduit.storagenexus." + TYPE_KEYS[i]);
             typeButtons[i].setMessage(i == type ? Component.literal("> ").append(name) : name);
         }
         SideConfig.Mode mode = SideConfig.Mode.values()[menu.get(ConduitConfigMenu.D_MODE) % 4];
-        String modeKey = (type == 2 ? "rs_" : "") + mode.name().toLowerCase(Locale.ROOT);
-        modeButton.setMessage(Component.translatable("mode.storagenexus." + modeKey));
+        modeButton.setMessage(Component.translatable("mode.storagenexus." + mode.name().toLowerCase(Locale.ROOT)));
         SideConfig.RedstoneControl rc = SideConfig.RedstoneControl.values()[menu.get(ConduitConfigMenu.D_REDSTONE) % 4];
         redstoneButton.setMessage(Component.translatable("redstone.storagenexus." + rc.name().toLowerCase(Locale.ROOT)));
-        redstoneButton.active = type != 2;
         rrButton.setMessage(Component.translatable(menu.get(ConduitConfigMenu.D_RR) == 1
                 ? "screen.storagenexus.round_robin_on" : "screen.storagenexus.round_robin_off"));
-        rrButton.active = type != 2;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ConduitWrenchItem extends Item {
             player.displayClientMessage(Component.translatable("message.storagenexus.conduit_mode",
                     Component.translatable("conduit.storagenexus." + t.key()),
                     Component.translatable("direction.storagenexus." + side.getSerializedName()),
-                    Component.translatable("mode.storagenexus." + (t == ConduitType.REDSTONE ? "rs_" : "") + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))), true);
+                    Component.translatable("mode.storagenexus." + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))), true);
             break;
         }
         return InteractionResult.SUCCESS;
