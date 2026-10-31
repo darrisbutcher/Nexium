@@ -21,6 +21,7 @@ public class FluidDrawerRenderer extends AbstractFrontRenderer<FluidDrawerBlockE
             FluidVariant v = slot.displayVariant();
             ItemStack icon = v.isBlank() || v.getFluid().getBucket() == Items.AIR ? ItemStack.EMPTY : new ItemStack(v.getFluid().getBucket());
             setItem(be, state, i, icon, v.isBlank() ? "" : Fmt.fluid(slot.getAmount()));
+            if (!v.isBlank()) state.fill[i] = fraction(slot.getAmount(), slot.capacity());
         }
     }
 }

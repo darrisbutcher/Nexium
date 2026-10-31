@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.25.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.26.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -44,6 +44,9 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Right-click the front to insert, double-click to insert everything matching, left-click to take
   a stack (sneak for one item). Every click counts, however fast you click; holding the button
   takes just one. Break drawers from the side.
+* A bar under each section's count shows how full it is, counting upgrades: green under 75%, yellow
+  to 90%, red from 90%. Empty sections have no bar (a locked empty one shows an empty track). Fluid
+  drawers have the same bar; a compacting drawer has one bar for its shared pool, under the top form.
 * Right-click with an upgrade to install it. To see or remove upgrades, right-click the side or top
   of a drawer with an empty hand (or sneak + right-click it). The
   Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a

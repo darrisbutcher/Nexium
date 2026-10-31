@@ -196,6 +196,7 @@ public class TerminalClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(3);
             System.out.println("DRAWER target " + ctx.computeOnClient(mc -> String.valueOf(mc.hitResult instanceof BlockHitResult b ? b.getBlockPos() + " " + b.getDirection() : mc.hitResult)));
+            ctx.takeScreenshot("drawer_fill_bar_before");
             for (int i = 0; i < 4; i++) ctx.getInput().pressMouse(LEFT);
             ctx.waitTicks(5);
             int afterClicks = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory()

@@ -14,6 +14,8 @@ public class FrontRenderState extends BlockEntityRenderState {
     };
     public final String[] counts = new String[4];
     public final boolean[] present = new boolean[4];
+    /** How full each section is, 0 to 1, shown as a bar under the count; negative for no bar. */
+    public final float[] fill = new float[4];
     /** A Lock Upgrade is installed: a small padlock shows in the top-right corner. */
     public boolean locked;
     public final ItemStackRenderState lockIcon = new ItemStackRenderState();

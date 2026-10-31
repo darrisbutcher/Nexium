@@ -18,6 +18,7 @@ public class DrawerRenderer extends AbstractFrontRenderer<DrawerBlockEntity> {
             DrawerBlockEntity.DrawerSlot slot = be.slot(i);
             ItemVariant v = slot.displayVariant();
             setItem(be, state, i, v.isBlank() ? ItemStack.EMPTY : v.toStack(), Fmt.compact(slot.getAmount()));
+            if (!v.isBlank()) state.fill[i] = fraction(slot.getAmount(), slot.capacity());
         }
     }
 }

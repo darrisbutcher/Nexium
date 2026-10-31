@@ -73,6 +73,12 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     private boolean isLocked() { return hasUpgrade(UpgradeItem.Kind.LOCK); }
     private boolean isVoid() { return hasUpgrade(UpgradeItem.Kind.VOID); }
 
+    /** How full the shared pool is, 0 to 1. */
+    public double fillFraction() {
+        long cap = capacityUnits(multiplier);
+        return cap <= 0 ? 0 : Math.min(1.0, (double) units / cap);
+    }
+
     /** 54 stacks of the largest form (e.g. 54 stacks of iron blocks), times upgrades, in units. */
     private long capacityUnits(int mult) {
         if (tierCount == 0) return 0;

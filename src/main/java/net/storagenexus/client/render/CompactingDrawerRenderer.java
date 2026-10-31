@@ -18,5 +18,7 @@ public class CompactingDrawerRenderer extends AbstractFrontRenderer<CompactingDr
             ItemVariant v = be.tier(i);
             setItem(be, state, i, v.isBlank() ? ItemStack.EMPTY : v.toStack(), Fmt.compact(be.amountOf(i)));
         }
+        // One shared pool: a single bar under the largest form
+        if (!be.tier(0).isBlank()) state.fill[0] = (float) be.fillFraction();
     }
 }
