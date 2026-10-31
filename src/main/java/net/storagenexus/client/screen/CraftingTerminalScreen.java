@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,9 @@ import net.storagenexus.terminal.TerminalMenu;
 public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMenu> {
     /** Below this width the open recipe book covers the whole screen (same rule as vanilla). */
     private static final int NARROW_WIDTH = 379;
+    /** RecipeBookComponent's own offset left of centre when there is room. */
+    private static final int BOOK_X_OFFSET = 86;
+    private static final int BOOK_GAP = 4;
 
     private final TerminalView view;
     private final CraftingRecipeBookComponent recipeBook;
@@ -37,9 +41,20 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         this.view = new TerminalView(menu, this.font);
     }
 
+    /** Where the panel goes: a small gap right of the open recipe book, else centred. */
+    private int panelLeft() {
+        if (recipeBook.isVisible() && width >= NARROW_WIDTH) {
+            // Vanilla's placement assumes a 176-wide screen; ours is wider, so measure from the book.
+            int bookRight = (width - RecipeBookComponent.IMAGE_WIDTH) / 2 - BOOK_X_OFFSET + RecipeBookComponent.IMAGE_WIDTH;
+            return bookRight + BOOK_GAP;
+        }
+        return (width - imageWidth) / 2;
+    }
+
     @Override
     protected void init() {
         super.init();
+        leftPos = panelLeft();
         titleLabelY = 6;
         view.init(this::addRenderableWidget, leftPos, topPos);
     }
@@ -47,11 +62,12 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     @Override
     protected ScreenPosition getRecipeBookButtonPosition() {
         // Left of the crafting grid, level with its middle row
-        return new ScreenPosition(leftPos + 6, topPos + TerminalMenu.craftingTop(menu.rows()) + 18);
+        return new ScreenPosition(panelLeft() + 6, topPos + TerminalMenu.craftingTop(menu.rows()) + 18);
     }
 
     @Override
     protected void onRecipeBookButtonClick() {
+        leftPos = panelLeft();
         view.reposition(leftPos, topPos); // the screen slides right when the book opens
     }
 
@@ -64,10 +80,16 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-        BaseScreen.panel(g, leftPos, topPos, imageWidth, imageHeight);
-        for (Slot s : menu.slots) BaseScreen.slot(g, leftPos + s.x, topPos + s.y);
+        Palette.DARK.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        for (Slot s : menu.slots) Palette.DARK.slot(g, leftPos + s.x, topPos + s.y);
         view.extractBackground(g, leftPos, topPos);
-        g.text(font, "→", leftPos + 94, topPos + TerminalMenu.craftingTop(menu.rows()) + 22, BaseScreen.TEXT, false);
+        g.text(font, "→", leftPos + 94, topPos + TerminalMenu.craftingTop(menu.rows()) + 22, Palette.DARK.text(), false);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        g.text(font, title, titleLabelX, titleLabelY, Palette.DARK.text(), false);
+        g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, Palette.DARK.text(), false);
     }
 
     @Override

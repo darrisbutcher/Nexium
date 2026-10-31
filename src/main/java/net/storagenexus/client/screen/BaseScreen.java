@@ -24,25 +24,30 @@ public abstract class BaseScreen<M extends AbstractContainerMenu> extends Abstra
     }
 
     public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, 0xFF000000);
-        g.fill(x + 1, y + 1, x + w - 1, y + h - 1, PANEL);
-        g.fill(x + 1, y + 1, x + w - 2, y + 2, LIGHT);
-        g.fill(x + 1, y + 1, x + 2, y + h - 2, LIGHT);
-        g.fill(x + 2, y + h - 2, x + w - 1, y + h - 1, DARK);
-        g.fill(x + w - 2, y + 2, x + w - 1, y + h - 1, DARK);
+        Palette.LIGHT.panel(g, x, y, w, h);
     }
 
     public static void slot(GuiGraphicsExtractor g, int x, int y) {
-        g.fill(x - 1, y - 1, x + 17, y + 17, DARK);
-        g.fill(x, y, x + 17, y + 17, LIGHT);
-        g.fill(x, y, x + 16, y + 16, SLOT);
+        Palette.LIGHT.slot(g, x, y);
+    }
+
+    /** The colours this screen is drawn in. */
+    protected Palette palette() {
+        return Palette.LIGHT;
+    }
+
+    /** Title and inventory labels in the palette's text colour. */
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        g.text(font, title, titleLabelX, titleLabelY, palette().text(), false);
+        g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, palette().text(), false);
     }
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-        panel(g, leftPos, topPos, imageWidth, imageHeight);
-        for (Slot s : menu.slots) slot(g, leftPos + s.x, topPos + s.y);
+        palette().panel(g, leftPos, topPos, imageWidth, imageHeight);
+        for (Slot s : menu.slots) palette().slot(g, leftPos + s.x, topPos + s.y);
         renderExtraBg(g, mouseX, mouseY);
     }
 

@@ -147,13 +147,13 @@ final class TerminalView {
     void extractBackground(GuiGraphicsExtractor g, int left, int top) {
         int gx = left + TerminalMenu.GRID_X, gy = top + TerminalMenu.GRID_Y;
         for (int r = 0; r < rows(); r++) {
-            for (int c = 0; c < TerminalMenu.COLS; c++) BaseScreen.slot(g, gx + c * 18, gy + r * 18);
+            for (int c = 0; c < TerminalMenu.COLS; c++) Palette.DARK.slot(g, gx + c * 18, gy + r * 18);
         }
         int sx = left + 175, sh = rows() * 18;
-        g.fill(sx, gy, sx + 12, gy + sh, BaseScreen.SLOT);
+        g.fill(sx, gy, sx + 12, gy + sh, Palette.DARK.slotFill());
         int max = maxScroll();
         int knob = max == 0 ? 0 : (sh - 15) * scroll / max;
-        g.fill(sx + 1, gy + knob, sx + 11, gy + knob + 15, max == 0 ? BaseScreen.DARK : BaseScreen.LIGHT);
+        g.fill(sx + 1, gy + knob, sx + 11, gy + knob + 15, max == 0 ? Palette.DARK.body() : Palette.DARK.slotLight());
     }
 
     /** The grid's contents, hover highlight and tooltips. */
