@@ -46,8 +46,10 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    // Compile with JDK 25 even when Gradle itself runs on an older Java
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 jar {
