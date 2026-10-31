@@ -14,6 +14,15 @@ base {
 
 repositories {
     mavenCentral()
+    // Recipe viewers: only their APIs are compiled against; neither is needed to run the mod.
+    exclusiveContent {
+        forRepository { maven { url = "https://maven.blamejared.com/" } }
+        filter { includeGroup "mezz.jei"; includeGroup "net.mezzdev.config" }
+    }
+    exclusiveContent {
+        forRepository { maven { url = "https://maven.shedaniel.me/" } }
+        filter { includeGroup "me.shedaniel"; includeGroup "me.shedaniel.cloth"; includeGroup "dev.architectury" }
+    }
 }
 
 loom {
@@ -35,6 +44,13 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Optional recipe-viewer support (JEI and REI "+" buttons). compileOnly: not shipped, not required.
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
+    compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") { transitive = false }
+    // `./gradlew runClientGameTest -PwithJei` runs the client test with JEI installed.
+    gametestCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
+    if (project.hasProperty("withJei")) localRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
 
     testImplementation platform("org.junit:junit-bom:${project.junit_version}")
     testImplementation "org.junit.jupiter:junit-jupiter"

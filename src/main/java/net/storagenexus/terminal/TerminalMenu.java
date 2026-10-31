@@ -548,6 +548,16 @@ public class TerminalMenu extends AbstractCraftingMenu {
         return RecipeBookMenu.PostPlaceAction.NOTHING;
     }
 
+    /** A recipe picked in JEI or REI: fill the grid the same way the recipe book does. */
+    public void fillGrid(ServerPlayer sp, FillGridPayload payload) {
+        if (!crafting) return;
+        ServerLevel level = (ServerLevel) sp.level();
+        level.recipeAccess().byKey(payload.recipe()).ifPresent(holder -> {
+            handlePlacement(payload.maxItems(), true, holder, level, sp.getInventory());
+            broadcastChanges();
+        });
+    }
+
     /** Puts the grid's contents back: into the network, else the inventory, else on the ground. */
     private void clearGrid(@Nullable StorageNetwork net, Inventory inventory) {
         for (Slot s : inputSlots) {

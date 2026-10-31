@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.17.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.18.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -32,7 +32,7 @@ conduits and Dimensional links). Run just those with `./gradlew runGameTest`.
 
 There is also a client test that opens a real Minecraft client, opens every screen and clicks the
 terminal grid: `./gradlew runClientGameTest`. It needs a window (or a virtual display such as Xvfb),
-so it is not part of `build`. The tests live in their own test mod and are never part of the release jar.
+so it is not part of `build`. Add `-PwithJei` to run it with JEI installed, which also presses JEI's "+". The tests live in their own test mod and are never part of the release jar.
 
 ## How it works in game
 
@@ -84,6 +84,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   tooltip shows its exact amount in the network.
 * The red **X** next to the crafting grid empties it: items go into the network, else your inventory,
   else onto the floor.
+* **JEI / REI**: their "+" button on a crafting recipe fills the Crafting Terminal's grid from the
+  network (then your inventory), and turns red when the ingredients aren't there. Neither mod is required.
 * The **Crafting Terminal** has the vanilla recipe book: recipes you can make from the network show
   as craftable, and clicking one fills the grid from the network (then your inventory).
 

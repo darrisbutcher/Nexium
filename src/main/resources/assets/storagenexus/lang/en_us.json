@@ -264,6 +264,7 @@
   "screen.storagenexus.link_name": "Link name",
   "screen.storagenexus.match_exact": "Exact match",
   "screen.storagenexus.match_item": "Item only",
+  "screen.storagenexus.missing_ingredients": "Not enough ingredients in the network and your inventory",
   "screen.storagenexus.not_linked": "Not linked",
   "screen.storagenexus.nothing": "Nothing",
   "screen.storagenexus.outputs": "Outputs",

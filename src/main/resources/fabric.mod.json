@@ -16,6 +16,12 @@
     ],
     "client": [
       "net.storagenexus.client.StorageNexusClient"
+    ],
+    "jei_mod_plugin": [
+      "net.storagenexus.compat.jei.StorageNexusJeiPlugin"
+    ],
+    "rei_client": [
+      "net.storagenexus.compat.rei.StorageNexusReiPlugin"
     ]
   },
   "accessWidener": "storagenexus.accesswidener",
@@ -24,5 +30,9 @@
     "minecraft": "~26.3",
     "java": ">=25",
     "fabric-api": "*"
+  },
+  "suggests": {
+    "jei": "*",
+    "roughlyenoughitems": "*"
   }
 }

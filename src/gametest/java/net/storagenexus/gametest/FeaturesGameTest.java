@@ -224,4 +224,35 @@ public class FeaturesGameTest {
         h.assertValueEqual(onFloor, 2, "emeralds dropped on the ground");
         h.succeed();
     }
+
+    /** A left click takes a whole stack of a mod item, whatever storage it sits in. */
+    @GameTest
+    public void takeStackOfUpgradesFromAnyStorage(GameTestHelper h) {
+        ItemStack upgrades = new ItemStack(ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD), 64);
+        net.minecraft.world.level.block.Block[] stores = {Blocks.CHEST, ModBlocks.DRAWERS.get(DrawerWood.OAK)[0], ModBlocks.BARRELS.get(BarrelTier.IRON)};
+        for (int i = 0; i < stores.length; i++) {
+            BlockPos terminal = new BlockPos(1, 1 + i * 2, 1), store = terminal.east();
+            h.setBlock(terminal, ModBlocks.CRAFTING_TERMINAL);
+            h.setBlock(store, stores[i]);
+            net.fabricmc.fabric.api.transfer.v1.item.ItemVariant v = net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(upgrades);
+            h.setBlock(terminal.west(), ModBlocks.STORAGE_CONNECTOR);
+            h.setBlock(terminal.west(), net.minecraft.world.level.block.Blocks.AIR);
+            // the connector sits between the terminal and the store
+            h.setBlock(terminal.east(), ModBlocks.STORAGE_CONNECTOR);
+            h.setBlock(terminal.east(2), stores[i]);
+            var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(h.getLevel(), h.absolutePos(terminal.east(2)), Direction.WEST);
+            try (Transaction tx = Transaction.openOuter()) {
+                h.assertValueEqual(storage.insert(v, 64, tx), 64L, stores[i] + " accepts 64 upgrades");
+                tx.commit();
+            }
+            ServerPlayer player = h.makeMockServerPlayerInLevel();
+            player.getInventory().clearContent();
+            TerminalMenu menu = new TerminalMenu(1, player.getInventory(), true, h.getLevel(), h.absolutePos(terminal), p -> true, null);
+            player.containerMenu = menu;
+            menu.handleAction(player, new net.storagenexus.terminal.TerminalActionPayload(
+                    net.storagenexus.terminal.TerminalActionPayload.TAKE_STACK, upgrades.copyWithCount(1), Fluids.EMPTY));
+            h.assertValueEqual(menu.getCarried().getCount(), 64, "stack taken from " + stores[i]);
+        }
+        h.succeed();
+    }
 }

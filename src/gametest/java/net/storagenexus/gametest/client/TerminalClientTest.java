@@ -22,6 +22,9 @@ public class TerminalClientTest implements FabricClientGameTest {
     /** Ticks the button is held: a real click lasts several, long enough for the server's answer to arrive before release. */
     private static final int HOLD = 5;
     private static boolean DRAG;
+    /** Mouse buttons as 26.x numbers them (SDL): left 1, right 3. */
+    private static final int LEFT = com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT;
+    private static final int RIGHT = com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT;
 
     @Override
     public void runTest(ClientGameTestContext ctx) {
@@ -69,15 +72,68 @@ public class TerminalClientTest implements FabricClientGameTest {
                     });
                     ctx.waitTicks(10);
                 }
-                click(ctx, 0, 0, 0, false, "left on planks (take stack)");
-                click(ctx, 5, 0, 0, false, "left on empty cell (deposit all)");
-                click(ctx, 0, 0, 1, false, "right on planks (take one)");
-                click(ctx, 0, 0, 1, false, "right on planks (deposit one)");
-                click(ctx, 1, 0, 0, true, "shift-left on iron (to inventory)");
-                click(ctx, 2, 0, 1, false, "right on diamonds (take one)");
-                click(ctx, 8, 0, 0, false, "left on empty cell holding diamond (deposit)");
-                click(ctx, 2, 1, 0, false, "left, 2nd row empty");
-                if (pass == 2) { click(ctx, 0, 0, 0, false, "scale2: take planks"); click(ctx, 4, 7, 0, false, "scale2: deposit deep row"); click(ctx, 0, 0, 1, false, "scale2: take one iron/planks"); click(ctx, 4, 7, 1, false, "scale2: deposit one deep row"); }
+                expect(click(ctx, 0, 0, LEFT, false, "left on planks (take stack)"), "carried=[64 minecraft:oak_planks]");
+                expect(click(ctx, 5, 0, LEFT, false, "left on empty cell (deposit all)"), "carried=[0 minecraft:air]");
+                expect(click(ctx, 0, 0, RIGHT, false, "right on planks (take one)"), "carried=[1 minecraft:oak_planks]");
+                expect(click(ctx, 0, 0, RIGHT, false, "right on planks (deposit one)"), "carried=[0 minecraft:air]");
+                click(ctx, 1, 0, LEFT, true, "shift-left on iron (to inventory)");
+                click(ctx, 2, 0, RIGHT, false, "right on diamonds (take one)");
+                click(ctx, 8, 0, LEFT, false, "left on empty cell holding diamond (deposit)");
+                click(ctx, 2, 1, LEFT, false, "left, 2nd row empty");
+                if (pass == 2) { click(ctx, 0, 0, LEFT, false, "scale2: take planks"); click(ctx, 4, 7, LEFT, false, "scale2: deposit deep row"); click(ctx, 0, 0, RIGHT, false, "scale2: take one iron/planks"); click(ctx, 4, 7, RIGHT, false, "scale2: deposit one deep row"); }
+            }
+            // ---- a stack of mod items (Gold Barrel Upgrades), alone in the network
+            ctx.runOnClient(mc -> mc.player.containerMenu.setCarried(ItemStack.EMPTY));
+            world.getServer().runOnServer(server -> {
+                var player = server.getPlayerList().getPlayers().get(0);
+                player.containerMenu.setCarried(ItemStack.EMPTY);
+                player.getInventory().clearContent();
+                ChestBlockEntity chest = (ChestBlockEntity) server.overworld().getBlockEntity(player.blockPosition().offset(2, 0, 3));
+                chest.clearContent();
+                chest.setItem(5, new ItemStack(net.storagenexus.registry.ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD), 64));
+            });
+            ctx.waitTicks(30);
+            DRAG = false;
+            expect(click(ctx, 0, 0, LEFT, false, "left on 64 gold barrel upgrades (take stack)"), "carried=[64 storagenexus:gold_barrel_upgrade]");
+            DRAG = true;
+            expect(click(ctx, 0, 0, LEFT, false, "left on gold barrel upgrades again, holding them (deposit all)"), "carried=[0 minecraft:air]");
+            expect(click(ctx, 0, 0, RIGHT, false, "right on gold barrel upgrades (take one)"), "carried=[1 storagenexus:gold_barrel_upgrade]");
+            expect(click(ctx, 0, 0, RIGHT, false, "right holding one (deposit one)"), "carried=[0 minecraft:air]");
+            click(ctx, 0, 0, LEFT, false, "left with drag on gold barrel upgrades (take stack)");
+            // ---- a recipe viewer's "+" button: fill the grid for oak planks -> crafting table from the network
+            ctx.runOnClient(mc -> mc.player.containerMenu.setCarried(ItemStack.EMPTY));
+            world.getServer().runOnServer(server -> {
+                var player = server.getPlayerList().getPlayers().get(0);
+                player.containerMenu.setCarried(ItemStack.EMPTY);
+                ChestBlockEntity chest = (ChestBlockEntity) server.overworld().getBlockEntity(player.blockPosition().offset(2, 0, 3));
+                chest.clearContent();
+                chest.setItem(0, new ItemStack(Items.OAK_PLANKS, 64));
+            });
+            ctx.waitTicks(30);
+            ctx.runOnClient(mc -> net.storagenexus.client.compat.RecipeTransfer.fill(
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+                            net.minecraft.resources.Identifier.withDefaultNamespace("crafting_table")), false));
+            ctx.waitTicks(10);
+            String grid = ctx.computeOnClient(mc -> {
+                StringBuilder b = new StringBuilder();
+                for (var slot : ((TerminalMenu) mc.player.containerMenu).getInputGridSlots()) b.append(slot.getItem().getCount()).append(' ');
+                return b.toString().trim() + " result=" + ((TerminalMenu) mc.player.containerMenu).getResultSlot().getItem();
+            });
+            System.out.println("FILLGRID " + grid);
+            if (!grid.contains("result=1 minecraft:crafting_table")) throw new AssertionError("grid not filled for a crafting table: " + grid);
+            boolean jei = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("jei");
+            System.out.println("FILLGRID jei loaded: " + jei);
+            if (jei) {
+                // Empty the grid back into the network, then press JEI's own "+" for the crafting table
+                ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, TerminalMenu.CLEAR_GRID));
+                ctx.waitTicks(10);
+                String handler = ctx.computeOnClient(JeiCheck::pressPlus);
+                System.out.println("FILLGRID jei handler: " + handler);
+                if (!handler.contains("StorageNexusJeiPlugin")) throw new AssertionError("JEI did not use our transfer handler: " + handler);
+                ctx.waitTicks(10);
+                String grid2 = ctx.computeOnClient(mc -> ((TerminalMenu) mc.player.containerMenu).getResultSlot().getItem().toString());
+                System.out.println("FILLGRID after JEI +: result=" + grid2);
+                if (!grid2.equals("1 minecraft:crafting_table")) throw new AssertionError("JEI + did not fill the grid: " + grid2);
             }
             // ---- the other screens must open and render without crashing
             ctx.runOnClient(mc -> mc.gui.setScreen(null));
@@ -113,7 +169,7 @@ public class TerminalClientTest implements FabricClientGameTest {
     }
 
     /** Clicks grid cell (col,row) with the given mouse button and prints the carried stack and the inventory. */
-    private static void click(ClientGameTestContext ctx, int col, int row, int button, boolean shift, String what) {
+    private static String click(ClientGameTestContext ctx, int col, int row, int button, boolean shift, String what) {
         double[] p = ctx.computeOnClient(mc -> {
             var ac = (AbstractContainerScreen<?>) mc.gui.screen();
             double scale = mc.getWindow().getGuiScale();
@@ -142,6 +198,11 @@ public class TerminalClientTest implements FabricClientGameTest {
                     + " gui=" + mc.getWindow().getGuiScaledWidth() + "x" + mc.getWindow().getGuiScaledHeight();
         });
         System.out.println("CLICK " + what + " -> " + state);
+        return state;
+    }
+
+    private static void expect(String state, String wanted) {
+        if (!state.startsWith(wanted)) throw new AssertionError("expected " + wanted + " but got " + state);
     }
 
     private static int field(Object o, String name) {

@@ -6,7 +6,9 @@
   "description": "In-game tests for Storage Nexus. Not shipped with the mod.",
   "environment": "*",
   "entrypoints": {
-    "fabric-client-gametest": ["net.storagenexus.gametest.client.TerminalClientTest"],
+    "fabric-client-gametest": [
+      "net.storagenexus.gametest.client.TerminalClientTest"
+    ],
     "fabric-gametest": [
       "net.storagenexus.gametest.CableGameTest",
       "net.storagenexus.gametest.CompactingCapacityGameTest",
@@ -18,6 +20,9 @@
       "net.storagenexus.gametest.TerminalGameTest",
       "net.storagenexus.gametest.UpgradeGameTest",
       "net.storagenexus.gametest.UsabilityGameTest"
+    ],
+    "jei_mod_plugin": [
+      "net.storagenexus.gametest.client.JeiCheck"
     ]
   },
   "depends": {

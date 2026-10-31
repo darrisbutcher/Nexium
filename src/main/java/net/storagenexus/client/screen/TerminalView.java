@@ -1,5 +1,6 @@
 package net.storagenexus.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -262,7 +263,8 @@ final class TerminalView {
         if (cell < 0) return false;
         ownsMouse = true;
         Entry e = entryAt(scroll * TerminalMenu.COLS + cell);
-        boolean right = event.button() == 1;
+        // 26.x numbers mouse buttons the SDL way: left is 1 and right is 3 (not GLFW's 0 and 1)
+        boolean right = event.button() == InputConstants.MOUSE_BUTTON_RIGHT;
         ItemStack carried = menu.getCarried();
 
         if (!carried.isEmpty()) {
