@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.11.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.12.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -71,14 +71,16 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Look straight at an Input or Output to see its link name for 3 seconds.
 * Outputs push into everything around them, on any side: inventories, storage-network blocks and
   item conduits (which carry the items to their Insert sides on the same colour). Inputs are
-  skipped. Outputs can have a filter so one Input can split items by type. If nothing can take an
+  skipped. In the Output's screen, the D/U/N/S/W/E buttons turn sides on and off (green = on);
+  hover one to see what is on that side. Outputs can have a filter so one Input can split items by type. If nothing can take an
   item, the Input's buffer backs up.
 * Transfer Speed Upgrade in the Input: 1 = 16 items per move, 2 = full stacks.
 
 ### Conduits
 * Item conduits (Tier 1-2) and Fluid conduits (Tier 1-3) share one block. Placed conduits show their
   tier: a gold trim for Tier 2 fluid, green for the top tier of each.
-* **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings
+* **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings, which
+  also name what is on the selected side
   (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades).
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.
 * **Fluid Intake** pulls from source blocks (infinite water is never drained).

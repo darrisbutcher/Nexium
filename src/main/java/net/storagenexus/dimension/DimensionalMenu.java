@@ -2,6 +2,7 @@ package net.storagenexus.dimension;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -51,7 +52,7 @@ public class DimensionalMenu extends BaseMenu {
         this.input = open.input();
         this.be = null;
         this.clientName = open.name();
-        this.data = new SimpleContainerData(2);
+        this.data = new SimpleContainerData(3);
         layout(inventory, input ? new SimpleContainer(9) : null, input ? new SimpleContainer(1) : new SimpleContainer(1));
         addDataSlots(data);
     }
@@ -76,9 +77,15 @@ public class DimensionalMenu extends BaseMenu {
         this.be = out;
         this.clientName = out.displayName();
         this.data = new ContainerData() {
-            @Override public int get(int i) { return i == 0 ? (out.inputOnline() ? 1 : 0) : (out.linkId() != null ? 1 : 0); }
+            @Override public int get(int i) {
+                return switch (i) {
+                    case 0 -> out.inputOnline() ? 1 : 0;
+                    case 1 -> out.linkId() != null ? 1 : 0;
+                    default -> out.sideMask();
+                };
+            }
             @Override public void set(int i, int v) {}
-            @Override public int getCount() { return 2; }
+            @Override public int getCount() { return 3; }
         };
         layout(inventory, null, out.filterSlot());
         addDataSlots(data);
@@ -115,6 +122,18 @@ public class DimensionalMenu extends BaseMenu {
     public int statusA() { return data.get(0); }
     /** Input: total outputs. Output: 1 if linked. */
     public int statusB() { return data.get(1); }
+    /** Output only: bit per Direction (3D data value) for the sides it pushes into. */
+    public int sideMask() { return data.get(2); }
+
+    /** Output only: buttons 0-5 toggle pushing into that side (Direction 3D data value). */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (be instanceof DimensionalOutputBlockEntity out && id >= 0 && id < 6) {
+            out.toggleSide(Direction.from3DDataValue(id));
+            return true;
+        }
+        return false;
+    }
 
     public void rename(ServerPlayer player, String newName) {
         if (be == null || be.linkId() == null || !(player.level() instanceof ServerLevel)) return;

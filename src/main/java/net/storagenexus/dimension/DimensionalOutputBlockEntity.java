@@ -37,6 +37,9 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
     private boolean inputOnline;
     /** Which side gets the first try next time, so no single neighbour hogs everything. */
     private int nextSide;
+    /** Bit per Direction (3D data value): sides the Output pushes into. All on by default. */
+    private int sideMask = ALL_SIDES;
+    public static final int ALL_SIDES = 0b111111;
 
     public DimensionalOutputBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DIMENSIONAL_OUTPUT, pos, state);
@@ -84,9 +87,20 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
         long moved = 0;
         for (int i = 0; i < sides.length && moved < amount; i++) {
             Direction side = sides[(first + i) % sides.length];
-            moved += pushTo(side, variant, amount - moved, tx);
+            if (isSideEnabled(side)) moved += pushTo(side, variant, amount - moved, tx);
         }
         return moved;
+    }
+
+    public boolean isSideEnabled(Direction side) {
+        return (sideMask & (1 << side.get3DDataValue())) != 0;
+    }
+
+    public int sideMask() { return sideMask; }
+
+    public void toggleSide(Direction side) {
+        sideMask ^= 1 << side.get3DDataValue();
+        setChanged();
     }
 
     private long pushTo(Direction side, ItemVariant variant, long amount, TransactionContext tx) {
@@ -106,12 +120,14 @@ public class DimensionalOutputBlockEntity extends LinkedBlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.store("filter", ItemStack.OPTIONAL_CODEC, filterSlot.getItem(0));
+        output.putInt("sides", sideMask);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         filterSlot.setItem(0, input.read("filter", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        sideMask = input.getIntOr("sides", ALL_SIDES) & ALL_SIDES;
     }
 
     @Override

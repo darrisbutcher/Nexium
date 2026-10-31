@@ -2,6 +2,7 @@ package net.storagenexus.client.screen;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.storagenexus.conduit.ConduitConfigMenu;
@@ -97,14 +98,36 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, palette().text(), false);
         g.text(font, "F", leftPos + 143, topPos + 66, palette().text(), false);
         g.text(font, "S", leftPos + 143, topPos + 88, palette().text(), false);
-        Component conn = Component.translatable(menu.get(ConduitConfigMenu.D_CONNECTED) == 1
-                ? "screen.storagenexus.connected" : "screen.storagenexus.not_connected");
-        g.text(font, conn, leftPos + imageWidth - 8 - font.width(conn), topPos + 6, palette().text(), false);
+        // What is on the selected side: green when this conduit connects to it, grey when not
+        String neighbour = font.plainSubstrByWidth(NeighbourNames.describe(menu.pos(), selectedSide()).getString(), neighbourWidth());
+        int colour = menu.get(ConduitConfigMenu.D_CONNECTED) == 1 ? 0xFF55FF55 : 0xFFA0A0A0;
+        g.text(font, neighbour, leftPos + imageWidth - 8 - font.width(neighbour), topPos + 6, colour, false);
+    }
+
+    private Direction selectedSide() {
+        return Direction.from3DDataValue(menu.get(ConduitConfigMenu.D_SIDE) % 6);
+    }
+
+    /** Room for the neighbour's name right of the title. */
+    private int neighbourWidth() {
+        return imageWidth - 16 - font.width(title) - 6;
+    }
+
+    /** Full "North: Chest (connected)" when the shortened name is hovered. */
+    private Component neighbourTooltip() {
+        boolean connected = menu.get(ConduitConfigMenu.D_CONNECTED) == 1;
+        return Component.empty().append(NeighbourNames.sideName(selectedSide())).append(": ")
+                .append(NeighbourNames.describe(menu.pos(), selectedSide()))
+                .append(Component.translatable(connected ? "screen.storagenexus.side_connected" : "screen.storagenexus.side_not_connected"));
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
+        int nameRight = leftPos + imageWidth - 8;
+        if (mouseY >= topPos + 4 && mouseY < topPos + 15 && mouseX >= nameRight - neighbourWidth() && mouseX < nameRight) {
+            g.setTooltipForNextFrame(font, neighbourTooltip(), mouseX, mouseY);
+        }
         if (mouseX >= leftPos + 108 && mouseX < leftPos + 122 && mouseY >= topPos + 52 && mouseY < topPos + 66) {
             int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
             g.setComponentTooltipForNextFrame(font, java.util.List.of(Component.translatable("color.minecraft." + COLOR_KEYS[channel])), mouseX, mouseY);

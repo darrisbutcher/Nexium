@@ -51,11 +51,14 @@ public class ConduitConfigMenu extends BaseMenu {
     private final ContainerData data;
     private int side;
     private int type;
+    /** Client only: where the bundle is, so the screen can name its neighbours. */
+    private BlockPos clientPos = BlockPos.ZERO;
 
     /** Client constructor. */
     public ConduitConfigMenu(int id, Inventory inventory, OpenData open) {
         super(ModMenus.CONDUIT_CONFIG, id);
         this.be = null;
+        this.clientPos = open.pos();
         this.data = new SimpleContainerData(9);
         layout(inventory, new SimpleContainer(2));
         addDataSlots(data);
@@ -115,6 +118,7 @@ public class ConduitConfigMenu extends BaseMenu {
     }
 
     public int get(int index) { return data.get(index); }
+    public BlockPos pos() { return clientPos; }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
