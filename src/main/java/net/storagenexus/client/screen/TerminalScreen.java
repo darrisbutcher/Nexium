@@ -43,6 +43,7 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (view.blurSearchIfClickedOutside(event)) setFocused(null);
         return view.mouseClicked(event, leftPos, topPos) || super.mouseClicked(event, doubleClick);
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -102,9 +103,19 @@ public class DimensionalScreen extends BaseScreen<DimensionalMenu> {
     }
 
     @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // Clicking away from the name box stops typing into it
+        if (nameBox.isFocused() && !nameBox.isMouseOver(event.x(), event.y())) {
+            nameBox.setFocused(false);
+            setFocused(null);
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
     public boolean keyPressed(KeyEvent event) {
         if (nameBox.isFocused()) {
-            if (event.key() == 256) {
+            if (event.isEscape()) {
                 onClose();
                 return true;
             }

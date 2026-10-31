@@ -119,6 +119,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (view.blurSearchIfClickedOutside(event)) setFocused(null);
         boolean bookCoversScreen = recipeBook.isVisible() && width < NARROW_WIDTH;
         if (!bookCoversScreen && view.mouseClicked(event, leftPos, topPos)) return true;
         return super.mouseClicked(event, doubleClick);

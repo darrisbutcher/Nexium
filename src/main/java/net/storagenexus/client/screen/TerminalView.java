@@ -263,10 +263,20 @@ final class TerminalView {
         return true;
     }
 
+    /**
+     * Clicking anywhere but the search box takes the focus off it, so keys like E and Escape
+     * work again. Returns true if it did, so the screen can clear its own focus too.
+     */
+    boolean blurSearchIfClickedOutside(MouseButtonEvent event) {
+        if (!search.isFocused() || search.isMouseOver(event.x(), event.y())) return false;
+        search.setFocused(false);
+        return true;
+    }
+
     /** Lets the search box keep typed keys (e.g. "e") from closing the screen. */
     boolean searchConsumesKey(KeyEvent event) {
         if (!search.isFocused()) return false;
-        if (event.key() == 256) return false; // Escape still closes
+        if (event.isEscape()) return false; // Escape still closes the screen
         return search.keyPressed(event) || search.canConsumeInput();
     }
 }
