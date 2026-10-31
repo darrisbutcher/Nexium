@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.storagenexus.dimension.DimensionalOutputBlock;
+import net.storagenexus.fluid.FluidIntakeBlock;
 import net.storagenexus.util.PipeShapes;
 import net.storagenexus.util.StorageEvents;
 
@@ -39,10 +40,10 @@ public class InventoryCableBlock extends Block implements NetworkBlock {
         PROPS.values().forEach(builder::add);
     }
 
-    /** Network blocks, plus Dimensional Outputs (they push into a network). */
+    /** Network blocks, plus the blocks that push into a network: Fluid Intakes and Dimensional Outputs. */
     private static boolean connects(BlockState neighbor, Direction side) {
         Block block = neighbor.getBlock();
-        return block instanceof NetworkBlock || block instanceof DimensionalOutputBlock;
+        return block instanceof NetworkBlock || block instanceof FluidIntakeBlock || block instanceof DimensionalOutputBlock;
     }
 
     @Override

@@ -127,8 +127,6 @@ public final class StorageNetwork {
                 BlockPos inv = c.relative(d);
                 BlockState invState = level.getBlockState(inv);
                 if (invState.getBlock() instanceof NetworkBlock || invState.getBlock() instanceof ConduitBundleBlock) continue;
-                // A Fluid Intake only feeds a network through an Import/Export Bus
-                if (invState.getBlock() instanceof net.storagenexus.fluid.FluidIntakeBlock) continue;
                 if (level.getBlockEntity(inv) instanceof DrawerControllerBlockEntity ctrl) {
                     claimedByController.addAll(ctrl.clusterPositions());
                 }

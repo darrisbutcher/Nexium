@@ -15,11 +15,11 @@ public class CableGameTest {
     }
 
     @GameTest
-    public void cableConnectsToOutputsButNotIntakes(GameTestHelper h) {
+    public void cableConnectsToIntakeAndFacingOutput(GameTestHelper h) {
         BlockPos cable = new BlockPos(2, 1, 2);
         h.setBlock(cable, ModBlocks.INVENTORY_CABLE);
         h.setBlock(cable.east(), ModBlocks.FLUID_INTAKE);
-        h.assertFalse(arm(h, cable, Direction.EAST), "no cable arm toward a Fluid Intake: that needs an Import/Export Bus");
+        h.assertTrue(arm(h, cable, Direction.EAST), "cable arm toward a Fluid Intake");
         // Output facing the cable (west, toward it) connects; one facing away does not.
         h.setBlock(cable.north(), ModBlocks.DIMENSIONAL_OUTPUT.defaultBlockState().setValue(DimensionalOutputBlock.FACING, Direction.SOUTH));
         h.assertTrue(arm(h, cable, Direction.NORTH), "cable arm toward an Output facing it");
