@@ -23,20 +23,19 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * Finds every drawer connected to it (touching it or each other) within 16 blocks,
- * with the reach restarting at each Controller Slave. Items only go into drawers that
+ * Finds every drawer connected to it (touching it or each other) that is within 12 blocks of
+ * the controller or of a Controller Slave. Slaves count when they are themselves within reach of
+ * the controller or another counted slave, so they can be chained. Items only go into drawers that
  * already hold (or are locked to) that item.
  */
 public class DrawerControllerBlockEntity extends BlockEntity {
-    public static final int RANGE = 16;
+    public static final int RANGE = 12;
     private static final int MAX_NODES = 4096;
 
     private final List<BlockPos> cluster = new ArrayList<>();
@@ -76,31 +75,52 @@ public class DrawerControllerBlockEntity extends BlockEntity {
         anchors.clear();
         anchors.add(worldPosition);
 
-        // BFS; each node remembers the controller/slave its reach is measured from.
-        Map<BlockPos, BlockPos> anchorOf = new HashMap<>();
+        // 1. Everything connected to the controller through touching drawers and slaves.
+        Set<BlockPos> seen = new HashSet<>();
+        List<BlockPos> slaves = new ArrayList<>();
+        List<BlockPos> drawers = new ArrayList<>();
         Deque<BlockPos> queue = new ArrayDeque<>();
-        anchorOf.put(worldPosition, worldPosition);
+        seen.add(worldPosition);
         queue.add(worldPosition);
-        while (!queue.isEmpty() && anchorOf.size() < MAX_NODES) {
+        while (!queue.isEmpty() && seen.size() < MAX_NODES) {
             BlockPos pos = queue.poll();
-            BlockPos anchor = anchorOf.get(pos);
             for (Direction dir : Direction.values()) {
                 BlockPos next = pos.relative(dir);
-                if (anchorOf.containsKey(next)) continue;
+                if (seen.contains(next)) continue;
                 BlockState state = level.getBlockState(next);
                 boolean slave = state.getBlock() instanceof ControllerSlaveBlock;
                 boolean drawer = state.getBlock() instanceof FacingDrawerBlock;
                 if (!slave && !drawer) continue;
-                if (chebyshev(next, anchor) > RANGE) continue;
-                anchorOf.put(next, slave ? next : anchor);
+                seen.add(next);
                 queue.add(next);
-                if (slave) anchors.add(next);
-                if (drawer) {
-                    cluster.add(next);
-                    clusterSet.add(next);
+                (slave ? slaves : drawers).add(next);
+            }
+        }
+        // 2. Slaves count once they are in reach of the controller or of another counted slave.
+        boolean grew = true;
+        while (grew) {
+            grew = false;
+            for (Iterator<BlockPos> it = slaves.iterator(); it.hasNext(); ) {
+                BlockPos slave = it.next();
+                if (inReach(slave)) {
+                    anchors.add(slave);
+                    it.remove();
+                    grew = true;
                 }
             }
         }
+        // 3. Drawers in reach of any of them.
+        for (BlockPos d : drawers) {
+            if (inReach(d)) {
+                cluster.add(d);
+                clusterSet.add(d);
+            }
+        }
+    }
+
+    private boolean inReach(BlockPos pos) {
+        for (BlockPos a : anchors) if (chebyshev(pos, a) <= RANGE) return true;
+        return false;
     }
 
     /**
