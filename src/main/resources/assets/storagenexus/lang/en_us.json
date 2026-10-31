@@ -42,7 +42,7 @@
   "block.storagenexus.drawer_controller": "Drawer Controller",
   "block.storagenexus.drawer_controller.desc": "Right-click with an item: puts it in the drawer",
   "block.storagenexus.drawer_controller.desc2": "already holding it. Double-click: your inventory",
-  "block.storagenexus.drawer_controller.desc3": "Empty hand: shows its 12-block reach",
+  "block.storagenexus.drawer_controller.desc3": "Empty hand: shows its 12-block reach for 1 minute",
   "block.storagenexus.filtered_connector": "Filtered Connector",
   "block.storagenexus.filtered_connector.desc": "Joins only the inventory it faces, through a filter",
   "block.storagenexus.filtered_connector.desc2": "Right-click: priority and filter slot",
@@ -108,7 +108,7 @@
   "guide.storagenexus.page.18": "Links, continued\nName a link by renaming the card in an anvil first.\n\nMove an Input: break it, then click the new one with the same card.\n\nOutputs can hold a filter. Transfer Speed Upgrade (Input): 1 = 16 items, 2 = stacks.",
   "guide.storagenexus.page.19": "Conduits\nItem and Fluid conduits come in Tier 1 and Tier 2. Tier 2 shows a green trim. Use a Tier 2 conduit on a Tier 1 to upgrade it.\n\nWrench: right-click a side to cycle its mode. Sneak + right-click: all its settings.",
   "guide.storagenexus.page.2": "Drawers\n1x1: 54 stacks\n1x2: 27 per slot\n2x2: 13.5 per slot\n\nRight-click the front: insert what you hold.\nDouble-click: insert all matching.\nLeft-click: take a stack. Sneak: one.",
-  "guide.storagenexus.page.20": "Conduit settings\nColour channel: items only travel between sides of the same colour. Also redstone control, priority, round-robin, a filter and up to 3 Speed Upgrades per side.\n\nUse any full block on a conduit to hide it behind a facade.",
+  "guide.storagenexus.page.20": "Conduit settings\nColour channel: items only travel between sides of the same colour; each arm shows a ring in its colour. Also redstone control, priority, round-robin, a filter and up to 3 Speed Upgrades.\n\nA full block on a conduit makes a facade.",
   "guide.storagenexus.page.21": "Filters\nRight-click a filter to edit it: click items into its 9 slots, then choose allow or block, and whether to match exactly.\n\nAdvanced Filter: matches by item tag.\nFluids: use their bucket.",
   "guide.storagenexus.page.22": "Reach and limits\nController: 12 blocks; each slave 12 more.\nDimensional Anchor: 3x3 chunks.\nTablets and links: any distance or dimension.\nFluid Intake: touching blocks; 5x5 area with the upgrade.",
   "guide.storagenexus.page.23": "Limits, continued\nOne conduit line: up to 1024 conduits.\nOne storage network: up to 2048 cables, connectors and terminals.\nLink names show for 3 seconds when you look at an Input or Output.",
@@ -116,7 +116,7 @@
   "guide.storagenexus.page.4": "Upgrade types\nCapacity: Iron x2, Gold x4, Diamond x8, Netherite x16. Several add together.\nLock: goes in the lock slot. Empty slots stay reserved; a padlock shows on the front.\nVoid: deletes what doesn't fit.",
   "guide.storagenexus.page.5": "Compacting Drawer\nStores nuggets, ingots and blocks (any 9:1 or 4:1 recipe that works both ways) as one pool.\n\nTop slot: largest form. Bottom: smaller forms.\n\nHolds 54 stacks of the largest form, e.g. 54 stacks of iron blocks.",
   "guide.storagenexus.page.6": "Moving storage\nBreaking a drawer, compacting drawer, fluid drawer or tank keeps everything inside, upgrades included, in the dropped item.\n\nHover over it to see the contents, then place it anywhere.",
-  "guide.storagenexus.page.7": "Drawer Controller\nDrawers touching it, or touching each other, within 12 blocks join it.\n\nRight-click it with an item: it goes to the drawer holding it. Double-click: your inventory.\nEmpty hand: shows its reach.",
+  "guide.storagenexus.page.7": "Drawer Controller\nDrawers touching it, or touching each other, within 12 blocks join it.\n\nRight-click it with an item: it goes to the drawer holding it. Double-click: your inventory.\nEmpty hand: outlines its reach for 1 minute (click again to hide).",
   "guide.storagenexus.page.8": "Controller Slave\nPlace it touching the drawers (or the controller) within 12 blocks of the controller. Drawers within 12 blocks of the slave then join too.\n\nSlaves chain: a slave in reach of another slave works as well.",
   "guide.storagenexus.page.9": "Fluids\nFluid Drawers hold 32 buckets (2x2: 8 per slot), Fluid Tanks 128. Use a bucket on them to fill or empty.\n\nFluid Intake: pulls one source block a second into a tank or network next to it. Infinite water is never drained.",
   "item.storagenexus.advanced_filter": "Advanced Filter",
@@ -194,7 +194,7 @@
   "message.storagenexus.card_input": "Card holds link %s. Now click Outputs.",
   "message.storagenexus.card_output": "Output linked as %s",
   "message.storagenexus.conduit_mode": "%s %s: %s",
-  "message.storagenexus.controller_info": "Controlling %s drawers",
+  "message.storagenexus.controller_info": "Controlling %s drawers. Showing its %s-block reach for 1 minute (click again to hide)",
   "message.storagenexus.empty": "Empty",
   "message.storagenexus.intake_status": "Buffer: %s, reach: %s",
   "message.storagenexus.name_taken": "The name \"%s\" is already used",
@@ -262,5 +262,6 @@
   "tooltip.storagenexus.tablet_linked": "Linked to %s",
   "tooltip.storagenexus.tablet_unlinked": "Sneak + right-click a terminal to link",
   "tooltip.storagenexus.tag_mode": "Matches by item tag",
-  "tooltip.storagenexus.whitelist": "Whitelist"
+  "tooltip.storagenexus.whitelist": "Whitelist",
+  "message.storagenexus.controller_info_hidden": "Controlling %s drawers. Reach outline hidden"
 }

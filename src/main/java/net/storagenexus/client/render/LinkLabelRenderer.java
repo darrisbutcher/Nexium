@@ -18,9 +18,12 @@ import net.minecraft.world.phys.Vec3;
 import net.storagenexus.dimension.LinkedBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Floating link name above a Dimensional Input or Output, shown for 3 seconds when you look
- * straight at it (and again each time you look back).
+ * Floating link name above a Dimensional Input or Output: looking straight at it shows the
+ * name for 3 seconds (it stays if you look away), and again each time you look back.
  */
 public class LinkLabelRenderer<T extends LinkedBlockEntity> implements BlockEntityRenderer<T, LinkLabelRenderer.LabelState> {
     private static final double MAX_DIST_SQ = 12 * 12;
@@ -32,9 +35,9 @@ public class LinkLabelRenderer<T extends LinkedBlockEntity> implements BlockEnti
     }
 
     private final Font font;
-    /** The block the crosshair is on, and the game time it got there. */
+    /** The block the crosshair is on, and until when each recently looked-at name shows. */
     private @Nullable BlockPos lookedAt;
-    private long lookStart;
+    private final Map<BlockPos, Long> showUntil = new HashMap<>();
 
     public LinkLabelRenderer(BlockEntityRendererProvider.Context context) {
         this.font = context.font();
@@ -55,12 +58,15 @@ public class LinkLabelRenderer<T extends LinkedBlockEntity> implements BlockEnti
                 && hit.getType() == HitResult.Type.BLOCK && hit.getBlockPos().equals(pos);
         long now = be.getLevel() != null ? be.getLevel().getGameTime() : 0;
         if (looking && !pos.equals(lookedAt)) {
+            // A new look: show the name for the next 3 seconds, even if you look away
             lookedAt = pos.immutable();
-            lookStart = now;
+            showUntil.put(lookedAt, now + SHOW_TICKS);
         } else if (!looking && pos.equals(lookedAt)) {
             lookedAt = null; // looking back later shows the name again
         }
-        state.visible = looking && !state.name.isEmpty() && now - lookStart < SHOW_TICKS
+        Long until = showUntil.get(pos);
+        if (until != null && now >= until) showUntil.remove(pos);
+        state.visible = until != null && now < until && !state.name.isEmpty()
                 && cameraPos.distanceToSqr(Vec3.atCenterOf(pos)) < MAX_DIST_SQ;
     }
 

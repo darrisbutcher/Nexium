@@ -83,9 +83,13 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
     public void submit(FrontRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.slots <= 0 || state.slots > 4) return;
         double[][] layout = LAYOUT[state.slots];
-        float itemScale = state.slots == 1 ? 0.5f : 0.3f;
-        float textScale = state.slots == 1 ? 0.012f : 0.008f;
-        float textDrop = state.slots == 1 ? 0.33f : 0.17f;
+        // Each cell: the item in its upper part and the count below it, with a gap between.
+        // (Layout y is 0.01 above the cell's middle.)
+        boolean single = state.slots == 1;
+        float itemScale = single ? 0.45f : 0.26f;
+        float itemLift = single ? 0.02f : 0.05f;
+        float textScale = single ? 0.011f : 0.007f;
+        float countDrop = single ? 0.26f : 0.13f;
 
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
@@ -97,7 +101,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
             float y = (float) layout[i][1] - 0.5f;
 
             pose.pushPose();
-            pose.translate(x, y + 0.03f, 0);
+            pose.translate(x, y + itemLift, 0);
             pose.scale(itemScale, itemScale, itemScale * 0.05f);
             state.items[i].submit(pose, collector, state.frontLight, OverlayTexture.NO_OVERLAY, 0);
             pose.popPose();
@@ -105,7 +109,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
             String count = state.counts[i];
             if (count != null && !count.isEmpty()) {
                 pose.pushPose();
-                pose.translate(x, y - textDrop + 0.08f, 0.002f);
+                pose.translate(x, y - countDrop, 0.002f);
                 pose.scale(textScale, -textScale, textScale);
                 float w = font.width(count);
                 collector.submitText(pose, -w / 2f, 0, Component.literal(count).getVisualOrderText(), false,
@@ -115,8 +119,8 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
         }
         if (state.locked) {
             pose.pushPose();
-            pose.translate(0.40f, 0.40f, 0.001f); // top-right corner of the front
-            pose.scale(0.12f, 0.12f, 0.12f * 0.05f);
+            pose.translate(0.44f, 0.44f, 0.001f); // top-right corner of the front, clear of the items
+            pose.scale(0.08f, 0.08f, 0.08f * 0.05f);
             state.lockIcon.submit(pose, collector, state.frontLight, OverlayTexture.NO_OVERLAY, 0);
             pose.popPose();
         }

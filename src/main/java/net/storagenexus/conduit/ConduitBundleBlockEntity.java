@@ -52,6 +52,9 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     private record Target(BlockPos invPos, Direction side, SideConfig cfg, int distance) {}
 
     private final Map<Integer, List<Target>> targetCache = new HashMap<>();
+    // Client-side cache for the channel markers drawn on each arm
+    private final int[][] markers = new int[ConduitType.VALUES.length][6];
+    private long markersAt = -1;
     private long cacheVersion = -1;
 
     public ConduitBundleBlockEntity(BlockPos pos, BlockState state) {
@@ -113,6 +116,22 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                     || level.getBlockState(pos).getBlock() instanceof DimensionalOutputBlock;
             case FLUID -> FluidStorage.SIDED.find(level, pos, side) != null;
         };
+    }
+
+    /**
+     * Client display: the colour channel of each connected side per conduit type
+     * ([type][side], -1 when that type does not connect there). Re-checked every half second.
+     */
+    public int[][] channelMarkers(long gameTime) {
+        if (gameTime - markersAt >= 10 || markersAt < 0) {
+            markersAt = gameTime;
+            for (ConduitType t : ConduitType.VALUES) {
+                for (Direction d : Direction.values()) {
+                    markers[t.ordinal()][d.get3DDataValue()] = connectsTo(t, d) ? config(t, d).channel : -1;
+                }
+            }
+        }
+        return markers;
     }
 
     public int connectionMask() {

@@ -14,8 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.util.StorageEvents;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +37,11 @@ public class DrawerControllerBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DrawerControllerBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.DRAWER_CONTROLLER, DrawerControllerBlockEntity::serverTick);
     }
 
     @Override
@@ -73,9 +81,9 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
                 be.insertAllFromInventory(player);
             } else {
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_info",
-                        be.drawerCount(), DrawerControllerBlockEntity.RANGE));
-                if (level instanceof ServerLevel server) be.showRange(server);
+                boolean showing = level instanceof ServerLevel server && be.toggleRangeDisplay(server);
+                player.sendOverlayMessage(Component.translatable(showing ? "message.storagenexus.controller_info"
+                        : "message.storagenexus.controller_info_hidden", be.drawerCount(), DrawerControllerBlockEntity.RANGE));
             }
         }
         return InteractionResult.SUCCESS;

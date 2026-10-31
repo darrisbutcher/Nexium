@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.fluid.FluidDrawerBlockEntity;
@@ -123,9 +124,35 @@ public class DrawerControllerBlockEntity extends BlockEntity {
         return false;
     }
 
+    /** How long the reach outline stays up after clicking the controller. */
+    private static final int RANGE_DISPLAY_TICKS = 60 * 20;
+    /** Particles last about 3 seconds; redraw a little sooner so the outline stays solid. */
+    private static final int RANGE_REDRAW_TICKS = 40;
+    private long rangeDisplayUntil = -1;
+
+    /** Starts showing the reach for a minute, or stops if it is showing. Returns whether it is now shown. */
+    public boolean toggleRangeDisplay(ServerLevel level) {
+        long now = level.getGameTime();
+        if (rangeDisplayUntil > now) {
+            rangeDisplayUntil = -1;
+            return false;
+        }
+        rangeDisplayUntil = now + RANGE_DISPLAY_TICKS;
+        showRange(level);
+        return true;
+    }
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerBlockEntity be) {
+        long now = level.getGameTime();
+        if (be.rangeDisplayUntil > now && (be.rangeDisplayUntil - now) % RANGE_REDRAW_TICKS == 0
+                && level instanceof ServerLevel server) {
+            be.showRange(server);
+        }
+    }
+
     /**
-     * Outlines the reach of the controller and of every slave with particles for a few
-     * seconds, and marks each connected drawer.
+     * Outlines the reach of the controller and of every slave with particles (about 3 seconds
+     * per call), and marks each connected drawer.
      */
     public void showRange(ServerLevel level) {
         refresh();
