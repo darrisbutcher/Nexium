@@ -19,7 +19,7 @@ import net.storagenexus.util.SyncedBlockEntity;
 
 /** Upgrade slots for drawers, fluid drawers and tanks: four general ones plus the lock slot. */
 public class UpgradeMenu extends BaseMenu {
-    public static final int LOCK_SLOT_X = 8, SLOT_Y = 20, INVENTORY_Y = 73;
+    public static final int LOCK_SLOT_X = 8, SLOT_Y = 20, TEXT_Y = 42, INVENTORY_Y = 84;
 
     private final Upgradeable target;
     private final BlockEntity blockEntity;

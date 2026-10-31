@@ -179,6 +179,37 @@ public class FeaturesGameTest {
     }
 
     @GameTest
+    public void intakeNeedsABusToReachTheNetwork(GameTestHelper h) {
+        // Intake - bus (import, facing the intake) - cable - connector - fluid drawer
+        h.setBlock(SOURCE, ModBlocks.FLUID_INTAKE);
+        h.setBlock(SOURCE.north(), ModBlocks.LAVA_SPRING);
+        h.setBlock(CABLE, ModBlocks.INVENTORY_CABLE);
+        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(STORE, ModBlocks.FLUID_DRAWER_1X1);
+        // A second connector touching the intake directly must not make it network storage
+        h.setBlock(SOURCE.south(), ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(SOURCE.south().east(), ModBlocks.INVENTORY_CABLE);
+        h.setBlock(BUS, ModBlocks.INVENTORY_CABLE);
+        FluidIntakeBlockEntity intake = h.getBlockEntity(SOURCE, FluidIntakeBlockEntity.class);
+        FluidDrawerBlockEntity drawer = h.getBlockEntity(STORE, FluidDrawerBlockEntity.class);
+        intake.pullNow(h.getLevel());
+        intake.pullNow(h.getLevel());
+        h.assertTrue(intake.bufferAmount() == 2 * FluidConstants.BUCKET, "two buckets in the intake");
+        for (int i = 0; i < 40; i++) {
+            FluidIntakeBlockEntity.serverTick(h.getLevel(), h.absolutePos(SOURCE), h.getLevel().getBlockState(h.absolutePos(SOURCE)), intake);
+        }
+        h.assertValueEqual(drawer.slot(0).getAmount(), 0L, "without a bus nothing reaches the network");
+        var network = net.storagenexus.network.StorageNetwork.find(h.getLevel(), h.absolutePos(CONNECTOR));
+        h.assertValueEqual(network.countFluid(FluidVariant.of(Fluids.LAVA)), 0L, "the intake is not network storage");
+
+        h.setBlock(BUS, ModBlocks.NETWORK_BUS.defaultBlockState()
+                .setValue(NetworkBusBlock.FACING, Direction.WEST).setValue(NetworkBusBlock.EXPORT, false));
+        run(h, h.getBlockEntity(BUS, NetworkBusBlockEntity.class));
+        h.assertValueEqual(drawer.slot(0).getAmount(), FluidConstants.BUCKET, "the bus imported a bucket");
+        h.succeed();
+    }
+
+    @GameTest
     public void capacityUpgradesAddTogether(GameTestHelper h) {
         BlockPos pos = new BlockPos(1, 1, 1);
         h.setBlock(pos, ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);

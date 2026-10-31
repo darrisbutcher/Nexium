@@ -1,11 +1,9 @@
 package net.storagenexus.fluid;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -17,8 +15,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.storagenexus.network.NetworkBlock;
-import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModBlockEntities;
 
 import java.util.ArrayList;
@@ -27,13 +23,13 @@ import java.util.List;
 /**
  * Takes one bucket per second from a touching source block (optionally only one chosen fluid).
  * Infinite water sources (two or more neighbouring water sources) and the Infinite Lava Source
- * are never used up; everything else is drained block by block.
+ * are never used up; everything else is drained block by block. The intake only fills its own
+ * 4-bucket buffer: an Import/Export Bus (import mode) facing it moves the fluid into a network, and
+ * fluid conduits or other mods' pipes can pull from it too.
  */
 public class FluidIntakeBlockEntity extends BlockEntity {
     private static final long BUFFER = 4 * FluidConstants.BUCKET;
     private static final int PULL_INTERVAL = 20;
-    /** The buffer holds 4 buckets and fills by one a second, so pushing every half second keeps up. */
-    private static final int PUSH_INTERVAL = 10;
 
     private int scanIndex;
     /** Only this fluid is taken; blank means anything. */
@@ -65,9 +61,7 @@ public class FluidIntakeBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidIntakeBlockEntity be) {
-        long time = level.getGameTime();
-        if (time % PULL_INTERVAL == 0) be.pull(level);
-        if (be.buffer.amount > 0 && time % PUSH_INTERVAL == 0) be.push(level);
+        if (level.getGameTime() % PULL_INTERVAL == 0) be.pull(level);
     }
 
     /** Runs one pull straight away (tests and the tick both use it). */
@@ -111,29 +105,6 @@ public class FluidIntakeBlockEntity extends BlockEntity {
             if (n.isSource() && n.getType().isSame(Fluids.WATER)) sources++;
         }
         return sources >= 2;
-    }
-
-    private void push(Level level) {
-        for (Direction d : Direction.values()) {
-            if (buffer.amount <= 0) return;
-            BlockPos np = worldPosition.relative(d);
-            try (Transaction tx = Transaction.openOuter()) {
-                long moved;
-                if (level.getBlockState(np).getBlock() instanceof NetworkBlock) {
-                    StorageNetwork net = StorageNetwork.find(level, np);
-                    if (net == null) continue;
-                    moved = net.insertFluid(buffer.variant, buffer.amount, tx);
-                } else {
-                    Storage<FluidVariant> target = FluidStorage.SIDED.find(level, np, d.getOpposite());
-                    if (target == null) continue;
-                    moved = target.insert(buffer.variant, buffer.amount, tx);
-                }
-                if (moved > 0) {
-                    buffer.extract(buffer.variant, moved, tx);
-                    tx.commit();
-                }
-            }
-        }
     }
 
     @Override

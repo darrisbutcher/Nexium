@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.21.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.22.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -48,7 +48,9 @@ world, or crafted from a book and any drawer) explains everything in game.
   Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a
   Void Upgrade shows a marker in the opposite corner, and the upgrade's tooltip warns it destroys overflow.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32.
-  The upgrade screen shows the multiplier and the total capacity (stacks, or buckets for fluid drawers).
+  The upgrade screen shows the multiplier, what each section holds and the whole drawer's total
+  (stacks, or buckets for fluid drawers). Sections share the drawer: a 1x1 holds 54 stacks, a 1x2
+  27 per section and a 2x2 13.5 per section, all times the multiplier.
 * With all four slots taken, even on a full drawer, a higher capacity upgrade swaps out the weakest one:
   right-click the drawer with it (the old upgrade drops), click a slot with a stack of them, or
   shift-click one in (the old upgrade goes to your inventory, or drops if it is full).
@@ -108,7 +110,7 @@ world, or crafted from a book and any drawer) explains everything in game.
 * To move an Input, break it and click the new one with the same card: it takes over the link and
   all its Outputs.
 * Look straight at an Input or Output to see its link name for 3 seconds.
-* Inputs take fluids too (pipes, conduits or a Fluid Intake can feed them). Outputs push into everything around them, on any side: inventories, fluid storage, storage-network blocks and
+* Inputs take fluids too (pipes or fluid conduits can feed them). Outputs push into everything around them, on any side: inventories, fluid storage, storage-network blocks and
   item conduits (which carry the items to their Insert sides on the same colour). Inputs are
   skipped. In the Output's screen, the D/U/N/S/W/E buttons turn sides on and off (green = on);
   hover one to see what is on that side. Outputs can have a filter so one Input can split items by type. If nothing can take an
@@ -124,7 +126,9 @@ world, or crafted from a book and any drawer) explains everything in game.
   (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades). The
   settings screen also names what is on the selected side.
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.
-* **Fluid Intake** pulls from the source blocks touching it (infinite water is never drained). Right-click it
+* **Fluid Intake** pulls a bucket a second from the source blocks touching it (infinite water is never
+  drained) into its own 4-bucket buffer. It doesn't push anywhere: an **Import/Export Bus** in import mode
+  facing it moves the fluid into a network (fluid conduits can pull from it too). Right-click it
   with a bucket to make it take only that fluid (sneak + empty hand to clear). Put an **Infinite Lava
   Source** (obsidian, lava buckets and a nether star) next to it for endless lava.
 * **Basic Filter** (whitelist/blacklist, exact match) and **Advanced Filter** (matches by item tag).

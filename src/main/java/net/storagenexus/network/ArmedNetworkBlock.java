@@ -50,11 +50,14 @@ public abstract class ArmedNetworkBlock extends BaseEntityBlock implements Netwo
         return RenderShape.MODEL;
     }
 
-    /** An arm shows towards network blocks and anything with a block entity (chests, machines, drawers...). */
+    /**
+     * An arm shows towards network blocks and anything with a block entity (chests, machines, drawers...),
+     * but not a Fluid Intake: that needs an Import/Export Bus.
+     */
     protected static boolean hasArm(BlockState neighbor) {
         Block block = neighbor.getBlock();
-        return block instanceof NetworkBlock || block instanceof FluidIntakeBlock || block instanceof DimensionalOutputBlock
-                || neighbor.hasBlockEntity();
+        if (block instanceof FluidIntakeBlock) return false;
+        return block instanceof NetworkBlock || block instanceof DimensionalOutputBlock || neighbor.hasBlockEntity();
     }
 
     /** Arm flags for all sides; subclasses can claim a side for something else. */
