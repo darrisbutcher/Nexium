@@ -122,7 +122,7 @@ public class FeaturesGameTest {
         net.minecraft.server.level.ServerLevel level = h.getLevel();
         BlockPos abs = h.absolutePos(pos);
         h.assertTrue(!ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD).apply(level, abs), "gold can't skip iron");
-        int[] expected = {36, 45, 54, 63};
+        int[] expected = {45, 63, 81, 99};
         for (BarrelTier tier : BarrelTier.values()) {
             h.assertTrue(ModItems.BARREL_UPGRADES.get(tier).apply(level, abs), tier + " upgrade applies");
             TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
@@ -253,6 +253,49 @@ public class FeaturesGameTest {
                     net.storagenexus.terminal.TerminalActionPayload.TAKE_STACK, upgrades.copyWithCount(1), Fluids.EMPTY));
             h.assertValueEqual(menu.getCarried().getCount(), 64, "stack taken from " + stores[i]);
         }
+        h.succeed();
+    }
+
+    @GameTest
+    public void levelEmitterCountsFluidInBuckets(GameTestHelper h) {
+        BlockPos emitterPos = new BlockPos(1, 1, 1), drawer = new BlockPos(3, 1, 1);
+        h.setBlock(emitterPos, ModBlocks.LEVEL_EMITTER);
+        h.setBlock(new BlockPos(2, 1, 1), ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(drawer, ModBlocks.FLUID_DRAWER_1X1);
+        try (Transaction tx = Transaction.openOuter()) {
+            h.getBlockEntity(drawer, FluidDrawerBlockEntity.class).getFluidStorage()
+                    .insert(FluidVariant.of(Fluids.LAVA), 3 * FluidConstants.BUCKET, tx);
+            tx.commit();
+        }
+        LevelEmitterBlockEntity be = h.getBlockEntity(emitterPos, LevelEmitterBlockEntity.class);
+        be.setItem(new ItemStack(Items.LAVA_BUCKET));
+        be.setAmount(3);
+        h.assertValueEqual(be.lastCount(), 3L, "three buckets of lava in a fluid drawer");
+        h.assertTrue(h.getBlockState(emitterPos).getValue(LevelEmitterBlock.POWERED), "on at 3 of 3");
+        be.setAmount(4);
+        h.assertTrue(!h.getBlockState(emitterPos).getValue(LevelEmitterBlock.POWERED), "off at 3 of 4");
+        h.succeed();
+    }
+
+    @GameTest
+    public void usageCountsCompactingPoolsOnce(GameTestHelper h) {
+        BlockPos terminal = new BlockPos(1, 1, 1), connector = new BlockPos(2, 1, 1);
+        h.setBlock(terminal, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(connector, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(connector.east(), ModBlocks.COMPACTING_DRAWER);
+        h.setBlock(connector.above(), Blocks.CHEST);
+        try (Transaction tx = Transaction.openOuter()) {
+            h.getBlockEntity(connector.east(), net.storagenexus.drawer.CompactingDrawerBlockEntity.class).getItemStorage()
+                    .insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(Items.IRON_INGOT), 10, tx);
+            tx.commit();
+        }
+        h.getBlockEntity(connector.above(), ChestBlockEntity.class).setItem(0, new ItemStack(Items.OAK_PLANKS, 5));
+        net.storagenexus.network.StorageNetwork.Usage u =
+                net.storagenexus.network.StorageNetwork.find(h.getLevel(), h.absolutePos(terminal)).usage();
+        // 10 ingots = 90 nuggets in the compacting pool, counted once in nuggets; plus 5 planks
+        h.assertValueEqual(u.items(), 95L, "items stored");
+        long compacting = 54L * 64 * 81; // 54 stacks of iron blocks, in nuggets
+        h.assertValueEqual(u.itemCapacity(), compacting + 27L * 64, "capacity: the compacting pool once plus a chest");
         h.succeed();
     }
 }

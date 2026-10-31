@@ -1,6 +1,9 @@
 package net.storagenexus.network;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.storagenexus.util.FluidItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -10,7 +13,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.storagenexus.registry.ModBlockEntities;
 
-/** One item, an amount, and whether to fire when the network has at least or fewer than that amount. */
+/**
+ * One item, an amount, and whether to fire when the network has at least or fewer than that amount.
+ * A filled bucket also counts that fluid stored in the network, in buckets.
+ */
 public class LevelEmitterBlockEntity extends BlockEntity {
     public static final int MAX_AMOUNT = 100_000_000;
     private static final int INTERVAL = 10;
@@ -60,7 +66,10 @@ public class LevelEmitterBlockEntity extends BlockEntity {
         if (!item.isEmpty()) {
             StorageNetwork net = StorageNetwork.find(level, pos);
             if (net != null) {
-                lastCount = net.countItem(ItemVariant.of(item));
+                // A bucket of something counts that fluid too, in whole buckets
+                FluidVariant fluid = FluidItems.fluidIn(item);
+                lastCount = net.countItem(ItemVariant.of(item))
+                        + (fluid == null ? 0 : net.countFluid(fluid) / FluidConstants.BUCKET);
                 on = below ? lastCount < amount : lastCount >= amount;
             }
         } else {

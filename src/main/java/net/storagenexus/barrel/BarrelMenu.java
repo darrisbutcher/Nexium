@@ -8,30 +8,37 @@ import net.minecraft.world.inventory.Slot;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
 
-/** A grid of 9 columns and 4 to 7 rows over the player inventory. */
+/**
+ * The barrel's slots over the player inventory. Never taller than a double chest (6 rows):
+ * bigger barrels get wider instead, and the inventory is centred under them.
+ */
 public class BarrelMenu extends BaseMenu {
-    private final Container container;
-    private final int rows;
+    public static final int MAX_ROWS = 6;
 
-    /** Client side: only the row count travels. */
-    public BarrelMenu(int id, Inventory inventory, Integer rows) {
-        this(id, inventory, new SimpleContainer(rows * 9), rows);
+    private final Container container;
+    private final int slots;
+
+    /** Client side: only the slot count travels. */
+    public BarrelMenu(int id, Inventory inventory, Integer slots) {
+        this(id, inventory, new SimpleContainer(slots), slots);
     }
 
-    public BarrelMenu(int id, Inventory inventory, Container container, int rows) {
+    public BarrelMenu(int id, Inventory inventory, Container container, int slots) {
         super(ModMenus.BARREL, id);
         this.container = container;
-        this.rows = rows;
+        this.slots = slots;
         container.startOpen(inventory.player);
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < 9; c++) addCustomSlot(new Slot(container, c + r * 9, 8 + c * 18, 18 + r * 18));
-        }
-        addPlayerSlots(inventory, 8, inventoryTop(rows));
+        int cols = columns(slots);
+        for (int i = 0; i < slots; i++) addCustomSlot(new Slot(container, i, 8 + (i % cols) * 18, 18 + (i / cols) * 18));
+        addPlayerSlots(inventory, (imageWidth(slots) - 162) / 2, inventoryTop(slots));
     }
 
-    public static int inventoryTop(int rows) { return 32 + rows * 18; }
-    public static int imageHeight(int rows) { return inventoryTop(rows) + 82; }
-    public int rows() { return rows; }
+    public static int rows(int slots) { return Math.min(MAX_ROWS, (slots + 8) / 9); }
+    public static int columns(int slots) { int r = rows(slots); return (slots + r - 1) / r; }
+    public static int imageWidth(int slots) { return Math.max(176, 16 + columns(slots) * 18); }
+    public static int inventoryTop(int slots) { return 32 + rows(slots) * 18; }
+    public static int imageHeight(int slots) { return inventoryTop(slots) + 82; }
+    public int slotCount() { return slots; }
 
     @Override
     public boolean stillValid(Player player) {

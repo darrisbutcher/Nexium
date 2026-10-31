@@ -13,7 +13,10 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.terminal.TerminalMenu;
+import net.storagenexus.util.Fmt;
 
 /**
  * Crafting Terminal: the network grid, a 3x3 crafting grid with the vanilla recipe book, and your
@@ -106,6 +109,53 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     public void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractContents(g, mouseX, mouseY, partialTick);
         view.extractGrid(g, leftPos, topPos, mouseX, mouseY);
+        extractUsage(g, mouseX, mouseY);
+    }
+
+    // ---- Capacity: items above the result slot, fluids below it --------------------------------
+
+    private static final float USAGE_SCALE = 0.75f;
+
+    private void extractUsage(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        StorageNetwork.Usage u = menu.clientUsage();
+        int x = leftPos + 98, right = leftPos + imageWidth - 8;
+        int top = topPos + TerminalMenu.craftingTop(menu.rows());
+        long bucket = FluidConstants.BUCKET;
+        usageBlock(g, mouseX, mouseY, x, right, top + 1, "screen.storagenexus.usage_items",
+                Fmt.compact(u.items()) + "/" + Fmt.compact(u.itemCapacity()), u.items(), u.itemCapacity(),
+                Component.translatable("screen.storagenexus.usage_items_tip", exact(u.items()), exact(u.itemCapacity()), percent(u.items(), u.itemCapacity())));
+        usageBlock(g, mouseX, mouseY, x, right, top + 39, "screen.storagenexus.usage_fluids",
+                Fmt.compact(u.fluid() / bucket) + "/" + Fmt.compact(u.fluidCapacity() / bucket) + " B", u.fluid(), u.fluidCapacity(),
+                Component.translatable("screen.storagenexus.usage_fluids_tip", exact(u.fluid() / bucket), exact(u.fluidCapacity() / bucket),
+                        percent(u.fluid(), u.fluidCapacity())));
+    }
+
+    /** A small label with used/total and a fill bar under it; hovering shows the exact numbers. */
+    private void usageBlock(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int right, int y, String labelKey,
+                            String numbers, long used, long capacity, Component tooltip) {
+        Component text = Component.translatable(labelKey).append(" " + numbers);
+        g.pose().pushMatrix();
+        g.pose().translate(x, y);
+        g.pose().scale(USAGE_SCALE, USAGE_SCALE);
+        g.text(font, text, 0, 0, Palette.DARK.text(), false);
+        g.pose().popMatrix();
+        int barY = y + 8, width = right - x;
+        g.fill(x, barY, right, barY + 4, Palette.DARK.slotDark());
+        double fraction = capacity <= 0 ? 0 : Math.min(1.0, (double) used / capacity);
+        int fill = (int) Math.round(width * fraction);
+        int color = fraction < 0.75 ? 0xFF4CAF50 : fraction < 0.9 ? 0xFFE0C040 : 0xFFE05050;
+        if (fill > 0) g.fill(x, barY, x + fill, barY + 4, color);
+        if (mouseX >= x && mouseX < right && mouseY >= y && mouseY < barY + 4) {
+            g.setComponentTooltipForNextFrame(font, java.util.List.of(tooltip), mouseX, mouseY);
+        }
+    }
+
+    private static String exact(long n) {
+        return String.format(java.util.Locale.ROOT, "%,d", n);
+    }
+
+    private static String percent(long used, long capacity) {
+        return capacity <= 0 ? "0" : Long.toString(Math.min(100, used * 100 / capacity));
     }
 
     /**

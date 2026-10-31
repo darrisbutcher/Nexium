@@ -24,7 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.storagenexus.util.Menus;
 import org.jetbrains.annotations.Nullable;
 
-/** An iron, gold, diamond or netherite barrel: a vanilla barrel with 9 more slots per tier. */
+/** An iron, gold, diamond or netherite barrel: a vanilla barrel with 18 more slots per tier. */
 public class TieredBarrelBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
@@ -57,7 +57,7 @@ public class TieredBarrelBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer sp && level instanceof ServerLevel server
                 && level.getBlockEntity(pos) instanceof TieredBarrelBlockEntity be) {
-            Menus.open(sp, be.getDisplayName(), tier.rows(), (id, inv, p) -> new BarrelMenu(id, inv, be, tier.rows()));
+            Menus.open(sp, be.getDisplayName(), tier.slots(), (id, inv, p) -> new BarrelMenu(id, inv, be, tier.slots()));
             PiglinAi.angerNearbyPiglins(server, player, true);
         }
         return InteractionResult.SUCCESS;

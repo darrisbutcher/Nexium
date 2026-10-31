@@ -41,6 +41,6 @@ public class TieredBarrelBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new BarrelMenu(containerId, inventory, this, items.size() / 9);
+        return new BarrelMenu(containerId, inventory, this, items.size());
     }
 }

@@ -2,6 +2,7 @@ package net.storagenexus.network;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -207,6 +208,52 @@ public final class StorageNetwork {
             extracted += s.storage.extract(resource, maxAmount - extracted, tx);
         }
         return extracted;
+    }
+
+    /** Used and total space, for the terminal's capacity display. Fluids in droplets. */
+    public record Usage(long items, long itemCapacity, long fluid, long fluidCapacity) {
+        public static final Usage NONE = new Usage(0, 0, 0, 0);
+        public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, Usage> STREAM_CODEC =
+                net.minecraft.network.codec.StreamCodec.composite(
+                        net.minecraft.network.codec.ByteBufCodecs.VAR_LONG, Usage::items,
+                        net.minecraft.network.codec.ByteBufCodecs.VAR_LONG, Usage::itemCapacity,
+                        net.minecraft.network.codec.ByteBufCodecs.VAR_LONG, Usage::fluid,
+                        net.minecraft.network.codec.ByteBufCodecs.VAR_LONG, Usage::fluidCapacity,
+                        Usage::new);
+    }
+
+    public Usage usage() {
+        long[] item = total(items), fluid = total(fluids);
+        return new Usage(item[0], item[1], fluid[0], fluid[1]);
+    }
+
+    /** {stored, capacity} over every view, counting each compacting pool once. */
+    private static <T> long[] total(List<Source<T>> sources) {
+        long stored = 0, capacity = 0;
+        for (Source<T> s : sources) {
+            if (!s.valid()) continue;
+            for (StorageView<T> view : s.storage) {
+                if (view instanceof net.storagenexus.util.PooledStorageView p && !p.isPrimaryView()) continue;
+                stored += Math.max(0, view.getAmount());
+                long cap = Math.max(0, view.getCapacity());
+                // An empty chest or barrel slot reports the container limit (99); count it as one normal stack
+                if (view.isResourceBlank() && s.storage instanceof ContainerStorage) cap = Math.min(cap, 64);
+                capacity += cap;
+            }
+        }
+        return new long[]{stored, capacity};
+    }
+
+    /** How much of one fluid the network holds, in droplets. */
+    public long countFluid(FluidVariant resource) {
+        long total = 0;
+        for (Source<FluidVariant> s : fluids) {
+            if (!s.valid() || !allowsFluid(s, resource)) continue;
+            for (StorageView<FluidVariant> view : s.storage) {
+                if (!view.isResourceBlank() && view.getResource().equals(resource)) total += view.getAmount();
+            }
+        }
+        return total;
     }
 
     /** How many of one item the network holds (respecting connector filters). */

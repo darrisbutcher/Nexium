@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.network.StorageNetwork;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * fluids and starts a new list, the last one completes it.
  */
 public record TerminalSyncPayload(boolean online, boolean first, boolean last, List<ItemEntry> items,
-                                  List<FluidEntry> fluids) implements CustomPacketPayload {
+                                  List<FluidEntry> fluids, StorageNetwork.Usage usage) implements CustomPacketPayload {
     public static final Type<TerminalSyncPayload> TYPE = new Type<>(StorageNexus.id("terminal_sync"));
 
     public record ItemEntry(ItemStack stack, long count) {
@@ -40,6 +41,7 @@ public record TerminalSyncPayload(boolean online, boolean first, boolean last, L
             ByteBufCodecs.BOOL, TerminalSyncPayload::last,
             ItemEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalSyncPayload::items,
             FluidEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalSyncPayload::fluids,
+            StorageNetwork.Usage.STREAM_CODEC, TerminalSyncPayload::usage,
             TerminalSyncPayload::new);
 
     @Override

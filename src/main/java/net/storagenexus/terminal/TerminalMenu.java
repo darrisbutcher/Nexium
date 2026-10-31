@@ -89,6 +89,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
     private List<TerminalSyncPayload.ItemEntry> clientItems = new ArrayList<>();
     private List<TerminalSyncPayload.FluidEntry> clientFluids = new ArrayList<>();
     private boolean clientOnline = true;
+    private StorageNetwork.Usage clientUsage = StorageNetwork.Usage.NONE;
     private int clientRevision;
     private @Nullable List<TerminalSyncPayload.ItemEntry> pendingItems;
     private List<TerminalSyncPayload.FluidEntry> pendingFluids = List.of();
@@ -184,17 +185,18 @@ public class TerminalMenu extends AbstractCraftingMenu {
             }
         }
         items.sort(Comparator.comparing(e -> BuiltInRegistries.ITEM.getKey(e.stack().getItem()).toString()));
-        int hash = (net != null ? 1 : 0);
+        StorageNetwork.Usage usage = net != null ? net.usage() : StorageNetwork.Usage.NONE;
+        int hash = (net != null ? 1 : 0) * 31 + usage.hashCode();
         for (TerminalSyncPayload.ItemEntry e : items) hash = 31 * hash + ItemStack.hashItemAndComponents(e.stack()) * 17 + Long.hashCode(e.count());
         for (TerminalSyncPayload.FluidEntry e : fluids) hash = 31 * hash + e.fluid().hashCode() + Long.hashCode(e.amount());
         if (hash == lastHash) return;
         lastHash = hash;
-        sendInParts(sp, net != null, items, fluids);
+        sendInParts(sp, net != null, items, fluids, usage);
     }
 
     /** Splits the item list by encoded size so no payload gets near the 1 MiB limit. */
     private static void sendInParts(ServerPlayer sp, boolean online, List<TerminalSyncPayload.ItemEntry> items,
-                                    List<TerminalSyncPayload.FluidEntry> fluids) {
+                                    List<TerminalSyncPayload.FluidEntry> fluids, StorageNetwork.Usage usage) {
         RegistryFriendlyByteBuf scratch = new RegistryFriendlyByteBuf(Unpooled.buffer(), sp.registryAccess());
         List<TerminalSyncPayload.ItemEntry> part = new ArrayList<>();
         int partBytes = 0;
@@ -209,7 +211,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
                     continue;
                 }
                 if (!part.isEmpty() && partBytes + size > MAX_PART_BYTES) {
-                    ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, false, part, first ? fluids : List.of()));
+                    ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, false, part, first ? fluids : List.of(), usage));
                     first = false;
                     part = new ArrayList<>();
                     partBytes = 0;
@@ -220,7 +222,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
         } finally {
             scratch.release();
         }
-        ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, true, part, first ? fluids : List.of()));
+        ServerPlayNetworking.send(sp, new TerminalSyncPayload(online, first, true, part, first ? fluids : List.of(), usage));
     }
 
     private void forceResync() {
@@ -241,6 +243,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
         clientOnline = payload.online();
         clientItems = pendingItems;
         clientFluids = new ArrayList<>(pendingFluids);
+        clientUsage = payload.usage();
         pendingItems = null;
         clientRevision++;
         // The recipe book re-checks what is craftable when the inventory changes; the
@@ -251,6 +254,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
     public List<TerminalSyncPayload.ItemEntry> clientItems() { return clientItems; }
     public List<TerminalSyncPayload.FluidEntry> clientFluids() { return clientFluids; }
     public boolean clientOnline() { return clientOnline; }
+    public StorageNetwork.Usage clientUsage() { return clientUsage; }
     public int clientRevision() { return clientRevision; }
 
     // ---- Actions (server) ---------------------------------------------------------------------

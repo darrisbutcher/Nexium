@@ -179,7 +179,10 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         protected void onFinalCommit() { contentsChanged(); }
     }
 
-    private class TierView implements StorageView<ItemVariant> {
+    private class TierView implements StorageView<ItemVariant>, net.storagenexus.util.PooledStorageView {
+        /** The smallest form (ratio 1) stands for the whole pool in totals. */
+        @Override public boolean isPrimaryView() { return tier == tierCount - 1; }
+
         private final int tier;
 
         TierView(int tier) { this.tier = tier; }

@@ -55,7 +55,8 @@ public class LevelEmitterScreen extends BaseScreen<LevelEmitterMenu> {
         g.text(font, amount, leftPos + 88 - font.width(amount) / 2, topPos + 60, palette().text(), false);
         Component line = menu.item().isEmpty()
                 ? Component.translatable("screen.storagenexus.emitter_pick")
-                : Component.translatable("screen.storagenexus.emitter_now", String.format(Locale.ROOT, "%,d", menu.now()),
+                : Component.translatable(net.storagenexus.util.FluidItems.fluidIn(menu.item()) != null
+                        ? "screen.storagenexus.emitter_now_buckets" : "screen.storagenexus.emitter_now", String.format(Locale.ROOT, "%,d", menu.now()),
                         Component.translatable(menu.powered() ? "screen.storagenexus.emitter_on" : "screen.storagenexus.emitter_off"));
         g.text(font, line, leftPos + 8, topPos + 88, palette().text(), false);
     }

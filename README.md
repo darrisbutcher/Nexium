@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.18.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.19.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -61,8 +61,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   it join too, and slaves can chain.
 
 ### Barrels
-* **Iron, Gold, Diamond and Netherite Barrels** hold 36, 45, 54 and 63 slots (a vanilla barrel has 27;
-  every tier adds 9), each in its tier's colour. Right-click a barrel with the matching **Barrel
+* **Iron, Gold, Diamond and Netherite Barrels** hold 45, 63, 81 and 99 slots (a vanilla barrel has 27;
+  every tier adds 18). Bigger barrels get a wider screen, never taller than a double chest, each in its tier's colour. Right-click a barrel with the matching **Barrel
   Upgrade** to upgrade it in place: Iron upgrades a vanilla barrel, Gold an Iron Barrel, Diamond a Gold
   Barrel, Netherite a Diamond Barrel. What is inside stays inside.
 
@@ -75,13 +75,16 @@ world, or crafted from a book and any drawer) explains everything in game.
   items and fluids into the network and **Export** pushes them out (32 items or a bucket every half
   second). An optional filter limits what moves; no filter means everything.
 * **Level Emitter**: gives a redstone signal while the network holds at least (or fewer than) an
-  amount of one item. Right-click it to pick the item, the amount and the mode.
+  amount of one item. Right-click it to pick the item, the amount and the mode. Pick a bucket of
+  something to count that fluid in buckets (plus any filled buckets).
 * **Crafting Terminal**: fluids and items in one grid, as many rows as fit your
   screen; search (`@modname` to filter by mod) and sort. Left-click takes a stack, right-click one
   item, shift-click to your inventory; holding items, left puts them all in and right puts one in.
   Empty bucket on a fluid fills it; a filled bucket is poured in with left-click.
   The arrow button flips the sort direction, your sort is remembered for the session, and an item's
   tooltip shows its exact amount in the network.
+* Next to the result slot the terminal shows how full the network is: items above, fluids below,
+  with exact numbers on hover. A compacting drawer counts once, in its smallest form.
 * The red **X** next to the crafting grid empties it: items go into the network, else your inventory,
   else onto the floor.
 * **JEI / REI**: their "+" button on a crafting recipe fills the Crafting Terminal's grid from the
