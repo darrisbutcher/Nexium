@@ -8,9 +8,9 @@ public record Palette(int outline, int body, int highlight, int shadow,
     /** Vanilla-style light grey. */
     public static final Palette LIGHT = new Palette(0xFF000000, 0xFFC6C6C6, 0xFFFFFFFF, 0xFF555555,
             0xFF8B8B8B, 0xFF555555, 0xFFFFFFFF, 0xFF404040);
-    /** Matches the vanilla recipe book: grey frame, dark recessed slots, light text. */
-    public static final Palette DARK = new Palette(0xFF000000, 0xFF535353, 0xFF6B6B6B, 0xFF2A2A2A,
-            0xFF262626, 0xFF000000, 0xFF6B6B6B, 0xFFE0E0E0);
+    /** Matches vanilla's dark inventory: grey panel, slots with a dark top-left and light bottom-right edge. */
+    public static final Palette DARK = new Palette(0xFF000000, 0xFF535353, 0xFF6B6B6B, 0xFF262626,
+            0xFF333333, 0xFF262626, 0xFF6B6B6B, 0xFFE0E0E0);
 
     public void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x, y, x + w, y + h, outline);
