@@ -77,10 +77,15 @@ public final class StorageNetwork {
         CacheEntry e = CACHE.get(key);
         long v = StorageEvents.storageVersion();
         long t = level.getGameTime();
-        if (e != null && e.version == v && t - e.gameTime < CACHE_TICKS) return e.network;
+        if (e != null && e.version == v && t >= e.gameTime && t - e.gameTime < CACHE_TICKS) return e.network;
         StorageNetwork net = scan(level, start);
         CACHE.put(key, new CacheEntry(net, v, t));
         return net;
+    }
+
+    /** Drops every cached network; called when the server stops so nothing outlives its world. */
+    public static void clearCache() {
+        CACHE.clear();
     }
 
     private static StorageNetwork scan(Level level, BlockPos start) {

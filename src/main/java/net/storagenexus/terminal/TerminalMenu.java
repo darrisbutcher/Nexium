@@ -171,19 +171,19 @@ public class TerminalMenu extends BaseMenu {
             case TerminalActionPayload.TAKE_STACK, TerminalActionPayload.TAKE_HALF -> {
                 if (!carried.isEmpty() || payload.item().isEmpty()) return;
                 ItemVariant v = ItemVariant.of(payload.item());
-                int max = payload.item().getMaxStackSize();
-                ItemStack taken = extract(net, v, max);
-                if (payload.action() == TerminalActionPayload.TAKE_HALF && taken.getCount() > 1) {
-                    int keep = (taken.getCount() + 1) / 2;
-                    insert(net, taken.split(taken.getCount() - keep));
+                int want = payload.item().getMaxStackSize();
+                if (payload.action() == TerminalActionPayload.TAKE_HALF) {
+                    // Half of what is actually extractable, so nothing has to be put back.
+                    want = (int) Math.min(want, (simulateExtract(net, v, want) + 1) / 2);
                 }
-                setCarried(taken);
+                setCarried(extract(net, v, want));
             }
             case TerminalActionPayload.TAKE_TO_INVENTORY -> {
                 if (payload.item().isEmpty()) return;
                 ItemStack taken = extract(net, ItemVariant.of(payload.item()), payload.item().getMaxStackSize());
                 sp.getInventory().add(taken);
                 if (!taken.isEmpty()) insert(net, taken);
+                if (!taken.isEmpty()) sp.drop(taken, false); // came from an extract-only source
             }
             case TerminalActionPayload.INSERT_CARRIED -> {
                 if (carried.isEmpty()) return;
@@ -199,7 +199,9 @@ public class TerminalMenu extends BaseMenu {
             }
             case TerminalActionPayload.FILL_BUCKET -> {
                 Fluid fluid = payload.fluid();
-                if (!carried.is(Items.BUCKET) || fluid == Fluids.EMPTY || fluid.getBucket() == Items.AIR) return;
+                // Comes from the client: FluidVariant.of throws on flowing fluids.
+                if (!carried.is(Items.BUCKET) || fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())
+                        || fluid.getBucket() == Items.AIR) return;
                 try (Transaction tx = Transaction.openOuter()) {
                     if (net.extractFluid(FluidVariant.of(fluid), FluidConstants.BUCKET, tx) == FluidConstants.BUCKET) {
                         tx.commit();
@@ -232,6 +234,12 @@ public class TerminalMenu extends BaseMenu {
             if (f != Fluids.EMPTY && f.isSource(f.defaultFluidState()) && f.getBucket() == stack.getItem()) return f;
         }
         return null;
+    }
+
+    private static long simulateExtract(StorageNetwork net, ItemVariant v, int max) {
+        try (Transaction tx = Transaction.openOuter()) {
+            return net.extractItem(v, max, tx);
+        }
     }
 
     private static ItemStack extract(StorageNetwork net, ItemVariant v, int max) {

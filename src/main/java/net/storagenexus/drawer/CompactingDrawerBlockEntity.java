@@ -115,12 +115,17 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         setChanged();
     }
 
-    private class CompactingStorage extends SnapshotParticipant<Long> implements Storage<ItemVariant> {
+    /** Everything a transaction can change, including the tier setup done by {@link #configure}. */
+    private record Snapshot(long units, ItemVariant[] tiers, long[] ratio, int tierCount) {}
+
+    private class CompactingStorage extends SnapshotParticipant<Snapshot> implements Storage<ItemVariant> {
         @Override
         public long insert(ItemVariant resource, long maxAmount, TransactionContext transaction) {
             if (resource.isBlank() || maxAmount <= 0) return 0;
             int t = tierOf(resource);
             if (t < 0) {
+                // Snapshot first so an aborted (e.g. simulated) insert also undoes the configuration.
+                updateSnapshots(transaction);
                 if (!configure(resource)) return 0;
                 t = tierOf(resource);
                 if (t < 0) return 0;
@@ -156,10 +161,15 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         }
 
         @Override
-        protected Long createSnapshot() { return units; }
+        protected Snapshot createSnapshot() { return new Snapshot(units, tiers.clone(), ratio.clone(), tierCount); }
 
         @Override
-        protected void readSnapshot(Long snapshot) { units = snapshot; }
+        protected void readSnapshot(Snapshot snapshot) {
+            units = snapshot.units();
+            System.arraycopy(snapshot.tiers(), 0, tiers, 0, TIERS);
+            System.arraycopy(snapshot.ratio(), 0, ratio, 0, TIERS);
+            tierCount = snapshot.tierCount();
+        }
 
         @Override
         protected void onFinalCommit() { contentsChanged(); }

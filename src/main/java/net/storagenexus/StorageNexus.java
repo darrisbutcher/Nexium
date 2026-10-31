@@ -1,9 +1,11 @@
 package net.storagenexus;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.Identifier;
 import net.storagenexus.drawer.DrawerInteraction;
 import net.storagenexus.network.ModPayloads;
+import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModComponents;
@@ -33,6 +35,7 @@ public class StorageNexus implements ModInitializer {
         ModStorageLookups.init();
         ModPayloads.init();
         DrawerInteraction.init();
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> StorageNetwork.clearCache());
         LOG.info("Storage Nexus loaded");
     }
 }
