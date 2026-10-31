@@ -1,6 +1,9 @@
 package net.storagenexus.network;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +37,10 @@ public class ConnectorBlockEntity extends BlockEntity {
         }
     };
 
+    /** Per side: the block entity (or block, for inventories without one) we read from, or null. */
+    private final Object[] neighbourInventories = new Object[6];
+    private boolean neighboursKnown;
+
     public ConnectorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CONNECTOR, pos, state);
     }
@@ -47,6 +54,31 @@ public class ConnectorBlockEntity extends BlockEntity {
     }
 
     public SimpleContainer filterContainer() { return filterSlot; }
+
+    /**
+     * Called on every neighbour update. Only reports a change when an inventory appeared,
+     * disappeared or was replaced next to us, so water flowing past or redstone ticking
+     * does not make every network rescan.
+     */
+    public boolean neighbourInventoriesChanged() {
+        if (level == null) return false;
+        boolean changed = false;
+        for (Direction d : Direction.values()) {
+            BlockPos n = worldPosition.relative(d);
+            BlockEntity be = level.getBlockEntity(n);
+            Object inventory = be != null ? be
+                    : ItemStorage.SIDED.find(level, n, d.getOpposite()) != null
+                    || FluidStorage.SIDED.find(level, n, d.getOpposite()) != null
+                    ? level.getBlockState(n).getBlock() : null;
+            if (neighbourInventories[d.ordinal()] != inventory) {
+                neighbourInventories[d.ordinal()] = inventory;
+                changed = true;
+            }
+        }
+        boolean first = !neighboursKnown;
+        neighboursKnown = true;
+        return changed || first;
+    }
 
     public @Nullable FilterData filterData() {
         ItemStack s = filterSlot.getItem(0);

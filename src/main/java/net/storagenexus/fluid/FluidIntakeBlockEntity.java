@@ -31,6 +31,8 @@ import java.util.List;
 public class FluidIntakeBlockEntity extends BlockEntity {
     private static final long BUFFER = 4 * FluidConstants.BUCKET;
     private static final int PULL_INTERVAL = 20;
+    /** The buffer holds 4 buckets and fills by one a second, so pushing every half second keeps up. */
+    private static final int PUSH_INTERVAL = 10;
 
     private boolean rangeUpgrade;
     private int scanIndex;
@@ -63,8 +65,9 @@ public class FluidIntakeBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidIntakeBlockEntity be) {
-        if (level.getGameTime() % PULL_INTERVAL == 0) be.pull(level);
-        if (be.buffer.amount > 0) be.push(level);
+        long time = level.getGameTime();
+        if (time % PULL_INTERVAL == 0) be.pull(level);
+        if (be.buffer.amount > 0 && time % PUSH_INTERVAL == 0) be.push(level);
     }
 
     private List<BlockPos> candidates() {

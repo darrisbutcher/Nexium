@@ -56,6 +56,9 @@ public class StorageConnectorBlock extends BaseEntityBlock implements NetworkBlo
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block neighborBlock,
                                    @Nullable net.minecraft.world.level.redstone.Orientation orientation, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
-        StorageEvents.storageChanged(); // a chest placed or broken next to us
+        // a chest placed, broken or swapped next to us
+        if (level.getBlockEntity(pos) instanceof ConnectorBlockEntity be && be.neighbourInventoriesChanged()) {
+            StorageEvents.storageChanged();
+        }
     }
 }
