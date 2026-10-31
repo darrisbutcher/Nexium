@@ -46,8 +46,7 @@ public final class ModItems {
     public static final ConduitItem ITEM_CONDUIT = register("item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 1), new Item.Properties());
     public static final ConduitItem ENDER_ITEM_CONDUIT = register("ender_item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 2), new Item.Properties());
     public static final ConduitItem FLUID_CONDUIT = register("fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 1), new Item.Properties());
-    public static final ConduitItem PRESSURIZED_FLUID_CONDUIT = register("pressurized_fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 2), new Item.Properties());
-    public static final ConduitItem ENDER_FLUID_CONDUIT = register("ender_fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 3), new Item.Properties());
+    public static final ConduitItem ENDER_FLUID_CONDUIT = register("ender_fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 2), new Item.Properties());
     public static final ConduitWrenchItem CONDUIT_WRENCH = register("conduit_wrench", ConduitWrenchItem::new, new Item.Properties().stacksTo(1));
     public static final FilterItem BASIC_FILTER = register("basic_filter", p -> new FilterItem(p, false), new Item.Properties().stacksTo(1));
     public static final FilterItem ADVANCED_FILTER = register("advanced_filter", p -> new FilterItem(p, true), new Item.Properties().stacksTo(1));
@@ -69,7 +68,7 @@ public final class ModItems {
     public static ConduitItem conduitFor(ConduitType type, int tier) {
         return switch (type) {
             case ITEM -> tier >= 2 ? ENDER_ITEM_CONDUIT : ITEM_CONDUIT;
-            case FLUID -> tier >= 3 ? ENDER_FLUID_CONDUIT : tier == 2 ? PRESSURIZED_FLUID_CONDUIT : FLUID_CONDUIT;
+            case FLUID -> tier >= 2 ? ENDER_FLUID_CONDUIT : FLUID_CONDUIT;
         };
     }
 

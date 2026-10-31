@@ -1,6 +1,0 @@
-{
-  "parent": "storagenexus:block/conduit_trim_fluid",
-  "textures": {
-    "all": "storagenexus:block/conduit_trim_tier2"
-  }
-}

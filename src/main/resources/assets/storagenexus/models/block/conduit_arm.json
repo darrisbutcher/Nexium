@@ -7,19 +7,18 @@
   "elements": [
     {
       "from": [
-        5.5,
-        5.5,
+        6.75,
+        6.75,
         0
       ],
       "to": [
-        10.5,
-        10.5,
-        5.5
+        9.25,
+        9.25,
+        6.5
       ],
       "faces": {
         "north": {
-          "texture": "#all",
-          "cullface": "north"
+          "texture": "#all"
         },
         "east": {
           "texture": "#all"

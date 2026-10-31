@@ -7,7 +7,7 @@
     "CCC"
   ],
   "key": {
-    "C": "storagenexus:pressurized_fluid_conduit",
+    "C": "storagenexus:fluid_conduit",
     "P": "minecraft:ender_pearl"
   },
   "result": {

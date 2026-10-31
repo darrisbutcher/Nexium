@@ -160,7 +160,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 SideConfig cfg = be.config(ConduitType.FLUID, d);
                 if (!cfg.mode.extracts() || !cfg.redstone.allows(powered) || be.isBundle(pos.relative(d))) continue;
                 int tier = be.tier(ConduitType.FLUID);
-                long mbPerTick = (tier >= 3 ? 2000 : tier == 2 ? 400 : 100) * (1L << cfg.speedUpgrades());
+                long mbPerTick = (tier >= 2 ? 2000 : 100) * (1L << cfg.speedUpgrades());
                 be.transferFluids(d, cfg, mbPerTick * FLUID_INTERVAL * DROPLETS_PER_MB);
             }
         }
@@ -300,6 +300,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
             output.store(t.key() + "_sides", SideConfig.codec(t).listOf(), List.of(configs[t.ordinal()]));
         }
         if (facade != null) output.store("facade", BlockState.CODEC, facade);
+        output.putInt("tier_format", 2);
     }
 
     @Override
@@ -312,6 +313,10 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
             });
         }
         facade = input.read("facade", BlockState.CODEC).orElse(null);
+        // Before 1.0.14 fluid conduits had three tiers; the old Tier 2 and 3 are now Tier 2.
+        if (input.getIntOr("tier_format", 1) < 2) {
+            tiers[ConduitType.FLUID.ordinal()] = Math.min(tiers[ConduitType.FLUID.ordinal()], 2);
+        }
     }
 
     @Override

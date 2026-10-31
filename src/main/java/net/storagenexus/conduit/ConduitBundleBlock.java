@@ -40,8 +40,8 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     public static final Map<Direction, BooleanProperty> CONNECTIONS = PipeBlock.PROPERTY_BY_DIRECTION;
     /** Tier of each conduit type (0 = none), so the model can show it. */
     public static final IntegerProperty ITEM_TIER = IntegerProperty.create("item_tier", 0, 2);
-    public static final IntegerProperty FLUID_TIER = IntegerProperty.create("fluid_tier", 0, 3);
-    public static final PipeShapes SHAPES = new PipeShapes(5, 11);
+    public static final IntegerProperty FLUID_TIER = IntegerProperty.create("fluid_tier", 0, 2);
+    public static final PipeShapes SHAPES = new PipeShapes(6.5, 9.5); // half-size conduits
 
     public ConduitBundleBlock(Properties properties) {
         super(properties);
