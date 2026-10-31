@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.24.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.25.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -42,7 +42,8 @@ world, or crafted from a book and any drawer) explains everything in game.
 ### Drawers
 * 1x1 holds **54 stacks**, 1x2 holds **27 stacks** per slot, 2x2 holds **13.5 stacks** per slot.
 * Right-click the front to insert, double-click to insert everything matching, left-click to take
-  a stack (sneak for one item). Break drawers from the side.
+  a stack (sneak for one item). Every click counts, however fast you click; holding the button
+  takes just one. Break drawers from the side.
 * Right-click with an upgrade to install it. To see or remove upgrades, right-click the side or top
   of a drawer with an empty hand (or sneak + right-click it). The
   Lock Upgrade has its own slot, and a locked drawer shows a padlock on its front. A drawer with a
@@ -120,10 +121,14 @@ world, or crafted from a book and any drawer) explains everything in game.
 ### Conduits
 * Item and Fluid conduits (Tier 1 and 2) share one block. Tier 2 conduits show a green trim when
   placed. Fluid: 100 mB/tick (Tier 1), 2000 mB/tick (Tier 2).
-* Each connected conduit arm shows a small ring in its side's colour channel (item rings nearer the
-  core, fluid rings further out).
+* Every side has two colour channels: an **insert** colour and an **extract** colour. What a side
+  extracts goes to insert sides with the same colour, so on a side set to Both, in and out can use
+  different colours and stay separate.
+* Each arm to an inventory shows its channels as rings: the inner ring is the insert colour, the outer
+  ring (nearer the block) the extract colour; item rings come before fluid rings. Arms between
+  conduits have no rings.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings
-  (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades). The
+  (mode, insert and extract colour channels, redstone control, priority, round-robin, filter, speed upgrades). The
   settings screen also names what is on the selected side.
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.
 * **Fluid Intake** pulls from the source blocks touching it (infinite water is never drained). Right-click it

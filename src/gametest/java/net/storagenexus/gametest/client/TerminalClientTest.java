@@ -175,6 +175,67 @@ public class TerminalClientTest implements FabricClientGameTest {
                 ctx.runOnClient(mc -> mc.gui.setScreen(null));
                 ctx.waitTicks(5);
             }
+
+            // ---- drawer front: fast real left clicks each take a stack; holding takes one
+            world.getServer().runOnServer(server -> {
+                var level = server.overworld();
+                var player = server.getPlayerList().getPlayers().get(0);
+                player.getInventory().clearContent();
+                BlockPos d = player.blockPosition().offset(-1, 0, -2);
+                level.setBlockAndUpdate(d, ModBlocks.DRAWERS.get(net.storagenexus.drawer.DrawerWood.OAK)[0].defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+                if (level.getBlockEntity(d) instanceof net.storagenexus.drawer.DrawerBlockEntity de) {
+                    de.insertFromHand(0, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 64));
+                    while (de.slot(0).getAmount() < 1000) de.insertFromHand(0, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 64));
+                }
+            });
+            ctx.waitTicks(5);
+            ctx.runOnClient(mc -> {
+                BlockPos d = mc.player.blockPosition().offset(-1, 0, -2);
+                mc.player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(d).add(0, 0, 0.5));
+            });
+            ctx.waitTicks(3);
+            System.out.println("DRAWER target " + ctx.computeOnClient(mc -> String.valueOf(mc.hitResult instanceof BlockHitResult b ? b.getBlockPos() + " " + b.getDirection() : mc.hitResult)));
+            for (int i = 0; i < 4; i++) ctx.getInput().pressMouse(LEFT);
+            ctx.waitTicks(5);
+            int afterClicks = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory()
+                    .countItem(net.minecraft.world.item.Items.COBBLESTONE));
+            System.out.println("DRAWER after 4 quick clicks: " + afterClicks);
+            if (afterClicks != 4 * 64) throw new AssertionError("4 quick clicks should take 4 stacks, got " + afterClicks);
+            ctx.getInput().holdMouseFor(LEFT, 30);
+            ctx.waitTicks(5);
+            int afterHold = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory()
+                    .countItem(net.minecraft.world.item.Items.COBBLESTONE));
+            System.out.println("DRAWER after holding 30 ticks: " + afterHold);
+            if (afterHold != 5 * 64) throw new AssertionError("holding should take one more stack, got " + afterHold);
+
+            // ---- conduit settings screen with separate In / Out channels
+            world.getServer().runOnServer(server -> {
+                var level = server.overworld();
+                var player = server.getPlayerList().getPlayers().get(0);
+                BlockPos c = player.blockPosition().offset(2, 0, -2);
+                level.setBlockAndUpdate(c.east(), Blocks.CHEST.defaultBlockState());
+                level.setBlockAndUpdate(c, ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                if (level.getBlockEntity(c) instanceof net.storagenexus.conduit.ConduitBundleBlockEntity be) {
+                    be.addConduit(net.storagenexus.conduit.ConduitType.ITEM, 1);
+                    var cfg = be.config(net.storagenexus.conduit.ConduitType.ITEM, Direction.EAST);
+                    cfg.mode = net.storagenexus.conduit.SideConfig.Mode.BOTH;
+                    cfg.channel = 1;
+                    cfg.extractChannel = 11;
+                    be.changed();
+                    net.storagenexus.util.Menus.open(player, net.minecraft.network.chat.Component.literal("Conduit"),
+                            new net.storagenexus.conduit.ConduitConfigMenu.OpenData(c, Direction.EAST.get3DDataValue()),
+                            (id, inv, p) -> new net.storagenexus.conduit.ConduitConfigMenu(id, inv, be, Direction.EAST.get3DDataValue()));
+                }
+            });
+            ctx.waitFor(mc -> mc.gui.screen() != null);
+            ctx.waitTicks(10);
+            String conduit = ctx.computeOnClient(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> sc
+                    && sc.getMenu() instanceof net.storagenexus.conduit.ConduitConfigMenu m
+                    ? sc.getClass().getSimpleName() + " in " + m.get(net.storagenexus.conduit.ConduitConfigMenu.D_CHANNEL)
+                      + " out " + m.get(net.storagenexus.conduit.ConduitConfigMenu.D_EXTRACT_CHANNEL) : "none");
+            System.out.println("DRAWER conduit screen: " + conduit);
+            ctx.runOnClient(mc -> mc.gui.setScreen(null));
         }
     }
 

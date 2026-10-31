@@ -47,6 +47,23 @@ public final class DrawerInteraction {
         });
     }
 
+    /** A left click sent by the client for one real mouse press (see {@link DrawerClickPayload}). */
+    public static void handleClick(Player player, DrawerClickPayload click) {
+        BlockPos pos = click.pos();
+        if (!player.isWithinBlockInteractionRange(pos, 1.0)) return;
+        BlockState state = player.level().getBlockState(pos);
+        if (!(state.getBlock() instanceof FacingDrawerBlock)) return;
+        if (!(player.level().getBlockEntity(pos) instanceof ItemDrawer drawer)) return;
+        if (click.slot() < 0 || click.slot() >= drawer.slotCount()) return;
+        drawer.extractToPlayer(click.slot(), player, player.isShiftKeyDown());
+    }
+
+    /** The drawer slot under the crosshair, or -1 when it isn't an item drawer's front. */
+    public static int frontSlot(BlockState state, BlockEntity be, BlockHitResult hit) {
+        if (!(state.getBlock() instanceof FacingDrawerBlock) || !(be instanceof ItemDrawer drawer)) return -1;
+        return hitSlot(state, hit, drawer.slotCount());
+    }
+
     /** False for the repeats the client sends while the attack button stays held. Records the attack. */
     static boolean isNewAttack(Player player, BlockPos pos, long gameTime) {
         Click last = LAST_ATTACK.put(player.getUUID(), new Click(pos.immutable(), gameTime));

@@ -1,6 +1,13 @@
 package net.storagenexus.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.storagenexus.drawer.DrawerClickPayload;
+import net.storagenexus.drawer.DrawerInteraction;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -50,6 +57,18 @@ public class StorageNexusClient implements ClientModInitializer {
         BlockEntityRenderers.register(ModBlockEntities.DIMENSIONAL_INPUT, LinkLabelRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.DIMENSIONAL_OUTPUT, LinkLabelRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.CONDUIT_BUNDLE, FacadeRenderer::new);
+
+        // Drawer fronts: one extraction per real left click, however fast; holding the button doesn't repeat
+        ClientPreAttackCallback.EVENT.register((client, player, clicks) -> {
+            if (client.level == null || player.isSpectator()) return false;
+            if (!(client.hitResult instanceof BlockHitResult hit) || hit.getType() != HitResult.Type.BLOCK) return false;
+            BlockPos pos = hit.getBlockPos();
+            int slot = DrawerInteraction.frontSlot(client.level.getBlockState(pos), client.level.getBlockEntity(pos), hit);
+            if (slot < 0) return false;
+            for (int i = 0; i < clicks; i++) ClientPlayNetworking.send(new DrawerClickPayload(pos, slot));
+            if (clicks > 0) player.swing(InteractionHand.MAIN_HAND, player.getMainHandItem().getAttackAnimation(), false);
+            return true; // the front is never mined, and a held button does nothing more
+        });
 
         ItemDescriptions.init();
         ContentsTooltip.init();

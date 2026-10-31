@@ -19,13 +19,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.client.screen.ConduitConfigScreen;
+import net.storagenexus.conduit.SideConfig;
 import net.storagenexus.conduit.ConduitBundleBlockEntity;
 import net.storagenexus.conduit.ConduitType;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Draws a conduit bundle's facade, or, without one, a small ring on each connected arm in
- * that side's colour channel (item rings nearer the core, fluid rings further out).
+ * that side's colour channels: an inner ring in the insert colour and an outer ring, nearer the
+ * block, in the extract colour (item rings before fluid rings). Conduit-to-conduit arms have none.
  */
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
@@ -33,6 +35,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** Ring cross-section, just wider than an arm (6.75-9.25 px). */
     private static final float RING_MIN = 6.6f / 16, RING_MAX = 9.4f / 16;
     /** Distance from the block centre along the arm, per conduit type (px). */
+    /** How much further out the extract ring sits than the insert ring. */
+    private static final float EXTRACT_OFFSET = 2.6f / 16;
     private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}};
 
     public static class FacadeState extends BlockEntityRenderState {
@@ -74,9 +78,17 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         collector.submitCustomGeometry(pose, MARKER, (p, buffer) -> {
             for (int t = 0; t < state.channels.length; t++) {
                 for (Direction d : Direction.values()) {
-                    int channel = state.channels[t][d.get3DDataValue()];
-                    if (channel < 0) continue;
-                    ring(p, buffer, d, RING_SPAN[t][0], RING_SPAN[t][1], ConduitConfigScreen.CHANNEL_COLORS[channel & 15], light);
+                    int marker = state.channels[t][d.get3DDataValue()];
+                    if (marker < 0) continue;
+                    SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 8) & 3];
+                    // Inner ring: the insert colour. Outer ring, nearer the block: the extract colour.
+                    if (mode.inserts()) {
+                        ring(p, buffer, d, RING_SPAN[t][0], RING_SPAN[t][1], ConduitConfigScreen.CHANNEL_COLORS[marker & 15], light);
+                    }
+                    if (mode.extracts()) {
+                        ring(p, buffer, d, RING_SPAN[t][0] + EXTRACT_OFFSET, RING_SPAN[t][1] + EXTRACT_OFFSET,
+                                ConduitConfigScreen.CHANNEL_COLORS[(marker >> 4) & 15], light);
+                    }
                 }
             }
         });

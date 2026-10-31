@@ -132,6 +132,25 @@ public class UsabilityGameTest {
         });
     }
 
+    @GameTest
+    public void fastClicksEachTakeAStack(GameTestHelper h) {
+        DrawerBlockEntity be = drawerWithCobble(h, 640);
+        ServerPlayer player = emptyHandedPlayer(h);
+        player.setPos(Vec3.atCenterOf(h.absolutePos(POS.north())));
+        // Three real clicks arriving in the same tick: nothing is thrown away as a "held" repeat
+        for (int i = 0; i < 3; i++) {
+            net.storagenexus.drawer.DrawerInteraction.handleClick(player,
+                    new net.storagenexus.drawer.DrawerClickPayload(h.absolutePos(POS), 0));
+        }
+        h.assertValueEqual(be.slot(0).getAmount(), 640L - 3 * 64, "three clicks, three stacks");
+        // Out of reach does nothing
+        player.setPos(Vec3.atCenterOf(h.absolutePos(POS)).add(0, 30, 0));
+        net.storagenexus.drawer.DrawerInteraction.handleClick(player,
+                new net.storagenexus.drawer.DrawerClickPayload(h.absolutePos(POS), 0));
+        h.assertValueEqual(be.slot(0).getAmount(), 640L - 3 * 64, "too far away");
+        h.succeed();
+    }
+
     @GameTest(maxTicks = 40)
     public void sneakAttackTakesOneItem(GameTestHelper h) {
         DrawerBlockEntity be = drawerWithCobble(h, 640);

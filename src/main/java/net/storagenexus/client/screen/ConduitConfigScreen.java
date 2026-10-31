@@ -25,6 +25,9 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     private final Button[] sideButtons = new Button[6];
     private final Button[] typeButtons = new Button[TYPE_KEYS.length];
     private Button modeButton, redstoneButton, rrButton;
+    private final Button[] insertPicker = new Button[2], extractPicker = new Button[2];
+    /** Channel pickers: insert left, extract right, on the row under the mode button. */
+    private static final int PICKER_Y = 70, IN_SWATCH_X = 36, OUT_SWATCH_X = 104;
 
     public ConduitConfigScreen(ConduitConfigMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, ConduitConfigMenu.INVENTORY_TOP + 82, ConduitConfigMenu.INVENTORY_TOP);
@@ -48,19 +51,23 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
                     b -> click(ConduitConfigMenu.BTN_TYPE + id)).bounds(leftPos + 8 + i * 46, topPos + 34, 44, 14).build());
         }
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_MODE))
-                .bounds(leftPos + 8, topPos + 52, 82, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("<"), b -> click(ConduitConfigMenu.BTN_CHANNEL_PREV))
-                .bounds(leftPos + 94, topPos + 52, 12, 14).build());
-        addRenderableWidget(Button.builder(Component.literal(">"), b -> click(ConduitConfigMenu.BTN_CHANNEL_NEXT))
-                .bounds(leftPos + 124, topPos + 52, 12, 14).build());
+                .bounds(leftPos + 8, topPos + 52, 128, 14).build());
+        insertPicker[0] = addRenderableWidget(Button.builder(Component.literal("<"), b -> click(ConduitConfigMenu.BTN_CHANNEL_PREV))
+                .bounds(leftPos + IN_SWATCH_X - 14, topPos + PICKER_Y, 12, 14).build());
+        insertPicker[1] = addRenderableWidget(Button.builder(Component.literal(">"), b -> click(ConduitConfigMenu.BTN_CHANNEL_NEXT))
+                .bounds(leftPos + IN_SWATCH_X + 16, topPos + PICKER_Y, 12, 14).build());
+        extractPicker[0] = addRenderableWidget(Button.builder(Component.literal("<"), b -> click(ConduitConfigMenu.BTN_EXTRACT_CHANNEL_PREV))
+                .bounds(leftPos + OUT_SWATCH_X - 14, topPos + PICKER_Y, 12, 14).build());
+        extractPicker[1] = addRenderableWidget(Button.builder(Component.literal(">"), b -> click(ConduitConfigMenu.BTN_EXTRACT_CHANNEL_NEXT))
+                .bounds(leftPos + OUT_SWATCH_X + 16, topPos + PICKER_Y, 12, 14).build());
         redstoneButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_REDSTONE))
-                .bounds(leftPos + 8, topPos + 70, 128, 14).build());
+                .bounds(leftPos + 8, topPos + 88, 128, 14).build());
         addRenderableWidget(Button.builder(Component.literal("-"), b -> click(ConduitConfigMenu.BTN_PRIORITY_DOWN))
-                .bounds(leftPos + 8, topPos + 88, 12, 12).build());
+                .bounds(leftPos + 8, topPos + 106, 12, 12).build());
         addRenderableWidget(Button.builder(Component.literal("+"), b -> click(ConduitConfigMenu.BTN_PRIORITY_UP))
-                .bounds(leftPos + 48, topPos + 88, 12, 12).build());
+                .bounds(leftPos + 48, topPos + 106, 12, 12).build());
         rrButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_ROUND_ROBIN))
-                .bounds(leftPos + 64, topPos + 88, 72, 12).build());
+                .bounds(leftPos + 64, topPos + 106, 72, 12).build());
         inventoryLabelY = 10_000;
         updateLabels();
     }
@@ -77,6 +84,8 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         }
         SideConfig.Mode mode = SideConfig.Mode.values()[menu.get(ConduitConfigMenu.D_MODE) % 4];
         modeButton.setMessage(Component.translatable("mode.storagenexus." + mode.name().toLowerCase(Locale.ROOT)));
+        for (Button b : insertPicker) b.active = mode.inserts();
+        for (Button b : extractPicker) b.active = mode.extracts();
         SideConfig.RedstoneControl rc = SideConfig.RedstoneControl.values()[menu.get(ConduitConfigMenu.D_REDSTONE) % 4];
         redstoneButton.setMessage(Component.translatable("redstone.storagenexus." + rc.name().toLowerCase(Locale.ROOT)));
         rrButton.setMessage(Component.translatable(menu.get(ConduitConfigMenu.D_RR) == 1
@@ -91,17 +100,31 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
-        g.fill(leftPos + 108, topPos + 52, leftPos + 122, topPos + 66, 0xFF000000);
-        g.fill(leftPos + 109, topPos + 53, leftPos + 121, topPos + 65, CHANNEL_COLORS[channel]);
+        SideConfig.Mode mode = mode();
+        g.text(font, Component.translatable("screen.storagenexus.channel_in"), leftPos + 8, topPos + PICKER_Y + 3, palette().text(), false);
+        g.text(font, Component.translatable("screen.storagenexus.channel_out"), leftPos + 70, topPos + PICKER_Y + 3, palette().text(), false);
+        swatch(g, IN_SWATCH_X, menu.get(ConduitConfigMenu.D_CHANNEL) % 16, mode.inserts());
+        swatch(g, OUT_SWATCH_X, menu.get(ConduitConfigMenu.D_EXTRACT_CHANNEL) % 16, mode.extracts());
         String prio = Integer.toString(menu.get(ConduitConfigMenu.D_PRIORITY) - 100);
-        g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, palette().text(), false);
+        g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 108, palette().text(), false);
         g.text(font, "F", leftPos + 143, topPos + 66, palette().text(), false);
         g.text(font, "S", leftPos + 143, topPos + 88, palette().text(), false);
         // What is on the selected side: green when this conduit connects to it, grey when not
         String neighbour = font.plainSubstrByWidth(NeighbourNames.describe(menu.pos(), selectedSide()).getString(), neighbourWidth());
         int colour = menu.get(ConduitConfigMenu.D_CONNECTED) == 1 ? 0xFF55FF55 : 0xFFA0A0A0;
         g.text(font, neighbour, leftPos + imageWidth - 8 - font.width(neighbour), topPos + 6, colour, false);
+    }
+
+    private SideConfig.Mode mode() {
+        return SideConfig.Mode.values()[menu.get(ConduitConfigMenu.D_MODE) % 4];
+    }
+
+    /** A channel colour square; dimmed when the side's mode doesn't use that direction. */
+    private void swatch(GuiGraphicsExtractor g, int x, int channel, boolean used) {
+        int left = leftPos + x, top = topPos + PICKER_Y;
+        g.fill(left, top, left + 14, top + 14, 0xFF000000);
+        g.fill(left + 1, top + 1, left + 13, top + 13, CHANNEL_COLORS[channel]);
+        if (!used) g.fill(left + 1, top + 1, left + 13, top + 13, 0xB0333333);
     }
 
     private Direction selectedSide() {
@@ -128,9 +151,16 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         if (mouseY >= topPos + 4 && mouseY < topPos + 15 && mouseX >= nameRight - neighbourWidth() && mouseX < nameRight) {
             g.setTooltipForNextFrame(font, neighbourTooltip(), mouseX, mouseY);
         }
-        if (mouseX >= leftPos + 108 && mouseX < leftPos + 122 && mouseY >= topPos + 52 && mouseY < topPos + 66) {
-            int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
-            g.setComponentTooltipForNextFrame(font, java.util.List.of(Component.translatable("color.minecraft." + COLOR_KEYS[channel])), mouseX, mouseY);
+        for (int i = 0; i < 2; i++) {
+            int x = leftPos + (i == 0 ? IN_SWATCH_X : OUT_SWATCH_X);
+            if (mouseX >= x && mouseX < x + 14 && mouseY >= topPos + PICKER_Y && mouseY < topPos + PICKER_Y + 14) {
+                int channel = menu.get(i == 0 ? ConduitConfigMenu.D_CHANNEL : ConduitConfigMenu.D_EXTRACT_CHANNEL) % 16;
+                g.setComponentTooltipForNextFrame(font, java.util.List.of(
+                        Component.translatable(i == 0 ? "screen.storagenexus.channel_in.tooltip" : "screen.storagenexus.channel_out.tooltip",
+                                Component.translatable("color.minecraft." + COLOR_KEYS[channel])),
+                        Component.translatable(i == 0 ? "screen.storagenexus.channel_in.hint" : "screen.storagenexus.channel_out.hint")
+                                .withStyle(net.minecraft.ChatFormatting.GRAY)), mouseX, mouseY);
+            }
         }
     }
 }

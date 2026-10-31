@@ -119,19 +119,26 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     }
 
     /**
-     * Client display: the colour channel of each connected side per conduit type
-     * ([type][side], -1 when that type does not connect there). Re-checked every half second.
+     * Client display: the colour channels of each connected side per conduit type
+     * ([type][side], -1 when that type does not connect there or the neighbour is another conduit), packed by {@link #packMarker}.
+     * Re-checked every half second.
      */
     public int[][] channelMarkers(long gameTime) {
         if (gameTime - markersAt >= 10 || markersAt < 0) {
             markersAt = gameTime;
             for (ConduitType t : ConduitType.VALUES) {
                 for (Direction d : Direction.values()) {
-                    markers[t.ordinal()][d.get3DDataValue()] = connectsTo(t, d) ? config(t, d).channel : -1;
+                    markers[t.ordinal()][d.get3DDataValue()] = connectsTo(t, d) && !isBundle(worldPosition.relative(d))
+                            ? packMarker(config(t, d)) : -1;
                 }
             }
         }
         return markers;
+    }
+
+    /** Insert channel in bits 0-3, extract channel in bits 4-7, mode in bits 8-9. */
+    public static int packMarker(SideConfig cfg) {
+        return cfg.channel | cfg.extractChannel << 4 | cfg.mode.ordinal() << 8;
     }
 
     public int connectionMask() {
@@ -243,7 +250,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         Storage<ItemVariant> source = ItemStorage.SIDED.find(level, sourcePos, dir.getOpposite());
         if (source == null) return;
         FilterData extractFilter = filterOf(cfg);
-        for (Target t : ordered(targets(ConduitType.ITEM, cfg.channel), sourcePos, cfg)) {
+        for (Target t : ordered(targets(ConduitType.ITEM, cfg.extractChannel), sourcePos, cfg)) {
             if (budget <= 0) break;
             Storage<ItemVariant> dest = ItemStorage.SIDED.find(level, t.invPos, t.side);
             if (dest == null) continue;
@@ -272,7 +279,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         if (sourceFilter != null && !sourceFilter.matches(variant)) return 0;
         BlockPos sourcePos = worldPosition.relative(side);
         long moved = 0;
-        for (Target t : ordered(targets(ConduitType.ITEM, cfg.channel), sourcePos, cfg)) {
+        for (Target t : ordered(targets(ConduitType.ITEM, cfg.sourceChannel()), sourcePos, cfg)) {
             if (moved >= amount) break;
             FilterData targetFilter = filterOf(t.cfg);
             if (targetFilter != null && !targetFilter.matches(variant)) continue;
@@ -293,7 +300,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         Storage<FluidVariant> source = FluidStorage.SIDED.find(level, sourcePos, dir.getOpposite());
         if (source == null) return;
         FilterData extractFilter = filterOf(cfg);
-        for (Target t : ordered(targets(ConduitType.FLUID, cfg.channel), sourcePos, cfg)) {
+        for (Target t : ordered(targets(ConduitType.FLUID, cfg.extractChannel), sourcePos, cfg)) {
             if (budget <= 0) break;
             Storage<FluidVariant> dest = FluidStorage.SIDED.find(level, t.invPos, t.side);
             if (dest == null) continue;

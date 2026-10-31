@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Per-side settings for one conduit bundle. Pick a side and a conduit type, then set mode,
- * colour channel, redstone control, priority and round-robin; the two slots hold that side's
+ * insert and extract colour channels, redstone control, priority and round-robin; the two slots hold that side's
  * filter and speed upgrades.
  */
 public class ConduitConfigMenu extends BaseMenu {
-    public static final int INVENTORY_TOP = 112;
+    public static final int INVENTORY_TOP = 130;
 
     public static final int BTN_SIDE = 0;      // 0..5
     public static final int BTN_TYPE = 10;     // 10..11
@@ -36,9 +36,11 @@ public class ConduitConfigMenu extends BaseMenu {
     public static final int BTN_PRIORITY_UP = 24;
     public static final int BTN_PRIORITY_DOWN = 25;
     public static final int BTN_ROUND_ROBIN = 26;
+    public static final int BTN_EXTRACT_CHANNEL_NEXT = 27;
+    public static final int BTN_EXTRACT_CHANNEL_PREV = 28;
 
     public static final int D_SIDE = 0, D_TYPE = 1, D_MODE = 2, D_CHANNEL = 3, D_REDSTONE = 4, D_PRIORITY = 5,
-            D_RR = 6, D_TYPES = 7, D_CONNECTED = 8;
+            D_RR = 6, D_TYPES = 7, D_CONNECTED = 8, D_EXTRACT_CHANNEL = 9, DATA_COUNT = 10;
 
     public record OpenData(BlockPos pos, int side) {
         public static final StreamCodec<RegistryFriendlyByteBuf, OpenData> STREAM_CODEC = StreamCodec.composite(
@@ -59,7 +61,7 @@ public class ConduitConfigMenu extends BaseMenu {
         super(ModMenus.CONDUIT_CONFIG, id);
         this.be = null;
         this.clientPos = open.pos();
-        this.data = new SimpleContainerData(9);
+        this.data = new SimpleContainerData(DATA_COUNT);
         layout(inventory, new SimpleContainer(2));
         addDataSlots(data);
     }
@@ -83,6 +85,7 @@ public class ConduitConfigMenu extends BaseMenu {
                     case D_TYPE -> type;
                     case D_MODE -> c.mode.ordinal();
                     case D_CHANNEL -> c.channel;
+                    case D_EXTRACT_CHANNEL -> c.extractChannel;
                     case D_REDSTONE -> c.redstone.ordinal();
                     case D_PRIORITY -> c.priority + 100;
                     case D_RR -> c.roundRobin ? 1 : 0;
@@ -93,7 +96,7 @@ public class ConduitConfigMenu extends BaseMenu {
             }
 
             @Override public void set(int i, int v) {}
-            @Override public int getCount() { return 9; }
+            @Override public int getCount() { return DATA_COUNT; }
         };
         layout(inventory, new SideSlots());
         addDataSlots(data);
@@ -137,6 +140,8 @@ public class ConduitConfigMenu extends BaseMenu {
             case BTN_MODE -> c.mode = c.mode.next();
             case BTN_CHANNEL_NEXT -> c.channel = (c.channel + 1) % 16;
             case BTN_CHANNEL_PREV -> c.channel = (c.channel + 15) % 16;
+            case BTN_EXTRACT_CHANNEL_NEXT -> c.extractChannel = (c.extractChannel + 1) % 16;
+            case BTN_EXTRACT_CHANNEL_PREV -> c.extractChannel = (c.extractChannel + 15) % 16;
             case BTN_REDSTONE -> c.redstone = c.redstone.next();
             case BTN_PRIORITY_UP -> c.priority = Math.min(SideConfig.MAX_PRIORITY, c.priority + 1);
             case BTN_PRIORITY_DOWN -> c.priority = Math.max(-SideConfig.MAX_PRIORITY, c.priority - 1);
