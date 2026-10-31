@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.storagenexus.terminal.TerminalMenu;
 import net.storagenexus.util.Menus;
 import net.storagenexus.util.StorageEvents;
@@ -60,7 +61,7 @@ public class TerminalBlock extends Block implements NetworkBlock {
         if (player instanceof ServerPlayer sp && level instanceof ServerLevel server) {
             open(sp, server, pos, crafting, p -> p.level() == server
                     && server.getBlockState(pos).getBlock() instanceof TerminalBlock
-                    && p.distanceToSqr(pos.getCenter()) <= 64, null);
+                    && p.distanceToSqr(Vec3.atCenterOf(pos)) <= 64, null);
         }
         return InteractionResult.SUCCESS;
     }

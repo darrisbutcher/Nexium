@@ -1,6 +1,5 @@
 package net.storagenexus.dimension;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,10 +24,6 @@ public class DimensionalInputBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(DimensionalInputBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {

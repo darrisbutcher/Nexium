@@ -9,11 +9,9 @@
           "name": "storagenexus:inventory_cable"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ],
   "random_sequence": "storagenexus:blocks/inventory_cable"

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
@@ -134,7 +134,7 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
     // ---- Rendering ------------------------------------------------------------------------------
 
     @Override
-    protected void renderExtraBg(GuiGraphics g, int mouseX, int mouseY) {
+    protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         int gx = leftPos + TerminalMenu.GRID_X, gy = topPos + TerminalMenu.GRID_Y;
         for (int r = 0; r < TerminalMenu.ROWS; r++) {
             for (int c = 0; c < TerminalMenu.COLS; c++) slot(g, gx + c * 18, gy + r * 18);
@@ -146,13 +146,13 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
         int knob = max == 0 ? 0 : (sh - 15) * scroll / max;
         g.fill(sx + 1, sy + knob, sx + 11, sy + knob + 15, max == 0 ? DARK : LIGHT);
         if (menu.isCrafting()) {
-            g.drawString(font, "→", leftPos + 94, topPos + 154, TEXT, false);
+            g.text(font, "→", leftPos + 94, topPos + 154, TEXT, false);
         }
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
         int gx = leftPos + TerminalMenu.GRID_X, gy = topPos + TerminalMenu.GRID_Y;
         int start = scroll * TerminalMenu.COLS;
         int hovered = cellAt(mouseX, mouseY);
@@ -164,17 +164,17 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
                 TerminalSyncPayload.FluidEntry e = visibleFluids.get(idx);
                 renderFluidIcon(g, e.fluid(), x, y);
                 String amt = Fmt.fluid(e.amount());
-                g.drawString(font, amt, x + 17 - font.width(amt), y + 9, 0xFFFFFFFF, true);
+                g.text(font, amt, x + 17 - font.width(amt), y + 9, 0xFFFFFFFF, true);
             } else {
                 TerminalSyncPayload.ItemEntry e = visibleItems.get(idx);
-                g.renderItem(e.stack(), x, y);
-                g.renderItemDecorations(font, e.stack(), x, y, Fmt.compact(e.count()));
+                g.item(e.stack(), x, y);
+                g.itemDecorations(font, e.stack(), x, y, Fmt.compact(e.count()));
             }
             if (i == hovered) g.fill(x, y, x + 16, y + 16, 0x80FFFFFF);
         }
         if (!menu.clientOnline()) {
             Component off = Component.translatable("message.storagenexus.network_offline").withStyle(ChatFormatting.RED);
-            g.drawString(font, off, gx + 81 - font.width(off) / 2, gy + 50, 0xFFFF5555, true);
+            g.text(font, off, gx + 81 - font.width(off) / 2, gy + 50, 0xFFFF5555, true);
         }
         if (hovered >= 0 && start + hovered < entryCount() && menu.getCarried().isEmpty()) {
             int idx = start + hovered;
@@ -188,9 +188,9 @@ public class TerminalScreen extends BaseScreen<TerminalMenu> {
         }
     }
 
-    private void renderFluidIcon(GuiGraphics g, Fluid fluid, int x, int y) {
+    private void renderFluidIcon(GuiGraphicsExtractor g, Fluid fluid, int x, int y) {
         if (fluid.getBucket() != Items.AIR) {
-            g.renderItem(new ItemStack(fluid.getBucket()), x, y);
+            g.item(new ItemStack(fluid.getBucket()), x, y);
         } else {
             int color = 0xFF000000 | FluidVariantRendering.getColor(FluidVariant.of(fluid));
             g.fill(x + 1, y + 1, x + 15, y + 15, color);

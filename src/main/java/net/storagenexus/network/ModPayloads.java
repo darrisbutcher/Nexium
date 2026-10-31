@@ -10,9 +10,9 @@ import net.storagenexus.terminal.TerminalSyncPayload;
 
 public final class ModPayloads {
     public static void init() {
-        PayloadTypeRegistry.playS2C().register(TerminalSyncPayload.TYPE, TerminalSyncPayload.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(TerminalActionPayload.TYPE, TerminalActionPayload.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(TerminalSyncPayload.TYPE, TerminalSyncPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(TerminalActionPayload.TYPE, TerminalActionPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(TerminalActionPayload.TYPE, (payload, context) -> {
             if (context.player().containerMenu instanceof TerminalMenu menu) {

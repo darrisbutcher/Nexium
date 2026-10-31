@@ -1,6 +1,5 @@
 package net.storagenexus.network;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,10 +21,6 @@ public class StorageConnectorBlock extends BaseEntityBlock implements NetworkBlo
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(StorageConnectorBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {

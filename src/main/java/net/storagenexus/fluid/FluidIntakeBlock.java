@@ -1,6 +1,5 @@
 package net.storagenexus.fluid;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -26,10 +25,6 @@ public class FluidIntakeBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(FluidIntakeBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -54,9 +49,9 @@ public class FluidIntakeBlock extends BaseEntityBlock {
             if (!level.isClientSide()) {
                 if (be.installRangeUpgrade()) {
                     stack.shrink(1);
-                    player.displayClientMessage(Component.translatable("message.storagenexus.upgrade_installed", stack.getHoverName()), true);
+                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_installed", stack.getHoverName()));
                 } else {
-                    player.displayClientMessage(Component.translatable("message.storagenexus.upgrade_rejected"), true);
+                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_rejected"));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -67,8 +62,8 @@ public class FluidIntakeBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof FluidIntakeBlockEntity be) {
-            player.displayClientMessage(Component.translatable("message.storagenexus.intake_status",
-                    Fmt.fluid(be.bufferAmount()), be.hasRangeUpgrade() ? "5x5" : "adjacent"), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.intake_status",
+                    Fmt.fluid(be.bufferAmount()), be.hasRangeUpgrade() ? "5x5" : "adjacent"));
         }
         return InteractionResult.SUCCESS;
     }

@@ -7,16 +7,14 @@
         {
           "type": "minecraft:item",
           "name": "storagenexus:compacting_drawer",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "include": [
-                "storagenexus:compacting_contents",
-                "storagenexus:upgrades"
-              ]
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "storagenexus:compacting_contents",
+              "storagenexus:upgrades"
+            ]
+          }
         }
       ]
     }

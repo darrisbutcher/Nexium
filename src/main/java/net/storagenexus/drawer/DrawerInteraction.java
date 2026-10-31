@@ -3,6 +3,7 @@ package net.storagenexus.drawer;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -87,7 +88,7 @@ public final class DrawerInteraction {
     /** Gives a stack to the player, dropping whatever does not fit. */
     public static void give(Player player, ItemStack stack) {
         if (stack.isEmpty()) return;
-        if (!player.getInventory().add(stack)) player.drop(stack, false);
+        if (!player.getInventory().add(stack)) player.drop(stack, false, Prediction.SERVER_ONLY);
     }
 
     private DrawerInteraction() {}

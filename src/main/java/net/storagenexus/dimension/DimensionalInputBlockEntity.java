@@ -1,6 +1,6 @@
 package net.storagenexus.dimension;
 
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -39,7 +39,7 @@ public class DimensionalInputBlockEntity extends LinkedBlockEntity {
         }
         @Override public int getMaxStackSize() { return 2; }
     };
-    private final InventoryStorage storage = InventoryStorage.of(buffer, null);
+    private final ContainerStorage storage = ContainerStorage.of(buffer, null);
 
     private int cooldown;
     private int roundRobin;

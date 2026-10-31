@@ -103,9 +103,9 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
         if (stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade() && be instanceof Upgradeable upgradeable) {
             if (!level.isClientSide()) {
                 if (upgradeable.tryInstall(stack)) {
-                    player.displayClientMessage(Component.translatable("message.storagenexus.upgrade_installed", stack.getHoverName()), true);
+                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_installed", stack.getHoverName()));
                 } else {
-                    player.displayClientMessage(Component.translatable("message.storagenexus.upgrade_rejected"), true);
+                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_rejected"));
                 }
             }
             return InteractionResult.SUCCESS;

@@ -3,16 +3,16 @@ package net.storagenexus.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -63,7 +63,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
         BlockEntityRenderer.super.extractRenderState(be, state, partialTick, cameraPos, crumbling);
         state.facing = be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         state.frontLight = be.getLevel() != null
-                ? LevelRenderer.getLightColor(be.getLevel(), be.getBlockPos().relative(state.facing))
+                ? LightCoordsUtil.getLightCoords(be.getLevel(), be.getBlockPos().relative(state.facing))
                 : state.lightCoords;
         for (int i = 0; i < 4; i++) state.present[i] = false;
         fill(be, state);
@@ -79,7 +79,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
 
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.YP.rotationDegrees(-state.facing.toYRot()));
+        pose.rotateDegrees(Axis.YP, -state.facing.toYRot());
         pose.translate(0, 0, 0.5 + 0.005);
         for (int i = 0; i < layout.length; i++) {
             if (!state.present[i]) continue;

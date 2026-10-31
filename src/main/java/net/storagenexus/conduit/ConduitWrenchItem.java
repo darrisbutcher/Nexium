@@ -49,10 +49,10 @@ public class ConduitWrenchItem extends Item {
             SideConfig cfg = be.config(t, side);
             cfg.mode = cfg.mode.next();
             be.changed();
-            player.displayClientMessage(Component.translatable("message.storagenexus.conduit_mode",
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.conduit_mode",
                     Component.translatable("conduit.storagenexus." + t.key()),
                     Component.translatable("direction.storagenexus." + side.getSerializedName()),
-                    Component.translatable("mode.storagenexus." + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))), true);
+                    Component.translatable("mode.storagenexus." + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))));
             break;
         }
         return InteractionResult.SUCCESS;

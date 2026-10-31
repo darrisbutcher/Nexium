@@ -1,6 +1,5 @@
 package net.storagenexus.drawer;
 
-import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -26,10 +25,6 @@ public class DrawerControllerBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(DrawerControllerBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -65,7 +60,7 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             boolean dbl = DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
             int moved = dbl ? be.insertAllFromInventory(player) : be.insertFromHand(stack);
             if (moved == 0 && !dbl) {
-                player.displayClientMessage(Component.translatable("message.storagenexus.no_matching_drawer"), true);
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.no_matching_drawer"));
             }
         }
         return InteractionResult.SUCCESS;
@@ -77,7 +72,7 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
                 be.insertAllFromInventory(player);
             } else {
-                player.displayClientMessage(Component.translatable("message.storagenexus.controller_info", be.drawerCount()), true);
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_info", be.drawerCount()));
             }
         }
         return InteractionResult.SUCCESS;

@@ -5,7 +5,10 @@ Ender IO-style item and fluid conduits.
 
 ## Building
 
-You need **JDK 25** installed (Minecraft 26.x requires Java 25).
+Any Java 17+ is enough to start the build: Gradle runs itself on JDK 25 and compiles with JDK 25,
+using one you have installed or downloading one automatically (see
+`gradle/gradle-daemon-jvm.properties`). The first build also downloads Minecraft and Fabric, so it
+takes several minutes.
 
 ```
 # Windows
@@ -14,25 +17,12 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.1.jar`. Put it in your `mods` folder next to
-**Fabric API** for 26.3.
+The mod jar ends up in `build/libs/storage-nexus-1.0.1.jar` (not the `-sources` one). Put it in
+your `mods` folder next to **Fabric API** for 26.3.
 
-If Gradle can't find a version, update the numbers in `gradle.properties` from
-https://fabricmc.net/develop (Loom, loader and Fabric API for 26.3). If Loom says it needs a newer
-Gradle, change the version in `gradle/wrapper/gradle-wrapper.properties`.
-
-### First-build notes
-
-This code was written without access to the 26.3 jars, so a few API names may have moved.
-The most likely spots, in order:
-
-1. `client/render/*` — the block entity renderers (drawer front display, link labels, facades).
-   If they won't compile and you just want to play, delete the `client/render` folder and the
-   `BlockEntityRenderers.register(...)` lines in `StorageNexusClient`. Everything still works,
-   you just lose the item icons on drawer fronts.
-2. `appendHoverText(...)` tooltip signatures and `GuiGraphics` tooltip calls in the screens.
-3. `SavedDataType` constructor in `LinkRegistry` / `AnchorRegistry`.
-4. `ResourceKey#identifier()` in `StorageTabletItem`.
+Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
+Loom 1.19.3. To move to a newer version, update `gradle.properties` from
+https://fabricmc.net/develop.
 
 ## How it works in game
 

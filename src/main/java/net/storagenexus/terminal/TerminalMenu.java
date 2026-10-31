@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -229,7 +230,7 @@ public class TerminalMenu extends BaseMenu {
                 ItemStack taken = extract(net, ItemVariant.of(payload.item()), payload.item().getMaxStackSize());
                 sp.getInventory().add(taken);
                 if (!taken.isEmpty()) insert(net, taken);
-                if (!taken.isEmpty()) sp.drop(taken, false); // came from an extract-only source
+                if (!taken.isEmpty()) sp.drop(taken, false, Prediction.SERVER_ONLY); // came from an extract-only source
             }
             case TerminalActionPayload.INSERT_CARRIED -> {
                 if (carried.isEmpty()) return;
@@ -254,7 +255,7 @@ public class TerminalMenu extends BaseMenu {
                         ItemStack filled = new ItemStack(fluid.getBucket());
                         carried.shrink(1);
                         if (carried.isEmpty()) setCarried(filled);
-                        else if (!sp.getInventory().add(filled)) sp.drop(filled, false);
+                        else if (!sp.getInventory().add(filled)) sp.drop(filled, false, Prediction.SERVER_ONLY);
                     }
                 }
             }
@@ -347,7 +348,7 @@ public class TerminalMenu extends BaseMenu {
             ServerLevel level = (ServerLevel) sp.level();
             CraftingInput input = craftSlots.asCraftInput();
             Optional<RecipeHolder<CraftingRecipe>> recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
-            ItemStack result = recipe.map(r -> r.value().assemble(input, level.registryAccess())).orElse(ItemStack.EMPTY);
+            ItemStack result = recipe.map(r -> r.value().assemble(input)).orElse(ItemStack.EMPTY);
             resultSlots.setItem(0, result);
             broadcastChanges();
         }
@@ -387,7 +388,7 @@ public class TerminalMenu extends BaseMenu {
                 ItemStack s = craftSlots.removeItemNoUpdate(i);
                 if (s.isEmpty()) continue;
                 if (net != null) insert(net, s);
-                if (!s.isEmpty() && !p.getInventory().add(s)) p.drop(s, false);
+                if (!s.isEmpty() && !p.getInventory().add(s)) p.drop(s, false, Prediction.SERVER_ONLY);
             }
         }
         if (onClose != null) onClose.run();

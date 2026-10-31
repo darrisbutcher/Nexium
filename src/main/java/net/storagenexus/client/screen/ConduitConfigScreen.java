@@ -1,6 +1,6 @@
 package net.storagenexus.client.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -89,22 +89,22 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     }
 
     @Override
-    protected void renderExtraBg(GuiGraphics g, int mouseX, int mouseY) {
+    protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
         g.fill(leftPos + 108, topPos + 52, leftPos + 122, topPos + 66, 0xFF000000);
         g.fill(leftPos + 109, topPos + 53, leftPos + 121, topPos + 65, CHANNEL_COLORS[channel]);
         String prio = Integer.toString(menu.get(ConduitConfigMenu.D_PRIORITY) - 100);
-        g.drawString(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, TEXT, false);
-        g.drawString(font, "F", leftPos + 143, topPos + 66, TEXT, false);
-        g.drawString(font, "S", leftPos + 143, topPos + 88, TEXT, false);
+        g.text(font, prio, leftPos + 34 - font.width(prio) / 2, topPos + 90, TEXT, false);
+        g.text(font, "F", leftPos + 143, topPos + 66, TEXT, false);
+        g.text(font, "S", leftPos + 143, topPos + 88, TEXT, false);
         Component conn = Component.translatable(menu.get(ConduitConfigMenu.D_CONNECTED) == 1
                 ? "screen.storagenexus.connected" : "screen.storagenexus.not_connected");
-        g.drawString(font, conn, leftPos + imageWidth - 8 - font.width(conn), topPos + 6, 0xFF404040, false);
+        g.text(font, conn, leftPos + imageWidth - 8 - font.width(conn), topPos + 6, 0xFF404040, false);
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
         if (mouseX >= leftPos + 108 && mouseX < leftPos + 122 && mouseY >= topPos + 52 && mouseY < topPos + 66) {
             int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
             g.setComponentTooltipForNextFrame(font, java.util.List.of(Component.translatable("color.minecraft." + COLOR_KEYS[channel])), mouseX, mouseY);

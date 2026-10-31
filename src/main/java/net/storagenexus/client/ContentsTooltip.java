@@ -55,9 +55,8 @@ public final class ContentsTooltip {
 
         ItemContainerContents upgrades = stack.get(ModComponents.UPGRADES);
         if (upgrades != null) {
-            for (ItemStack up : upgrades.nonEmptyItems()) {
-                lines.add(Component.literal("+ ").append(up.getHoverName()).withStyle(ChatFormatting.DARK_AQUA));
-            }
+            upgrades.nonEmptyItemCopyStream().forEach(up ->
+                lines.add(Component.literal("+ ").append(up.getHoverName()).withStyle(ChatFormatting.DARK_AQUA)));
         }
     }
 

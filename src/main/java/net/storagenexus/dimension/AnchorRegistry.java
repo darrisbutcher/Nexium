@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import net.storagenexus.StorageNexus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class AnchorRegistry extends SavedData {
     private static final Codec<AnchorRegistry> CODEC = Entry.CODEC.listOf().xmap(AnchorRegistry::new, r -> List.copyOf(r.anchors.values()));
 
     public static final SavedDataType<AnchorRegistry> TYPE =
-            new SavedDataType<>("storagenexus_anchors", AnchorRegistry::new, CODEC, null);
+            new SavedDataType<>(StorageNexus.id("anchors"), AnchorRegistry::new, CODEC, null);
 
     private final Map<GlobalPos, Entry> anchors = new HashMap<>();
     /** Not saved: how many open tablets are holding each on-demand anchor awake. */
@@ -63,11 +64,11 @@ public class AnchorRegistry extends SavedData {
      * anchors never release each other's chunks. Call after any anchor change.
      */
     public void refreshArea(ServerLevel level, BlockPos anchor) {
-        ChunkPos center = new ChunkPos(anchor);
+        ChunkPos center = ChunkPos.containing(anchor);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                ChunkPos chunk = new ChunkPos(center.x + dx, center.z + dz);
-                level.setChunkForced(chunk.x, chunk.z, wanted(level, chunk));
+                ChunkPos chunk = new ChunkPos(center.x() + dx, center.z() + dz);
+                level.setChunkForced(chunk.x(), chunk.z(), wanted(level, chunk));
             }
         }
     }
@@ -81,8 +82,8 @@ public class AnchorRegistry extends SavedData {
     }
 
     private static boolean covers(BlockPos anchor, ChunkPos chunk) {
-        ChunkPos ac = new ChunkPos(anchor);
-        return Math.abs(ac.x - chunk.x) <= 1 && Math.abs(ac.z - chunk.z) <= 1;
+        ChunkPos ac = ChunkPos.containing(anchor);
+        return Math.abs(ac.x() - chunk.x()) <= 1 && Math.abs(ac.z() - chunk.z()) <= 1;
     }
 
     /**
@@ -102,13 +103,13 @@ public class AnchorRegistry extends SavedData {
      * returns a callback that puts it back to sleep. Otherwise returns null.
      */
     public @Nullable Runnable loadOnDemand(ServerLevel level, BlockPos target) {
-        ChunkPos tc = new ChunkPos(target);
+        ChunkPos tc = ChunkPos.containing(target);
         for (Entry e : anchors.values()) {
             if (!e.onDemand() || !e.pos().dimension().equals(level.dimension()) || !covers(e.pos().pos(), tc)) continue;
             GlobalPos key = e.pos();
             int count = demand.merge(key, 1, Integer::sum);
             if (count == 1) refreshArea(level, key.pos());
-            level.getChunk(tc.x, tc.z); // load now, synchronously
+            level.getChunk(tc.x(), tc.z()); // load now, synchronously
             return () -> {
                 int left = demand.merge(key, -1, Integer::sum);
                 if (left <= 0) {

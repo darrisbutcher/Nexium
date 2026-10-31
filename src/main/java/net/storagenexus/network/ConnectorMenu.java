@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.storagenexus.filter.FilterItem;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
@@ -22,7 +23,7 @@ public class ConnectorMenu extends BaseMenu {
     private final ContainerData data;
 
     public ConnectorMenu(int id, Inventory inventory, BlockPos pos) {
-        this(id, inventory, null);
+        this(id, inventory, (ConnectorBlockEntity) null);
     }
 
     public ConnectorMenu(int id, Inventory inventory, ConnectorBlockEntity be) {
@@ -62,6 +63,6 @@ public class ConnectorMenu extends BaseMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return be == null || (!be.isRemoved() && player.distanceToSqr(be.getBlockPos().getCenter()) <= 64);
+        return be == null || (!be.isRemoved() && player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) <= 64);
     }
 }

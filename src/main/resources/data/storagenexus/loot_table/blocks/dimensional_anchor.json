@@ -9,11 +9,9 @@
           "name": "storagenexus:dimensional_anchor"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ],
   "random_sequence": "storagenexus:blocks/dimensional_anchor"

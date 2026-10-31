@@ -2,13 +2,13 @@ package net.storagenexus.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.dimension.LinkedBlockEntity;
@@ -47,11 +47,11 @@ public class LinkLabelRenderer<T extends LinkedBlockEntity> implements BlockEnti
         if (!state.visible) return;
         pose.pushPose();
         pose.translate(0.5, 1.35, 0.5);
-        pose.mulPose(camera.orientation);
+        pose.rotate(camera.orientation);
         pose.scale(0.025f, -0.025f, 0.025f);
         float w = font.width(state.name);
         collector.submitText(pose, -w / 2f, 0, Component.literal(state.name).getVisualOrderText(), false,
-                Font.DisplayMode.SEE_THROUGH, LightTexture.FULL_BRIGHT, 0xFFFFFFFF, 0x40000000, 0);
+                Font.DisplayMode.SEE_THROUGH, LightCoordsUtil.FULL_BRIGHT, 0xFFFFFFFF, 0x40000000, 0);
         pose.popPose();
     }
 }

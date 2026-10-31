@@ -1,6 +1,6 @@
 package net.storagenexus.util;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,7 +15,7 @@ public final class Menus {
     }
 
     public static <D> void open(ServerPlayer player, Component title, D data, Factory factory) {
-        player.openMenu(new ExtendedScreenHandlerFactory<D>() {
+        player.openMenu(new ExtendedMenuProvider<D>() {
             @Override
             public D getScreenOpeningData(ServerPlayer p) {
                 return data;

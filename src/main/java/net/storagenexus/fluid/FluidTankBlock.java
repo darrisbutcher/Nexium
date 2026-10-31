@@ -1,6 +1,5 @@
 package net.storagenexus.fluid;
 
-import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -32,10 +31,6 @@ public class FluidTankBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(FluidTankBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -77,8 +72,8 @@ public class FluidTankBlock extends BaseEntityBlock {
         if (stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade()) {
             if (!level.isClientSide()) {
                 boolean ok = be.tryInstall(stack);
-                player.displayClientMessage(Component.translatable(ok ? "message.storagenexus.upgrade_installed"
-                        : "message.storagenexus.upgrade_rejected", stack.getHoverName()), true);
+                player.sendOverlayMessage(Component.translatable(ok ? "message.storagenexus.upgrade_installed"
+                        : "message.storagenexus.upgrade_rejected", stack.getHoverName()));
             }
             return InteractionResult.SUCCESS;
         }
@@ -98,8 +93,8 @@ public class FluidTankBlock extends BaseEntityBlock {
                 FluidDrawerBlockEntity.FluidSlot slot = be.slot(0);
                 Component name = slot.isResourceBlank() ? Component.translatable("message.storagenexus.empty")
                         : net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes.getName(slot.getResource());
-                player.displayClientMessage(Component.translatable("message.storagenexus.tank_contents", name,
-                        Fmt.fluid(slot.getAmount()), Fmt.fluid(slot.capacity())), true);
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.tank_contents", name,
+                        Fmt.fluid(slot.getAmount()), Fmt.fluid(slot.capacity())));
             }
         }
         return InteractionResult.SUCCESS;

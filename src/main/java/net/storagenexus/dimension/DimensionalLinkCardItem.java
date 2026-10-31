@@ -50,7 +50,7 @@ public class DimensionalLinkCardItem extends Item {
                     String requested = custom != null ? custom.getString() : null;
                     id = reg.create(requested, input.globalPos(), server.getRandom());
                     if (id == null) {
-                        player.displayClientMessage(Component.translatable("message.storagenexus.name_taken", requested).withStyle(ChatFormatting.RED), false);
+                        player.sendSystemMessage(Component.translatable("message.storagenexus.name_taken", requested).withStyle(ChatFormatting.RED));
                         return InteractionResult.FAIL;
                     }
                 }
@@ -60,14 +60,14 @@ public class DimensionalLinkCardItem extends Item {
             String name = reg.get(id).name();
             card.set(ModComponents.LINK_ID, id);
             card.set(ModComponents.LINK_NAME, name);
-            player.displayClientMessage(Component.translatable("message.storagenexus.card_input", name).withStyle(ChatFormatting.AQUA), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.card_input", name).withStyle(ChatFormatting.AQUA));
             return InteractionResult.SUCCESS;
         }
 
         if (linked instanceof DimensionalOutputBlockEntity output) {
             UUID id = card.get(ModComponents.LINK_ID);
             if (id == null || reg.get(id) == null) {
-                player.displayClientMessage(Component.translatable("message.storagenexus.card_empty").withStyle(ChatFormatting.RED), true);
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.card_empty").withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
             reg.addOutput(id, output.globalPos());
@@ -79,7 +79,7 @@ public class DimensionalLinkCardItem extends Item {
                     if (other.refreshName()) other.sync();
                 }
             }
-            player.displayClientMessage(Component.translatable("message.storagenexus.card_output", output.displayName()).withStyle(ChatFormatting.AQUA), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.card_output", output.displayName()).withStyle(ChatFormatting.AQUA));
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

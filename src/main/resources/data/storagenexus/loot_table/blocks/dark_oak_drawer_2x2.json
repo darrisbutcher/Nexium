@@ -7,16 +7,14 @@
         {
           "type": "minecraft:item",
           "name": "storagenexus:dark_oak_drawer_2x2",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "include": [
-                "storagenexus:drawer_slots",
-                "storagenexus:upgrades"
-              ]
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "storagenexus:drawer_slots",
+              "storagenexus:upgrades"
+            ]
+          }
         }
       ]
     }

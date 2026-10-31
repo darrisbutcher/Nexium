@@ -88,7 +88,7 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     private boolean configure(ItemVariant resource) {
         if (units > 0 || (isLocked() && tierCount > 0)) return false;
         if (!(level instanceof ServerLevel server)) return false;
-        if (!resource.getComponents().isEmpty()) {
+        if (resource.hasComponents()) {
             // Items with custom data never compact; treat as single tier.
             tiers[0] = resource; ratio[0] = 1; tierCount = 1;
             for (int i = 1; i < TIERS; i++) { tiers[i] = ItemVariant.blank(); ratio[i] = 1; }

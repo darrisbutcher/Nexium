@@ -1,6 +1,5 @@
 package net.storagenexus.conduit;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -49,10 +48,6 @@ public class ConduitBundleBlock extends BaseEntityBlock {
         registerDefaultState(s);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(ConduitBundleBlock::new);
-    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

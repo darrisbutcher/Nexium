@@ -1,6 +1,6 @@
 package net.storagenexus.client.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.storagenexus.upgrade.UpgradeMenu;
@@ -11,7 +11,7 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
     }
 
     @Override
-    protected void renderExtraBg(GuiGraphics g, int mouseX, int mouseY) {
-        g.drawString(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, TEXT, false);
+    protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, TEXT, false);
     }
 }

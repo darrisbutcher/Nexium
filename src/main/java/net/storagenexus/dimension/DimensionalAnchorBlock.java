@@ -1,6 +1,5 @@
 package net.storagenexus.dimension;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -21,10 +20,6 @@ public class DimensionalAnchorBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(DimensionalAnchorBlock::new);
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -42,7 +37,7 @@ public class DimensionalAnchorBlock extends BaseEntityBlock {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DimensionalAnchorBlockEntity be) {
             be.activate();
             if (placer instanceof Player p) {
-                p.displayClientMessage(Component.translatable("message.storagenexus.anchor_mode.always"), true);
+                p.sendOverlayMessage(Component.translatable("message.storagenexus.anchor_mode.always"));
             }
         }
     }
@@ -51,8 +46,8 @@ public class DimensionalAnchorBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DimensionalAnchorBlockEntity be) {
             be.toggleMode();
-            player.displayClientMessage(Component.translatable(be.isOnDemand()
-                    ? "message.storagenexus.anchor_mode.on_demand" : "message.storagenexus.anchor_mode.always"), true);
+            player.sendOverlayMessage(Component.translatable(be.isOnDemand()
+                    ? "message.storagenexus.anchor_mode.on_demand" : "message.storagenexus.anchor_mode.always"));
         }
         return InteractionResult.SUCCESS;
     }

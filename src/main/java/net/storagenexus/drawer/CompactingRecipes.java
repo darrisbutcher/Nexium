@@ -75,7 +75,7 @@ public final class CompactingRecipes {
         List<ItemStack> grid = new ArrayList<>(Collections.nCopies(size * size, new ItemStack(item)));
         CraftingInput input = CraftingInput.of(size, size, grid);
         Optional<RecipeHolder<CraftingRecipe>> recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
-        return recipe.map(r -> r.value().assemble(input, level.registryAccess())).orElse(ItemStack.EMPTY);
+        return recipe.map(r -> r.value().assemble(input)).orElse(ItemStack.EMPTY);
     }
 
     private CompactingRecipes() {}

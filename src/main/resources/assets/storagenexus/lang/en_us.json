@@ -139,6 +139,7 @@
   "screen.storagenexus.speed": "Speed",
   "screen.storagenexus.upgrades": "Upgrades",
   "screen.storagenexus.whitelist": "Whitelist",
+  "tag.item.storagenexus.drawers": "Drawers",
   "tooltip.storagenexus.blacklist": "Blacklist",
   "tooltip.storagenexus.capacity_upgrade": "Capacity x%s",
   "tooltip.storagenexus.capacity_upgrade.stack": "Several upgrades add together",

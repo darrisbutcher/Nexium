@@ -44,7 +44,7 @@ public class StorageTabletItem extends Item {
         if (!level.isClientSide()) {
             GlobalPos link = GlobalPos.of(level.dimension(), context.getClickedPos().immutable());
             context.getItemInHand().set(ModComponents.TERMINAL_LINK, link);
-            player.displayClientMessage(Component.translatable("message.storagenexus.tablet_linked", describe(link)), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_linked", describe(link)));
         }
         return InteractionResult.SUCCESS;
     }
@@ -55,7 +55,7 @@ public class StorageTabletItem extends Item {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         GlobalPos link = stack.get(ModComponents.TERMINAL_LINK);
         if (link == null) {
-            player.displayClientMessage(Component.translatable("message.storagenexus.tablet_unlinked").withStyle(ChatFormatting.RED), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_unlinked").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
         MinecraftServer server = level.getServer();
@@ -74,7 +74,7 @@ public class StorageTabletItem extends Item {
         }
         if (!(target.getBlockState(pos).getBlock() instanceof TerminalBlock)) {
             if (release != null) release.run();
-            player.displayClientMessage(Component.translatable("message.storagenexus.tablet_terminal_missing").withStyle(ChatFormatting.RED), true);
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_terminal_missing").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
         final Runnable onClose = release;
@@ -93,7 +93,7 @@ public class StorageTabletItem extends Item {
     }
 
     private static void offline(Player player) {
-        player.displayClientMessage(Component.translatable("message.storagenexus.network_offline").withStyle(ChatFormatting.RED), true);
+        player.sendOverlayMessage(Component.translatable("message.storagenexus.network_offline").withStyle(ChatFormatting.RED));
     }
 
     private static Component describe(GlobalPos link) {
