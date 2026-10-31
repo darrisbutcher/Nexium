@@ -1,12 +1,15 @@
 package net.storagenexus.barrel;
 
-/** Barrel upgrade path: a vanilla barrel has 27 slots and every tier adds another 18. */
+/**
+ * Barrel upgrade path. Iron is 5 rows of 9; from Gold on every tier is a full 6-row grid,
+ * three columns wider than the tier below (6x11, 6x14, 6x17, 6x20).
+ */
 public enum BarrelTier {
     IRON("iron", 45, 0xC8CDD4),
-    GOLD("gold", 63, 0xF8D23C),
-    DIAMOND("diamond", 81, 0x4FE6DB),
-    EMERALD("emerald", 99, 0x41D87A),
-    NETHERITE("netherite", 117, 0x4A4150);
+    GOLD("gold", 66, 0xF8D23C),
+    DIAMOND("diamond", 84, 0x4FE6DB),
+    EMERALD("emerald", 102, 0x41D87A),
+    NETHERITE("netherite", 120, 0x4A4150);
 
     private final String id;
     private final int slots;

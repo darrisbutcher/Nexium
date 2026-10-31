@@ -17,7 +17,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.23.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.0.24.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -67,8 +67,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   it join too, and slaves can chain.
 
 ### Barrels
-* **Iron, Gold, Diamond, Emerald and Netherite Barrels** hold 45, 63, 81, 99 and 117 slots (a vanilla barrel has 27;
-  every tier adds 18). Bigger barrels get a wider screen, never taller than a double chest, each in its tier's colour. Right-click a barrel with the matching **Barrel
+* **Iron, Gold, Diamond, Emerald and Netherite Barrels** hold 45, 66, 84, 102 and 120 slots: Iron is
+  5 rows of 9, and from Gold on every slot grid is full, 6 rows of 11, 14, 17 and 20. Bigger barrels get a wider screen, never taller than a double chest, each in its tier's colour. Right-click a barrel with the matching **Barrel
   Upgrade** to upgrade it in place: Iron upgrades a vanilla barrel, Gold an Iron Barrel, Diamond a Gold
   Barrel, Emerald a Diamond Barrel, Netherite an Emerald Barrel. What is inside stays inside.
 

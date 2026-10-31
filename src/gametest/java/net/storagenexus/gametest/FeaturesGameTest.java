@@ -122,12 +122,15 @@ public class FeaturesGameTest {
         net.minecraft.server.level.ServerLevel level = h.getLevel();
         BlockPos abs = h.absolutePos(pos);
         h.assertTrue(!ModItems.BARREL_UPGRADES.get(BarrelTier.GOLD).apply(level, abs), "gold can't skip iron");
-        int[] expected = {45, 63, 81, 99, 117};
+        int[] expected = {45, 66, 84, 102, 120};
         for (BarrelTier tier : BarrelTier.values()) {
             h.assertTrue(ModItems.BARREL_UPGRADES.get(tier).apply(level, abs), tier + " upgrade applies");
             TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
             h.assertValueEqual(be.getContainerSize(), expected[tier.ordinal()], tier + " slots");
             h.assertValueEqual(be.getItem(3).getCount(), 10, tier + " kept the planks");
+            int slots = tier.slots();
+            h.assertValueEqual(net.storagenexus.barrel.BarrelMenu.rows(slots) * net.storagenexus.barrel.BarrelMenu.columns(slots), slots,
+                    tier + " fills its grid with no gaps");
         }
         h.assertValueEqual(level.getEntitiesOfClass(ItemEntity.class, new AABB(abs).inflate(3)).size(), 0, "nothing dropped");
         h.succeed();
