@@ -79,9 +79,9 @@ world, or crafted from a book and any drawer) explains everything in game.
 ### Conduits
 * Item conduits (Tier 1-2) and Fluid conduits (Tier 1-3) share one block. Placed conduits show their
   tier: a gold trim for Tier 2 fluid, green for the top tier of each.
-* **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings, which
-  also name what is on the selected side
-  (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades).
+* **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings
+  (mode, colour channel, redstone control, priority, round-robin, filter, speed upgrades). The
+  settings screen also names what is on the selected side.
 * Right-click a conduit with any full block to give it a **facade**; wrench it to take it off.
 * **Fluid Intake** pulls from source blocks (infinite water is never drained).
 * **Basic Filter** (whitelist/blacklist, exact match) and **Advanced Filter** (matches by item tag).
