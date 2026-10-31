@@ -14,7 +14,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.0.jar`. Put it in your `mods` folder next to
+The mod jar ends up in `build/libs/storage-nexus-1.0.1.jar`. Put it in your `mods` folder next to
 **Fabric API** for 26.3.
 
 If Gradle can't find a version, update the numbers in `gradle.properties` from
@@ -42,6 +42,8 @@ The most likely spots, in order:
   a stack (sneak for one item). Break drawers from the side.
 * Right-click with an upgrade to install it; sneak + empty hand opens the 4 upgrade slots.
 * Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Netherite x16.
+* Breaking a drawer, fluid drawer or fluid tank keeps its contents and upgrades in the dropped item
+  (like a shulker box); the tooltip shows what is inside. Place it to get everything back.
 * **Compacting Drawer**: nuggets/ingots/blocks (any reversible 9:1 or 4:1 recipe), 54 stacks of the
   smallest form.
 * **Drawer Controller**: drawers touching it or each other within **16 blocks** form a cluster.
@@ -64,6 +66,8 @@ The most likely spots, in order:
 ### Dimensional Input / Output
 * Click an Input with a **Dimensional Link Card**, then click Outputs. Each link gets a unique name
   (random, or rename the card in an anvil first). Rename later in either block's screen.
+* To move an Input, break it and click the new one with the same card: it takes over the link and
+  all its Outputs.
 * Outputs push into the block they face, including any storage-network block. Outputs can have a filter
   so one Input can split items by type. If nothing can take an item, the Input's buffer backs up.
 * Transfer Speed Upgrade in the Input: 1 = 16 items per move, 2 = full stacks.
