@@ -257,7 +257,6 @@
   "redstone.storagenexus.never": "Never active",
   "redstone.storagenexus.with_signal": "Active with signal",
   "redstone.storagenexus.without_signal": "Active without signal",
-  "screen.storagenexus.barrel_usage": "%s / %s",
   "screen.storagenexus.blacklist": "Blacklist",
   "screen.storagenexus.buffer": "Buffer",
   "screen.storagenexus.bus_export": "Mode: Export",
