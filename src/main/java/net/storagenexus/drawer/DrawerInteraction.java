@@ -21,7 +21,14 @@ import java.util.UUID;
 /** Hit testing for drawer fronts, double-click detection and left-click extraction. */
 public final class DrawerInteraction {
     private static final int DOUBLE_CLICK_TICKS = 10;
+    /**
+     * While the attack button is held, the client re-sends the attack every tick, so a
+     * single click arrives 2-3 times. Attacks on the same block closer together than this
+     * count as the same click.
+     */
+    private static final int HELD_ATTACK_TICKS = 3;
     private static final Map<UUID, Click> LAST_CLICK = new HashMap<>();
+    private static final Map<UUID, Click> LAST_ATTACK = new HashMap<>();
 
     private record Click(BlockPos pos, long time) {}
 
@@ -32,12 +39,18 @@ public final class DrawerInteraction {
             if (direction != state.getValue(BlockStateProperties.HORIZONTAL_FACING)) return InteractionResult.PASS;
             BlockEntity be = level.getBlockEntity(pos);
             if (!(be instanceof ItemDrawer drawer)) return InteractionResult.PASS;
-            if (!level.isClientSide()) {
+            if (!level.isClientSide() && isNewAttack(player, pos, level.getGameTime())) {
                 int slot = slotFromLook(player, state, pos, drawer.slotCount());
                 if (slot >= 0) drawer.extractToPlayer(slot, player, player.isShiftKeyDown());
             }
             return InteractionResult.SUCCESS;
         });
+    }
+
+    /** False for the repeats the client sends while the attack button stays held. Records the attack. */
+    static boolean isNewAttack(Player player, BlockPos pos, long gameTime) {
+        Click last = LAST_ATTACK.put(player.getUUID(), new Click(pos.immutable(), gameTime));
+        return last == null || !last.pos.equals(pos) || gameTime - last.time > HELD_ATTACK_TICKS;
     }
 
     /** True when the same player clicked the same block within half a second. Records the click. */

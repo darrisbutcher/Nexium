@@ -52,6 +52,7 @@ public class DrawerControllerBlock extends BaseEntityBlock {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof DrawerControllerBlockEntity be)) return InteractionResult.PASS;
+        if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND; // info, reach, double-click dump
         if (stack.getItem() instanceof BucketItem || stack.is(Items.BUCKET)) {
             if (!level.isClientSide()) FluidStorageUtil.interactWithFluidStorage(be.getFluidStorage(), player, hand);
             return InteractionResult.SUCCESS;
@@ -72,7 +73,9 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
                 be.insertAllFromInventory(player);
             } else {
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_info", be.drawerCount()));
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_info",
+                        be.drawerCount(), DrawerControllerBlockEntity.RANGE));
+                if (level instanceof ServerLevel server) be.showRange(server);
             }
         }
         return InteractionResult.SUCCESS;

@@ -32,7 +32,7 @@ import net.storagenexus.util.StorageEvents;
 /**
  * Base for every block with a drawer-style front: item drawers, the compacting drawer
  * and fluid drawers. Handles facing, installing upgrades by right-clicking with them,
- * and sneak + empty hand to open the upgrade slots.
+ * and opening the upgrade slots (empty hand on the side or top, or sneaking).
  */
 public abstract class FacingDrawerBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -110,6 +110,8 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
+        // Empty hand: only reaches useWithoutItem if we hand it on explicitly
+        if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND;
         int slot = DrawerInteraction.hitSlot(state, hit, frontSlots(state));
         if (slot < 0) return InteractionResult.PASS;
         boolean dbl = !level.isClientSide() && DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
@@ -119,13 +121,14 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         BlockEntity be = level.getBlockEntity(pos);
-        if (player.isSecondaryUseActive() && be instanceof Upgradeable upgradeable) {
+        int slot = DrawerInteraction.hitSlot(state, hit, frontSlots(state));
+        // Upgrade slots: right-click the side or top, or sneak + right-click anywhere
+        if ((slot < 0 || player.isSecondaryUseActive()) && be instanceof Upgradeable upgradeable) {
             if (player instanceof ServerPlayer sp) {
                 Menus.open(sp, getName(), pos, (id, inv, p) -> new UpgradeMenu(id, inv, upgradeable, be));
             }
             return InteractionResult.SUCCESS;
         }
-        int slot = DrawerInteraction.hitSlot(state, hit, frontSlots(state));
         if (slot < 0) return InteractionResult.PASS;
         boolean dbl = !level.isClientSide() && DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
         return useFrontEmpty(state, level, pos, player, slot, dbl);

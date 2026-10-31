@@ -8,6 +8,8 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +41,8 @@ public class DrawerControllerBlockEntity extends BlockEntity {
 
     private final List<BlockPos> cluster = new ArrayList<>();
     private final Set<BlockPos> clusterSet = new HashSet<>();
+    /** The controller and every slave in the cluster: each one's reach is measured from it. */
+    private final List<BlockPos> anchors = new ArrayList<>();
     private long builtAtVersion = -1;
 
     private final ControllerItemStorage itemStorage = new ControllerItemStorage();
@@ -69,6 +73,8 @@ public class DrawerControllerBlockEntity extends BlockEntity {
         builtAtVersion = v;
         cluster.clear();
         clusterSet.clear();
+        anchors.clear();
+        anchors.add(worldPosition);
 
         // BFS; each node remembers the controller/slave its reach is measured from.
         Map<BlockPos, BlockPos> anchorOf = new HashMap<>();
@@ -88,9 +94,44 @@ public class DrawerControllerBlockEntity extends BlockEntity {
                 if (chebyshev(next, anchor) > RANGE) continue;
                 anchorOf.put(next, slave ? next : anchor);
                 queue.add(next);
+                if (slave) anchors.add(next);
                 if (drawer) {
                     cluster.add(next);
                     clusterSet.add(next);
+                }
+            }
+        }
+    }
+
+    /**
+     * Outlines the reach of the controller and of every slave with particles for a few
+     * seconds, and marks each connected drawer.
+     */
+    public void showRange(ServerLevel level) {
+        refresh();
+        for (BlockPos a : anchors) outline(level, a);
+        for (BlockPos d : cluster) {
+            level.sendParticles(ParticleTypes.HAPPY_VILLAGER, true, true,
+                    d.getX() + 0.5, d.getY() + 1.1, d.getZ() + 0.5, 4, 0.3, 0.1, 0.3, 0);
+        }
+    }
+
+    private static void outline(ServerLevel level, BlockPos anchor) {
+        double[] lo = {anchor.getX() - RANGE, anchor.getY() - RANGE, anchor.getZ() - RANGE};
+        double[] hi = {anchor.getX() + RANGE + 1, anchor.getY() + RANGE + 1, anchor.getZ() + RANGE + 1};
+        double[][] ends = {lo, hi};
+        // The 12 edges of the box: for each axis, the 4 lines running along it.
+        for (int axis = 0; axis < 3; axis++) {
+            int u = (axis + 1) % 3, v = (axis + 2) % 3;
+            for (double[] eu : ends) {
+                for (double[] ev : ends) {
+                    for (double t = lo[axis]; t <= hi[axis]; t += 1) {
+                        double[] p = new double[3];
+                        p[axis] = t;
+                        p[u] = eu[u];
+                        p[v] = ev[v];
+                        level.sendParticles(ParticleTypes.END_ROD, true, true, p[0], p[1], p[2], 1, 0, 0, 0, 0);
+                    }
                 }
             }
         }

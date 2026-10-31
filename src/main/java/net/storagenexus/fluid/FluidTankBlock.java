@@ -87,15 +87,13 @@ public class FluidTankBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof FluidTankBlockEntity be)) return InteractionResult.PASS;
         if (player instanceof ServerPlayer sp) {
-            if (player.isSecondaryUseActive()) {
-                Menus.open(sp, getName(), pos, (id, inv, p) -> new UpgradeMenu(id, inv, be, be));
-            } else {
-                FluidDrawerBlockEntity.FluidSlot slot = be.slot(0);
-                Component name = slot.isResourceBlank() ? Component.translatable("message.storagenexus.empty")
-                        : net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes.getName(slot.getResource());
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.tank_contents", name,
-                        Fmt.fluid(slot.getAmount()), Fmt.fluid(slot.capacity())));
-            }
+            // Empty hand: upgrade slots, plus the contents in the action bar
+            Menus.open(sp, getName(), pos, (id, inv, p) -> new UpgradeMenu(id, inv, be, be));
+            FluidDrawerBlockEntity.FluidSlot slot = be.slot(0);
+            Component name = slot.isResourceBlank() ? Component.translatable("message.storagenexus.empty")
+                    : net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes.getName(slot.getResource());
+            sp.sendOverlayMessage(Component.translatable("message.storagenexus.tank_contents", name,
+                    Fmt.fluid(slot.getAmount()), Fmt.fluid(slot.capacity())));
         }
         return InteractionResult.SUCCESS;
     }
