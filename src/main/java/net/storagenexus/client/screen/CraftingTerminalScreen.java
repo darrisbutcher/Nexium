@@ -76,6 +76,25 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         view.extractGrid(g, leftPos, topPos, mouseX, mouseY);
     }
 
+    /**
+     * Same sequence as AbstractRecipeBookScreen, which calls super.extractContents directly and so
+     * would skip the network grid drawn in our extractContents.
+     */
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        if (recipeBook.isVisible() && width < NARROW_WIDTH) {
+            extractBackground(g, mouseX, mouseY, partialTick);
+        } else {
+            extractContents(g, mouseX, mouseY, partialTick);
+        }
+        g.nextStratum();
+        recipeBook.extractRenderState(g, mouseX, mouseY, partialTick);
+        g.nextStratum();
+        extractCarriedItem(g, mouseX, mouseY);
+        extractTooltip(g, mouseX, mouseY);
+        recipeBook.extractTooltip(g, mouseX, mouseY, hoveredSlot);
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         boolean bookCoversScreen = recipeBook.isVisible() && width < NARROW_WIDTH;
