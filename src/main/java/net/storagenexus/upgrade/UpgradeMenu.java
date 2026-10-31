@@ -30,7 +30,7 @@ public class UpgradeMenu extends BaseMenu {
         Container container = target != null ? new UpgradeContainer(target) : new SimpleContainer(Upgradeable.UPGRADE_SLOTS);
         for (int i = 0; i < Upgradeable.UPGRADE_SLOTS; i++) {
             final int slotIndex = i;
-            addCustomSlot(new Slot(container, i, 53 + i * 18, 20) {
+            addCustomSlot(new Slot(container, i, 96 + i * 18, 20) { // right-aligned, clear of the label
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return UpgradeMenu.this.target == null
