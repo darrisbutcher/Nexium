@@ -20,6 +20,17 @@ loom {
     accessWidenerPath = file("src/main/resources/storagenexus.accesswidener")
 }
 
+// In-game tests live in src/gametest (their own small mod, never in the release jar).
+// `./gradlew runGameTest` runs them on a headless server; `check` and `build` run them too.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "storagenexus-gametest"
+        enableGameTests = true
+        enableClientGameTests = false
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"

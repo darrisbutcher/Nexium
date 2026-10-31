@@ -24,6 +24,13 @@ Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.
 Loom 1.19.3. To move to a newer version, update `gradle.properties` from
 https://fabricmc.net/develop.
 
+### Tests
+
+`./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
+server (about 30 tests covering drawers, controllers, terminals, conduits and Dimensional links).
+Run just the in-game tests with `./gradlew runGameTest`. They live in their own test mod and are
+never part of the release jar.
+
 ## How it works in game
 
 Every item's tooltip says what it does, and the **Storage Nexus Guide** (given once when you join a
