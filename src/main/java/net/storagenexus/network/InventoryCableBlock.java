@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.storagenexus.dimension.DimensionalOutputBlock;
+import net.storagenexus.fluid.FluidIntakeBlock;
 import net.storagenexus.util.PipeShapes;
 import net.storagenexus.util.StorageEvents;
 
@@ -38,15 +40,22 @@ public class InventoryCableBlock extends Block implements NetworkBlock {
         PROPS.values().forEach(builder::add);
     }
 
-    private static boolean connects(BlockState neighbor) {
-        return neighbor.getBlock() instanceof NetworkBlock;
+    /**
+     * Network blocks, plus the blocks that push into a network: a Fluid Intake on any side, and a
+     * Dimensional Output facing the cable. {@code side} points from the cable to the neighbour.
+     */
+    private static boolean connects(BlockState neighbor, Direction side) {
+        Block block = neighbor.getBlock();
+        return block instanceof NetworkBlock
+                || block instanceof FluidIntakeBlock
+                || block instanceof DimensionalOutputBlock && neighbor.getValue(DimensionalOutputBlock.FACING) == side.getOpposite();
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState s = defaultBlockState();
         for (Direction d : Direction.values()) {
-            s = s.setValue(PROPS.get(d), connects(context.getLevel().getBlockState(context.getClickedPos().relative(d))));
+            s = s.setValue(PROPS.get(d), connects(context.getLevel().getBlockState(context.getClickedPos().relative(d)), d));
         }
         return s;
     }
@@ -54,7 +63,7 @@ public class InventoryCableBlock extends Block implements NetworkBlock {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
                                      Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-        return state.setValue(PROPS.get(direction), connects(neighborState));
+        return state.setValue(PROPS.get(direction), connects(neighborState, direction));
     }
 
     @Override
