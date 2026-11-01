@@ -24,6 +24,9 @@ import org.slf4j.Logger;
  * Everything here keeps the {@value #NAMESPACE} namespace it had as its own mod (item, block, effect, component and
  * tag ids, lang keys, {@code config/nexusessentials.json} and the player's saved slots), so worlds made with
  * Nexus Essentials load unchanged. fabric.mod.json lists the old mod id under "provides".
+ * <p>
+ * New Essentials content uses this namespace too (register it with {@link #id}), so every Essentials id stays
+ * {@code nexusessentials:}; only the storage features use {@code storagenexus:}.
  */
 public final class NexusEssentials {
     public static final String NAMESPACE = "nexusessentials";

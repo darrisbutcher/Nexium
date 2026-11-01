@@ -21,3 +21,34 @@ jobs:
         with:
           name: storage-nexus
           path: build/libs/*.jar
+
+  client-test:
+    # Opens a real game client on a virtual display (Xvfb) and runs the client tests in src/gametest: the terminal
+    # grid, the trinket and wings slots, the magnet on the Key Binds screen, and barrels keeping their items through
+    # save and quit. Their screenshots are kept as an artifact.
+    # There is no GPU: Minecraft can't get an OpenGL window from Xvfb ("Couldn't find matching GLX visual"), so it
+    # falls back to Vulkan, which Mesa's software driver (lavapipe, in mesa-vulkan-drivers) provides.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install a virtual display and software Vulkan
+        run: sudo apt-get update && sudo apt-get install -y xvfb mesa-vulkan-drivers libvulkan1
+      - name: Run the client tests
+        # If the client can't create a window it waits forever, so stop well before the job's limit
+        timeout-minutes: 15
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --no-daemon
+      - name: Keep the screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-test-screenshots
+          path: |
+            build/run/clientGameTest/screenshots
+            build/run/clientGameTest/logs
+          if-no-files-found: ignore

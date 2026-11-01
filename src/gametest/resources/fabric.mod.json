@@ -8,7 +8,9 @@
   "entrypoints": {
     "fabric-client-gametest": [
       "net.storagenexus.gametest.client.TerminalClientTest",
-      "net.storagenexus.gametest.client.SlotsClientTest"
+      "net.storagenexus.gametest.client.SlotsClientTest",
+      "net.storagenexus.gametest.client.KeyBindsClientTest",
+      "net.storagenexus.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.CableGameTest",
@@ -20,6 +22,7 @@
       "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
       "net.storagenexus.gametest.OutputGameTest",
+      "net.storagenexus.gametest.SaveLoadGameTest",
       "net.storagenexus.gametest.TerminalGameTest",
       "net.storagenexus.gametest.UpgradeGameTest",
       "net.storagenexus.gametest.UsabilityGameTest"

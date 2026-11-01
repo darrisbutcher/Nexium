@@ -35,7 +35,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.1.2.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.1.3.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -45,15 +45,28 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 80 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+server (about 85 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
 conduits, Dimensional links and every Essentials feature). Run just those with `./gradlew runGameTest`.
 The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
 and the magnet tests pull items from 16 blocks away.
 
-There are also client tests that open a real Minecraft client: one opens every screen and clicks the
-terminal grid, the other fills the trinket and wings slots, checks where they sit in the survival and creative
-inventories and takes screenshots: `./gradlew runClientGameTest`. They need a window (or a virtual display such
-as Xvfb), so they are not part of `build`. Add `-PwithJei` to run them with JEI installed, which also presses JEI's "+". The tests live in their own test mod and are never part of the release jar.
+`SaveLoadGameTest` saves and reloads every block entity in the mod, the way reopening a world does, changing one
+thing it keeps at a time: each must change what is saved and load back exactly. A new block entity type with no case
+there fails the test.
+
+There are also client tests that open a real Minecraft client (`./gradlew runClientGameTest`): one opens every
+screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
+and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; and one
+saves and quits a world with filled barrels and reopens it. They take screenshots as they go. They need a window
+(or a virtual display such as Xvfb), so they are not part of `build`; CI runs them in a separate `client-test` job
+on Xvfb and keeps the screenshots as an artifact. Add `-PwithJei` to run them with JEI installed, which also presses
+JEI's "+". The tests live in their own test mod and are never part of the release jar.
+
+### IDs
+
+The storage features use the `storagenexus:` namespace. Everything in the Essentials (code in
+`net.storagenexus.essentials`) uses `nexusessentials:`, including anything added to it later, so old Nexus
+Essentials worlds keep loading and the two never mix.
 
 ## How it works in game
 

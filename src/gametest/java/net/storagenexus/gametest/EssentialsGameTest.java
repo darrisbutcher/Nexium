@@ -213,6 +213,24 @@ public class EssentialsGameTest {
         }).thenSucceed();
     }
 
+    /** No explicit pull: the server tick brings the item in by itself, within one item interval. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void magnetPullsOnItsOwnEveryFewTicks(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        Vec3 base = player.position();
+        // Inside the test area, so it is loaded straight away; only this player may pick it up, so no other test's magnet takes it
+        ItemEntity item = new ItemEntity(h.getLevel(), base.x + 3, base.y, base.z, new ItemStack(Items.EMERALD));
+        item.setNoPickUpDelay();
+        item.setTarget(player.getUUID());
+        h.getLevel().addFreshEntity(item);
+        ExtraSlots.of(player).setItem(ExtraSlots.TRINKET, new ItemStack(ModItems.MAGNET));
+        long start = h.getTick();
+        h.succeedWhen(() -> {
+            h.assertValueEqual(player.getInventory().countItem(Items.EMERALD), 1, "the magnet pulled the emerald by itself");
+            h.assertTrue(h.getTick() - start <= MagnetLogic.ITEM_INTERVAL, "pulled within " + MagnetLogic.ITEM_INTERVAL + " ticks, took " + (h.getTick() - start));
+        });
+    }
+
     /** Dropping with Q: the magnet brings it back once vanilla's 2-second pickup delay is over. */
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
     public void magnetPullsBackWhatYouDrop(GameTestHelper h) {
