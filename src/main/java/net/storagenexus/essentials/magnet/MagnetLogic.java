@@ -15,9 +15,21 @@ import net.storagenexus.essentials.registry.ModComponents;
 import net.storagenexus.essentials.slots.ExtraSlots;
 
 public final class MagnetLogic {
+    /** Items are pulled every 4 ticks (0.2 s): too quick to notice, and a quarter of the work of scanning every tick. */
+    public static final int ITEM_INTERVAL = 4;
+    /** XP orbs every 2 ticks: vanilla lets a player take one orb every 2 ticks, so XP still arrives as fast as it can. */
+    public static final int XP_INTERVAL = 2;
+
     public static void init() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) pull(player);
+            int tick = server.getTickCount();
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                // Offset by the entity id, so players' scans fall on different ticks instead of all at once
+                int phase = tick + player.getId();
+                boolean items = Math.floorMod(phase, ITEM_INTERVAL) == 0;
+                boolean xp = Math.floorMod(phase, XP_INTERVAL) == 0;
+                if (items || xp) pull(player, items, xp);
+            }
         });
     }
 
@@ -43,6 +55,10 @@ public final class MagnetLogic {
      * to throw something away, switch the magnet off first.
      */
     public static void pull(ServerPlayer player) {
+        pull(player, true, true);
+    }
+
+    private static void pull(ServerPlayer player, boolean items, boolean xp) {
         if (player.isSpectator() || !player.isAlive()) return;
         ItemStack magnet = ExtraSlots.of(player).trinket();
         if (!(magnet.getItem() instanceof MagnetItem) || !MagnetItem.isActive(magnet)) return;
@@ -52,12 +68,14 @@ public final class MagnetLogic {
         ServerLevel level = player.level();
         AABB area = player.getBoundingBox().inflate(range);
 
-        for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area, e -> e.isAlive() && !e.hasPickUpDelay())) {
-            if (item.distanceToSqr(player) > rangeSqr) continue;
-            item.playerTouch(player);
+        if (items) {
+            for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area, e -> e.isAlive() && !e.hasPickUpDelay())) {
+                if (item.distanceToSqr(player) > rangeSqr) continue;
+                item.playerTouch(player);
+            }
         }
 
-        if (NexusConfig.get().magnetPullsXp) {
+        if (xp && NexusConfig.get().magnetPullsXp) {
             for (ExperienceOrb orb : level.getEntitiesOfClass(ExperienceOrb.class, area, ExperienceOrb::isAlive)) {
                 if (orb.distanceToSqr(player) > rangeSqr) continue;
                 orb.playerTouch(player); // vanilla takes at most one orb every 2 ticks
