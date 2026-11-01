@@ -6,13 +6,18 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
@@ -133,6 +138,53 @@ public class FeaturesGameTest {
                     tier + " fills its grid with no gaps");
         }
         h.assertValueEqual(level.getEntitiesOfClass(ItemEntity.class, new AABB(abs).inflate(3)).size(), 0, "nothing dropped");
+        h.succeed();
+    }
+
+    /** Saves the barrel at {@code pos} the way a chunk save does and loads the data into a fresh block entity. */
+    private static TieredBarrelBlockEntity saveAndLoad(GameTestHelper h, BlockPos pos) {
+        HolderLookup.Provider registries = h.getLevel().registryAccess();
+        CompoundTag tag = h.getBlockEntity(pos, TieredBarrelBlockEntity.class).saveWithFullMetadata(registries);
+        BlockEntity loaded = BlockEntity.loadStatic(h.absolutePos(pos), h.getBlockState(pos), tag, registries);
+        h.assertTrue(loaded instanceof TieredBarrelBlockEntity, "the saved data loads back as a tiered barrel");
+        return (TieredBarrelBlockEntity) loaded;
+    }
+
+    @GameTest
+    public void tieredBarrelsKeepItemsWhenSavedAndLoaded(GameTestHelper h) {
+        ItemStack named = new ItemStack(Items.DIAMOND_SWORD);
+        named.set(DataComponents.CUSTOM_NAME, Component.literal("Keeper"));
+        for (BarrelTier tier : BarrelTier.values()) {
+            BlockPos pos = new BlockPos(1 + tier.ordinal(), 1, 1);
+            h.setBlock(pos, ModBlocks.BARRELS.get(tier));
+            TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
+            // Every slot full, with a different count in each, and an item with components in the first
+            for (int i = 1; i < be.getContainerSize(); i++) be.setItem(i, new ItemStack(i % 2 == 0 ? Items.OAK_PLANKS : Items.COBBLESTONE, i % 64 + 1));
+            be.setItem(0, named.copy());
+
+            TieredBarrelBlockEntity copy = saveAndLoad(h, pos);
+            h.assertValueEqual(copy.getContainerSize(), tier.slots(), tier + " slots after loading");
+            for (int i = 0; i < tier.slots(); i++) {
+                h.assertTrue(ItemStack.matches(copy.getItem(i), be.getItem(i)), tier + " slot " + i + " kept " + be.getItem(i));
+            }
+        }
+        h.succeed();
+    }
+
+    @GameTest
+    public void upgradedVanillaBarrelKeepsItemsWhenSavedAndLoaded(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, Blocks.BARREL);
+        BarrelBlockEntity vanilla = h.getBlockEntity(pos, BarrelBlockEntity.class);
+        vanilla.setItem(0, new ItemStack(Items.OAK_PLANKS, 10));
+        vanilla.setItem(26, new ItemStack(Items.IRON_INGOT, 5));
+        net.minecraft.server.level.ServerLevel level = h.getLevel();
+        for (BarrelTier tier : BarrelTier.values()) {
+            h.assertTrue(ModItems.BARREL_UPGRADES.get(tier).apply(level, h.absolutePos(pos)), tier + " upgrade applies");
+            TieredBarrelBlockEntity copy = saveAndLoad(h, pos);
+            h.assertTrue(ItemStack.matches(copy.getItem(0), new ItemStack(Items.OAK_PLANKS, 10)), tier + " kept the planks after loading");
+            h.assertTrue(ItemStack.matches(copy.getItem(26), new ItemStack(Items.IRON_INGOT, 5)), tier + " kept the iron after loading");
+        }
         h.succeed();
     }
 
