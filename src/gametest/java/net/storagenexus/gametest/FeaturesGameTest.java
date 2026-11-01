@@ -7,12 +7,14 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
@@ -133,6 +135,28 @@ public class FeaturesGameTest {
                     tier + " fills its grid with no gaps");
         }
         h.assertValueEqual(level.getEntitiesOfClass(ItemEntity.class, new AABB(abs).inflate(3)).size(), 0, "nothing dropped");
+        h.succeed();
+    }
+
+    /** A barrel's items survive being saved and loaded again, as when its chunk unloads or the world is reopened. */
+    @GameTest
+    public void barrelsKeepContentsThroughSaveAndLoad(GameTestHelper h) {
+        for (BarrelTier tier : BarrelTier.values()) {
+            BlockPos pos = new BlockPos(1 + tier.ordinal(), 1, 1);
+            h.setBlock(pos, ModBlocks.BARRELS.get(tier));
+            TieredBarrelBlockEntity be = h.getBlockEntity(pos, TieredBarrelBlockEntity.class);
+            int last = be.getContainerSize() - 1;
+            be.setItem(0, new ItemStack(Items.DIAMOND, 5));
+            be.setItem(last, new ItemStack(Items.OAK_PLANKS, 64));
+
+            CompoundTag saved = be.saveWithFullMetadata(h.getLevel().registryAccess());
+            BlockEntity loaded = BlockEntity.loadStatic(h.absolutePos(pos), h.getBlockState(pos), saved, h.getLevel().registryAccess());
+            h.assertTrue(loaded instanceof TieredBarrelBlockEntity, tier + " barrel loads back as a tiered barrel");
+            TieredBarrelBlockEntity back = (TieredBarrelBlockEntity) loaded;
+            h.assertValueEqual(back.getContainerSize(), be.getContainerSize(), tier + " slots after loading");
+            h.assertTrue(back.getItem(0).is(Items.DIAMOND) && back.getItem(0).getCount() == 5, tier + " kept the diamonds in its first slot");
+            h.assertTrue(back.getItem(last).is(Items.OAK_PLANKS) && back.getItem(last).getCount() == 64, tier + " kept the planks in its last slot");
+        }
         h.succeed();
     }
 
