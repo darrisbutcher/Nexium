@@ -35,7 +35,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.1.0.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.1.1.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -193,7 +193,8 @@ The features that used to be the Nexus Essentials mod. The Guide's last pages co
   ```
 * Works only while it is in your **trinket slot**. It picks up every item and experience orb within range,
   through walls, using the normal pickup, so items fly into you and full inventories, pickup delays and
-  item owners still apply. Items you threw yourself are left alone, so you can still drop things on purpose.
+  item owners still apply. It pulls back what you drop yourself too, once the usual 2-second pickup delay is
+  over, so press **M** to switch it off before throwing something away.
 * **Sneak + right-click** it (in your hand) to change the range: 4, 8, 12, 16 blocks (up to `magnetMaxRange`).
 * Press **M** to switch it on or off (rebind under Controls > Key Binds > Storage Nexus). It glints while it is on.
 

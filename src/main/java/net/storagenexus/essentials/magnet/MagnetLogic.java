@@ -39,6 +39,8 @@ public final class MagnetLogic {
     /**
      * Picks up every item and experience orb within range of a player wearing an active magnet, through walls.
      * Uses vanilla's own pickup, so items fly into the player as usual and pickup rules (delays, owners, full inventory) still apply.
+     * Items the player dropped themselves come back too, once vanilla's pickup delay (2 seconds for a dropped item) is over:
+     * to throw something away, switch the magnet off first.
      */
     public static void pull(ServerPlayer player) {
         if (player.isSpectator() || !player.isAlive()) return;
@@ -52,8 +54,6 @@ public final class MagnetLogic {
 
         for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area, e -> e.isAlive() && !e.hasPickUpDelay())) {
             if (item.distanceToSqr(player) > rangeSqr) continue;
-            // Items you threw yourself stay put, so you can still drop things on purpose
-            if (item.getOwner() == player) continue;
             item.playerTouch(player);
         }
 

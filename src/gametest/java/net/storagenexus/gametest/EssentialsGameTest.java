@@ -204,12 +204,33 @@ public class EssentialsGameTest {
             MagnetLogic.pull(player);
             h.assertValueEqual(player.getInventory().countItem(Items.EMERALD), 3, "emeralds 6 blocks away pulled in");
             h.assertValueEqual(player.getInventory().countItem(Items.GOLD_INGOT), 0, "gold 12 blocks away left alone (range 8)");
-            h.assertValueEqual(player.getInventory().countItem(Items.APPLE), 0, "the player's own thrown apple left alone");
+            h.assertValueEqual(player.getInventory().countItem(Items.APPLE), 1, "the player's own thrown apple pulled back too");
             h.assertTrue(player.totalExperience > xpBefore, "XP orb collected");
 
             magnet.set(ModComponents.MAGNET_RANGE, 16);
             MagnetLogic.pull(player);
             h.assertValueEqual(player.getInventory().countItem(Items.GOLD_INGOT), 1, "gold pulled in at range 16");
+        }).thenSucceed();
+    }
+
+    /** Dropping with Q: the magnet brings it back once vanilla's 2-second pickup delay is over. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
+    public void magnetPullsBackWhatYouDrop(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ItemStack magnet = new ItemStack(ModItems.MAGNET);
+        player.getInventory().setItem(player.getInventory().getSelectedSlot(), new ItemStack(Items.BREAD, 5));
+        player.drop(false); // what pressing Q does on the server
+        h.assertValueEqual(player.getInventory().countItem(Items.BREAD), 4, "Q dropped one bread");
+        AABB around = player.getBoundingBox().inflate(MagnetItem.DEFAULT_RANGE);
+        // The magnet goes on only when the bread can be picked up, so the pull below is what brings it back
+        h.startSequence().thenWaitUntil(() -> {
+            List<ItemEntity> bread = h.getLevel().getEntitiesOfClass(ItemEntity.class, around, e -> e.getItem().is(Items.BREAD));
+            h.assertTrue(bread.size() == 1 && !bread.get(0).hasPickUpDelay(), "waiting for the dropped bread's pickup delay");
+            h.assertTrue(bread.get(0).getOwner() == player, "the bread was dropped by this player");
+        }).thenExecute(() -> {
+            ExtraSlots.of(player).setItem(ExtraSlots.TRINKET, magnet);
+            MagnetLogic.pull(player);
+            h.assertValueEqual(player.getInventory().countItem(Items.BREAD), 5, "the magnet brought the dropped bread back");
         }).thenSucceed();
     }
 
