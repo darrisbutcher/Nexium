@@ -1,0 +1,17 @@
+package net.storagenexus.essentials.registry;
+
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.ironfarm.IronFarmMenu;
+
+public final class ModMenus {
+    public static final ExtendedMenuType<IronFarmMenu, BlockPos> IRON_FARM = Registry.register(BuiltInRegistries.MENU,
+            NexusEssentials.id("iron_farm"), new ExtendedMenuType<>(IronFarmMenu::new, BlockPos.STREAM_CODEC));
+
+    public static void init() {}
+
+    private ModMenus() {}
+}

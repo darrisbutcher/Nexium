@@ -15,6 +15,8 @@ public final class ModTab {
                     .icon(() -> new ItemStack(ModBlocks.DRAWER_CONTROLLER))
                     .displayItems((params, output) -> {
                         for (Item item : ModItems.TAB_ORDER) output.accept(item);
+                        // Then the Essentials items (magnet, elixir, iron farm)
+                        for (Item item : net.storagenexus.essentials.registry.ModItems.TAB_ORDER) output.accept(item);
                     })
                     .build());
 
