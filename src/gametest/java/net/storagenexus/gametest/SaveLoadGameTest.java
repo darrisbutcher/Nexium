@@ -116,9 +116,7 @@ public class SaveLoadGameTest {
                 } catch (RuntimeException e) {
                     problems.add(label + ": " + e);
                 }
-                // An active anchor's clean-up would release the forced chunks around it, including other tests' chunks
-                if (be instanceof DimensionalAnchorBlockEntity) setField(be, "active", false);
-                // Clear the spot and anything that spilled
+                // Clear the spot (an anchor drops its chunk ticket) and anything that spilled
                 h.setBlock(POS, Blocks.AIR);
                 h.setBlock(POS.east(), Blocks.AIR);
                 h.killAllEntitiesOfClass(ItemEntity.class);
@@ -214,11 +212,9 @@ public class SaveLoadGameTest {
                 part(ConnectorBlockEntity.class, "priority", be -> be.setPriority(-3)),
                 part(ConnectorBlockEntity.class, "filter", be -> be.filterContainer().setItem(0, filter.copy())))));
 
-        // Set directly: activate() and toggleMode() also force or release the 3x3 chunks around it with the vanilla forced
-        // flag, which would release the chunks the test framework keeps forced for the tests next door
         cases.add(new Case("Dimensional Anchor", ModBlocks.DIMENSIONAL_ANCHOR, List.of(
-                part(DimensionalAnchorBlockEntity.class, "active", be -> setField(be, "active", true)),
-                part(DimensionalAnchorBlockEntity.class, "on-demand mode", be -> setField(be, "active", true), be -> setField(be, "onDemand", true)))));
+                part(DimensionalAnchorBlockEntity.class, "active", DimensionalAnchorBlockEntity::activate),
+                part(DimensionalAnchorBlockEntity.class, "on-demand mode", DimensionalAnchorBlockEntity::activate, DimensionalAnchorBlockEntity::toggleMode))));
 
         List<Part> input = new ArrayList<>(linkParts(DimensionalInputBlockEntity.class, links));
         input.add(part(DimensionalInputBlockEntity.class, "buffered items", be -> be.buffer().setItem(0, new ItemStack(Items.DIAMOND, 12))));
@@ -279,16 +275,6 @@ public class SaveLoadGameTest {
             change.accept(be.config(ConduitType.ITEM, Direction.NORTH));
             be.changed();
         });
-    }
-
-    private static void setField(Object target, String name, Object value) {
-        try {
-            var field = target.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            field.set(target, value);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("no field " + name + " on " + target.getClass().getSimpleName(), e);
-        }
     }
 
     private static void insert(DrawerBlockEntity.DrawerSlot slot, Item item, long amount) {

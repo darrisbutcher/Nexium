@@ -13,6 +13,7 @@
       "net.storagenexus.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
+      "net.storagenexus.gametest.AnchorGameTest",
       "net.storagenexus.gametest.CableGameTest",
       "net.storagenexus.gametest.CompactingCapacityGameTest",
       "net.storagenexus.gametest.ConduitGameTest",
