@@ -3,13 +3,16 @@
   "id": "storagenexus",
   "version": "${version}",
   "name": "Storage Nexus",
-  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item and fluid conduits.",
+  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item and fluid conduits. Also includes Nexus Essentials: no creeper/ghast block damage, endermen leave blocks alone, an item and XP magnet with its own trinket slot, a wings slot so an elytra and chestplate can be worn together, protection enchantments on elytra, netherite counts as gold for piglins, a bedrock-breaking elixir, picking up mobs as items, Fortune on ancient debris, and a 1-block iron farm.",
   "authors": [
     "Darris"
   ],
   "license": "MIT",
   "icon": "assets/storagenexus/icon.png",
   "environment": "*",
+  "provides": [
+    "nexusessentials"
+  ],
   "entrypoints": {
     "main": [
       "net.storagenexus.StorageNexus"
@@ -24,6 +27,13 @@
       "net.storagenexus.compat.rei.StorageNexusReiPlugin"
     ]
   },
+  "mixins": [
+    "storagenexus.mixins.json",
+    {
+      "config": "storagenexus.client.mixins.json",
+      "environment": "client"
+    }
+  ],
   "accessWidener": "storagenexus.accesswidener",
   "depends": {
     "fabricloader": ">=0.20.1",

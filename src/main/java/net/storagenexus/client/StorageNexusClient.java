@@ -8,6 +8,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.storagenexus.drawer.DrawerClickPayload;
 import net.storagenexus.drawer.DrawerInteraction;
+import net.storagenexus.essentials.client.NexusEssentialsClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -73,6 +74,7 @@ public class StorageNexusClient implements ClientModInitializer {
         ItemDescriptions.init();
         ContentsTooltip.init();
         GuideBookItem.openScreen = GuideScreen::open;
+        NexusEssentialsClient.init();
 
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {

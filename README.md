@@ -1,7 +1,25 @@
 # Storage Nexus (Fabric, Minecraft 26.3)
 
 Drawers + a Tom's Simple Storage-style network + cross-dimensional tablets and item links +
-Ender IO-style item and fluid conduits.
+Ender IO-style item and fluid conduits + the **Essentials**: the quality-of-life features that used to be the
+separate Nexus Essentials mod (no creeper or ghast block damage, endermen leave blocks alone, an item and XP magnet
+with its own trinket slot, a wings slot for an elytra, protection enchantments on elytra, netherite calms piglins,
+a bedrock-breaking elixir, picking up mobs, Fortune on ancient debris and a 1-block iron farm).
+
+Every item, the Essentials ones included (Magnet, Elixir of Bedrock Breaking, Iron Farm), is in the
+**Storage Nexus** creative tab.
+
+## Coming from Nexus Essentials
+
+Nexus Essentials is now part of Storage Nexus. **Delete `nexus-essentials-*.jar` from your `mods` folder** when you
+install this version. If one is left behind, Fabric skips it without a word (Storage Nexus provides the
+`nexusessentials` mod id now), so it does no harm, but it is dead weight.
+
+Nothing in your worlds changes: the Essentials items and blocks keep their `nexusessentials:` ids (so
+`/give @s nexusessentials:magnet` still works), magnets and elytra stay in the trinket and wings slots, placed Iron
+Farms keep running, Captured Mobs keep their mob, and `config/nexusessentials.json` is still the Essentials config.
+The only visible changes: the Essentials items moved from the vanilla creative tabs to the Storage Nexus tab, and
+the magnet key bind is listed under Storage Nexus in Controls (it stays on the key you chose).
 
 ## Building
 
@@ -17,8 +35,8 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.0.26.jar` (not the `-sources` one). Put it in
-your `mods` folder next to **Fabric API** for 26.3.
+The mod jar ends up in `build/libs/storage-nexus-1.1.0.jar` (not the `-sources` one). Put it in
+your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
 Loom 1.19.3. To move to a newer version, update `gradle.properties` from
@@ -27,12 +45,15 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 40 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
-conduits and Dimensional links). Run just those with `./gradlew runGameTest`.
+server (about 80 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+conduits, Dimensional links and every Essentials feature). Run just those with `./gradlew runGameTest`.
+The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
+and the magnet tests pull items from 16 blocks away.
 
-There is also a client test that opens a real Minecraft client, opens every screen and clicks the
-terminal grid: `./gradlew runClientGameTest`. It needs a window (or a virtual display such as Xvfb),
-so it is not part of `build`. Add `-PwithJei` to run it with JEI installed, which also presses JEI's "+". The tests live in their own test mod and are never part of the release jar.
+There are also client tests that open a real Minecraft client: one opens every screen and clicks the
+terminal grid, the other fills the trinket and wings slots, checks where they sit in the survival and creative
+inventories and takes screenshots: `./gradlew runClientGameTest`. They need a window (or a virtual display such
+as Xvfb), so they are not part of `build`. Add `-PwithJei` to run them with JEI installed, which also presses JEI's "+". The tests live in their own test mod and are never part of the release jar.
 
 ## How it works in game
 
@@ -139,3 +160,138 @@ world, or crafted from a book and any drawer) explains everything in game.
   Source** (obsidian, lava buckets and a nether star) next to it for endless lava.
 * **Basic Filter** (whitelist/blacklist, exact match) and **Advanced Filter** (matches by item tag).
   Fluids are filtered by putting their bucket in the filter.
+
+## Essentials
+
+The features that used to be the Nexus Essentials mod. The Guide's last pages cover them too.
+
+### Explosions and endermen
+* Creeper and ghast explosions break no blocks, and ghast fireballs light no fires. They still hurt and push
+  players and mobs, and still look like full-size explosions.
+* They also leave item frames, paintings, armor stands, items on the ground, minecarts and boats alone.
+* TNT, beds, respawn anchors, withers and end crystals work as in vanilla.
+* Endermen never pick up blocks. One that was already carrying a block before you added the mod can still put it down.
+
+### Trinket and wings slots
+* Two new slots sit in a column above the offhand slot in your inventory (and right of the armor in the
+  creative inventory tab): the **trinket slot** (top) takes the magnet, and the **wings slot** (bottom) takes an
+  elytra (or any modded item that glides like one).
+* Shift-click a magnet or elytra to send it there, or right-click it in your hand to put it on.
+* An elytra in the wings slot glides exactly like one in the chest slot, so you can wear a chestplate too.
+  It wears down the same way, Unbreaking and Mending work on it, and its protection enchantments add to your
+  armor's (vanilla's 80% total protection cap still applies). Other players see it on you, and it hides your cape like a normal elytra.
+* Curse of Binding keeps an item in the slot, as it does in armor slots.
+* The slots are saved with your player. On death they drop like the rest of your inventory (Curse of Vanishing
+  destroys), unless keepInventory is on.
+
+### Magnet
+* Crafted from 5 iron ingots, 1 redstone and 1 lapis lazuli in a U shape:
+  ```
+  R . L
+  I . I
+  I I I
+  ```
+* Works only while it is in your **trinket slot**. It picks up every item and experience orb within range,
+  through walls, using the normal pickup, so items fly into you and full inventories, pickup delays and
+  item owners still apply. Items you threw yourself are left alone, so you can still drop things on purpose.
+* **Sneak + right-click** it (in your hand) to change the range: 4, 8, 12, 16 blocks (up to `magnetMaxRange`).
+* Press **M** to switch it on or off (rebind under Controls > Key Binds > Storage Nexus). It glints while it is on.
+
+### Elytra enchanting
+* At an anvil, elytra take Protection, Fire Protection, Blast Protection and Projectile Protection from enchanted
+  books, and can hold all four at once. Chestplates keep the vanilla rule of one protection type.
+
+### Piglins
+* Wearing any piece of netherite armor counts as wearing gold armor: piglins stay neutral.
+  (Bartering still uses gold ingots; the item tag `nexusessentials:calms_piglins` lists the armor.)
+
+### Elixir of Bedrock Breaking
+* Crafted from 2 diamonds, 2 obsidian and a glass bottle:
+  ```
+  . O .
+  D B D
+  . O .
+  ```
+* Drinking it gives **Bedrock Breaker** for 5 minutes (`bedrockBreakerSeconds`). While it lasts, bedrock mines
+  like obsidian with a diamond or netherite pickaxe (Efficiency and Haste help). Bedrock drops nothing, and any
+  bedrock can be broken, including the bottom layer above the void, so be careful.
+* Which blocks it affects is the block tag `nexusessentials:bedrock_breaker_mineable`.
+
+### Picking up mobs
+* **Sneak + right-click a mob with an empty hand** to pick it up. You get a Captured Mob item that looks like its
+  spawn egg (with a glint) and keeps everything about the mob: health, name, equipment, saddle and chests,
+  villager profession and trades, horse stats, owner, age and so on.
+* **Right-click a block** with the item to let the mob out there. A released mob never despawns.
+* The Ender Dragon and the Wither can't be picked up (entity tag `nexusessentials:cannot_be_picked_up`).
+* Only a pet's owner can pick it up (`onlyOwnersPickUpPets`). Players in Adventure mode and non-operators
+  inside spawn protection can't pick up mobs.
+* Sneak + right-clicking a tamed horse, donkey or llama with an **item** in your hand still opens its inventory.
+  With an empty hand it picks the animal up.
+* A picked-up villager gives up its bed and workstation so other villagers can use them; it finds new ones when let out.
+* Riders get off and a lead drops when a mob is picked up.
+* Monsters can't be let out on Peaceful (the item stays in your hand).
+* A dropped Captured Mob item doesn't despawn and can't be destroyed by fire, lava, explosions or cactus.
+
+### Ancient debris
+* Ancient debris drops **netherite scrap** instead of itself: 2 per block, multiplied by Fortune the same way as
+  diamond ore, so Fortune I/II/III average 2.67 / 3.5 / 4.4 scrap (up to 8). Silk Touch still drops the block.
+
+### Iron Farm
+* **Making one**: put a chest down, rename another chest **Nexus Iron Farm** in an anvil and place it next to the
+  first to make a double chest (only one half needs the name; upper and lower case don't matter). Fill it with exactly:
+
+  | Material | Amount | Counts |
+  |---|---|---|
+  | Zombies | 4 | Zombie, husk, drowned or zombie villager: spawn eggs or Captured Mobs, any mix |
+  | Villagers | 12 | Villager spawn eggs or Captured Mob villagers |
+  | Torches | 33 | Torch, soul torch or copper torch |
+  | Slabs | 20 | Any slab |
+  | Signs | 16 | Any sign or hanging sign |
+  | Trapdoors | 12 | Any trapdoor |
+  | Beds | 12 | Any colour |
+  | Smooth Stone | every other slot | Full stacks of 64 |
+
+  Amounts are totals, so a material can be split over slots. Every slot of the double chest must be used: with spawn
+  eggs that is 36 stacks of smooth stone, with Captured Mobs (which don't stack) 22. The moment the chest holds exactly
+  this, the chest and everything in it disappear and the **Iron Farm** pops out. Close the chest before it's ready
+  and the chat says what's missing, what's too much and what doesn't belong (an empty named chest lists the whole recipe).
+* **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron and 0-2 poppies, about **1,900 iron an
+  hour** (four 3-villager farms). Right-click it to see the output, a bar to the next golem and the bread slot.
+* **Hoppers and pipes take the output from below**, and only from below. Nothing can be put in by hopper.
+* **Bread**: put bread in the bread slot and the farm works **10x faster** (about 19,000 iron an hour), eating one loaf
+  every 30 seconds. When the last loaf is eaten, the bread slot locks for **10x as long as the boost lasted** (a full
+  stack of 64 is 32 minutes of boost, then 5 h 20 min of cooldown). The farm keeps working at normal speed during the
+  cooldown. Hover the empty bread slot to see how long is left.
+* When the output is full, or a **redstone signal** reaches it, the farm waits and doesn't eat bread (a bread cooldown
+  keeps counting down). The screen says which.
+* Breaking it drops the Iron Farm with its boost and cooldown kept (the tooltip shows them), so moving it doesn't skip a
+  cooldown; the output and bread drop on the ground. A pickaxe breaks it faster, but it drops whatever breaks it.
+* The materials are item and entity tags (`nexusessentials:iron_farm_zombies`, `iron_farm_villagers`, `iron_farm_torches`,
+  `iron_farm_slabs`, `iron_farm_signs`, `iron_farm_trapdoors`, `iron_farm_beds`, `iron_farm_filler`), so a data pack can change them.
+
+### Essentials settings
+
+`config/nexusessentials.json` is created on first launch (the same file the old Nexus Essentials mod used, so
+existing settings carry over). Changes take effect after a restart. On a server, the server's file is the one that
+counts.
+
+| Setting | Default | What it does |
+|---|---|---|
+| `creepersBreakBlocks` | `false` | Creeper explosions break blocks (vanilla) |
+| `ghastFireballsBreakBlocks` | `false` | Ghast fireballs break blocks and start fires (vanilla) |
+| `explosionsSpareDecorations` | `true` | Creeper and ghast explosions spare item frames, paintings, armor stands, dropped items, minecarts and boats |
+| `endermenPickUpBlocks` | `false` | Endermen pick up blocks (vanilla) |
+| `magnetMaxRange` | `16` | Largest magnet range, 4 to 64 blocks |
+| `magnetPullsXp` | `true` | Magnets pull experience orbs too |
+| `elytraProtectionEnchantments` | `true` | Elytra accept all four protection enchantments |
+| `netheriteArmorCalmsPiglins` | `true` | Netherite armor keeps piglins calm |
+| `bedrockBreakerSeconds` | `300` | How long the elixir lasts |
+| `mobPickUp` | `true` | Sneak + right-click picks up mobs |
+| `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
+| `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
+| `ironFarmChestName` | `"Nexus Iron Farm"` | The name a double chest needs to become an Iron Farm |
+| `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s, about 1,900 iron an hour) |
+| `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
+| `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
+| `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
+| `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |

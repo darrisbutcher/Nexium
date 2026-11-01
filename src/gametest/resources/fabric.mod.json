@@ -7,14 +7,17 @@
   "environment": "*",
   "entrypoints": {
     "fabric-client-gametest": [
-      "net.storagenexus.gametest.client.TerminalClientTest"
+      "net.storagenexus.gametest.client.TerminalClientTest",
+      "net.storagenexus.gametest.client.SlotsClientTest"
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.CableGameTest",
       "net.storagenexus.gametest.CompactingCapacityGameTest",
       "net.storagenexus.gametest.ConduitGameTest",
       "net.storagenexus.gametest.ControllerGameTest",
+      "net.storagenexus.gametest.EssentialsGameTest",
       "net.storagenexus.gametest.FeaturesGameTest",
+      "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
       "net.storagenexus.gametest.OutputGameTest",
       "net.storagenexus.gametest.TerminalGameTest",

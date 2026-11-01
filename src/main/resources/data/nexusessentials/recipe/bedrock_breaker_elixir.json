@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:glass_bottle",
+    "D": "minecraft:diamond",
+    "O": "minecraft:obsidian"
+  },
+  "pattern": [
+    " O ",
+    "DBD",
+    " O "
+  ],
+  "result": {
+    "id": "nexusessentials:bedrock_breaker_elixir"
+  }
+}

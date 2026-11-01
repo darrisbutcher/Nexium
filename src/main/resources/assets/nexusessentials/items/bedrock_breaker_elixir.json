@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexusessentials:item/bedrock_breaker_elixir",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -12566456
+      }
+    ]
+  }
+}

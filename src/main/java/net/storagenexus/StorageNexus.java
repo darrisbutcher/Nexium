@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.dimension.AnchorRegistry;
 import net.storagenexus.drawer.DrawerInteraction;
+import net.storagenexus.essentials.NexusEssentials;
 import net.storagenexus.network.ModPayloads;
 import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.registry.ModBlockEntities;
@@ -40,6 +41,8 @@ public class StorageNexus implements ModInitializer {
         ModStorageLookups.init();
         ModPayloads.init();
         DrawerInteraction.init();
+        // The quality-of-life features that used to be the Nexus Essentials mod
+        NexusEssentials.init();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> AnchorRegistry.get(server).reconcile(server));
         // Hand every player the guide once, the first time they join a world.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
