@@ -41,6 +41,7 @@ public class StorageNexus implements ModInitializer {
         ModStorageLookups.init();
         ModPayloads.init();
         DrawerInteraction.init();
+        AnchorRegistry.init();
         // The quality-of-life features that used to be the Nexus Essentials mod
         NexusEssentials.init();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> AnchorRegistry.get(server).reconcile(server));

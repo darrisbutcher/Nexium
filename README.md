@@ -35,7 +35,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.1.3.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.1.4.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -140,7 +140,9 @@ world, or crafted from a book and any drawer) explains everything in game.
 * Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to link it. No range limit, any dimension,
   as long as the terminal's chunk is loaded.
 * **Dimensional Anchor** loads a 3x3 chunk area. Right-click to switch between Always and On-demand
-  (loads only while a tablet is open).
+  (loads only while a tablet is open). It keeps them loaded with a chunk ticket of its own, so it never unloads
+  chunks you forced with `/forceload` or that another mod keeps loaded. Worlds from before 1.1.4 switch over by
+  themselves the first time they start.
 
 ### Dimensional Input / Output
 * Click an Input with a **Dimensional Link Card**, then click Outputs. Each link gets a unique name
