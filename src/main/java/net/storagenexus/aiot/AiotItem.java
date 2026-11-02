@@ -30,6 +30,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.storagenexus.aiot.module.AiotModules;
+import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.registry.ModComponents;
 
 import java.util.List;
@@ -100,6 +103,11 @@ public class AiotItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        // Sneak + right-click a Crafting Terminal: links the installed Nexus Link module to it
+        if (!AiotModules.find(context.getItemInHand(), ModuleType.NEXUS_LINK).isEmpty()
+                && ModuleItem.linkTo(context, link -> AiotModules.relink(context.getItemInHand(), link))) {
+            return InteractionResult.SUCCESS;
+        }
         var transformers = context.getLevel().registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
         for (ResourceKey<BlockTransformer> key : context.isSecondaryUseActive() ? SNEAK_USE_ORDER : USE_ORDER) {
             var transformer = transformers.get(key);
@@ -118,6 +126,13 @@ public class AiotItem extends Item {
         for (Object2IntMap.Entry<Holder<Enchantment>> entry : inactive.entrySet()) {
             tooltip.accept(Component.translatable("tooltip.storagenexus.aiot_inactive",
                     Enchantment.getFullname(entry.getKey(), entry.getIntValue())).withStyle(ChatFormatting.DARK_GRAY));
+        }
+        // Installed modules, and whether each is on
+        for (ItemStack module : AiotModules.slots(stack)) {
+            if (module.isEmpty()) continue;
+            boolean on = !module.has(ModComponents.MODULE_OFF);
+            tooltip.accept(Component.translatable(on ? "tooltip.storagenexus.aiot_module_on" : "tooltip.storagenexus.aiot_module_off",
+                    module.getHoverName()).withStyle(on ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY));
         }
     }
 }

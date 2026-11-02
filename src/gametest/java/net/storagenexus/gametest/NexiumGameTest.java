@@ -30,7 +30,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.ToolMenu;
-import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.nexium.NexiumHaste;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModComponents;
@@ -209,12 +208,12 @@ public class NexiumGameTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.AIOTS.get(AiotTier.NEXIUM)));
         NexiumHaste.update(player);
         h.assertTrue(haste(player) != null, "the Nexium AIOT gives it too");
-        ToolMenu.handle(player, ToolMenuPayload.Action.TOGGLE_HASTE);
+        ToolMenu.toggleHaste(player, player.getMainHandItem());
         h.assertTrue(player.getMainHandItem().has(ModComponents.HASTE_OFF), "the tool menu turns it off on the tool");
         h.assertTrue(haste(player) == null, "and the effect goes at once");
         NexiumHaste.update(player);
         h.assertTrue(haste(player) == null, "and stays off");
-        ToolMenu.handle(player, ToolMenuPayload.Action.TOGGLE_HASTE);
+        ToolMenu.toggleHaste(player, player.getMainHandItem());
         h.assertTrue(haste(player) != null, "turning it back on gives it back");
 
         // A beacon's Haste II (finite) is never taken away

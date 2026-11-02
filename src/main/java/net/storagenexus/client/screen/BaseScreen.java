@@ -33,7 +33,7 @@ public abstract class BaseScreen<M extends AbstractContainerMenu> extends Abstra
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         palette().panel(g, leftPos, topPos, imageWidth, imageHeight);
-        for (Slot s : menu.slots) palette().slot(g, leftPos + s.x, topPos + s.y);
+        for (Slot s : menu.slots) if (s.isActive()) palette().slot(g, leftPos + s.x, topPos + s.y);
         renderExtraBg(g, mouseX, mouseY);
     }
 

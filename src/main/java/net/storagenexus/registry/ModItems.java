@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.Block;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.aiot.AiotTier;
+import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.barrel.BarrelTier;
 import net.storagenexus.barrel.BarrelUpgradeItem;
 import net.storagenexus.conduit.ConduitItem;
@@ -73,6 +75,15 @@ public final class ModItems {
     static {
         for (AiotTier tier : AiotTier.values()) {
             AIOTS.put(tier, register(tier.id() + "_aiot", p -> new AiotItem(p, tier), AiotItem.properties(tier)));
+        }
+    }
+
+    /** AIOT modules, one per type: {@code storagenexus:<type>_module}. */
+    public static final Map<ModuleType, ModuleItem> MODULES = new EnumMap<>(ModuleType.class);
+
+    static {
+        for (ModuleType type : ModuleType.values()) {
+            MODULES.put(type, register(type.id() + "_module", p -> new ModuleItem(p, type), new Item.Properties().stacksTo(1)));
         }
     }
 

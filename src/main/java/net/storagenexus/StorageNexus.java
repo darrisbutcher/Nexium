@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.storagenexus.aiot.module.AiotMining;
+import net.storagenexus.aiot.module.NexusLink;
 import net.storagenexus.dimension.AnchorRegistry;
 import net.storagenexus.drawer.DrawerInteraction;
 import net.storagenexus.essentials.NexusEssentials;
@@ -46,6 +48,8 @@ public class StorageNexus implements ModInitializer {
         DrawerInteraction.init();
         AnchorRegistry.init();
         NexiumHaste.init();
+        NexusLink.init();
+        AiotMining.init();
         // The quality-of-life features that used to be the Nexus Essentials mod
         NexusEssentials.init();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> AnchorRegistry.get(server).reconcile(server));

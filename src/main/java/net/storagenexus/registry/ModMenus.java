@@ -8,6 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.aiot.ToolMenuMenu;
 import net.storagenexus.barrel.BarrelMenu;
 import net.storagenexus.conduit.ConduitConfigMenu;
 import net.storagenexus.dimension.DimensionalMenu;
@@ -37,6 +38,9 @@ public final class ModMenus {
             new ExtendedMenuType<>(ConduitConfigMenu::new, ConduitConfigMenu.OpenData.STREAM_CODEC));
     public static final ExtendedMenuType<FilterMenu, Integer> FILTER = register("filter",
             new ExtendedMenuType<>(FilterMenu::new, ByteBufCodecs.VAR_INT));
+    /** Opening data: the hotbar slot holding the tool. */
+    public static final ExtendedMenuType<ToolMenuMenu, Integer> TOOL_MENU = register("tool_menu",
+            new ExtendedMenuType<>(ToolMenuMenu::new, ByteBufCodecs.VAR_INT));
 
     private static <T extends AbstractContainerMenu, M extends MenuType<T>> M register(String name, M type) {
         return Registry.register(BuiltInRegistries.MENU, StorageNexus.id(name), type);

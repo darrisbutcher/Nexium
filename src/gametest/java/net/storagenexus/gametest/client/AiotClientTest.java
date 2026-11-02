@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Unit;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -18,6 +19,8 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.storagenexus.aiot.AiotEnchanting;
 import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.MiningMode;
+import net.storagenexus.aiot.module.AiotModules;
+import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.client.ToolMenuClient;
 import net.storagenexus.client.screen.ToolMenuScreen;
 import net.storagenexus.registry.ModComponents;
@@ -28,7 +31,8 @@ import java.util.List;
 /**
  * The AIOTs and Nexium gear on the hotbar and in the inventory, for a visual check of their sprites (a diamond AIOT
  * with a green Fortune gem and one with a blue Silk Touch gem), the tooltip of a diamond AIOT holding both, the tool
- * menu (opened with its key, switching to Silk Touch), a Nexium pickaxe's Haste II and the Nexium armor worn.
+ * menu (opened with its key, with three modules installed, switching to Silk Touch), a Nexium pickaxe's Haste II and
+ * the Nexium armor worn.
  */
 public class AiotClientTest implements FabricClientGameTest {
     @Override
@@ -52,6 +56,14 @@ public class AiotClientTest implements FabricClientGameTest {
                         ItemStack silk = stack.copy();
                         AiotEnchanting.normalize(silk, MiningMode.SILK_TOUCH); // blue gem
                         player.getInventory().setItem(SILK_SLOT, silk);
+                        // Modules in the diamond AIOT: Nexus Link and 3x3 on, vein mining off
+                        var modules = AiotModules.slots(stack);
+                        modules.set(0, new ItemStack(ModItems.MODULES.get(ModuleType.NEXUS_LINK)));
+                        modules.set(1, new ItemStack(ModItems.MODULES.get(ModuleType.AREA_MINING)));
+                        ItemStack vein = new ItemStack(ModItems.MODULES.get(ModuleType.VEIN_MINING));
+                        vein.set(ModComponents.MODULE_OFF, Unit.INSTANCE);
+                        modules.set(2, vein);
+                        AiotModules.setSlots(stack, modules);
                     }
                     player.getInventory().setItem(tier.ordinal(), stack);
                 }
@@ -79,6 +91,8 @@ public class AiotClientTest implements FabricClientGameTest {
             check(tooltip.contains("Pickaxe, axe, shovel, hoe and sword in one"), "the description is shown: " + tooltip);
             check(tooltip.stream().anyMatch(line -> line.contains("9 Attack Damage")), "9 attack damage, like a diamond axe: " + tooltip);
             check(tooltip.stream().anyMatch(line -> line.contains("1.6 Attack Speed")), "1.6 attack speed, like a sword: " + tooltip);
+            check(tooltip.contains("Module: Nexus Link Module"), "the installed Nexus Link is listed: " + tooltip);
+            check(tooltip.contains("Module: Vein Mining Module (off)"), "the switched-off vein mining is listed as off: " + tooltip);
 
             System.out.println("[nexus] AIOT in hand: " + ctx.takeScreenshot("nexus_aiot_in_hand"));
             ctx.getInput().pressKey(options -> options.keyInventory);

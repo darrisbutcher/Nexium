@@ -42,7 +42,6 @@ import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.MiningMode;
 import net.storagenexus.aiot.ToolMenu;
-import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
 
@@ -354,7 +353,7 @@ public class AiotGameTest {
     @GameTest
     public void toolMenuSwitchesSilkTouchAndFortune(GameTestHelper h) {
         ServerPlayer player = playerHolding(h, withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.FORTUNE));
-        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        ToolMenu.swapSilkTouchFortune(player, player.getMainHandItem());
         ItemStack held = player.getMainHandItem();
         h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "Silk Touch is active now");
         h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.FORTUNE)) == 0, "Fortune isn't");
@@ -363,14 +362,14 @@ public class AiotGameTest {
         h.assertTrue(held.get(ModComponents.MINING_MODE) == MiningMode.SILK_TOUCH, "the gem turns blue (Silk Touch)");
         h.assertTrue(player.getMainHandItem().isCorrectToolForDrops(Blocks.STONE.defaultBlockState()), "still a pickaxe");
 
-        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        ToolMenu.swapSilkTouchFortune(player, player.getMainHandItem());
         held = player.getMainHandItem();
         h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.FORTUNE)) == 3, "Fortune III is back");
         h.assertTrue(held.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "the gem turns green (Fortune)");
 
         // An AIOT without both can't switch, and nothing changes
         ServerPlayer other = playerHolding(h, new ItemStack(aiot(AiotTier.IRON)));
-        ToolMenu.handle(other, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        ToolMenu.swapSilkTouchFortune(other, other.getMainHandItem());
         h.assertFalse(other.getMainHandItem().has(ModComponents.MINING_MODE), "an AIOT without both has no mode");
         h.succeed();
     }
@@ -382,7 +381,7 @@ public class AiotGameTest {
         h.setBlock(POS, Blocks.DIAMOND_ORE);
         List<ItemStack> silkDrops = Block.getDrops(h.getBlockState(POS), h.getLevel(), h.absolutePos(POS), null, player, player.getMainHandItem());
         h.assertTrue(silkDrops.size() == 1 && silkDrops.getFirst().is(Items.DIAMOND_ORE), "Silk Touch: the ore block drops, got " + silkDrops);
-        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        ToolMenu.swapSilkTouchFortune(player, player.getMainHandItem());
         List<ItemStack> fortuneDrops = Block.getDrops(h.getBlockState(POS), h.getLevel(), h.absolutePos(POS), null, player, player.getMainHandItem());
         h.assertTrue(!fortuneDrops.isEmpty() && fortuneDrops.stream().allMatch(s -> s.is(Items.DIAMOND)), "Fortune: diamonds drop, got " + fortuneDrops);
         h.succeed();

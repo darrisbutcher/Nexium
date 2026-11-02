@@ -1,0 +1,80 @@
+package net.storagenexus.aiot.module;
+
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.storagenexus.aiot.AiotItem;
+import net.storagenexus.registry.ModComponents;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * Modules installed in an AIOT. They live in the AIOT's {@code storagenexus:modules} component (one slot per module
+ * type, so {@link #SLOTS} slots), and each module item carries its own on/off switch ({@code storagenexus:module_off})
+ * and, for the Nexus Link, its terminal link. Taking a module out keeps both.
+ */
+public final class AiotModules {
+    public static final int SLOTS = ModuleType.values().length;
+
+    /** The AIOT's module slots, always {@link #SLOTS} long (empty stacks for empty slots). */
+    public static NonNullList<ItemStack> slots(ItemStack tool) {
+        NonNullList<ItemStack> list = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
+        tool.getOrDefault(ModComponents.MODULES, ItemContainerContents.EMPTY).copyInto(list);
+        return list;
+    }
+
+    public static void setSlots(ItemStack tool, NonNullList<ItemStack> slots) {
+        if (slots.stream().allMatch(ItemStack::isEmpty)) tool.remove(ModComponents.MODULES);
+        else tool.set(ModComponents.MODULES, ItemContainerContents.fromItems(slots));
+    }
+
+    /** The installed module of this type, or an empty stack. */
+    public static ItemStack find(ItemStack tool, ModuleType type) {
+        if (!(tool.getItem() instanceof AiotItem)) return ItemStack.EMPTY;
+        for (ItemStack module : slots(tool)) {
+            if (module.getItem() instanceof ModuleItem item && item.type() == type) return module;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /** Whether the AIOT has this module installed and switched on. */
+    public static boolean active(ItemStack tool, ModuleType type) {
+        ItemStack module = find(tool, type);
+        return !module.isEmpty() && !module.has(ModComponents.MODULE_OFF);
+    }
+
+    /** The terminal the AIOT's Nexus Link sends drops to, if it has an active, linked one. */
+    public static @Nullable GlobalPos activeLink(ItemStack tool) {
+        return active(tool, ModuleType.NEXUS_LINK) ? find(tool, ModuleType.NEXUS_LINK).get(ModComponents.TERMINAL_LINK) : null;
+    }
+
+    /** Switches the module in this slot on or off. Returns its new state, or null if the slot is empty. */
+    public static @Nullable Boolean toggle(ItemStack tool, int slot) {
+        NonNullList<ItemStack> slots = slots(tool);
+        if (slot < 0 || slot >= SLOTS || slots.get(slot).isEmpty()) return null;
+        ItemStack module = slots.get(slot).copy();
+        boolean nowOn = module.has(ModComponents.MODULE_OFF);
+        if (nowOn) module.remove(ModComponents.MODULE_OFF);
+        else module.set(ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
+        slots.set(slot, module);
+        setSlots(tool, slots);
+        return nowOn;
+    }
+
+    /** Links the AIOT's installed Nexus Link to a terminal. Returns false if it has none. */
+    public static boolean relink(ItemStack tool, GlobalPos terminal) {
+        NonNullList<ItemStack> slots = slots(tool);
+        for (int i = 0; i < SLOTS; i++) {
+            if (slots.get(i).getItem() instanceof ModuleItem item && item.type() == ModuleType.NEXUS_LINK) {
+                ItemStack module = slots.get(i).copy();
+                module.set(ModComponents.TERMINAL_LINK, terminal);
+                slots.set(i, module);
+                setSlots(tool, slots);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private AiotModules() {}
+}

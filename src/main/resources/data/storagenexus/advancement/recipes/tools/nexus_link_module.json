@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_aiot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#storagenexus:aiots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "storagenexus:nexus_link_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_aiot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "storagenexus:nexus_link_module"
+    ]
+  }
+}

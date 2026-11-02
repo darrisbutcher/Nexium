@@ -36,7 +36,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.3.0.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.4.0.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -46,8 +46,8 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 110 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
-conduits, Dimensional links, the AIOTs, Nexium and every Essentials feature). Run just those with `./gradlew runGameTest`.
+server (about 115 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+conduits, Dimensional links, the AIOTs and their modules, Nexium and every Essentials feature). Run just those with `./gradlew runGameTest`.
 The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
 and the magnet tests pull items from 16 blocks away.
 
@@ -58,8 +58,8 @@ there fails the test.
 There are also client tests that open a real Minecraft client (`./gradlew runClientGameTest`): one opens every
 screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
 and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; one puts the
-AIOTs and Nexium gear on the hotbar, checks a diamond AIOT's tooltip, opens the tool menu with its key and clicks it
-to Silk Touch, checks a Nexium pickaxe gives Haste II and shows the Nexium armor worn; and one saves and quits a world with filled barrels
+AIOTs and Nexium gear on the hotbar, checks a diamond AIOT's tooltip (modules included), opens the tool menu with its
+key and clicks it to Silk Touch, checks a Nexium pickaxe gives Haste II and shows the Nexium armor worn; and one saves and quits a world with filled barrels
 and reopens it. They take screenshots as they go. They need a window
 (or a virtual display such as Xvfb), so they are not part of `build`; CI runs them in a separate `client-test` job
 on Xvfb and keeps the screenshots as an artifact. Add `-PwithJei` to run them with JEI installed, which also presses
@@ -217,7 +217,7 @@ world, or crafted from a book and any drawer) explains everything in game.
 
 ### Tool menu
 * Hold an AIOT or a Nexium tool and press **G** (rebind it under Controls > Key Binds > Storage Nexus, next to the
-  magnet). Press it again or Esc to close; it doesn't pause the game.
+  magnet). Press it again or Esc to close. The tool stays in its hotbar slot (outlined) while the menu is open.
 * **Mining**: on an AIOT holding both Silk Touch and Fortune, switches which one is active. The AIOT's gem shows it on
   the hotbar: **green for Fortune, blue for Silk Touch** (purple when it doesn't hold both). Whichever is active
   decides the drops, exactly as on a vanilla pickaxe.
@@ -225,8 +225,34 @@ world, or crafted from a book and any drawer) explains everything in game.
   the tool, and its tooltip says whether it is on.
 * A message above the hotbar confirms each change. Switches that don't apply to the held tool are greyed out, with a
   tooltip saying why.
-* Every AIOT has the Silk Touch / Fortune switch built in and every Nexium mining tool its Haste II: neither is an
-  add-on. The menu is where optional modules (area mining, Nexus Link and the like) will go if they are added later.
+* **Modules** (AIOTs only): three slots. Put a module in a slot like any item, take it out the same way; the button
+  beside each slot turns that module on or off. One of each module per AIOT. The AIOT's tooltip lists its modules.
+* Every AIOT has the Silk Touch / Fortune switch built in and every Nexium mining tool its Haste II; modules are the
+  add-ons.
+
+### AIOT modules
+Crafted, then put in an AIOT through the tool menu. A module keeps its on/off setting (and the Nexus Link its link)
+when taken out.
+
+| Module | Recipe | What it does |
+|---|---|---|
+| **Nexus Link** | Dimensional Link Card in the middle, ender pearls on the sides, iron ingots in the corners | What the AIOT mines goes straight into a storage network |
+| **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
+| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Mines whole ore veins and tree trunks |
+
+* **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or with an AIOT that has one) to link it.
+  Drops, Fortune and Silk Touch included, go into that terminal's network in any dimension; experience still drops.
+  The terminal's chunk must be loaded, as for tablets: a Dimensional Anchor set to Always, or one set to On-demand,
+  which the link wakes while you mine and lets sleep 30 seconds after the last block. What the network can't take,
+  or everything when it can't be reached, drops as usual, with a message above the hotbar.
+* **3x3 Mining**: mines the 3x3 around the block, facing you: a wall when you look ahead, the floor or ceiling when you
+  look down or up. Only blocks the AIOT is made for and at most about twice as hard as the block you mined (no
+  obsidian around stone), and never blocks with contents such as chests.
+* **Vein Mining**: mining an ore or a log (block tag `storagenexus:vein_mineable`: `#minecraft:ores`, `#c:ores`,
+  logs, ancient debris, nether quartz and gold ores) mines every block of the same kind touching it, corners included,
+  up to 64 blocks. With 3x3 also on, ores and logs are vein mined and everything else 3x3 mined.
+* Both mine each block as you would: Fortune, Silk Touch and the Nexus Link apply, each block costs 1 durability (it
+  stops if the AIOT breaks), and spawn protection is respected. **Sneak** to mine just the one block.
 
 ### Nexium
 * The tier above netherite. **Nexium Ingot**: a block of diamond, a block of emerald, a block of netherite and a

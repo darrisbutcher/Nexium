@@ -49,6 +49,14 @@ public final class ModComponents {
     public static final DataComponentType<MiningMode> MINING_MODE = register("mining_mode",
             b -> b.persistent(MiningMode.CODEC).networkSynchronized(MiningMode.STREAM_CODEC));
 
+    /** Modules installed in an AIOT, one slot per module type (see AiotModules). */
+    public static final DataComponentType<ItemContainerContents> MODULES = register("modules",
+            b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+
+    /** On a module: switched off in the tool menu. */
+    public static final DataComponentType<Unit> MODULE_OFF = register("module_off",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
+
     /** On a Nexium tool: its Haste II is turned off in the tool menu. */
     public static final DataComponentType<Unit> HASTE_OFF = register("haste_off",
             b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
