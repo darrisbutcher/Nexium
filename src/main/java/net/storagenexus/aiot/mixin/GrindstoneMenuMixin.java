@@ -1,4 +1,4 @@
-package net.storagenexus.essentials.mixin;
+package net.storagenexus.aiot.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.inventory.GrindstoneMenu;

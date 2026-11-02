@@ -1,5 +1,8 @@
 package net.storagenexus.aiot.module;
 
+import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,13 +16,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.aiot.AiotItem;
+import net.storagenexus.essentials.config.NexusConfig;
+import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The 3x3 and vein mining modules. When a player mines a block with an AIOT that has one on, the extra blocks are
@@ -36,7 +37,6 @@ import java.util.Set;
  */
 public final class AiotMining {
     public static final TagKey<Block> VEIN_MINEABLE = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_mineable"));
-    public static final int MAX_VEIN = 64;
 
     /** Set while mining the extra blocks, so they don't set off more of their own. */
     private static boolean busy;
@@ -51,42 +51,68 @@ public final class AiotMining {
         ItemStack tool = player.getMainHandItem();
         if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return;
         List<BlockPos> extra;
-        if (AiotModules.active(tool, ModuleType.VEIN_MINING) && state.is(VEIN_MINEABLE)) {
-            extra = vein(level, pos, state.getBlock());
-        } else if (AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
+        NexusConfig config = NexusConfig.get();
+        if (config.aiotVeinMining && AiotModules.active(tool, ModuleType.VEIN_MINING) && state.is(VEIN_MINEABLE)) {
+            extra = vein(level, pos, state);
+        } else if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
             extra = area(level, player, pos, state, tool);
         } else {
             return;
         }
+        if (extra.isEmpty()) return;
         busy = true;
         try {
-            for (BlockPos target : extra) {
-                // Stop if the tool breaks or is put away part of the way through
-                if (!(player.getMainHandItem().getItem() instanceof AiotItem)) break;
-                // Spawn protection and the world border, which vanilla checks before the first block only
-                if (!level.mayInteract(player, target)) continue;
-                player.gameMode.destroyBlock(target);
-            }
+            // A Nexus Link sends the whole swing's drops to the network in one go
+            NexusLink.batch(player, () -> {
+                for (BlockPos target : extra) {
+                    // Stop if the tool breaks or is put away part of the way through
+                    if (!(player.getMainHandItem().getItem() instanceof AiotItem)) break;
+                    // Spawn protection and the world border, which vanilla checks before the first block only
+                    if (!level.mayInteract(player, target)) continue;
+                    player.gameMode.destroyBlock(target);
+                }
+            });
         } finally {
             busy = false;
         }
     }
 
-    /** The other blocks of this kind connected to {@code start} (corners count), nearest first, up to the vein limit. */
-    static List<BlockPos> vein(Level level, BlockPos start, Block block) {
+    /** The ore group a block belongs to ({@code #c:ores/diamond} and the like), or null if it stands alone. */
+    private static @Nullable TagKey<Block> oreGroup(BlockState state) {
+        return state.tags()
+                .filter(tag -> tag.location().getNamespace().equals("c") && tag.location().getPath().startsWith("ores/"))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * The other blocks of this kind connected to {@code start} (corners count), nearest first, up to the configured
+     * limit. Blocks of the same ore group count as one kind, so the deepslate and stone variants of an ore join up.
+     * Only loaded chunks are looked at, so a vein never makes the server load or generate one.
+     */
+    static List<BlockPos> vein(Level level, BlockPos start, BlockState startState) {
+        int limit = NexusConfig.get().aiotVeinMaxBlocks - 1;
+        Block block = startState.getBlock();
+        TagKey<Block> group = oreGroup(startState);
         List<BlockPos> found = new ArrayList<>();
-        Set<BlockPos> seen = new HashSet<>();
-        Deque<BlockPos> queue = new ArrayDeque<>();
-        seen.add(start);
-        queue.add(start);
-        while (!queue.isEmpty() && found.size() < MAX_VEIN - 1) {
-            BlockPos pos = queue.poll();
-            for (BlockPos next : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) {
-                if (found.size() >= MAX_VEIN - 1) break;
-                BlockPos immutable = next.immutable();
-                if (!seen.add(immutable) || !level.getBlockState(immutable).is(block)) continue;
-                found.add(immutable);
-                queue.add(immutable);
+        LongSet seen = new LongOpenHashSet();
+        LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
+        seen.add(start.asLong());
+        queue.enqueue(start.asLong());
+        BlockPos.MutableBlockPos next = new BlockPos.MutableBlockPos();
+        while (!queue.isEmpty() && found.size() < limit) {
+            long current = queue.dequeueLong();
+            int cx = BlockPos.getX(current), cy = BlockPos.getY(current), cz = BlockPos.getZ(current);
+            for (int dx = -1; dx <= 1 && found.size() < limit; dx++) {
+                for (int dy = -1; dy <= 1 && found.size() < limit; dy++) {
+                    for (int dz = -1; dz <= 1 && found.size() < limit; dz++) {
+                        next.set(cx + dx, cy + dy, cz + dz);
+                        if (!level.hasChunkAt(next) || !seen.add(next.asLong())) continue;
+                        BlockState state = level.getBlockState(next);
+                        if (!state.is(block) && (group == null || !state.is(group))) continue;
+                        found.add(next.immutable());
+                        queue.enqueue(next.asLong());
+                    }
+                }
             }
         }
         return found;

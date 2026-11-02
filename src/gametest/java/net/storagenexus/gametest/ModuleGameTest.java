@@ -204,6 +204,74 @@ public class ModuleGameTest {
     }
 
     @GameTest
+    public void veinMiningJoinsOreVariants(GameTestHelper h) {
+        // Stone and deepslate diamond ore side by side are one vein; an iron ore next to them is not part of it
+        BlockPos a = new BlockPos(1, 1, 1), b = new BlockPos(2, 1, 1), c = new BlockPos(3, 1, 1), iron = new BlockPos(2, 2, 1);
+        h.setBlock(a, Blocks.DIAMOND_ORE);
+        h.setBlock(b, Blocks.DEEPSLATE_DIAMOND_ORE);
+        h.setBlock(c, Blocks.DIAMOND_ORE);
+        h.setBlock(iron, Blocks.IRON_ORE);
+        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        mine(h, player, a);
+        h.assertBlockPresent(Blocks.AIR, b);
+        h.assertBlockPresent(Blocks.AIR, c);
+        h.assertBlockPresent(Blocks.IRON_ORE, iron);
+        h.succeed();
+    }
+
+    @GameTest
+    public void configSwitchesTurnTheModulesOff(GameTestHelper h) {
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        boolean vein = config.aiotVeinMining;
+        int max = config.aiotVeinMaxBlocks;
+        try {
+            for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
+            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            config.aiotVeinMaxBlocks = 3;
+            mine(h, player, new BlockPos(1, 1, 1));
+            h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(4, 1, 1)); // 3 of the 4: the limit is a setting
+            for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
+            config.aiotVeinMaxBlocks = max;
+            config.aiotVeinMining = false;
+            mine(h, player, new BlockPos(1, 1, 1));
+            h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1)); // off: just the one block
+        } finally {
+            config.aiotVeinMining = vein;
+            config.aiotVeinMaxBlocks = max;
+        }
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 100)
+    public void nexusLinkTakesAWholeVeinInOneGo(GameTestHelper h) {
+        // A terminal at the end of a line of connectors, with a barrel on each side of every connector
+        BlockPos terminal = new BlockPos(7, 1, 6);
+        h.setBlock(terminal, ModBlocks.CRAFTING_TERMINAL);
+        for (int x = 0; x < 7; x++) {
+            h.setBlock(new BlockPos(x, 1, 6), ModBlocks.STORAGE_CONNECTOR);
+            h.setBlock(new BlockPos(x, 1, 5), Blocks.BARREL);
+            h.setBlock(new BlockPos(x, 1, 7), Blocks.BARREL);
+        }
+        // 100 blocks of coal ore, 64 of which a swing takes
+        for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
+        ServerPlayer player = miner(h, ModuleType.VEIN_MINING, ModuleType.NEXUS_LINK);
+        h.assertTrue(AiotModules.relink(player.getMainHandItem(), GlobalPos.of(h.getLevel().dimension(), h.absolutePos(terminal))), "linked");
+        long start = System.nanoTime();
+        mine(h, player, new BlockPos(2, 2, 2));
+        long micros = (System.nanoTime() - start) / 1000;
+        net.storagenexus.StorageNexus.LOG.info("Vein of 64 with a Nexus Link into 14 barrels: {} microseconds", micros);
+
+        int left = 0;
+        for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
+        h.assertValueEqual(left, 100 - 64, "64 blocks mined");
+        long coal = net.storagenexus.network.StorageNetwork.find(h.getLevel(), h.absolutePos(terminal))
+                .countItem(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(Items.COAL));
+        h.assertTrue(coal >= 64, "at least 64 coal in the network, got " + coal);
+        h.assertValueEqual(itemsOnGround(h), 0, "nothing on the ground");
+        h.succeed();
+    }
+
+    @GameTest
     public void nexusLinkModuleLinksToATerminal(GameTestHelper h) {
         h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
         ServerPlayer player = h.makeMockServerPlayerInLevel();
