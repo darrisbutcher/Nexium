@@ -48,7 +48,7 @@ public class AiotClientTest implements FabricClientGameTest {
             ctx.waitTicks(20);
             // Hold the diamond AIOT, the way a player picks a hotbar slot
             ctx.getInput().pressKey(options -> options.keyHotbarSlots[AiotTier.DIAMOND.ordinal()]);
-            ctx.waitTicks(5);
+            ctx.waitTicks(20); // long enough for the hand to finish raising the new item
 
             List<String> tooltip = ctx.computeOnClient(mc -> mc.player.getInventory().getItem(AiotTier.DIAMOND.ordinal())
                     .getTooltipLines(Item.TooltipContext.of(mc.level), mc.player, TooltipFlag.NORMAL)
