@@ -237,18 +237,19 @@ public class ModuleGameTest {
             menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
             h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 4, "wraps to the smallest after the limit");
             menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
-            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 8, "then steps up");
+            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 9, "then steps up");
             h.assertTrue(menu.getSlot(0).getItem().has(ModComponents.VEIN_SIZE), "the slot shows the new size");
 
             for (int x = 0; x < 20; x++) h.setBlock(new BlockPos(x % 10, 1 + x / 10, 1), Blocks.COAL_ORE);
             mine(h, player, new BlockPos(0, 1, 1));
             int left = 0;
             for (int x = 0; x < 20; x++) if (h.getBlockState(new BlockPos(x % 10, 1 + x / 10, 1)).is(Blocks.COAL_ORE)) left++;
-            h.assertValueEqual(left, 20 - 8, "a size of 8 mines 8 blocks");
+            h.assertValueEqual(left, 20 - 9, "a size of 9 mines 9 blocks");
 
             // A lower config limit caps the setting
             config.aiotVeinMaxBlocks = 5;
             h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 5, "the config's limit still caps it");
+            h.assertValueEqual(new ToolMenuMenu(2, player.getInventory(), player.getInventory().getSelectedSlot()).veinMax(), 5, "and the menu carries the limit to the screen");
             VeinKey.set(player, false);
         } finally {
             config.aiotVeinMaxBlocks = max;

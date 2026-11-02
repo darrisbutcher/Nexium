@@ -5,10 +5,12 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
 
@@ -21,7 +23,7 @@ public class ToolMenuMenu extends BaseMenu {
     public static final int BTN_SWAP_SILK_TOUCH_FORTUNE = 0, BTN_TOGGLE_HASTE = 1, BTN_TOGGLE_MODULE = 2;
     /** Steps the Vein Mining module to its next size. */
     public static final int BTN_VEIN_SIZE = BTN_TOGGLE_MODULE + AiotModules.SLOTS;
-    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 98, MODULE_ROW = 20, INVENTORY_Y = 168;
+    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88, MODULE_ROW = 18, INVENTORY_Y = 155;
 
     private final Player player;
     /** The hotbar slot holding the tool. */
@@ -35,6 +37,8 @@ public class ToolMenuMenu extends BaseMenu {
         }
     };
     private boolean loading;
+    /** The server's vein size limit, synced so the screen caps the size the way the server does (the config is server-side). */
+    private final DataSlot veinMax = DataSlot.standalone();
 
     /** Both sides: {@code toolSlot} is the selected hotbar slot when the menu was opened. */
     public ToolMenuMenu(int id, Inventory inventory, Integer toolSlot) {
@@ -65,12 +69,19 @@ public class ToolMenuMenu extends BaseMenu {
                 }
             });
         }
+        addDataSlot(veinMax);
+        if (!player.level().isClientSide()) veinMax.set(NexusConfig.get().aiotVeinMaxBlocks);
         addPlayerSlots(inventory, 8, INVENTORY_Y);
     }
 
     /** The tool the menu is for: whatever is in its hotbar slot. */
     public ItemStack tool() {
         return player.getInventory().getItem(toolSlot);
+    }
+
+    /** The most blocks a vein mining swing may mine on this server. */
+    public int veinMax() {
+        return veinMax.get();
     }
 
     public int toolSlot() {

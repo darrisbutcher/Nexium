@@ -44,11 +44,11 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     protected void init() {
         super.init();
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_SWAP_SILK_TOUCH_FORTUNE))
-                .bounds(leftPos + BUTTON_X, topPos + 24, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 22, BUTTON_WIDTH, 16).build());
         hasteButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_HASTE))
-                .bounds(leftPos + BUTTON_X, topPos + 44, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 40, BUTTON_WIDTH, 16).build());
         veinButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_VEIN_SIZE))
-                .bounds(leftPos + BUTTON_X, topPos + 64, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 58, BUTTON_WIDTH, 16).build());
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             final int slot = i;
             moduleButtons[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_MODULE + slot))
@@ -100,7 +100,7 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         if (vein.isEmpty()) {
             set(veinButton, false, Component.translatable("screen.storagenexus.tool_menu.vein_none"), "screen.storagenexus.tool_menu.vein_none.tooltip");
         } else {
-            int max = net.storagenexus.essentials.config.NexusConfig.get().aiotVeinMaxBlocks;
+            int max = menu.veinMax(); // the server's limit, synced with the menu
             int size = Math.max(1, Math.min(max, vein.getOrDefault(ModComponents.VEIN_SIZE, max)));
             set(veinButton, true, Component.translatable("screen.storagenexus.tool_menu.vein_size", size),
                     "screen.storagenexus.tool_menu.vein_size.tooltip");

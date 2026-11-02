@@ -228,7 +228,7 @@ world, or crafted from a book and any drawer) explains everything in game.
   button's hint shows beside the panel, never over the other buttons.
 * Wearing Nexium armor, the **Armor** button (top right) goes to the armor menu; the armor menu has a **Tools**
   button (top right) that goes back to the tool menu of the tool in your hand. Switch back and forth as often as you like.
-* **Vein size** (AIOTs with a Vein Mining module): click to step how many blocks one vein mining swing mines (4, 8, 16 ...
+* **Vein size** (AIOTs with a Vein Mining module): click to step how many blocks one vein mining swing mines (4, 9, 18, 32 ...
   up to the server's `aiotVeinMaxBlocks`, then back to 4). It is saved on the module.
 * **Modules** (AIOTs only): three slots. Put a module in a slot like any item, take it out the same way; the button
   beside each slot turns that module on or off. One of each module per AIOT. The AIOT's tooltip lists its modules.

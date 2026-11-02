@@ -63,7 +63,7 @@ public final class AiotModules {
     }
 
     /** Sizes the tool menu steps through, below the config's limit (which is always the last one). */
-    private static final int[] VEIN_STEPS = {4, 8, 16, 32, 64, 128, 256};
+    private static final int[] VEIN_STEPS = {4, 9, 18, 32, 64, 128, 256};
 
     /** Most blocks one vein mining swing mines with this AIOT: its module's setting, never above the config's limit. */
     public static int veinSize(ItemStack tool) {
