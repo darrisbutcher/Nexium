@@ -2,7 +2,6 @@ package net.storagenexus.client.screen;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
@@ -18,6 +17,7 @@ import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleItem;
 import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.client.ToolMenuClient;
+import net.storagenexus.nexium.NexiumArmor;
 import net.storagenexus.nexium.NexiumMaterials;
 import net.storagenexus.registry.ModComponents;
 
@@ -25,13 +25,14 @@ import net.storagenexus.registry.ModComponents;
  * The tool menu, opened with G (by default) while holding an AIOT or a Nexium tool. At the top, Silk Touch / Fortune
  * and Haste II; below, on an AIOT, its module slots, each with a switch to turn that module on or off. Labels follow
  * the held tool, so they update as soon as the server has made a change. Switches that don't apply to the tool are
- * greyed out with a tooltip saying why. The tool's own hotbar slot is outlined: it can't be moved while the menu is open.
+ * greyed out, and every button's hint shows beside the panel, never over the other buttons. The tool's own hotbar slot is outlined: it can't be moved while the menu is open.
  */
 public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     private static final int BUTTON_X = 8, BUTTON_WIDTH = 160, MODULE_BUTTON_X = 28, MODULE_BUTTON_WIDTH = 140;
     private static final int MODULES_LABEL_Y = ToolMenuMenu.MODULE_SLOT_Y - 12;
-    private Button modeButton, hasteButton;
+    private Button modeButton, hasteButton, armorButton;
     private final Button[] moduleButtons = new Button[AiotModules.SLOTS];
+    private final SideHints hints = new SideHints();
 
     public ToolMenuScreen(ToolMenuMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, ToolMenuMenu.INVENTORY_Y + 82, ToolMenuMenu.INVENTORY_Y);
@@ -52,6 +53,11 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
                     .bounds(leftPos + MODULE_BUTTON_X, topPos + ToolMenuMenu.MODULE_SLOT_Y + i * ToolMenuMenu.MODULE_ROW,
                             MODULE_BUTTON_WIDTH, 16).build());
         }
+        // To the armor menu, when wearing Nexium armor
+        armorButton = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.tool_menu.armor"), b -> {
+            minecraft.player.closeContainer();
+            minecraft.gui.setScreen(new ArmorMenuScreen());
+        }).bounds(leftPos + imageWidth - 8 - 44, topPos + 5, 44, 16).build());
         refresh();
     }
 
@@ -81,6 +87,8 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         } else {
             set(hasteButton, false, Component.translatable("screen.storagenexus.tool_menu.haste_none"), "screen.storagenexus.tool_menu.haste_none.tooltip");
         }
+        armorButton.visible = NexiumArmor.piecesWorn(minecraft.player) > 0;
+        hints.set(armorButton, Component.translatable("screen.storagenexus.tool_menu.armor.tooltip"));
         boolean aiot = tool.getItem() instanceof AiotItem;
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             Button button = moduleButtons[i];
@@ -101,14 +109,20 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
                         ? Component.translatable("tooltip.storagenexus.nexus_link.unlinked")
                         : Component.translatable("tooltip.storagenexus.nexus_link.linked", ModuleItem.describe(link)));
             }
-            button.setTooltip(Tooltip.create(tip));
+            hints.set(button, tip);
         }
     }
 
-    private static void set(Button button, boolean active, Component message, String tooltipKey) {
+    private void set(Button button, boolean active, Component message, String hintKey) {
         button.active = active;
         button.setMessage(message);
-        button.setTooltip(Tooltip.create(Component.translatable(tooltipKey)));
+        hints.set(button, Component.translatable(hintKey));
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
+        hints.render(g, leftPos, leftPos + imageWidth, mouseX, mouseY);
     }
 
     @Override

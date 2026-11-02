@@ -22,6 +22,7 @@ import net.storagenexus.conduit.ConduitWrenchItem;
 import net.storagenexus.dimension.DimensionalLinkCardItem;
 import net.storagenexus.filter.FilterItem;
 import net.storagenexus.guide.GuideBookItem;
+import net.storagenexus.nexium.NexiumChestplateItem;
 import net.storagenexus.nexium.NexiumMaterials;
 import net.storagenexus.tablet.StorageTabletItem;
 import net.storagenexus.upgrade.CapacityUpgradeItem;
@@ -106,7 +107,8 @@ public final class ModItems {
             new Item.Properties().spear(NexiumMaterials.TOOL, 1.25F, 1.325F, 0.3F, 2.0F, 8.0F, 4.5F, 5.1F, 7.5F, 4.6F).fireResistant());
     public static final Item NEXIUM_HELMET = register("nexium_helmet", Item::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.HELMET).fireResistant());
-    public static final Item NEXIUM_CHESTPLATE = register("nexium_chestplate", Item::new,
+    /** Also carries the set bonuses' settings and the Nexus Restock link. */
+    public static final Item NEXIUM_CHESTPLATE = register("nexium_chestplate", NexiumChestplateItem::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.CHESTPLATE).fireResistant());
     public static final Item NEXIUM_LEGGINGS = register("nexium_leggings", Item::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.LEGGINGS).fireResistant());

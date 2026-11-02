@@ -2,7 +2,6 @@ package net.storagenexus.nexium;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.registry.ModComponents;
@@ -12,10 +11,7 @@ import net.storagenexus.registry.ModComponents;
  * menu. With Efficiency V that is exactly netherite with Efficiency V under a Haste II beacon (49 mining speed: stone
  * and netherrack break instantly), and like the beacon's it also speeds up attacks by 20%.
  * <p>
- * The effect is infinite, ambient and without particles, so its icon shows a steady infinity sign instead of
- * blinking. That combination is its signature: when the player stops holding the tool, an infinite ambient Haste II is
- * taken off, and a beacon's (which is never infinite) or a command's (never ambient) is left alone. It does not stack
- * with a beacon's Haste II: the effect is the same.
+ * The effect is given and taken by {@link HeldEffects}, so a beacon's or a command's Haste is never taken away.
  */
 public final class NexiumHaste {
     private static final int AMPLIFIER = 1; // Haste II
@@ -35,15 +31,7 @@ public final class NexiumHaste {
 
     /** Gives or takes the Haste II for what the player holds now. */
     public static void update(ServerPlayer player) {
-        boolean wanted = grants(player.getMainHandItem()) && !player.isSpectator();
-        MobEffectInstance current = player.getEffect(MobEffects.HASTE);
-        boolean ours = current != null && current.isInfiniteDuration() && current.isAmbient() && current.getAmplifier() == AMPLIFIER;
-        if (wanted && !ours && (current == null || current.getAmplifier() <= AMPLIFIER)) {
-            player.addEffect(new MobEffectInstance(MobEffects.HASTE, MobEffectInstance.INFINITE_DURATION, AMPLIFIER,
-                    true, false, true));
-        } else if (!wanted && ours) {
-            player.removeEffect(MobEffects.HASTE);
-        }
+        HeldEffects.set(player, MobEffects.HASTE, AMPLIFIER, grants(player.getMainHandItem()) && !player.isSpectator());
     }
 
     private NexiumHaste() {}

@@ -10,13 +10,16 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
 import net.storagenexus.aiot.ToolMenu;
 import net.storagenexus.aiot.ToolMenuPayload;
+import net.storagenexus.client.screen.ArmorMenuScreen;
 import net.storagenexus.client.screen.ToolMenuScreen;
 import net.storagenexus.essentials.client.NexusEssentialsClient;
+import net.storagenexus.nexium.NexiumArmor;
 import net.storagenexus.registry.ModMenus;
 
 /**
- * The tool menu key: G by default, listed under Storage Nexus in Controls > Key Binds next to the magnet's. The menu
- * itself is opened by the server (it has slots for modules), so the key just asks for it.
+ * The tool menu key: G by default, listed under Storage Nexus in Controls > Key Binds next to the magnet's. Holding an
+ * AIOT or a Nexium tool, it asks the server for the tool menu (which has slots for modules); otherwise, wearing Nexium
+ * armor, it opens the armor menu.
  */
 public final class ToolMenuClient {
     public static final KeyMapping TOOL_MENU = new KeyMapping("key.storagenexus.tool_menu",
@@ -30,6 +33,8 @@ public final class ToolMenuClient {
                 if (client.player == null || client.gui.screen() != null) continue;
                 if (ToolMenu.appliesTo(client.player.getMainHandItem())) {
                     ClientPlayNetworking.send(ToolMenuPayload.INSTANCE);
+                } else if (NexiumArmor.piecesWorn(client.player) > 0) {
+                    client.gui.setScreen(new ArmorMenuScreen());
                 } else {
                     client.player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.hold_tool")
                             .withStyle(ChatFormatting.GRAY));

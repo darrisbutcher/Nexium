@@ -37,15 +37,16 @@ public class ModuleItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         if (type != ModuleType.NEXUS_LINK) return InteractionResult.PASS;
-        return linkTo(context, link -> context.getItemInHand().set(ModComponents.TERMINAL_LINK, link))
+        return linkTo(context, link -> context.getItemInHand().set(ModComponents.TERMINAL_LINK, link), "message.storagenexus.nexus_link.linked")
                 ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     /**
-     * Sneak + right-click on a Crafting Terminal: links to it. Shared with the AIOT, which relinks its installed Nexus
-     * Link the same way. Returns whether the click was a link.
+     * Sneak + right-click on a Crafting Terminal: links to it, with {@code messageKey} above the hotbar. Shared with the
+     * AIOT, which relinks its installed Nexus Link the same way, and the Nexium chestplate (Nexus Restock). Returns
+     * whether the click was a link.
      */
-    public static boolean linkTo(UseOnContext context, Consumer<GlobalPos> setLink) {
+    public static boolean linkTo(UseOnContext context, Consumer<GlobalPos> setLink, String messageKey) {
         Player player = context.getPlayer();
         Level level = context.getLevel();
         if (player == null || !player.isSecondaryUseActive()) return false;
@@ -53,7 +54,7 @@ public class ModuleItem extends Item {
         if (!level.isClientSide()) {
             GlobalPos link = GlobalPos.of(level.dimension(), context.getClickedPos().immutable());
             setLink.accept(link);
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.nexus_link.linked", describe(link)));
+            player.sendOverlayMessage(Component.translatable(messageKey, describe(link)));
         }
         return true;
     }

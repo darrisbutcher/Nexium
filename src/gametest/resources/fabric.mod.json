@@ -16,6 +16,7 @@
     "fabric-gametest": [
       "net.storagenexus.gametest.AiotGameTest",
       "net.storagenexus.gametest.AnchorGameTest",
+      "net.storagenexus.gametest.ArmorGameTest",
       "net.storagenexus.gametest.CableGameTest",
       "net.storagenexus.gametest.CompactingCapacityGameTest",
       "net.storagenexus.gametest.ConduitGameTest",

@@ -93,8 +93,11 @@ public final class NexusLink {
         }
     }
 
-    /** The linked terminal's network, waking an on-demand anchor if one covers it; null if it can't be reached. */
-    private static @Nullable StorageNetwork network(ServerPlayer player, GlobalPos link) {
+    /**
+     * The linked terminal's network, waking an on-demand anchor if one covers it (kept awake 30 s after the last use, per
+     * player); null if it can't be reached. Also used by the Nexium armor's Nexus Restock.
+     */
+    public static @Nullable StorageNetwork network(ServerPlayer player, GlobalPos link) {
         MinecraftServer server = player.level().getServer();
         ServerLevel target = server == null ? null : server.getLevel(link.dimension());
         if (target == null) return null;

@@ -5,6 +5,11 @@
         "texture": "storagenexus:nexium"
       }
     ],
+    "humanoid_baby": [
+      {
+        "texture": "storagenexus:nexium"
+      }
+    ],
     "humanoid_leggings": [
       {
         "texture": "storagenexus:nexium"

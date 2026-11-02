@@ -13,7 +13,9 @@ import net.storagenexus.drawer.DrawerInteraction;
 import net.storagenexus.essentials.NexusEssentials;
 import net.storagenexus.network.ModPayloads;
 import net.storagenexus.network.StorageNetwork;
+import net.storagenexus.nexium.NexiumArmor;
 import net.storagenexus.nexium.NexiumHaste;
+import net.storagenexus.nexium.NexusRestock;
 import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModComponents;
@@ -48,6 +50,8 @@ public class StorageNexus implements ModInitializer {
         DrawerInteraction.init();
         AnchorRegistry.init();
         NexiumHaste.init();
+        NexiumArmor.init();
+        NexusRestock.init();
         NexusLink.init();
         AiotMining.init();
         // The quality-of-life features that used to be the Nexus Essentials mod

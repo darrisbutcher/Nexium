@@ -17,6 +17,7 @@
     "InventoryMenuMixin",
     "PiglinAiMixin",
     "PlayerMixin",
+    "PlayerMiningMixin",
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin"

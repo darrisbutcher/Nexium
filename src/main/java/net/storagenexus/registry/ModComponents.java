@@ -16,6 +16,7 @@ import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
 import net.storagenexus.filter.FilterData;
 import net.storagenexus.fluid.FluidDrawerBlockEntity;
+import net.storagenexus.nexium.ArmorBonus;
 
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +57,10 @@ public final class ModComponents {
     /** On a module: switched off in the tool menu. */
     public static final DataComponentType<Unit> MODULE_OFF = register("module_off",
             b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
+
+    /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
+    public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
+            b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
 
     /** On a Nexium tool: its Haste II is turned off in the tool menu. */
     public static final DataComponentType<Unit> HASTE_OFF = register("haste_off",

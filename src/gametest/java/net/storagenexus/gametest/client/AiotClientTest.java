@@ -6,15 +6,22 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.world.item.equipment.trim.TrimMaterials;
+import net.minecraft.world.item.equipment.trim.TrimPatterns;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.storagenexus.aiot.AiotEnchanting;
 import net.storagenexus.aiot.AiotTier;
@@ -22,6 +29,7 @@ import net.storagenexus.aiot.MiningMode;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.client.ToolMenuClient;
+import net.storagenexus.client.screen.ArmorMenuScreen;
 import net.storagenexus.client.screen.ToolMenuScreen;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
@@ -71,6 +79,20 @@ public class AiotClientTest implements FabricClientGameTest {
                 player.getInventory().setItem(8, new ItemStack(ModItems.NEXIUM_SPEAR));
                 for (int i = 0; i < 6; i++) player.getInventory().setItem(9 + i, new ItemStack(List.of(ModItems.NEXIUM_INGOT,
                         ModItems.NEXIUM_BLOCK, ModItems.NEXIUM_SWORD, ModItems.NEXIUM_AXE, ModItems.NEXIUM_SHOVEL, ModItems.NEXIUM_HOE).get(i)));
+                ItemStack trimmed = new ItemStack(ModItems.NEXIUM_CHESTPLATE);
+                var registries = player.level().registryAccess();
+                trimmed.set(DataComponents.TRIM, new ArmorTrim(registries.lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.GOLD),
+                        registries.lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.SENTRY)));
+                player.getInventory().setItem(15, trimmed);
+                Zombie baby = EntityTypes.ZOMBIE.create(player.level(), EntitySpawnReason.COMMAND);
+                baby.setBaby(true);
+                baby.setNoAi(true);
+                baby.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.NEXIUM_HELMET));
+                baby.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.NEXIUM_CHESTPLATE));
+                baby.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModItems.NEXIUM_LEGGINGS));
+                baby.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.NEXIUM_BOOTS));
+                baby.snapTo(player.getX() + 1.2, player.getY(), player.getZ() + 1.5, 180, 0);
+                player.level().addFreshEntity(baby);
                 player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.NEXIUM_HELMET));
                 player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.NEXIUM_CHESTPLATE));
                 player.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModItems.NEXIUM_LEGGINGS));
@@ -129,7 +151,30 @@ public class AiotClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> mc.player.hasEffect(MobEffects.HASTE)), "holding the Nexium pickaxe gives Haste II");
             System.out.println("[nexus] Nexium pickaxe with Haste II: " + ctx.takeScreenshot("nexus_nexium_haste"));
 
-            // The Nexium armor, worn, seen from the front
+            // The armor menu: G with no tool in hand (the spear isn't one), with the full set on
+            ctx.getInput().pressKey(options -> options.keyHotbarSlots[8]);
+            ctx.waitTicks(5);
+            ctx.getInput().pressKey(options -> ToolMenuClient.TOOL_MENU);
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof ArmorMenuScreen), "G with no tool opens the armor menu");
+            check(ctx.computeOnClient(mc -> mc.player.hasEffect(MobEffects.FIRE_RESISTANCE)), "the full set gives Fire Resistance");
+            double[] first = ctx.computeOnClient(mc -> {
+                var widget = (AbstractWidget) mc.gui.screen().children().getFirst();
+                double scale = mc.getWindow().getGuiScale();
+                return new double[]{(widget.getX() + widget.getWidth() / 2.0) * scale, (widget.getY() + widget.getHeight() / 2.0) * scale};
+            });
+            ctx.getInput().setCursorPos(first[0], first[1]);
+            ctx.waitTicks(2);
+            System.out.println("[nexus] armor menu: " + ctx.takeScreenshot("nexus_armor_menu"));
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.waitTicks(15);
+            check(ctx.computeOnClient(mc -> !mc.player.hasEffect(MobEffects.FIRE_RESISTANCE)), "clicking Nether-forged switches it off");
+            System.out.println("[nexus] armor menu after switching: " + ctx.takeScreenshot("nexus_armor_menu_off"));
+            ctx.getInput().pressKey(options -> ToolMenuClient.TOOL_MENU);
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() == null), "the same key closes it");
+
+            // The Nexium armor, worn, seen from the front (and a baby zombie in it)
             ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             ctx.waitTicks(10);
             System.out.println("[nexus] Nexium armor: " + ctx.takeScreenshot("nexus_nexium_armor"));

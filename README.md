@@ -36,7 +36,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.4.0.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.5.0.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -46,8 +46,8 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 115 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
-conduits, Dimensional links, the AIOTs and their modules, Nexium and every Essentials feature). Run just those with `./gradlew runGameTest`.
+server (about 120 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+conduits, Dimensional links, the AIOTs and their modules, Nexium and its armor bonuses, and every Essentials feature). Run just those with `./gradlew runGameTest`.
 The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
 and the magnet tests pull items from 16 blocks away.
 
@@ -59,7 +59,8 @@ There are also client tests that open a real Minecraft client (`./gradlew runCli
 screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
 and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; one puts the
 AIOTs and Nexium gear on the hotbar, checks a diamond AIOT's tooltip (modules included), opens the tool menu with its
-key and clicks it to Silk Touch, checks a Nexium pickaxe gives Haste II and shows the Nexium armor worn; and one saves and quits a world with filled barrels
+key and clicks it to Silk Touch, checks a Nexium pickaxe gives Haste II, opens the armor menu and switches a bonus
+off, and shows the Nexium armor worn (by a baby zombie too) and a trimmed chestplate's icon; and one saves and quits a world with filled barrels
 and reopens it. They take screenshots as they go. They need a window
 (or a virtual display such as Xvfb), so they are not part of `build`; CI runs them in a separate `client-test` job
 on Xvfb and keeps the screenshots as an artifact. Add `-PwithJei` to run them with JEI installed, which also presses
@@ -223,8 +224,9 @@ world, or crafted from a book and any drawer) explains everything in game.
   decides the drops, exactly as on a vanilla pickaxe.
 * **Haste II**: on a Nexium pickaxe, axe, shovel, hoe or AIOT, turns its Haste II on or off. The setting is saved on
   the tool, and its tooltip says whether it is on.
-* A message above the hotbar confirms each change. Switches that don't apply to the held tool are greyed out, with a
-  tooltip saying why.
+* A message above the hotbar confirms each change. Switches that don't apply to the held tool are greyed out. Every
+  button's hint shows beside the panel, never over the other buttons.
+* Wearing Nexium armor, the **Armor** button (top right) goes to the armor menu.
 * **Modules** (AIOTs only): three slots. Put a module in a slot like any item, take it out the same way; the button
   beside each slot turns that module on or off. One of each module per AIOT. The AIOT's tooltip lists its modules.
 * Every AIOT has the Silk Touch / Fortune switch built in and every Nexium mining tool its Haste II; modules are the
@@ -271,7 +273,29 @@ when taken out.
   command's Haste is never taken off. Turn it off in the tool menu.
 * **Armor**: 4 / 9 / 7 / 4 armor (helmet, chestplate, leggings, boots: 24 in all, netherite 20), 5 toughness per
   piece (20 in all, the game's maximum), 0.15 knockback resistance per piece and durability 484 / 704 / 660 / 572.
-  It takes armor trims, and like netherite it keeps piglins calm (Essentials).
+  It takes armor trims (shown on the item icons too), baby zombies and the like wear it properly, and like netherite
+  it keeps piglins calm (Essentials).
+
+### Nexium armor bonuses
+| Bonus | Needs | What it gives |
+|---|---|---|
+| **Nether-forged** | full set | Fire Resistance: no fire or lava damage |
+| **Miner's set** | full set | No mining slowdown underwater or off the ground (vanilla mines 5 times slower in each) |
+| **No knockback** | full set | Hits and explosions don't push you back |
+| **Nexus restock** | full set, linked chestplate | Hotbar stacks top up from a storage network; you eat from it when hungry |
+| **Night vision** | helmet | Night Vision |
+
+* **Armor menu**: press the tool menu key (**G**) with no AIOT or Nexium tool in hand, or click **Armor** in the tool
+  menu. Each bonus has an on/off switch; bonuses the worn pieces don't give are greyed out. Each setting is saved on
+  the piece that carries it (the chestplate for set bonuses, the helmet for Night Vision), so it moves with the armor.
+* The effects (Fire Resistance, Night Vision) are infinite while worn, with a steady icon, and go as soon as a piece
+  comes off or the bonus is switched off; a potion's or beacon's effect is never taken away.
+* **Nexus restock**: link the chestplate by sneak + right-clicking a Crafting Terminal with it (it doesn't put it on).
+  A hotbar stack you use (blocks, torches, arrows...) is topped up to a full stack from the network when it gets down
+  to 8, or refilled when you use the last one; a stack you move or throw away whole is left alone. When your hunger bar
+  is down by 6 or more you eat the most filling plain food in the network (never food with effects, such as golden
+  apples, rotten flesh or pufferfish); bowls and bottles go back into the network. The network is reached as for the
+  Nexus Link module.
 
 ## Essentials
 

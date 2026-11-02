@@ -105,7 +105,7 @@ public class AiotItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         // Sneak + right-click a Crafting Terminal: links the installed Nexus Link module to it
         if (!AiotModules.find(context.getItemInHand(), ModuleType.NEXUS_LINK).isEmpty()
-                && ModuleItem.linkTo(context, link -> AiotModules.relink(context.getItemInHand(), link))) {
+                && ModuleItem.linkTo(context, link -> AiotModules.relink(context.getItemInHand(), link), "message.storagenexus.nexus_link.linked")) {
             return InteractionResult.SUCCESS;
         }
         var transformers = context.getLevel().registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
