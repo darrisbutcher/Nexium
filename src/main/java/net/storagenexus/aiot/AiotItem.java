@@ -85,7 +85,7 @@ public class AiotItem extends Item {
                 1.0F, 1, true);
         ItemAttributeModifiers attributes = ItemAttributeModifiers.builder()
                 .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID,
-                        tier.attackDamageBaseline() + material.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE),
+                        tier.axeAttackDamageBaseline() + material.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.MAINHAND)
                 .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID,
                         AiotTier.SWORD_ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)

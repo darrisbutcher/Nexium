@@ -202,9 +202,9 @@ world, or crafted from a book and any drawer) explains everything in game.
   | | Copper | Iron | Golden | Diamond | Netherite | Nexium |
   |---|---|---|---|---|---|---|
   | Durability | 950 | 1,250 | 160 | 7,805 | 10,155 | 12,500 |
-  | Attack damage | 5 | 6 | 4 | 7 | 8 | 9 |
+  | Attack damage | 9 | 9 | 7 | 9 | 10 | 11 |
 
-* **Combat**: as hard as that material's sword, at a sword's speed (1.6 attacks a second), with the sword's sweeping
+* **Combat**: as hard as that material's axe at a sword's speed (1.6 attacks a second), with the sword's sweeping
   attack, and it disables shields like an axe. It loses 1 durability per hit and per block.
 * **Mining**: everything that material's pickaxe, axe, shovel, hoe and sword mine, as fast as the best of them, with
   the same material limits (an iron AIOT can't mine obsidian, a diamond one can). It is in the vanilla `pickaxes`,
