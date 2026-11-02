@@ -10,6 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.storagenexus.aiot.ToolMenu;
+import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.aiot.module.ModuleItem;
 import net.storagenexus.client.ToolMenuClient;
 import net.storagenexus.nexium.ArmorBonus;
@@ -20,12 +22,13 @@ import net.storagenexus.registry.ModItems;
 
 /**
  * The armor menu: Nexium armor's bonuses, each with an on/off switch. Opened with the tool menu key (G) with no tool in
- * hand, or from the tool menu's Armor button. Labels follow the worn armor, so they update as soon as the server has
+ * hand, or from the tool menu's Armor button; the Tools button goes back to the tool menu when holding one. Labels follow the worn armor, so they update as soon as the server has
  * made a change; bonuses the worn pieces don't give are greyed out, and every hint shows beside the panel.
  */
 public class ArmorMenuScreen extends Screen {
     private static final int WIDTH = 200, ROW = 22, TOP = 32;
     private int left, top, height_;
+    private Button toolsButton;
     private final Button[] buttons = new Button[ArmorBonus.values().length];
     private final SideHints hints = new SideHints();
 
@@ -43,6 +46,11 @@ public class ArmorMenuScreen extends Screen {
                             b -> ClientPlayNetworking.send(new ArmorBonusPayload(bonus)))
                     .bounds(left + 8, top + TOP + bonus.ordinal() * ROW, WIDTH - 16, 18).build());
         }
+        // To the tool menu, when holding a tool it is for
+        toolsButton = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.armor_menu.tools"), b -> {
+            onClose();
+            ClientPlayNetworking.send(ToolMenuPayload.INSTANCE);
+        }).bounds(left + WIDTH - 8 - 44, top + 5, 44, 16).build());
         refresh();
     }
 
@@ -54,6 +62,8 @@ public class ArmorMenuScreen extends Screen {
     private void refresh() {
         Player player = minecraft.player;
         if (player == null) return;
+        toolsButton.visible = ToolMenu.appliesTo(player.getMainHandItem());
+        hints.set(toolsButton, Component.translatable("screen.storagenexus.armor_menu.tools.tooltip"));
         for (ArmorBonus bonus : ArmorBonus.values()) {
             Button button = buttons[bonus.ordinal()];
             Component name = Component.translatable("armor_bonus.storagenexus." + bonus.id());

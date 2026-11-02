@@ -19,7 +19,9 @@ import net.storagenexus.util.BaseMenu;
  */
 public class ToolMenuMenu extends BaseMenu {
     public static final int BTN_SWAP_SILK_TOUCH_FORTUNE = 0, BTN_TOGGLE_HASTE = 1, BTN_TOGGLE_MODULE = 2;
-    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 78, MODULE_ROW = 20, INVENTORY_Y = 148;
+    /** Steps the Vein Mining module to its next size. */
+    public static final int BTN_VEIN_SIZE = BTN_TOGGLE_MODULE + AiotModules.SLOTS;
+    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 98, MODULE_ROW = 20, INVENTORY_Y = 168;
 
     private final Player player;
     /** The hotbar slot holding the tool. */
@@ -115,6 +117,13 @@ public class ToolMenuMenu extends BaseMenu {
             ToolMenu.swapSilkTouchFortune(serverPlayer, tool());
         } else if (id == BTN_TOGGLE_HASTE) {
             ToolMenu.toggleHaste(serverPlayer, tool());
+        } else if (id == BTN_VEIN_SIZE) {
+            if (ToolMenu.cycleVeinSize(serverPlayer, tool())) {
+                loading = true;
+                NonNullList<ItemStack> installed = AiotModules.slots(tool());
+                for (int i = 0; i < AiotModules.SLOTS; i++) modules.setItem(i, installed.get(i));
+                loading = false;
+            }
         } else if (id >= BTN_TOGGLE_MODULE && id < BTN_TOGGLE_MODULE + AiotModules.SLOTS) {
             int slot = id - BTN_TOGGLE_MODULE;
             if (ToolMenu.toggleModule(serverPlayer, tool(), slot)) {

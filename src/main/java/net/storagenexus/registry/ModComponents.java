@@ -58,6 +58,10 @@ public final class ModComponents {
     public static final DataComponentType<Unit> MODULE_OFF = register("module_off",
             b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
+    /** On a Vein Mining module: most blocks one swing mines, set in the tool menu (up to the config's limit). */
+    public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
+            b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
             b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
