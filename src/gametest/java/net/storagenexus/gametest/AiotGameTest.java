@@ -99,11 +99,10 @@ public class AiotGameTest {
             h.assertTrue(stack.getMaxDamage() == expectedDurability[tier.ordinal()],
                     name + " AIOT durability is " + expectedDurability[tier.ordinal()] + ", got " + stack.getMaxDamage());
 
-            // Combat option D: the axe's damage at the sword's speed, sweeping and disabling shields
-            ItemStack axe = new ItemStack(tier.tools().get(1));
+            // Combat: the sword's damage at the sword's speed, sweeping, and an axe's way with shields
             ItemStack sword = new ItemStack(tier.tools().get(4));
-            h.assertTrue(attribute(stack, Attributes.ATTACK_DAMAGE) == attribute(axe, Attributes.ATTACK_DAMAGE),
-                    name + " AIOT hits as hard as the axe (" + attribute(axe, Attributes.ATTACK_DAMAGE) + "), got "
+            h.assertTrue(attribute(stack, Attributes.ATTACK_DAMAGE) == attribute(sword, Attributes.ATTACK_DAMAGE),
+                    name + " AIOT hits as hard as the sword (" + attribute(sword, Attributes.ATTACK_DAMAGE) + "), got "
                             + attribute(stack, Attributes.ATTACK_DAMAGE));
             h.assertTrue(Math.abs(attribute(stack, Attributes.ATTACK_SPEED) - attribute(sword, Attributes.ATTACK_SPEED)) < 1e-6,
                     name + " AIOT attacks as fast as the sword (" + attribute(sword, Attributes.ATTACK_SPEED) + "), got "
