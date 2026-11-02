@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Draws frames for the trinket and wings slots, in the column above the offhand slot. */
+/** Draws frames for the trinket and wings slots (above the offhand slot) and the arrow and totem slots (under the crafting grid). */
 @Mixin(InventoryScreen.class)
 abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMenu> {
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
@@ -27,5 +27,7 @@ abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMe
     private void nexusessentials$drawExtraSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 76, topPos + 25, 18, 18);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 76, topPos + 43, 18, 18);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 134, topPos + 61, 18, 18);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 152, topPos + 61, 18, 18);
     }
 }

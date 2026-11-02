@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -19,8 +20,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Gives every player the trinket and wings slots, saves them, and drops them on death. */
+/** Gives every player the trinket, wings, arrow and totem slots, saves them, and drops them on death. */
 @Mixin(Player.class)
 abstract class PlayerMixin extends LivingEntity implements ExtraSlotsHolder {
     @Unique
@@ -45,6 +47,19 @@ abstract class PlayerMixin extends LivingEntity implements ExtraSlotsHolder {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void nexusessentials$loadExtraSlots(ValueInput input, CallbackInfo ci) {
         nexusessentials$extraSlots().load(input);
+    }
+
+    /**
+     * Bows and crossbows shoot from the arrow slot: after anything held in a hand (as in vanilla), before the
+     * inventory. Arrows the weapon can't fire are left alone.
+     */
+    @Inject(method = "getProjectile", at = @At("HEAD"), cancellable = true)
+    private void nexusessentials$shootFromArrowSlot(ItemStack weapon, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack arrows = nexusessentials$extraSlots().arrows();
+        if (arrows.isEmpty() || !(weapon.getItem() instanceof ProjectileWeaponItem launcher)) return;
+        if (!launcher.getAllSupportedProjectiles().test(arrows)) return;
+        if (!ProjectileWeaponItem.getHeldProjectile(this, launcher.getSupportedHeldProjectiles()).isEmpty()) return;
+        cir.setReturnValue(arrows);
     }
 
     /** Same rules as the rest of the inventory: kept with keepInventory, Curse of Vanishing destroys, otherwise dropped. */

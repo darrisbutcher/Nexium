@@ -304,7 +304,7 @@ public class EssentialsGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void inventoryHasTheTwoSlots(GameTestHelper h) {
         ServerPlayer player = player(h);
-        h.assertValueEqual(player.inventoryMenu.slots.size(), 48, "inventory menu slots");
+        h.assertValueEqual(player.inventoryMenu.slots.size(), 50, "inventory menu slots");
         h.assertTrue(player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS).mayPlace(new ItemStack(Items.ELYTRA)), "elytra fits the wings slot");
         h.assertTrue(!player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS).mayPlace(new ItemStack(Items.DIAMOND_CHESTPLATE)), "a chestplate doesn't");
         h.assertTrue(player.inventoryMenu.getSlot(ExtraSlots.MENU_TRINKET).mayPlace(new ItemStack(ModItems.MAGNET)), "the magnet fits the trinket slot");
@@ -317,6 +317,101 @@ public class EssentialsGameTest {
         player.inventoryMenu.quickMoveStack(player, 10);
         h.assertTrue(ExtraSlots.of(player).wings().is(Items.ELYTRA), "shift-click moved the elytra to the wings slot");
         h.assertTrue(ExtraSlots.of(player).trinket().is(ModItems.MAGNET), "shift-click moved the magnet to the trinket slot");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void arrowAndTotemSlotsTakeTheirItems(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        var arrows = player.inventoryMenu.getSlot(ExtraSlots.MENU_ARROWS);
+        var totem = player.inventoryMenu.getSlot(ExtraSlots.MENU_TOTEM);
+        h.assertTrue(arrows.mayPlace(new ItemStack(Items.ARROW)) && arrows.mayPlace(new ItemStack(Items.SPECTRAL_ARROW)), "arrows fit the arrow slot");
+        h.assertTrue(!arrows.mayPlace(new ItemStack(Items.STONE)), "stone doesn't");
+        h.assertTrue(totem.mayPlace(new ItemStack(Items.TOTEM_OF_UNDYING)), "a totem fits the totem slot");
+        h.assertTrue(!totem.mayPlace(new ItemStack(Items.DIAMOND)), "a diamond doesn't");
+        h.assertValueEqual(arrows.getMaxStackSize(), 64, "the arrow slot holds a stack");
+        h.assertValueEqual(totem.getMaxStackSize(), 1, "the totem slot holds one");
+
+        // Shift-click: arrows fill the slot (and top it up), the rest stays in the inventory; a totem goes in too
+        player.getInventory().setItem(9, new ItemStack(Items.ARROW, 40));
+        player.getInventory().setItem(10, new ItemStack(Items.ARROW, 40));
+        player.getInventory().setItem(11, new ItemStack(Items.TOTEM_OF_UNDYING));
+        player.inventoryMenu.quickMoveStack(player, 9);
+        h.assertValueEqual(ExtraSlots.of(player).arrows().getCount(), 40, "40 arrows in the slot");
+        player.inventoryMenu.quickMoveStack(player, 10);
+        h.assertValueEqual(ExtraSlots.of(player).arrows().getCount(), 64, "topped up to a stack");
+        h.assertValueEqual(player.getInventory().getItem(10).getCount(), 16, "16 arrows left in the inventory");
+        player.inventoryMenu.quickMoveStack(player, 11);
+        h.assertTrue(ExtraSlots.of(player).totem().is(Items.TOTEM_OF_UNDYING), "shift-click moved the totem to the totem slot");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void pickedUpArrowsGoToTheArrowSlot(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ExtraSlots slots = ExtraSlots.of(player);
+        h.assertTrue(player.getInventory().add(new ItemStack(Items.ARROW, 30)), "the pickup works");
+        h.assertValueEqual(slots.arrows().getCount(), 30, "arrows went to the slot");
+        h.assertTrue(player.getInventory().isEmpty(), "and none to the inventory");
+        ItemStack more = new ItemStack(Items.ARROW, 50);
+        player.getInventory().add(more);
+        h.assertValueEqual(slots.arrows().getCount(), 64, "the slot filled up");
+        h.assertValueEqual(player.getInventory().countItem(Items.ARROW), 16, "and the rest went to the inventory");
+        // Other arrows don't mix into the slot
+        player.getInventory().add(new ItemStack(Items.SPECTRAL_ARROW, 5));
+        h.assertTrue(slots.arrows().is(Items.ARROW) && slots.arrows().getCount() == 64, "the slot is unchanged");
+        h.assertValueEqual(player.getInventory().countItem(Items.SPECTRAL_ARROW), 5, "spectral arrows stayed in the inventory");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void bowsShootFromTheArrowSlot(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ItemStack bow = new ItemStack(Items.BOW);
+        h.assertTrue(player.getProjectile(bow).isEmpty() || player.hasInfiniteMaterials(), "no arrows anywhere, no ammo (survival)");
+        ExtraSlots.of(player).setItem(ExtraSlots.ARROWS, new ItemStack(Items.ARROW, 10));
+        ItemStack ammo = player.getProjectile(bow);
+        h.assertTrue(ammo.is(Items.ARROW), "the bow finds the arrows in the slot");
+        ammo.shrink(1); // what firing does to the stack it is handed
+        h.assertValueEqual(ExtraSlots.of(player).arrows().getCount(), 9, "and uses them up from the slot");
+        h.assertTrue(player.getProjectile(new ItemStack(Items.CROSSBOW)).is(Items.ARROW), "a crossbow does too");
+        h.assertTrue(player.getProjectile(new ItemStack(Items.DIAMOND_SWORD)).isEmpty(), "a sword gets nothing");
+        // Arrows held in a hand come first, as in vanilla
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SPECTRAL_ARROW, 3));
+        h.assertTrue(player.getProjectile(bow).is(Items.SPECTRAL_ARROW), "held arrows are used before the slot's");
+        h.succeed();
+    }
+
+    /** Vanilla's own check for a totem, run directly: a mock player's connection hasn't loaded, so it can't be hurt. */
+    private static boolean checkTotem(ServerPlayer player, ServerLevel level) {
+        try {
+            var method = net.minecraft.world.entity.LivingEntity.class.getDeclaredMethod("checkTotemDeathProtection",
+                    net.minecraft.world.damagesource.DamageSource.class);
+            method.setAccessible(true);
+            return (boolean) method.invoke(player, level.damageSources().generic());
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void totemSlotSavesYouFromDeath(GameTestHelper h) {
+        ServerLevel level = h.getLevel();
+        ServerPlayer player = player(h);
+        h.assertFalse(checkTotem(player, level), "no totem, no protection");
+        ExtraSlots.of(player).setItem(ExtraSlots.TOTEM, new ItemStack(Items.TOTEM_OF_UNDYING));
+        h.assertTrue(checkTotem(player, level), "the totem in the slot saves the player");
+        h.assertTrue(ExtraSlots.of(player).totem().isEmpty(), "and is used up");
+        h.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.REGENERATION), "with the totem's effects");
+        h.assertValueEqual(player.getHealth(), 1.0F, "at 1 heart's worth of health, as in vanilla");
+
+        // A totem in hand is used first and the slot's is kept
+        ServerPlayer other = player(h);
+        ExtraSlots.of(other).setItem(ExtraSlots.TOTEM, new ItemStack(Items.TOTEM_OF_UNDYING));
+        other.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.TOTEM_OF_UNDYING));
+        h.assertTrue(checkTotem(other, level), "saved again");
+        h.assertTrue(other.getOffhandItem().isEmpty(), "the held totem was used");
+        h.assertTrue(ExtraSlots.of(other).totem().is(Items.TOTEM_OF_UNDYING), "the slot's totem is kept");
         h.succeed();
     }
 
@@ -339,6 +434,10 @@ public class EssentialsGameTest {
         player.connection.handleSetCreativeModeSlot(new ServerboundSetCreativeModeSlotPacket(ExtraSlots.MENU_TRINKET, new ItemStack(Items.STONE)));
         h.assertTrue(ExtraSlots.of(player).wings().is(Items.ELYTRA), "creative put an elytra in the wings slot");
         h.assertTrue(ExtraSlots.of(player).trinket().isEmpty(), "but not stone in the trinket slot");
+        player.connection.handleSetCreativeModeSlot(new ServerboundSetCreativeModeSlotPacket(ExtraSlots.MENU_ARROWS, new ItemStack(Items.ARROW, 64)));
+        player.connection.handleSetCreativeModeSlot(new ServerboundSetCreativeModeSlotPacket(ExtraSlots.MENU_TOTEM, new ItemStack(Items.TOTEM_OF_UNDYING)));
+        h.assertValueEqual(ExtraSlots.of(player).arrows().getCount(), 64, "creative put a stack of arrows in the arrow slot");
+        h.assertTrue(ExtraSlots.of(player).totem().is(Items.TOTEM_OF_UNDYING), "and a totem in the totem slot");
         h.succeed();
     }
 

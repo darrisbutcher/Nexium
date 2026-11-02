@@ -313,11 +313,19 @@ The features that used to be the Nexus Essentials mod. The Guide's last pages co
 * TNT, beds, respawn anchors, withers and end crystals work as in vanilla.
 * Endermen never pick up blocks. One that was already carrying a block before you added the mod can still put it down.
 
-### Trinket and wings slots
-* Two new slots sit in a column above the offhand slot in your inventory (and right of the armor in the
-  creative inventory tab): the **trinket slot** (top) takes the magnet, and the **wings slot** (bottom) takes an
-  elytra (or any modded item that glides like one).
-* Shift-click a magnet or elytra to send it there, or right-click it in your hand to put it on.
+### Trinket, wings, arrow and totem slots
+* Four new slots in your inventory (right of the armor in the creative inventory tab). Above the offhand slot: the
+  **trinket slot** (top) takes the magnet, and the **wings slot** (bottom) takes an elytra (or any modded item that
+  glides like one). Under the crafting grid: the **arrow slot** (a stack of up to 64 arrows, any kind in the
+  `minecraft:arrows` tag) and the **totem slot** (a Totem of Undying, or any item with death protection). None of them
+  use up inventory space.
+* Shift-click a magnet, elytra, arrows or a totem to send it to its slot, or right-click a magnet or elytra in your hand
+  to put it on.
+* **Arrows**: bows and crossbows shoot from the arrow slot, after anything you hold in a hand (as in vanilla) and before
+  arrows in your inventory. Arrows you pick up go into the slot first, topping it up (or filling it if it is empty);
+  a different kind of arrow stays in your inventory.
+* **Totem**: if you would die and hold no totem in either hand, the one in the totem slot saves you, with the same
+  effects as a held one. A held totem is used first.
 * An elytra in the wings slot glides exactly like one in the chest slot, so you can wear a chestplate too.
   It wears down the same way, Unbreaking and Mending work on it, and its protection enchantments add to your
   armor's (vanilla's 80% total protection cap still applies). Other players see it on you, and it hides your cape like a normal elytra.
