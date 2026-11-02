@@ -16,6 +16,7 @@ abstract class GrindstoneMenuMixin {
     @ModifyReturnValue(method = "removeNonCursesFrom", at = @At("RETURN"))
     private ItemStack storagenexus$removeInactiveEnchantments(ItemStack result) {
         result.remove(ModComponents.INACTIVE_ENCHANTMENTS);
+        result.remove(ModComponents.MINING_MODE);
         return result;
     }
 }

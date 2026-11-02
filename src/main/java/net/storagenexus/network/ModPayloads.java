@@ -2,6 +2,8 @@ package net.storagenexus.network;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.storagenexus.aiot.ToolMenu;
+import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.dimension.DimensionalMenu;
 import net.storagenexus.drawer.DrawerClickPayload;
 import net.storagenexus.drawer.DrawerInteraction;
@@ -18,6 +20,8 @@ public final class ModPayloads {
         PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(DrawerClickPayload.TYPE, DrawerClickPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ToolMenuPayload.TYPE, ToolMenuPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(ToolMenuPayload.TYPE, (payload, context) -> ToolMenu.handle(context.player(), payload.action()));
         ServerPlayNetworking.registerGlobalReceiver(DrawerClickPayload.TYPE,
                 (payload, context) -> DrawerInteraction.handleClick(context.player(), payload));
 

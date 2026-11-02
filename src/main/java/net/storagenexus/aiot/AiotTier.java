@@ -3,24 +3,31 @@ package net.storagenexus.aiot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ToolMaterial;
+import net.storagenexus.nexium.NexiumMaterials;
+import net.storagenexus.registry.ModItems;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
- * The five AIOT materials. Each AIOT mines like that material's tools, hits as hard as its axe at a sword's speed,
- * and holds every use of the five vanilla tools it is crafted from.
+ * The AIOT materials: the five vanilla tool materials from copper up, and Nexium. Each AIOT mines like that
+ * material's tools, hits as hard as its axe at a sword's speed, and holds every use of the five tools it is
+ * crafted from.
  */
 public enum AiotTier {
-    COPPER("copper", ToolMaterial.COPPER, 7.0F,
-            Items.COPPER_PICKAXE, Items.COPPER_AXE, Items.COPPER_SHOVEL, Items.COPPER_HOE, Items.COPPER_SWORD),
-    IRON("iron", ToolMaterial.IRON, 6.0F,
-            Items.IRON_PICKAXE, Items.IRON_AXE, Items.IRON_SHOVEL, Items.IRON_HOE, Items.IRON_SWORD),
-    GOLDEN("golden", ToolMaterial.GOLD, 6.0F,
-            Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_HOE, Items.GOLDEN_SWORD),
-    DIAMOND("diamond", ToolMaterial.DIAMOND, 5.0F,
-            Items.DIAMOND_PICKAXE, Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_HOE, Items.DIAMOND_SWORD),
-    NETHERITE("netherite", ToolMaterial.NETHERITE, 5.0F,
-            Items.NETHERITE_PICKAXE, Items.NETHERITE_AXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_HOE, Items.NETHERITE_SWORD);
+    COPPER("copper", ToolMaterial.COPPER, 7.0F, () -> List.of(
+            Items.COPPER_PICKAXE, Items.COPPER_AXE, Items.COPPER_SHOVEL, Items.COPPER_HOE, Items.COPPER_SWORD)),
+    IRON("iron", ToolMaterial.IRON, 6.0F, () -> List.of(
+            Items.IRON_PICKAXE, Items.IRON_AXE, Items.IRON_SHOVEL, Items.IRON_HOE, Items.IRON_SWORD)),
+    GOLDEN("golden", ToolMaterial.GOLD, 6.0F, () -> List.of(
+            Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_HOE, Items.GOLDEN_SWORD)),
+    DIAMOND("diamond", ToolMaterial.DIAMOND, 5.0F, () -> List.of(
+            Items.DIAMOND_PICKAXE, Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_HOE, Items.DIAMOND_SWORD)),
+    NETHERITE("netherite", ToolMaterial.NETHERITE, 5.0F, () -> List.of(
+            Items.NETHERITE_PICKAXE, Items.NETHERITE_AXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_HOE, Items.NETHERITE_SWORD)),
+    /** The mod's own tier above netherite; its tools are registered in {@link ModItems}, hence the supplier. */
+    NEXIUM("nexium", NexiumMaterials.TOOL, 5.0F, () -> List.of(
+            ModItems.NEXIUM_PICKAXE, ModItems.NEXIUM_AXE, ModItems.NEXIUM_SHOVEL, ModItems.NEXIUM_HOE, ModItems.NEXIUM_SWORD));
 
     /** How many vanilla tools an AIOT is made from, and so how many times a single tool's durability it holds. */
     public static final int TOOLS_PER_AIOT = 5;
@@ -30,13 +37,14 @@ public enum AiotTier {
     private final String id;
     private final ToolMaterial material;
     private final float axeAttackDamageBaseline;
-    private final List<Item> tools;
+    private final Supplier<List<Item>> tools;
 
-    AiotTier(String id, ToolMaterial material, float axeAttackDamageBaseline, Item pickaxe, Item axe, Item shovel, Item hoe, Item sword) {
+    /** @param tools pickaxe, axe, shovel, hoe and sword, in that order */
+    AiotTier(String id, ToolMaterial material, float axeAttackDamageBaseline, Supplier<List<Item>> tools) {
         this.id = id;
         this.material = material;
         this.axeAttackDamageBaseline = axeAttackDamageBaseline;
-        this.tools = List.of(pickaxe, axe, shovel, hoe, sword);
+        this.tools = tools;
     }
 
     /** Item id prefix, as in {@code storagenexus:<id>_aiot}. Matches vanilla's tool names (golden, not gold). */
@@ -64,6 +72,11 @@ public enum AiotTier {
 
     /** Pickaxe, axe, shovel, hoe and sword of this material: the merge recipe's ingredients. */
     public List<Item> tools() {
-        return tools;
+        return tools.get();
+    }
+
+    /** Netherite and Nexium AIOTs survive fire and lava, like netherite gear. */
+    public boolean fireResistant() {
+        return this == NETHERITE || this == NEXIUM;
     }
 }

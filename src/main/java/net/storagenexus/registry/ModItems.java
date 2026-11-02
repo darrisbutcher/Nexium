@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.block.Block;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.aiot.AiotItem;
@@ -19,6 +20,7 @@ import net.storagenexus.conduit.ConduitWrenchItem;
 import net.storagenexus.dimension.DimensionalLinkCardItem;
 import net.storagenexus.filter.FilterItem;
 import net.storagenexus.guide.GuideBookItem;
+import net.storagenexus.nexium.NexiumMaterials;
 import net.storagenexus.tablet.StorageTabletItem;
 import net.storagenexus.upgrade.CapacityUpgradeItem;
 import net.storagenexus.upgrade.UpgradeItem;
@@ -73,6 +75,32 @@ public final class ModItems {
             AIOTS.put(tier, register(tier.id() + "_aiot", p -> new AiotItem(p, tier), AiotItem.properties(tier)));
         }
     }
+
+    // Nexium: the tier above netherite (see NexiumMaterials). Everything Nexium survives fire and lava.
+    public static final Item NEXIUM_INGOT = register("nexium_ingot", Item::new, new Item.Properties().fireResistant());
+    public static final BlockItem NEXIUM_BLOCK = register("nexium_block", p -> new BlockItem(ModBlocks.NEXIUM_BLOCK, p),
+            new Item.Properties().useBlockDescriptionPrefix().fireResistant());
+    public static final Item NEXIUM_SWORD = register("nexium_sword", Item::new,
+            new Item.Properties().sword(NexiumMaterials.TOOL, 3.0F, -2.4F).fireResistant());
+    public static final Item NEXIUM_PICKAXE = register("nexium_pickaxe", Item::new,
+            new Item.Properties().pickaxe(NexiumMaterials.TOOL, 1.0F, -2.8F).fireResistant());
+    public static final Item NEXIUM_AXE = register("nexium_axe", Item::new,
+            new Item.Properties().axe(NexiumMaterials.TOOL, 5.0F, -3.0F).fireResistant());
+    public static final Item NEXIUM_SHOVEL = register("nexium_shovel", Item::new,
+            new Item.Properties().shovel(NexiumMaterials.TOOL, 1.5F, -3.0F).fireResistant());
+    public static final Item NEXIUM_HOE = register("nexium_hoe", Item::new,
+            new Item.Properties().hoe(NexiumMaterials.TOOL, -5.0F, 0.0F).fireResistant());
+    /** One step past netherite on every spear stat, as netherite is one step past diamond. */
+    public static final Item NEXIUM_SPEAR = register("nexium_spear", Item::new,
+            new Item.Properties().spear(NexiumMaterials.TOOL, 1.25F, 1.325F, 0.3F, 2.0F, 8.0F, 4.5F, 5.1F, 7.5F, 4.6F).fireResistant());
+    public static final Item NEXIUM_HELMET = register("nexium_helmet", Item::new,
+            new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.HELMET).fireResistant());
+    public static final Item NEXIUM_CHESTPLATE = register("nexium_chestplate", Item::new,
+            new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.CHESTPLATE).fireResistant());
+    public static final Item NEXIUM_LEGGINGS = register("nexium_leggings", Item::new,
+            new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.LEGGINGS).fireResistant());
+    public static final Item NEXIUM_BOOTS = register("nexium_boots", Item::new,
+            new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.BOOTS).fireResistant());
 
     static {
         // Block items go after the loose items so the tab starts with drawers.

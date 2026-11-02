@@ -98,6 +98,10 @@ public final class ModBlocks {
         return BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD);
     }
 
+    /** Nine Nexium ingots. Like a netherite block: needs a diamond pickaxe, resists explosions, a beacon base. Its item is in ModItems. */
+    public static final Block NEXIUM_BLOCK = register("nexium_block", Block::new, BlockBehaviour.Properties.of()
+            .mapColor(MapColor.EMERALD).strength(50.0F, 1200.0F).sound(SoundType.NETHERITE_BLOCK).requiresCorrectToolForDrops(), false);
+
     private static BlockBehaviour.Properties stone() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0f).sound(SoundType.STONE).requiresCorrectToolForDrops();
     }

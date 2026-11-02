@@ -1,6 +1,27 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "storagenexus:item/copper_aiot"
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "storagenexus:mining_mode",
+    "cases": [
+      {
+        "when": "silk_touch",
+        "model": {
+          "type": "minecraft:model",
+          "model": "storagenexus:item/copper_aiot_silk_touch"
+        }
+      },
+      {
+        "when": "fortune",
+        "model": {
+          "type": "minecraft:model",
+          "model": "storagenexus:item/copper_aiot_fortune"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "storagenexus:item/copper_aiot"
+    }
   }
 }

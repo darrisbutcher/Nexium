@@ -7,9 +7,11 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.aiot.MiningMode;
 import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
 import net.storagenexus.filter.FilterData;
@@ -42,6 +44,14 @@ public final class ModComponents {
      */
     public static final DataComponentType<ItemEnchantments> INACTIVE_ENCHANTMENTS = register("inactive_enchantments",
             b -> b.persistent(ItemEnchantments.CODEC).networkSynchronized(ItemEnchantments.STREAM_CODEC));
+
+    /** Which of Silk Touch and Fortune an AIOT holding both is using; the item model's gem colour follows it. */
+    public static final DataComponentType<MiningMode> MINING_MODE = register("mining_mode",
+            b -> b.persistent(MiningMode.CODEC).networkSynchronized(MiningMode.STREAM_CODEC));
+
+    /** On a Nexium tool: its Haste II is turned off in the tool menu. */
+    public static final DataComponentType<Unit> HASTE_OFF = register("haste_off",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
     // Contents a storage block keeps when broken, so they survive in the dropped item.
     // Copied in by the blocks' loot tables and read back when the item is placed.

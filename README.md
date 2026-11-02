@@ -1,7 +1,8 @@
 # Storage Nexus (Fabric, Minecraft 26.3)
 
 Drawers + a Tom's Simple Storage-style network + cross-dimensional tablets and item links +
-Ender IO-style item and fluid conduits + **all-in-one tools** (AIOTs) + the **Essentials**: the quality-of-life features that used to be the
+Ender IO-style item and fluid conduits + **all-in-one tools** (AIOTs) + **Nexium**, a tier above netherite + the
+**Essentials**: the quality-of-life features that used to be the
 separate Nexus Essentials mod (no creeper or ghast block damage, endermen leave blocks alone, an item and XP magnet
 with its own trinket slot, a wings slot for an elytra, protection enchantments on elytra, netherite calms piglins,
 a bedrock-breaking elixir, picking up mobs, Fortune on ancient debris and a 1-block iron farm).
@@ -35,7 +36,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.2.0.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.3.0.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -45,8 +46,8 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 100 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
-conduits, Dimensional links, the AIOTs and every Essentials feature). Run just those with `./gradlew runGameTest`.
+server (about 110 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+conduits, Dimensional links, the AIOTs, Nexium and every Essentials feature). Run just those with `./gradlew runGameTest`.
 The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
 and the magnet tests pull items from 16 blocks away.
 
@@ -57,7 +58,8 @@ there fails the test.
 There are also client tests that open a real Minecraft client (`./gradlew runClientGameTest`): one opens every
 screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
 and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; one puts the
-five AIOTs on the hotbar and checks a diamond AIOT's tooltip; and one saves and quits a world with filled barrels
+AIOTs and Nexium gear on the hotbar, checks a diamond AIOT's tooltip, opens the tool menu with its key and clicks it
+to Silk Touch, checks a Nexium pickaxe gives Haste II and shows the Nexium armor worn; and one saves and quits a world with filled barrels
 and reopens it. They take screenshots as they go. They need a window
 (or a virtual display such as Xvfb), so they are not part of `build`; CI runs them in a separate `client-test` job
 on Xvfb and keeps the screenshots as an artifact. Add `-PwithJei` to run them with JEI installed, which also presses
@@ -178,13 +180,13 @@ world, or crafted from a book and any drawer) explains everything in game.
   Fluids are filtered by putting their bucket in the filter.
 
 ### All-in-one tools (AIOT)
-* A pickaxe, axe, shovel, hoe and sword in one item: **Copper, Iron, Golden, Diamond and Netherite AIOT**
+* A pickaxe, axe, shovel, hoe and sword in one item: **Copper, Iron, Golden, Diamond, Netherite and Nexium AIOT**
   (`storagenexus:<material>_aiot`).
 * **Crafting**: all five tools of one material (pickaxe, axe, shovel, hoe and sword) anywhere in the crafting
   grid. What you put in carries over:
   * every enchantment, at the highest level any of the five tools had it;
   * **Silk Touch and Fortune both stay**: Fortune is active and Silk Touch is kept inactive (the tooltip lists it
-    as "Silk Touch (inactive)"). A key to swap them is coming next;
+    as "Silk Touch (inactive)"). Switch between them in the **tool menu**;
   * of Sharpness, Smite and Bane of Arthropods, the highest level stays (Sharpness wins a tie);
   * curses stay, so crafting never gets rid of one;
   * durability: the AIOT has exactly the uses the five tools had left, so five fresh tools make a full AIOT;
@@ -192,12 +194,14 @@ world, or crafted from a book and any drawer) explains everything in game.
 * **Netherite**: at a smithing table, a Diamond AIOT, a netherite upgrade template and a **netherite block**. Its
   enchantments (the inactive one too) and wear stay, as with vanilla's netherite upgrade. Five netherite tools also
   make one in the crafting grid.
+* **Nexium**: at a smithing table, a Netherite AIOT, a netherite upgrade template and a **Block of Nexium**; or five
+  Nexium tools in the crafting grid.
 * **Durability**: five times the material's tool durability, the five tools' uses added together.
 
-  | | Copper | Iron | Golden | Diamond | Netherite |
-  |---|---|---|---|---|---|
-  | Durability | 950 | 1,250 | 160 | 7,805 | 10,155 |
-  | Attack damage | 9 | 9 | 7 | 9 | 10 |
+  | | Copper | Iron | Golden | Diamond | Netherite | Nexium |
+  |---|---|---|---|---|---|---|
+  | Durability | 950 | 1,250 | 160 | 7,805 | 10,155 | 12,500 |
+  | Attack damage | 9 | 9 | 7 | 9 | 10 | 11 |
 
 * **Combat**: as hard as that material's axe at a sword's speed (1.6 attacks a second), with the sword's sweeping
   attack, and it disables shields like an axe. It loses 1 durability per hit and per block.
@@ -207,7 +211,41 @@ world, or crafted from a book and any drawer) explains everything in game.
   treat it as each tool. A Diamond or Netherite AIOT mines bedrock under the Elixir of Bedrock Breaking.
 * **Right-click** strips logs, scrapes or unwaxes copper and makes paths (or tills a path into farmland);
   **sneak + right-click** tills grass and dirt into farmland instead. Right-click a lit campfire to put it out.
+* At an **anvil**, an AIOT holding one of Silk Touch and Fortune takes the other from a book (or another AIOT): the
+  one it was using stays active and the new one is added inactive. Vanilla tools keep the vanilla rule.
 * A grindstone takes the inactive enchantment off with the others. Piglins love the Golden AIOT.
+
+### Tool menu
+* Hold an AIOT or a Nexium tool and press **G** (rebind it under Controls > Key Binds > Storage Nexus, next to the
+  magnet). Press it again or Esc to close; it doesn't pause the game.
+* **Mining**: on an AIOT holding both Silk Touch and Fortune, switches which one is active. The AIOT's gem shows it on
+  the hotbar: **green for Fortune, blue for Silk Touch** (purple when it doesn't hold both). Whichever is active
+  decides the drops, exactly as on a vanilla pickaxe.
+* **Haste II**: on a Nexium pickaxe, axe, shovel, hoe or AIOT, turns its Haste II on or off. The setting is saved on
+  the tool, and its tooltip says whether it is on.
+* A message above the hotbar confirms each change. Switches that don't apply to the held tool are greyed out, with a
+  tooltip saying why.
+* Every AIOT has the Silk Touch / Fortune switch built in and every Nexium mining tool its Haste II: neither is an
+  add-on. The menu is where optional modules (area mining, Nexus Link and the like) will go if they are added later.
+
+### Nexium
+* The tier above netherite. **Nexium Ingot**: a netherite block, an emerald block, a diamond and a netherite upgrade
+  smithing template in a crafting table make **3 ingots** (the template is used up). Nine make a **Block of Nexium**
+  (a beacon base, mined like a netherite block); beacons take the ingots as payment.
+* **Gear**: at a smithing table, a netherite upgrade template, the netherite piece and a Nexium ingot. Enchantments
+  and wear stay. There is a Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and
+  boots**, and the Nexium AIOT. Everything Nexium survives fire and lava.
+* **Tools**: netherite's mining speed and level, 2,500 uses (netherite 2,031), one more attack damage than
+  netherite (sword 9, axe 11, spear 6), enchantability 18. The spear charges like vanilla spears, one step past
+  netherite on each spear stat.
+* **Haste II**: the Nexium pickaxe, axe, shovel, hoe and AIOT give the real **Haste II** effect while held in the main
+  hand, so with Efficiency V they mine exactly as fast as netherite with Efficiency V under a Haste II beacon (stone
+  and netherrack break instantly). Like the beacon's, it also speeds up attacks by 20%, and it doesn't stack with a
+  beacon's Haste II. The effect shows a steady infinity sign and goes as soon as the tool is put away; a beacon's or a
+  command's Haste is never taken off. Turn it off in the tool menu.
+* **Armor**: 4 / 9 / 7 / 4 armor (helmet, chestplate, leggings, boots: 24 in all, netherite 20), 5 toughness per
+  piece (20 in all, the game's maximum), 0.15 knockback resistance per piece and durability 484 / 704 / 660 / 572.
+  It takes armor trims, and like netherite it keeps piglins calm (Essentials).
 
 ## Essentials
 

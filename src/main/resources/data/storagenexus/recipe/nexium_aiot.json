@@ -1,0 +1,14 @@
+{
+  "type": "storagenexus:aiot_merge",
+  "category": "equipment",
+  "ingredients": [
+    "storagenexus:nexium_pickaxe",
+    "storagenexus:nexium_axe",
+    "storagenexus:nexium_shovel",
+    "storagenexus:nexium_hoe",
+    "storagenexus:nexium_sword"
+  ],
+  "result": {
+    "id": "storagenexus:nexium_aiot"
+  }
+}

@@ -24,6 +24,7 @@
       "net.storagenexus.gametest.FeaturesGameTest",
       "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
+      "net.storagenexus.gametest.NexiumGameTest",
       "net.storagenexus.gametest.OutputGameTest",
       "net.storagenexus.gametest.SaveLoadGameTest",
       "net.storagenexus.gametest.TerminalGameTest",

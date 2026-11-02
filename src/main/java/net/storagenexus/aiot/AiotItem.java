@@ -95,7 +95,7 @@ public class AiotItem extends Item {
                 .attributes(attributes)
                 // 1 durability a hit, like a sword; disables shields like an axe
                 .component(DataComponents.WEAPON, new Weapon(1, Weapon.AXE_DISABLES_BLOCKING_FOR_SECONDS));
-        return tier == AiotTier.NETHERITE ? properties.fireResistant() : properties;
+        return tier.fireResistant() ? properties.fireResistant() : properties;
     }
 
     @Override

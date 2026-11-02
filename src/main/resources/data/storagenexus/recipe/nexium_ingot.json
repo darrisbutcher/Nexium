@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:netherite_block",
+    "minecraft:emerald_block",
+    "minecraft:diamond",
+    "minecraft:netherite_upgrade_smithing_template"
+  ],
+  "result": {
+    "id": "storagenexus:nexium_ingot",
+    "count": 3
+  }
+}

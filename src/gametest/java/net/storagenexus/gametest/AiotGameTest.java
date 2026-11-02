@@ -17,6 +17,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.Item;
@@ -36,8 +37,12 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.storagenexus.aiot.AiotEnchanting;
 import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.aiot.AiotTier;
+import net.storagenexus.aiot.MiningMode;
+import net.storagenexus.aiot.ToolMenu;
+import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
 
@@ -88,7 +93,7 @@ public class AiotGameTest {
     @GameTest
     public void statsMatchTheChosenOptions(GameTestHelper h) {
         // Durability option 1: all five tools' durability; vanilla's numbers for each material, times five
-        int[] expectedDurability = {950, 1250, 160, 7805, 10155};
+        int[] expectedDurability = {950, 1250, 160, 7805, 10155, 12500};
         for (AiotTier tier : AiotTier.values()) {
             ItemStack stack = new ItemStack(aiot(tier));
             String name = tier.id();
@@ -114,8 +119,8 @@ public class AiotGameTest {
             for (var tag : List.of(ItemTags.PICKAXES, ItemTags.AXES, ItemTags.SHOVELS, ItemTags.HOES)) {
                 h.assertTrue(stack.is(tag), name + " AIOT is in " + tag.location());
             }
-            h.assertTrue(stack.has(DataComponents.DAMAGE_RESISTANT) == (tier == AiotTier.NETHERITE),
-                    name + " AIOT survives lava only if it is netherite");
+            h.assertTrue(stack.has(DataComponents.DAMAGE_RESISTANT) == (tier == AiotTier.NETHERITE || tier == AiotTier.NEXIUM),
+                    name + " AIOT survives lava only if it is netherite or Nexium");
         }
         h.assertTrue(new ItemStack(aiot(AiotTier.GOLDEN)).is(ItemTags.PIGLIN_LOVED), "piglins love the golden AIOT");
         h.succeed();
@@ -265,6 +270,7 @@ public class AiotGameTest {
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.FORTUNE)) == 3, "Fortune III is active: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 0, "Silk Touch isn't active: " + all);
         h.assertTrue(inactive.getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "Silk Touch waits, inactive: " + all);
+        h.assertTrue(result.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "the mining mode is Fortune (green gem)");
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SMITE)) == 5, "Smite V beats Sharpness III: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SHARPNESS)) == 0, "Sharpness III lost to Smite V: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SWEEPING_EDGE)) == 2, "Sweeping Edge kept: " + all);
@@ -302,12 +308,8 @@ public class AiotGameTest {
 
     @GameTest
     public void netheriteBlockUpgradesADiamondAiot(GameTestHelper h) {
-        ItemStack diamond = new ItemStack(aiot(AiotTier.DIAMOND));
+        ItemStack diamond = withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.FORTUNE);
         diamond.enchant(enchantment(h, Enchantments.EFFICIENCY), 5);
-        diamond.enchant(enchantment(h, Enchantments.FORTUNE), 3);
-        ItemEnchantments.Mutable silk = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-        silk.set(enchantment(h, Enchantments.SILK_TOUCH), 1);
-        diamond.set(ModComponents.INACTIVE_ENCHANTMENTS, silk.toImmutable());
         diamond.setDamageValue(500);
         ItemStack template = new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
 
@@ -319,6 +321,7 @@ public class AiotGameTest {
         h.assertTrue(result.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY)
                 .getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "the inactive Silk Touch stays");
         h.assertTrue(result.getDamageValue() == 500, "wear stays, as vanilla's netherite upgrade keeps it");
+        h.assertTrue(result.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "the mining mode stays");
 
         SmithingRecipeInput ingot = new SmithingRecipeInput(template, diamond, new ItemStack(Items.NETHERITE_INGOT));
         Optional<?> withIngot = h.getLevel().recipeAccess().getRecipeFor(RecipeType.SMITHING, ingot, h.getLevel());
@@ -330,16 +333,101 @@ public class AiotGameTest {
     public void grindstoneRemovesInactiveEnchantments(GameTestHelper h) {
         ServerPlayer player = playerHolding(h, ItemStack.EMPTY);
         GrindstoneMenu menu = new GrindstoneMenu(0, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(POS)));
-        ItemStack stack = new ItemStack(aiot(AiotTier.DIAMOND));
-        stack.enchant(enchantment(h, Enchantments.FORTUNE), 3);
-        ItemEnchantments.Mutable silk = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-        silk.set(enchantment(h, Enchantments.SILK_TOUCH), 1);
-        stack.set(ModComponents.INACTIVE_ENCHANTMENTS, silk.toImmutable());
+        ItemStack stack = withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.FORTUNE);
         menu.getSlot(GrindstoneMenu.INPUT_SLOT).set(stack);
         ItemStack result = menu.getSlot(GrindstoneMenu.RESULT_SLOT).getItem();
         h.assertTrue(result.is(aiot(AiotTier.DIAMOND)), "the grindstone takes the enchantments off, got " + result);
         h.assertTrue(result.getEnchantments().isEmpty(), "no active enchantments left");
         h.assertFalse(result.has(ModComponents.INACTIVE_ENCHANTMENTS), "no inactive Silk Touch left either");
+        h.assertFalse(result.has(ModComponents.MINING_MODE), "and no mining mode (purple gem again)");
         h.succeed();
+    }
+
+    /** An AIOT holding Silk Touch I and Fortune III, the given one active. */
+    static ItemStack withSilkTouchAndFortune(GameTestHelper h, ItemStack aiot, MiningMode active) {
+        aiot.enchant(enchantment(h, Enchantments.FORTUNE), 3);
+        aiot.enchant(enchantment(h, Enchantments.SILK_TOUCH), 1);
+        AiotEnchanting.normalize(aiot, active);
+        return aiot;
+    }
+
+    @GameTest
+    public void toolMenuSwitchesSilkTouchAndFortune(GameTestHelper h) {
+        ServerPlayer player = playerHolding(h, withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.FORTUNE));
+        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        ItemStack held = player.getMainHandItem();
+        h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "Silk Touch is active now");
+        h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.FORTUNE)) == 0, "Fortune isn't");
+        h.assertTrue(held.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY)
+                .getLevel(enchantment(h, Enchantments.FORTUNE)) == 3, "Fortune III waits, inactive");
+        h.assertTrue(held.get(ModComponents.MINING_MODE) == MiningMode.SILK_TOUCH, "the gem turns blue (Silk Touch)");
+        h.assertTrue(player.getMainHandItem().isCorrectToolForDrops(Blocks.STONE.defaultBlockState()), "still a pickaxe");
+
+        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        held = player.getMainHandItem();
+        h.assertTrue(held.getEnchantments().getLevel(enchantment(h, Enchantments.FORTUNE)) == 3, "Fortune III is back");
+        h.assertTrue(held.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "the gem turns green (Fortune)");
+
+        // An AIOT without both can't switch, and nothing changes
+        ServerPlayer other = playerHolding(h, new ItemStack(aiot(AiotTier.IRON)));
+        ToolMenu.handle(other, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        h.assertFalse(other.getMainHandItem().has(ModComponents.MINING_MODE), "an AIOT without both has no mode");
+        h.succeed();
+    }
+
+    /** Silk Touch drops the block, Fortune multiplies the ore: whichever is active decides, like on any pickaxe. */
+    @GameTest
+    public void activeEnchantmentDecidesTheDrops(GameTestHelper h) {
+        ServerPlayer player = playerHolding(h, withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.SILK_TOUCH));
+        h.setBlock(POS, Blocks.DIAMOND_ORE);
+        List<ItemStack> silkDrops = Block.getDrops(h.getBlockState(POS), h.getLevel(), h.absolutePos(POS), null, player, player.getMainHandItem());
+        h.assertTrue(silkDrops.size() == 1 && silkDrops.getFirst().is(Items.DIAMOND_ORE), "Silk Touch: the ore block drops, got " + silkDrops);
+        ToolMenu.handle(player, ToolMenuPayload.Action.SWAP_SILK_TOUCH_FORTUNE);
+        List<ItemStack> fortuneDrops = Block.getDrops(h.getBlockState(POS), h.getLevel(), h.absolutePos(POS), null, player, player.getMainHandItem());
+        h.assertTrue(!fortuneDrops.isEmpty() && fortuneDrops.stream().allMatch(s -> s.is(Items.DIAMOND)), "Fortune: diamonds drop, got " + fortuneDrops);
+        h.succeed();
+    }
+
+    @GameTest
+    public void anvilAddsTheOtherOneInactive(GameTestHelper h) {
+        ServerPlayer player = playerHolding(h, ItemStack.EMPTY);
+        // Fortune III AIOT + Silk Touch book: Fortune stays active, Silk Touch is added inactive
+        ItemStack fortune = new ItemStack(aiot(AiotTier.DIAMOND));
+        fortune.enchant(enchantment(h, Enchantments.FORTUNE), 3);
+        ItemStack result = anvil(h, player, fortune, book(h, Enchantments.SILK_TOUCH, 1));
+        h.assertTrue(result.is(aiot(AiotTier.DIAMOND)), "the anvil takes Silk Touch onto a Fortune AIOT, got " + result);
+        h.assertTrue(result.getEnchantments().getLevel(enchantment(h, Enchantments.FORTUNE)) == 3, "Fortune stays active");
+        h.assertTrue(result.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY)
+                .getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "Silk Touch is added, inactive");
+        h.assertTrue(result.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "mode: Fortune");
+
+        // Silk Touch AIOT + Fortune book: Silk Touch stays active
+        ItemStack silk = new ItemStack(aiot(AiotTier.DIAMOND));
+        silk.enchant(enchantment(h, Enchantments.SILK_TOUCH), 1);
+        result = anvil(h, player, silk, book(h, Enchantments.FORTUNE, 2));
+        h.assertTrue(result.get(ModComponents.MINING_MODE) == MiningMode.SILK_TOUCH, "mode: Silk Touch, got " + result.get(ModComponents.MINING_MODE));
+        h.assertTrue(result.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY)
+                .getLevel(enchantment(h, Enchantments.FORTUNE)) == 2, "Fortune II is added, inactive");
+
+        // A vanilla pickaxe still can't have both
+        ItemStack pickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
+        pickaxe.enchant(enchantment(h, Enchantments.FORTUNE), 3);
+        h.assertTrue(anvil(h, player, pickaxe, book(h, Enchantments.SILK_TOUCH, 1)).isEmpty(), "vanilla pickaxes keep the vanilla rule");
+        h.succeed();
+    }
+
+    private static ItemStack book(GameTestHelper h, ResourceKey<Enchantment> key, int level) {
+        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+        ItemEnchantments.Mutable stored = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        stored.set(enchantment(h, key), level);
+        book.set(DataComponents.STORED_ENCHANTMENTS, stored.toImmutable());
+        return book;
+    }
+
+    private static ItemStack anvil(GameTestHelper h, ServerPlayer player, ItemStack left, ItemStack right) {
+        AnvilMenu menu = new AnvilMenu(0, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(POS)));
+        menu.getSlot(0).set(left.copy());
+        menu.getSlot(1).set(right.copy());
+        return menu.getSlot(2).getItem().copy();
     }
 }

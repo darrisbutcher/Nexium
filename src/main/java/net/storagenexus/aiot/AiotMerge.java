@@ -82,16 +82,9 @@ public final class AiotMerge {
             active.set(enchantment, e.getIntValue());
         }
 
-        // Both Silk Touch and Fortune: Fortune stays active, Silk Touch waits
-        Holder<Enchantment> silkTouch = kept.stream().filter(k -> k.is(Enchantments.SILK_TOUCH)).findFirst().orElse(null);
-        boolean hasFortune = kept.stream().anyMatch(k -> k.is(Enchantments.FORTUNE));
-        if (silkTouch != null && hasFortune) {
-            ItemEnchantments.Mutable inactive = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-            inactive.set(silkTouch, active.getLevel(silkTouch));
-            active.removeIf(silkTouch::equals);
-            result.set(ModComponents.INACTIVE_ENCHANTMENTS, inactive.toImmutable());
-        }
         result.set(DataComponents.ENCHANTMENTS, active.toImmutable());
+        // Both Silk Touch and Fortune: Fortune stays active, Silk Touch waits
+        AiotEnchanting.normalize(result, MiningMode.FORTUNE);
     }
 
     private static boolean isSilkTouchAndFortune(Holder<Enchantment> a, Holder<Enchantment> b) {

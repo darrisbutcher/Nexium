@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.drawer.DrawerBlock;
+import net.storagenexus.nexium.NexiumMaterials;
+import net.storagenexus.registry.ModComponents;
 
 import java.util.List;
 
@@ -40,6 +42,12 @@ public final class ItemDescriptions {
             String lineKey = i == 1 ? key : key + i;
             if (!language.has(lineKey)) break;
             lines.add(Component.translatable(lineKey).withStyle(ChatFormatting.GRAY));
+        }
+        // Nexium mining tools: whether their Haste II is on
+        if (stack.is(NexiumMaterials.GRANTS_HASTE)) {
+            lines.add(stack.has(ModComponents.HASTE_OFF)
+                    ? Component.translatable("tooltip.storagenexus.haste_off").withStyle(ChatFormatting.DARK_GRAY)
+                    : Component.translatable("tooltip.storagenexus.haste_on").withStyle(ChatFormatting.BLUE));
         }
         // Optional red warning line, e.g. for the Void Upgrade
         String warn = stack.getItem().getDescriptionId() + ".warn";

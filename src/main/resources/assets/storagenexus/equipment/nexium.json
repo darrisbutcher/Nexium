@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "storagenexus:nexium"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "storagenexus:nexium"
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "storagenexus:nexium_block",
+  "base": "storagenexus:netherite_aiot",
+  "result": {
+    "id": "storagenexus:nexium_aiot"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}
