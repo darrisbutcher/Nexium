@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "net.storagenexus.aiot.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
+  "mixins": [
+    "AnvilMenuMixin",
+    "GrindstoneMenuMixin",
+    "NexusLinkBlockMixin",
+    "PlayerMiningMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

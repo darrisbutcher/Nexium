@@ -73,6 +73,24 @@ public final class NexusConfig {
     /** Golems drop 0-2 poppies as well as 3-5 iron, like real ones. */
     public boolean ironFarmPoppies = true;
 
+    // --- AIOT modules (server-side only)
+    /** The Vein Mining module works. Off, installed modules do nothing. */
+    public boolean aiotVeinMining = true;
+    /** Most blocks one vein mining swing mines, the first included. */
+    public int aiotVeinMaxBlocks = 64;
+    /** The 3x3 Mining module works. */
+    public boolean aiotAreaMining = true;
+    /** The Nexus Link module works (drops go to the linked storage network). */
+    public boolean aiotNexusLink = true;
+
+    // --- Nexium armor (server-side only)
+    /** The Nexus restock set bonus works (top-ups and eating from the linked network). */
+    public boolean nexusRestock = true;
+    /** A hotbar stack that is being used up is topped up when it gets down to this many. */
+    public int restockTopUpAt = 8;
+    /** The wearer eats from the network when the hunger bar is down by this many points. */
+    public int restockEatWhenMissing = 6;
+
     public static NexusConfig get() {
         return instance;
     }
@@ -107,5 +125,8 @@ public final class NexusConfig {
         ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));
         ironFarmBreadSeconds = Math.max(1, Math.min(60 * 60, ironFarmBreadSeconds));
         ironFarmCooldownMultiplier = Math.max(0, Math.min(100, ironFarmCooldownMultiplier));
+        aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
+        restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
+        restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));
     }
 }

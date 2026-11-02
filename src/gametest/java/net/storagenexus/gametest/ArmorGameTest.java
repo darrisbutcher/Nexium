@@ -169,6 +169,28 @@ public class ArmorGameTest {
     }
 
     @GameTest
+    public void restockLooksAgainLaterWhenThereIsNothingToEat(GameTestHelper h) {
+        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(CHEST, Blocks.CHEST);
+        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
+        NexusRestock.reset(null);
+        ServerPlayer player = wearing(h, true);
+        player.getItemBySlot(EquipmentSlot.CHEST).set(ModComponents.TERMINAL_LINK,
+                GlobalPos.of(h.getLevel().dimension(), h.absolutePos(TERMINAL)));
+        player.getFoodData().setFoodLevel(6);
+        NexusRestock.tick(player, true); // nothing to eat in the network
+        chest.setItem(0, new ItemStack(Items.BREAD, 5));
+        net.storagenexus.network.StorageNetwork.clearCache();
+        NexusRestock.tick(player, true);
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 6, "still waiting before it looks again");
+        NexusRestock.reset(player.getUUID()); // the wait is forgotten, as when the armor comes off
+        NexusRestock.tick(player, true);
+        h.assertTrue(player.getFoodData().getFoodLevel() > 6, "eats once it looks again");
+        h.succeed();
+    }
+
+    @GameTest
     public void chestplateLinksToATerminal(GameTestHelper h) {
         h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
         ServerPlayer player = h.makeMockServerPlayerInLevel();

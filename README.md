@@ -432,3 +432,10 @@ counts.
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
+| `aiotVeinMining` | `true` | The Vein Mining module works |
+| `aiotVeinMaxBlocks` | `64` | Most blocks one vein mining swing takes, 1 to 512 |
+| `aiotAreaMining` | `true` | The 3x3 Mining module works |
+| `aiotNexusLink` | `true` | The Nexus Link module works |
+| `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
+| `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |
+| `restockEatWhenMissing` | `6` | The wearer eats from the network when the hunger bar is down by this much |

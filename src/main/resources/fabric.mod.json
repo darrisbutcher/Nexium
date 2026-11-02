@@ -29,6 +29,7 @@
   },
   "mixins": [
     "storagenexus.mixins.json",
+    "storagenexus.aiot.mixins.json",
     {
       "config": "storagenexus.client.mixins.json",
       "environment": "client"

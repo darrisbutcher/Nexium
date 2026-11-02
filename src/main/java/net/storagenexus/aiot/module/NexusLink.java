@@ -1,6 +1,7 @@
 package net.storagenexus.aiot.module;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -16,11 +17,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.dimension.AnchorRegistry;
+import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.network.TerminalBlock;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,6 +54,7 @@ public final class NexusLink {
                 return true;
             });
         });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> LAST_MESSAGE.remove(handler.getPlayer().getUUID()));
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             HOLDS.values().forEach(hold -> hold.release().run());
             HOLDS.clear();
@@ -65,31 +69,96 @@ public final class NexusLink {
      */
     public static boolean dropInto(BlockState state, ServerLevel level, BlockPos pos, @Nullable BlockEntity blockEntity,
                                    ServerPlayer player, ItemStack tool) {
+        if (!NexusConfig.get().aiotNexusLink) return false;
         GlobalPos link = AiotModules.activeLink(tool);
         if (link == null || Transaction.isOpen()) return false;
-        StorageNetwork network = network(player, link);
         List<ItemStack> drops = Block.getDrops(state, level, pos, blockEntity, player, tool);
+        if (batch != null && batch.player == player) {
+            // Part of a vein or 3x3: gather the drops, and send them all in one go when the swing is over
+            if (batch.link == null) {
+                batch.link = link;
+                batch.level = level;
+                batch.origin = pos.immutable();
+            }
+            for (ItemStack drop : drops) batch.totals.merge(ItemVariant.of(drop), (long) drop.getCount(), Long::sum);
+            state.spawnAfterBreak(level, pos, tool, true);
+            return true;
+        }
+        StorageNetwork network = network(player, link);
         boolean leftOver = false;
         for (ItemStack drop : drops) {
-            ItemStack rest = network == null ? drop : insert(network, drop);
-            if (!rest.isEmpty()) {
-                Block.popResource(level, pos, rest);
+            long rest = network == null ? drop.getCount() : insert(network, ItemVariant.of(drop), drop.getCount());
+            if (rest > 0) {
+                Block.popResource(level, pos, drop.copyWithCount((int) rest));
                 leftOver = true;
             }
         }
         state.spawnAfterBreak(level, pos, tool, true);
-        if (network == null) message(player, "message.storagenexus.nexus_link.offline");
-        else if (leftOver) message(player, "message.storagenexus.nexus_link.full");
+        report(player, network, leftOver);
         return true;
     }
 
-    private static ItemStack insert(StorageNetwork network, ItemStack drop) {
+    /** The drops of a swing that mines several blocks, sent to the network together. */
+    private static final class Batch {
+        final ServerPlayer player;
+        final Map<ItemVariant, Long> totals = new LinkedHashMap<>();
+        @Nullable GlobalPos link;
+        @Nullable ServerLevel level;
+        @Nullable BlockPos origin;
+
+        Batch(ServerPlayer player) {
+            this.player = player;
+        }
+    }
+
+    private static @Nullable Batch batch;
+
+    /**
+     * Runs {@code mining}, which breaks extra blocks for this player, and sends everything their Nexus Link would have
+     * sent to the network in one insert per kind of item rather than one per block. What does not fit drops at the
+     * first block mined. Without an active Nexus Link nothing is gathered, so this costs nothing.
+     */
+    public static void batch(ServerPlayer player, Runnable mining) {
+        if (batch != null) {
+            mining.run();
+            return;
+        }
+        Batch current = batch = new Batch(player);
+        try {
+            mining.run();
+        } finally {
+            batch = null;
+            flush(current);
+        }
+    }
+
+    private static void flush(Batch b) {
+        if (b.link == null || b.level == null || b.origin == null || b.totals.isEmpty()) return;
+        StorageNetwork network = Transaction.isOpen() ? null : network(b.player, b.link);
+        boolean leftOver = false;
+        for (Map.Entry<ItemVariant, Long> e : b.totals.entrySet()) {
+            long rest = network == null ? e.getValue() : insert(network, e.getKey(), e.getValue());
+            leftOver |= rest > 0;
+            while (rest > 0) {
+                int stack = (int) Math.min(rest, e.getKey().getItem().getDefaultMaxStackSize());
+                Block.popResource(b.level, b.origin, e.getKey().toStack(stack));
+                rest -= stack;
+            }
+        }
+        report(b.player, network, leftOver);
+    }
+
+    private static void report(ServerPlayer player, @Nullable StorageNetwork network, boolean leftOver) {
+        if (network == null) message(player, "message.storagenexus.nexus_link.offline");
+        else if (leftOver) message(player, "message.storagenexus.nexus_link.full");
+    }
+
+    /** Puts the amount into the network; returns how much did not fit. */
+    private static long insert(StorageNetwork network, ItemVariant variant, long amount) {
         try (Transaction tx = Transaction.openOuter()) {
-            long inserted = network.insertItem(ItemVariant.of(drop), drop.getCount(), tx);
+            long inserted = network.insertItem(variant, amount, tx);
             tx.commit();
-            ItemStack rest = drop.copy();
-            rest.shrink((int) inserted);
-            return rest;
+            return amount - inserted;
         }
     }
 

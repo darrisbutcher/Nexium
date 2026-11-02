@@ -18,7 +18,6 @@ import net.storagenexus.registry.ModItems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Nexium armor's bonuses ({@link ArmorBonus}). Set bonuses need all four pieces; Night Vision only the helmet. Each is
@@ -41,15 +40,24 @@ public final class NexiumArmor {
         });
     }
 
-    private static Map<EquipmentSlot, Item> pieces() {
-        return Map.of(EquipmentSlot.HEAD, ModItems.NEXIUM_HELMET, EquipmentSlot.CHEST, ModItems.NEXIUM_CHESTPLATE,
-                EquipmentSlot.LEGS, ModItems.NEXIUM_LEGGINGS, EquipmentSlot.FEET, ModItems.NEXIUM_BOOTS);
+    /** The four armor slots, matching {@link #piece(int)}; shared so nothing is allocated per check. */
+    private static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+    private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(NO_KNOCKBACK_ID, 1.0, AttributeModifier.Operation.ADD_VALUE);
+
+    /** The Nexium pieces in {@link #SLOTS} order. Read straight from {@link ModItems}, which are set once registered. */
+    private static Item piece(int index) {
+        return switch (index) {
+            case 0 -> ModItems.NEXIUM_HELMET;
+            case 1 -> ModItems.NEXIUM_CHESTPLATE;
+            case 2 -> ModItems.NEXIUM_LEGGINGS;
+            default -> ModItems.NEXIUM_BOOTS;
+        };
     }
 
     /** How many Nexium pieces the entity wears (0 to 4). */
     public static int piecesWorn(LivingEntity entity) {
         int worn = 0;
-        for (Map.Entry<EquipmentSlot, Item> e : pieces().entrySet()) if (entity.getItemBySlot(e.getKey()).is(e.getValue())) worn++;
+        for (int i = 0; i < SLOTS.length; i++) if (entity.getItemBySlot(SLOTS[i]).is(piece(i))) worn++;
         return worn;
     }
 
@@ -94,7 +102,7 @@ public final class NexiumArmor {
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
             if (active(player, ArmorBonus.NO_KNOCKBACK)) {
-                knockback.addOrUpdateTransientModifier(new AttributeModifier(NO_KNOCKBACK_ID, 1.0, AttributeModifier.Operation.ADD_VALUE));
+                knockback.addOrUpdateTransientModifier(NO_KNOCKBACK);
             } else {
                 knockback.removeModifier(NO_KNOCKBACK_ID);
             }
