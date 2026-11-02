@@ -2,9 +2,13 @@ package net.storagenexus.network;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.storagenexus.aiot.ToolMenu;
+import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.dimension.DimensionalMenu;
 import net.storagenexus.drawer.DrawerClickPayload;
 import net.storagenexus.drawer.DrawerInteraction;
+import net.storagenexus.nexium.ArmorBonusPayload;
+import net.storagenexus.nexium.NexiumArmor;
 import net.storagenexus.dimension.RenameLinkPayload;
 import net.storagenexus.terminal.FillGridPayload;
 import net.storagenexus.terminal.TerminalActionPayload;
@@ -18,6 +22,10 @@ public final class ModPayloads {
         PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(DrawerClickPayload.TYPE, DrawerClickPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ToolMenuPayload.TYPE, ToolMenuPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ArmorBonusPayload.TYPE, ArmorBonusPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(ArmorBonusPayload.TYPE, (payload, context) -> NexiumArmor.toggle(context.player(), payload.bonus()));
+        ServerPlayNetworking.registerGlobalReceiver(ToolMenuPayload.TYPE, (payload, context) -> ToolMenu.open(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(DrawerClickPayload.TYPE,
                 (payload, context) -> DrawerInteraction.handleClick(context.player(), payload));
 

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "storagenexus:nexium_ingot",
+  "base": "minecraft:netherite_leggings",
+  "result": {
+    "id": "storagenexus:nexium_leggings"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

@@ -8,13 +8,16 @@
   "mixins": [
     "AnvilMenuMixin",
     "BlockBehaviourMixin",
+    "BlockMixin",
     "BlockEntityMixin",
     "ChestBlockEntityMixin",
     "EnchantmentHelperMixin",
     "EndermanTakeBlockGoalMixin",
+    "GrindstoneMenuMixin",
     "InventoryMenuMixin",
     "PiglinAiMixin",
     "PlayerMixin",
+    "PlayerMiningMixin",
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin"

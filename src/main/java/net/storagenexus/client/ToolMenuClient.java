@@ -1,0 +1,47 @@
+package net.storagenexus.client;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.network.chat.Component;
+import net.storagenexus.aiot.ToolMenu;
+import net.storagenexus.aiot.ToolMenuPayload;
+import net.storagenexus.client.screen.ArmorMenuScreen;
+import net.storagenexus.client.screen.ToolMenuScreen;
+import net.storagenexus.essentials.client.NexusEssentialsClient;
+import net.storagenexus.nexium.NexiumArmor;
+import net.storagenexus.registry.ModMenus;
+
+/**
+ * The tool menu key: G by default, listed under Storage Nexus in Controls > Key Binds next to the magnet's. Holding an
+ * AIOT or a Nexium tool, it asks the server for the tool menu (which has slots for modules); otherwise, wearing Nexium
+ * armor, it opens the armor menu.
+ */
+public final class ToolMenuClient {
+    public static final KeyMapping TOOL_MENU = new KeyMapping("key.storagenexus.tool_menu",
+            InputConstants.KEY_G, NexusEssentialsClient.CATEGORY);
+
+    public static void init() {
+        KeyMappingHelper.registerKeyMapping(TOOL_MENU);
+        MenuScreens.register(ModMenus.TOOL_MENU, ToolMenuScreen::new);
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (TOOL_MENU.consumeClick()) {
+                if (client.player == null || client.gui.screen() != null) continue;
+                if (ToolMenu.appliesTo(client.player.getMainHandItem())) {
+                    ClientPlayNetworking.send(ToolMenuPayload.INSTANCE);
+                } else if (NexiumArmor.piecesWorn(client.player) > 0) {
+                    client.gui.setScreen(new ArmorMenuScreen());
+                } else {
+                    client.player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.hold_tool")
+                            .withStyle(ChatFormatting.GRAY));
+                }
+            }
+        });
+    }
+
+    private ToolMenuClient() {}
+}

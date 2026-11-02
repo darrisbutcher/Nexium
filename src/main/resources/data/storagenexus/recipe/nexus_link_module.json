@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "E": "minecraft:ender_pearl",
+    "C": "storagenexus:dimensional_link_card"
+  },
+  "pattern": [
+    "IEI",
+    "ECE",
+    "IEI"
+  ],
+  "result": {
+    "id": "storagenexus:nexus_link_module"
+  }
+}

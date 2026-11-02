@@ -3,7 +3,7 @@
   "id": "storagenexus",
   "version": "${version}",
   "name": "Storage Nexus",
-  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, and Ender IO-style item and fluid conduits. Also includes Nexus Essentials: no creeper/ghast block damage, endermen leave blocks alone, an item and XP magnet with its own trinket slot, a wings slot so an elytra and chestplate can be worn together, protection enchantments on elytra, netherite counts as gold for piglins, a bedrock-breaking elixir, picking up mobs as items, Fortune on ancient debris, and a 1-block iron farm.",
+  "description": "Drawers, a simple storage network, cross-dimensional tablets and links, Ender IO-style item and fluid conduits, all-in-one tools (AIOTs) that keep the enchantments of the five tools they are made from, with a tool menu to switch Silk Touch and Fortune and to fit modules (Nexus Link to send drops to the storage network, 3x3 mining, vein mining), and Nexium, a tier above netherite with Haste II tools, a spear and armor with switchable set bonuses (fire resistance, full-speed mining underwater and in the air, no knockback, restocking from the storage network, night vision). Also includes Nexus Essentials: no creeper/ghast block damage, endermen leave blocks alone, an item and XP magnet with its own trinket slot, a wings slot so an elytra and chestplate can be worn together, protection enchantments on elytra, netherite counts as gold for piglins, a bedrock-breaking elixir, picking up mobs as items, Fortune on ancient debris, and a 1-block iron farm.",
   "authors": [
     "Darris"
   ],

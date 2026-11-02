@@ -1,0 +1,14 @@
+{
+  "type": "storagenexus:aiot_merge",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:diamond_pickaxe",
+    "minecraft:diamond_axe",
+    "minecraft:diamond_shovel",
+    "minecraft:diamond_hoe",
+    "minecraft:diamond_sword"
+  ],
+  "result": {
+    "id": "storagenexus:diamond_aiot"
+  }
+}
