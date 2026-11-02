@@ -17,8 +17,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Nexium: the tier above netherite. Made in a crafting table from a netherite block, an emerald block, a diamond and
- * a netherite upgrade smithing template (three ingots), and put on netherite gear at a smithing table.
+ * Nexium: the tier above netherite. Made in a crafting table from a block of diamond, a block of emerald, a block of
+ * netherite and a netherite upgrade smithing template (three ingots), and put on netherite gear at a smithing table.
  * <p>
  * Its pickaxe, axe, shovel, hoe and AIOT give Haste II while held (see {@link NexiumHaste}), so with Efficiency V
  * they mine as fast as netherite with Efficiency V under a Haste II beacon.

@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:netherite_block",
+    "minecraft:diamond_block",
     "minecraft:emerald_block",
-    "minecraft:diamond",
+    "minecraft:netherite_block",
     "minecraft:netherite_upgrade_smithing_template"
   ],
   "result": {

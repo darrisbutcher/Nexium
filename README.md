@@ -229,8 +229,8 @@ world, or crafted from a book and any drawer) explains everything in game.
   add-on. The menu is where optional modules (area mining, Nexus Link and the like) will go if they are added later.
 
 ### Nexium
-* The tier above netherite. **Nexium Ingot**: a netherite block, an emerald block, a diamond and a netherite upgrade
-  smithing template in a crafting table make **3 ingots** (the template is used up). Nine make a **Block of Nexium**
+* The tier above netherite. **Nexium Ingot**: a block of diamond, a block of emerald, a block of netherite and a
+  netherite upgrade smithing template in a crafting table make **3 ingots** (the template is used up). Nine make a **Block of Nexium**
   (a beacon base, mined like a netherite block); beacons take the ingots as payment.
 * **Gear**: at a smithing table, a netherite upgrade template, the netherite piece and a Nexium ingot. Enchantments
   and wear stay. There is a Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and
