@@ -12,6 +12,7 @@
     "ChestBlockEntityMixin",
     "EnchantmentHelperMixin",
     "EndermanTakeBlockGoalMixin",
+    "GrindstoneMenuMixin",
     "InventoryMenuMixin",
     "PiglinAiMixin",
     "PlayerMixin",

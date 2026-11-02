@@ -8,6 +8,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.storagenexus.StorageNexus;
 import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
@@ -34,6 +35,13 @@ public final class ModComponents {
     /** Filter configuration stored on Basic and Advanced Filters. */
     public static final DataComponentType<FilterData> FILTER = register("filter",
             b -> b.persistent(FilterData.CODEC).networkSynchronized(FilterData.STREAM_CODEC));
+
+    /**
+     * Enchantments an AIOT holds but isn't using: Silk Touch while Fortune is active, or the other way round.
+     * Kept out of {@code minecraft:enchantments} so the active set is always one vanilla allows.
+     */
+    public static final DataComponentType<ItemEnchantments> INACTIVE_ENCHANTMENTS = register("inactive_enchantments",
+            b -> b.persistent(ItemEnchantments.CODEC).networkSynchronized(ItemEnchantments.STREAM_CODEC));
 
     // Contents a storage block keeps when broken, so they survive in the dropped item.
     // Copied in by the blocks' loot tables and read back when the item is placed.

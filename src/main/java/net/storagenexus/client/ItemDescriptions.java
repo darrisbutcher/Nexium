@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.drawer.DrawerBlock;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Adds a short "what is this for" description under every Storage Nexus item, from the
  * lang keys {@code <item>.desc}, {@code <item>.desc2}, ... and a red {@code <item>.warn}. Wooden
- * drawers share one description per size.
+ * drawers share one description per size, and the AIOTs one for every material.
  */
 public final class ItemDescriptions {
     private static final int MAX_LINES = 4;
@@ -26,9 +27,14 @@ public final class ItemDescriptions {
 
     private static void append(ItemStack stack, List<Component> lines) {
         if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(StorageNexus.MOD_ID)) return;
-        String key = stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof DrawerBlock drawer
-                ? "tooltip.storagenexus.drawer." + drawer.slots()
-                : stack.getItem().getDescriptionId() + ".desc";
+        String key;
+        if (stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof DrawerBlock drawer) {
+            key = "tooltip.storagenexus.drawer." + drawer.slots();
+        } else if (stack.getItem() instanceof AiotItem) {
+            key = "tooltip.storagenexus.aiot"; // the same for every material
+        } else {
+            key = stack.getItem().getDescriptionId() + ".desc";
+        }
         Language language = Language.getInstance();
         for (int i = 1; i <= MAX_LINES; i++) {
             String lineKey = i == 1 ? key : key + i;

@@ -9,6 +9,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.aiot.AiotItem;
+import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.barrel.BarrelTier;
 import net.storagenexus.barrel.BarrelUpgradeItem;
 import net.storagenexus.conduit.ConduitItem;
@@ -22,6 +24,7 @@ import net.storagenexus.upgrade.CapacityUpgradeItem;
 import net.storagenexus.upgrade.UpgradeItem;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -61,6 +64,15 @@ public final class ModItems {
     public static final ConduitWrenchItem CONDUIT_WRENCH = register("conduit_wrench", ConduitWrenchItem::new, new Item.Properties().stacksTo(1));
     public static final FilterItem BASIC_FILTER = register("basic_filter", p -> new FilterItem(p, false), new Item.Properties().stacksTo(1));
     public static final FilterItem ADVANCED_FILTER = register("advanced_filter", p -> new FilterItem(p, true), new Item.Properties().stacksTo(1));
+
+    /** All-in-one tools, one per material: {@code storagenexus:<tier>_aiot}. */
+    public static final Map<AiotTier, AiotItem> AIOTS = new EnumMap<>(AiotTier.class);
+
+    static {
+        for (AiotTier tier : AiotTier.values()) {
+            AIOTS.put(tier, register(tier.id() + "_aiot", p -> new AiotItem(p, tier), AiotItem.properties(tier)));
+        }
+    }
 
     static {
         // Block items go after the loose items so the tab starts with drawers.

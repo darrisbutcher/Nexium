@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_diamond_aiot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "storagenexus:diamond_aiot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "storagenexus:netherite_aiot_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_diamond_aiot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "storagenexus:netherite_aiot_smithing"
+    ]
+  }
+}

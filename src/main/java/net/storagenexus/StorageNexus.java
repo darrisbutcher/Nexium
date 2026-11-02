@@ -16,6 +16,7 @@ import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
 import net.storagenexus.registry.ModMenus;
+import net.storagenexus.registry.ModRecipes;
 import net.storagenexus.registry.ModStorageLookups;
 import net.storagenexus.registry.ModTab;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class StorageNexus implements ModInitializer {
         ModComponents.init();
         ModBlocks.init();
         ModItems.init();
+        ModRecipes.init();
         ModBlockEntities.init();
         ModMenus.init();
         ModTab.init();

@@ -1,7 +1,7 @@
 # Storage Nexus (Fabric, Minecraft 26.3)
 
 Drawers + a Tom's Simple Storage-style network + cross-dimensional tablets and item links +
-Ender IO-style item and fluid conduits + the **Essentials**: the quality-of-life features that used to be the
+Ender IO-style item and fluid conduits + **all-in-one tools** (AIOTs) + the **Essentials**: the quality-of-life features that used to be the
 separate Nexus Essentials mod (no creeper or ghast block damage, endermen leave blocks alone, an item and XP magnet
 with its own trinket slot, a wings slot for an elytra, protection enchantments on elytra, netherite calms piglins,
 a bedrock-breaking elixir, picking up mobs, Fortune on ancient debris and a 1-block iron farm).
@@ -35,7 +35,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.1.4.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/storage-nexus-1.2.0.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -45,8 +45,8 @@ https://fabricmc.net/develop.
 ### Tests
 
 `./gradlew build` also runs the unit tests and the in-game tests in `src/gametest` on a headless
-server (about 85 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
-conduits, Dimensional links and every Essentials feature). Run just those with `./gradlew runGameTest`.
+server (about 100 tests covering drawers, controllers, terminals, the bus, level emitter, barrels,
+conduits, Dimensional links, the AIOTs and every Essentials feature). Run just those with `./gradlew runGameTest`.
 The Essentials tests run as their own batch (test environment `storagenexus:essentials`), because one sets off TNT
 and the magnet tests pull items from 16 blocks away.
 
@@ -56,8 +56,9 @@ there fails the test.
 
 There are also client tests that open a real Minecraft client (`./gradlew runClientGameTest`): one opens every
 screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
-and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; and one
-saves and quits a world with filled barrels and reopens it. They take screenshots as they go. They need a window
+and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; one puts the
+five AIOTs on the hotbar and checks a diamond AIOT's tooltip; and one saves and quits a world with filled barrels
+and reopens it. They take screenshots as they go. They need a window
 (or a virtual display such as Xvfb), so they are not part of `build`; CI runs them in a separate `client-test` job
 on Xvfb and keeps the screenshots as an artifact. Add `-PwithJei` to run them with JEI installed, which also presses
 JEI's "+". The tests live in their own test mod and are never part of the release jar.
@@ -175,6 +176,38 @@ world, or crafted from a book and any drawer) explains everything in game.
   Source** (obsidian, lava buckets and a nether star) next to it for endless lava.
 * **Basic Filter** (whitelist/blacklist, exact match) and **Advanced Filter** (matches by item tag).
   Fluids are filtered by putting their bucket in the filter.
+
+### All-in-one tools (AIOT)
+* A pickaxe, axe, shovel, hoe and sword in one item: **Copper, Iron, Golden, Diamond and Netherite AIOT**
+  (`storagenexus:<material>_aiot`).
+* **Crafting**: all five tools of one material (pickaxe, axe, shovel, hoe and sword) anywhere in the crafting
+  grid. What you put in carries over:
+  * every enchantment, at the highest level any of the five tools had it;
+  * **Silk Touch and Fortune both stay**: Fortune is active and Silk Touch is kept inactive (the tooltip lists it
+    as "Silk Touch (inactive)"). A key to swap them is coming next;
+  * of Sharpness, Smite and Bane of Arthropods, the highest level stays (Sharpness wins a tie);
+  * curses stay, so crafting never gets rid of one;
+  * durability: the AIOT has exactly the uses the five tools had left, so five fresh tools make a full AIOT;
+  * the anvil repair cost of the most expensive tool.
+* **Netherite**: at a smithing table, a Diamond AIOT, a netherite upgrade template and a **netherite block**. Its
+  enchantments (the inactive one too) and wear stay, as with vanilla's netherite upgrade. Five netherite tools also
+  make one in the crafting grid.
+* **Durability**: five times the material's tool durability, the five tools' uses added together.
+
+  | | Copper | Iron | Golden | Diamond | Netherite |
+  |---|---|---|---|---|---|
+  | Durability | 950 | 1,250 | 160 | 7,805 | 10,155 |
+  | Attack damage | 9 | 9 | 7 | 9 | 10 |
+
+* **Combat**: as hard as that material's axe at a sword's speed (1.6 attacks a second), with the sword's sweeping
+  attack, and it disables shields like an axe. It loses 1 durability per hit and per block.
+* **Mining**: everything that material's pickaxe, axe, shovel, hoe and sword mine, as fast as the best of them, with
+  the same material limits (an iron AIOT can't mine obsidian, a diamond one can). It is in the vanilla `pickaxes`,
+  `axes`, `shovels`, `hoes` and `swords` item tags, so it takes every tool and sword enchantment, and other mods
+  treat it as each tool. A Diamond or Netherite AIOT mines bedrock under the Elixir of Bedrock Breaking.
+* **Right-click** strips logs, scrapes or unwaxes copper and makes paths (or tills a path into farmland);
+  **sneak + right-click** tills grass and dirt into farmland instead. Right-click a lit campfire to put it out.
+* A grindstone takes the inactive enchantment off with the others. Piglins love the Golden AIOT.
 
 ## Essentials
 

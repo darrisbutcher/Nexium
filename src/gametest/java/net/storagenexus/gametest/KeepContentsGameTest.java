@@ -134,7 +134,8 @@ public class KeepContentsGameTest {
     public void allRecipesLoad(GameTestHelper h) {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
                 .filter(r -> r.id().identifier().getNamespace().equals("storagenexus")).count();
-        h.assertValueEqual(ours, 75L, "storagenexus recipes loaded");
+        // Every file in data/storagenexus/recipe, the six AIOT recipes (storagenexus:aiot_merge and smithing) included
+        h.assertValueEqual(ours, 81L, "storagenexus recipes loaded");
         h.succeed();
     }
 
