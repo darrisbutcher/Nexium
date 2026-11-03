@@ -10,7 +10,7 @@ Every item is in the **Nexium** creative tab, and every tooltip says what its it
 The **Nexium Guide** (given once when you join a world, or crafted from a book and any drawer) is the in-game manual.
 Right-click it to pick one of nine chapters (Start Here, Drawers & Barrels, Storage Network, Links & Conduits, All-in-one
 Tools, Nexium, Nexium Armor, Essentials, and Mobs, Elixir & Iron Farm). Each opens as a book that describes every item,
-how to use it and, at the end, its crafting recipe drawn as a crafting grid. Closing a book comes back to the chapter list.
+how to use it and, at the end, its crafting recipes drawn as crafting grids. Closing a book comes back to the chapter list.
 
 The **Nexium advancement tab** (press **L**) is a quick map of everything in the mod: 33 nodes with an icon and a short
 description each, all unlocked from the start. For a bigger, easier-to-read advancements screen, try the optional

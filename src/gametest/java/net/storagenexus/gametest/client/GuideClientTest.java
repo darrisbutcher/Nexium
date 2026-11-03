@@ -44,6 +44,15 @@ public class GuideClientTest implements FabricClientGameTest {
             click(ctx, chapterIndex(data, "drawers"));
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof GuideBookScreen), "a card opens its chapter as a book");
             System.out.println("[nexus] guide chapter opened: " + ctx.takeScreenshot("nexus_guide_chapter"));
+
+            // A contents line jumps to its page: "Using a drawer" is the second line, "Recipes" the last
+            GuideData.Chapter drawers = data.chapter("drawers");
+            clickContents(ctx, 1);
+            check(currentPage(ctx) == drawers.indexOf("using"), "the contents link to 'Using a drawer' turns to that page");
+            ctx.runOnClient(mc -> ((GuideBookScreen) mc.gui.screen()).setPage(0));
+            ctx.waitTicks(2);
+            clickContents(ctx, 12);
+            check(currentPage(ctx) == drawers.indexOf("recipes"), "the contents link to 'Recipes' turns to the recipe pages");
             ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof GuideChaptersScreen), "closing a chapter goes back to the picker");
@@ -116,6 +125,23 @@ public class GuideClientTest implements FabricClientGameTest {
         hover(ctx, card);
         ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
         ctx.waitTicks(5);
+    }
+
+    /** Clicks the nth line of a book's contents page: the text starts 36 across and 30 down, under a one-line heading. */
+    private static void clickContents(ClientGameTestContext ctx, int entry) {
+        double[] spot = ctx.computeOnClient(mc -> {
+            double scale = mc.getWindow().getGuiScale();
+            int bookLeft = (mc.getWindow().getGuiScaledWidth() - 192) / 2;
+            return new double[]{(bookLeft + 36 + 10) * scale, (2 + 30 + 9 * (1 + entry) + 4) * scale};
+        });
+        ctx.getInput().setCursorPos(spot[0], spot[1]);
+        ctx.waitTicks(2);
+        ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+        ctx.waitTicks(3);
+    }
+
+    private static int currentPage(ClientGameTestContext ctx) {
+        return ctx.computeOnClient(mc -> ((GuideBookScreen) mc.gui.screen()).currentPage);
     }
 
     private static void check(boolean ok, String what) {

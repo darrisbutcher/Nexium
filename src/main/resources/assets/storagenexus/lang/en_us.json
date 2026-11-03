@@ -501,7 +501,7 @@
   "screen.storagenexus.guide.hint": "Hover a chapter to see what is in it.",
   "guide.storagenexus.chapter.start": "Start Here",
   "guide.storagenexus.chapter.start.topics": "Getting around, every key bind, the advancement tab",
-  "guide.storagenexus.start.welcome": "Welcome\nNexium adds drawers and barrels, a storage network, conduits, all-in-one tools, Nexium gear and the Essentials.\n\nPick a chapter on the guide's main screen. Each ends with the recipes for its items.",
+  "guide.storagenexus.start.welcome": "Welcome\nNexium adds drawers and barrels, a storage network, conduits, all-in-one tools, Nexium gear and the Essentials.\n\nPick a chapter on the guide's main screen. Every other chapter ends with the recipes for its items.",
   "guide.storagenexus.start.finding": "Finding things\nEvery item's tooltip says what it does. All items are in the Nexium creative tab.\n\nPress L for advancements: the Nexium tab is a map of the whole mod.\n\nLost your guide? Craft a book with any drawer.",
   "guide.storagenexus.start.keys": "Key binds\nG: tool menu, when holding an AIOT or Nexium tool. With neither: the armor menu.\nV: hold to vein mine (needs the Vein Mining module).\nM: Magnet on or off.\n\nChange them in Options > Controls > Key Binds, under Nexium.",
   "guide.storagenexus.start.settings": "Settings\nMany features can be tuned or switched off in the config file, nexusessentials.json. Restart to apply changes.\n\nOn a server, the server's file counts.\n\nInstall Nexium on the server and on every player's game.",
