@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:item_conduit"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.conduit.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.conduit.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

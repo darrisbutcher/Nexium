@@ -12,6 +12,8 @@
     "EnchantmentHelperMixin",
     "EndermanTakeBlockGoalMixin",
     "InventoryMenuMixin",
+    "InventoryMixin",
+    "LivingEntityMixin",
     "PiglinAiMixin",
     "PlayerMixin",
     "ServerExplosionMixin",

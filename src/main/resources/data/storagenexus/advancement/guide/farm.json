@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexusessentials:iron_farm"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.farm.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.farm.description"
+    },
+    "frame": "challenge",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

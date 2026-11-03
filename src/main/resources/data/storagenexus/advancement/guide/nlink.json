@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexus_link_module"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.nlink.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.nlink.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/aiot"
+}

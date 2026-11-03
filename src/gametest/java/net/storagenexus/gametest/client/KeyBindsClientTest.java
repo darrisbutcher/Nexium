@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 /**
  * The magnet's key bind can be changed in the game's menus: it is on the real Options > Controls > Key Binds screen,
- * under the Storage Nexus heading, as Toggle Magnet on M. Takes a screenshot scrolled to it.
+ * under the Nexium heading, as Toggle Magnet on M. Takes a screenshot scrolled to it.
  */
 public class KeyBindsClientTest implements FabricClientGameTest {
     @Override
@@ -56,7 +56,7 @@ public class KeyBindsClientTest implements FabricClientGameTest {
             }
         });
         check(heading != null, "Toggle Magnet is listed on the Key Binds screen");
-        check("Storage Nexus".equals(heading), "Toggle Magnet is under the Storage Nexus heading, not '" + heading + "'");
+        check("Nexium".equals(heading), "Toggle Magnet is under the Nexium heading, not '" + heading + "'");
         ctx.waitTicks(5);
         System.out.println("[nexus] key binds: " + ctx.takeScreenshot("nexus_key_binds_magnet"));
         ctx.setScreen(() -> null);

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexium_aiot"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.xaiot.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.xaiot.description"
+    },
+    "frame": "challenge",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/aiot"
+}

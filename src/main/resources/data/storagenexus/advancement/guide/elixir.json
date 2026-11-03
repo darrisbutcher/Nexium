@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexusessentials:bedrock_breaker_elixir"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.elixir.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.elixir.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

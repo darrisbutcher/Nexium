@@ -30,7 +30,7 @@ import net.storagenexus.registry.ModComponents;
 public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     private static final int BUTTON_X = 8, BUTTON_WIDTH = 160, MODULE_BUTTON_X = 28, MODULE_BUTTON_WIDTH = 140;
     private static final int MODULES_LABEL_Y = ToolMenuMenu.MODULE_SLOT_Y - 12;
-    private Button modeButton, hasteButton, armorButton;
+    private Button modeButton, hasteButton, armorButton, veinButton;
     private final Button[] moduleButtons = new Button[AiotModules.SLOTS];
     private final SideHints hints = new SideHints();
 
@@ -44,9 +44,11 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     protected void init() {
         super.init();
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_SWAP_SILK_TOUCH_FORTUNE))
-                .bounds(leftPos + BUTTON_X, topPos + 24, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 22, BUTTON_WIDTH, 16).build());
         hasteButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_HASTE))
-                .bounds(leftPos + BUTTON_X, topPos + 44, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 40, BUTTON_WIDTH, 16).build());
+        veinButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_VEIN_SIZE))
+                .bounds(leftPos + BUTTON_X, topPos + 58, BUTTON_WIDTH, 16).build());
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             final int slot = i;
             moduleButtons[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_MODULE + slot))
@@ -90,6 +92,19 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         armorButton.visible = NexiumArmor.piecesWorn(minecraft.player) > 0;
         hints.set(armorButton, Component.translatable("screen.storagenexus.tool_menu.armor.tooltip"));
         boolean aiot = tool.getItem() instanceof AiotItem;
+        veinButton.visible = aiot;
+        ItemStack vein = ItemStack.EMPTY;
+        for (int i = 0; i < AiotModules.SLOTS; i++) {
+            if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.VEIN_MINING) vein = menu.getSlot(i).getItem();
+        }
+        if (vein.isEmpty()) {
+            set(veinButton, false, Component.translatable("screen.storagenexus.tool_menu.vein_none"), "screen.storagenexus.tool_menu.vein_none.tooltip");
+        } else {
+            int max = menu.veinMax(); // the server's limit, synced with the menu
+            int size = Math.max(1, Math.min(max, vein.getOrDefault(ModComponents.VEIN_SIZE, max)));
+            set(veinButton, true, Component.translatable("screen.storagenexus.tool_menu.vein_size", size),
+                    "screen.storagenexus.tool_menu.vein_size.tooltip");
+        }
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             Button button = moduleButtons[i];
             button.visible = aiot;

@@ -12,6 +12,8 @@ import org.jspecify.annotations.Nullable;
 public class ExtraSlotMenuSlot extends Slot {
     public static final Identifier EMPTY_TRINKET_ICON = NexusEssentials.id("container/slot/trinket");
     public static final Identifier EMPTY_WINGS_ICON = NexusEssentials.id("container/slot/wings");
+    public static final Identifier EMPTY_ARROWS_ICON = NexusEssentials.id("container/slot/arrows");
+    public static final Identifier EMPTY_TOTEM_ICON = NexusEssentials.id("container/slot/totem");
 
     private final Player owner;
 
@@ -31,7 +33,7 @@ public class ExtraSlotMenuSlot extends Slot {
 
     @Override
     public int getMaxStackSize() {
-        return 1;
+        return ExtraSlots.maxStack(getContainerSlot());
     }
 
     @Override
@@ -48,6 +50,11 @@ public class ExtraSlotMenuSlot extends Slot {
 
     @Override
     public @Nullable Identifier getNoItemIcon() {
-        return isWingsSlot() ? EMPTY_WINGS_ICON : EMPTY_TRINKET_ICON;
+        return switch (getContainerSlot()) {
+            case ExtraSlots.WINGS -> EMPTY_WINGS_ICON;
+            case ExtraSlots.ARROWS -> EMPTY_ARROWS_ICON;
+            case ExtraSlots.TOTEM -> EMPTY_TOTEM_ICON;
+            default -> EMPTY_TRINKET_ICON;
+        };
     }
 }

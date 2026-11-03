@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:vein_mining_module"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.vein.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.vein.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/aiot"
+}

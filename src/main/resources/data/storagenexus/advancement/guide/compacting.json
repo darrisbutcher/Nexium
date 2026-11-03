@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:compacting_drawer"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.compacting.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.compacting.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/drawers"
+}

@@ -59,7 +59,7 @@ import java.util.function.Consumer;
  *   <li>what gets saved changes, so it really is saved (a barrel's items once were not, and vanished on relog), and</li>
  *   <li>loading that save into a new block entity and saving again gives exactly the same data, so it is loaded back.</li>
  * </ol>
- * A Storage Nexus or Essentials block entity type with no case here fails the test, so a new one can't be missed.
+ * A Nexium or Essentials block entity type with no case here fails the test, so a new one can't be missed.
  */
 public class SaveLoadGameTest {
     private static final BlockPos POS = new BlockPos(3, 1, 3);

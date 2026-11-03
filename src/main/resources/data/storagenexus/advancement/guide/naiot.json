@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:netherite_aiot"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.naiot.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.naiot.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/aiot"
+}

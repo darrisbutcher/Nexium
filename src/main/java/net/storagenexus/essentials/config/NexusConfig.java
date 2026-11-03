@@ -19,6 +19,7 @@ import java.nio.file.Path;
  */
 public final class NexusConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final int VERSION = 2;
     private static NexusConfig instance = new NexusConfig();
 
     // --- Mob griefing
@@ -76,8 +77,10 @@ public final class NexusConfig {
     // --- AIOT modules (server-side only)
     /** The Vein Mining module works. Off, installed modules do nothing. */
     public boolean aiotVeinMining = true;
-    /** Most blocks one vein mining swing mines, the first included. */
-    public int aiotVeinMaxBlocks = 64;
+    /** Most blocks one vein mining swing mines, the first included. Players pick a smaller size per tool in the tool menu. */
+    public int aiotVeinMaxBlocks = 256;
+    /** Which version of this file wrote it, so a changed default can be carried over once. */
+    public Integer configVersion;
     /** The 3x3 Mining module works. */
     public boolean aiotAreaMining = true;
     /** The Nexus Link module works (drops go to the linked storage network). */
@@ -106,6 +109,9 @@ public final class NexusConfig {
             }
         }
         instance = loaded == null ? new NexusConfig() : loaded;
+        // 1.6.0 raised the vein limit from 64 to 256: a file written before that, still on 64, moves up once
+        if (loaded != null && instance.configVersion == null && instance.aiotVeinMaxBlocks == 64) instance.aiotVeinMaxBlocks = 256;
+        instance.configVersion = VERSION;
         instance.clamp();
         try {
             Files.createDirectories(file.getParent());

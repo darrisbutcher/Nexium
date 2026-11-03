@@ -52,6 +52,14 @@ public final class ToolMenu {
                 : "message.storagenexus.tool_menu.haste_on"));
     }
 
+    /** Steps the Vein Mining module to its next size. Returns false if the tool has none. */
+    public static boolean cycleVeinSize(ServerPlayer player, ItemStack stack) {
+        int size = AiotModules.cycleVeinSize(stack);
+        if (size == 0) return false;
+        player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.vein_size", size));
+        return true;
+    }
+
     /** Switches the module in this slot on or off. Returns false if the slot is empty. */
     public static boolean toggleModule(ServerPlayer player, ItemStack stack, int slot) {
         ItemStack module = AiotModules.slots(stack).get(slot);

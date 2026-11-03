@@ -2,11 +2,13 @@
   "schemaVersion": 1,
   "id": "storagenexus-gametest",
   "version": "1.0.0",
-  "name": "Storage Nexus Game Tests",
-  "description": "In-game tests for Storage Nexus. Not shipped with the mod.",
+  "name": "Nexium Game Tests",
+  "description": "In-game tests for Nexium. Not shipped with the mod.",
   "environment": "*",
   "entrypoints": {
     "fabric-client-gametest": [
+      "net.storagenexus.gametest.client.AdvancementTabClientTest",
+      "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
@@ -14,6 +16,7 @@
       "net.storagenexus.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
+      "net.storagenexus.gametest.AdvancementTabGameTest",
       "net.storagenexus.gametest.AiotGameTest",
       "net.storagenexus.gametest.AnchorGameTest",
       "net.storagenexus.gametest.ArmorGameTest",
@@ -23,6 +26,7 @@
       "net.storagenexus.gametest.ControllerGameTest",
       "net.storagenexus.gametest.EssentialsGameTest",
       "net.storagenexus.gametest.FeaturesGameTest",
+      "net.storagenexus.gametest.GuideGameTest",
       "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
       "net.storagenexus.gametest.ModuleGameTest",

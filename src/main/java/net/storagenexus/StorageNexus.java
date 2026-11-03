@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class StorageNexus implements ModInitializer {
     public static final String MOD_ID = "storagenexus";
-    public static final Logger LOG = LoggerFactory.getLogger("Storage Nexus");
+    public static final Logger LOG = LoggerFactory.getLogger("Nexium");
     private static final String GUIDE_GIVEN_TAG = "storagenexus.guide_given";
 
     public static Identifier id(String path) {
@@ -63,6 +63,6 @@ public class StorageNexus implements ModInitializer {
             if (player.addTag(GUIDE_GIVEN_TAG)) DrawerInteraction.give(player, new ItemStack(ModItems.GUIDE));
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> StorageNetwork.clearCache());
-        LOG.info("Storage Nexus loaded");
+        LOG.info("Nexium loaded");
     }
 }

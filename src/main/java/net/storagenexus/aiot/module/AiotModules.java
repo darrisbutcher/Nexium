@@ -5,6 +5,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.storagenexus.aiot.AiotItem;
+import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.registry.ModComponents;
 import org.jspecify.annotations.Nullable;
 
@@ -59,6 +60,37 @@ public final class AiotModules {
         slots.set(slot, module);
         setSlots(tool, slots);
         return nowOn;
+    }
+
+    /** Sizes the tool menu steps through, below the config's limit (which is always the last one). */
+    private static final int[] VEIN_STEPS = {4, 9, 18, 32, 64, 128, 256};
+
+    /** Most blocks one vein mining swing mines with this AIOT: its module's setting, never above the config's limit. */
+    public static int veinSize(ItemStack tool) {
+        int max = NexusConfig.get().aiotVeinMaxBlocks;
+        return Math.max(1, Math.min(max, find(tool, ModuleType.VEIN_MINING).getOrDefault(ModComponents.VEIN_SIZE, max)));
+    }
+
+    /** Steps the installed Vein Mining module to the next size (back to the smallest after the limit). Returns it, or 0 if there is none. */
+    public static int cycleVeinSize(ItemStack tool) {
+        NonNullList<ItemStack> slots = slots(tool);
+        for (int i = 0; i < SLOTS; i++) {
+            if (!(slots.get(i).getItem() instanceof ModuleItem item) || item.type() != ModuleType.VEIN_MINING) continue;
+            int max = NexusConfig.get().aiotVeinMaxBlocks;
+            int current = veinSize(tool);
+            int next = max;
+            boolean found = false;
+            for (int step : VEIN_STEPS) {
+                if (step > current && step < max) { next = step; found = true; break; }
+            }
+            if (!found && current >= max) next = Math.min(VEIN_STEPS[0], max);
+            ItemStack module = slots.get(i).copy();
+            module.set(ModComponents.VEIN_SIZE, next);
+            slots.set(i, module);
+            setSlots(tool, slots);
+            return next;
+        }
+        return 0;
     }
 
     /** Links the AIOT's installed Nexus Link to a terminal. Returns false if it has none. */

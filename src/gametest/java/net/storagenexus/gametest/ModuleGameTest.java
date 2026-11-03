@@ -20,6 +20,7 @@ import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.ToolMenuMenu;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleType;
+import net.storagenexus.aiot.module.VeinKey;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
@@ -42,6 +43,7 @@ public class ModuleGameTest {
         for (int i = 0; i < types.length; i++) slots.set(i, module(types[i]));
         AiotModules.setSlots(aiot, slots);
         player.setItemInHand(InteractionHand.MAIN_HAND, aiot);
+        VeinKey.set(player, true); // vein mining needs the key held
         return player;
     }
 
@@ -195,11 +197,70 @@ public class ModuleGameTest {
     public void veinMiningStopsAtTheLimit(GameTestHelper h) {
         // A 5x5x4 block of coal ore (100 blocks): vein mining takes 64
         for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
-        mine(h, player, new BlockPos(2, 1, 2));
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
         int left = 0;
-        for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
+        try {
+            config.aiotVeinMaxBlocks = 64;
+            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            mine(h, player, new BlockPos(2, 1, 2));
+            for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         h.assertValueEqual(left, 100 - 64, "64 blocks mined, the rest left");
+        h.succeed();
+    }
+
+    @GameTest
+    public void veinMiningNeedsTheKeyHeld(GameTestHelper h) {
+        for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
+        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        VeinKey.set(player, false);
+        mine(h, player, new BlockPos(1, 1, 1));
+        h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1)); // key up: one block
+        VeinKey.set(player, true);
+        mine(h, player, new BlockPos(2, 1, 1));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 1)); // key held: the rest of the vein
+        // No module, key held: still one block
+        for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
+        ServerPlayer plain = miner(h);
+        mine(h, plain, new BlockPos(1, 1, 1));
+        h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1));
+        VeinKey.set(player, false);
+        VeinKey.set(plain, false);
+        h.succeed();
+    }
+
+    @GameTest
+    public void veinSizeIsSetInTheToolMenu(GameTestHelper h) {
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
+        try {
+            config.aiotVeinMaxBlocks = 64;
+            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            ToolMenuMenu menu = new ToolMenuMenu(1, player.getInventory(), player.getInventory().getSelectedSlot());
+            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 64, "defaults to the config's limit");
+            menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
+            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 4, "wraps to the smallest after the limit");
+            menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
+            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 9, "then steps up");
+            h.assertTrue(menu.getSlot(0).getItem().has(ModComponents.VEIN_SIZE), "the slot shows the new size");
+
+            for (int x = 0; x < 20; x++) h.setBlock(new BlockPos(x % 10, 1 + x / 10, 1), Blocks.COAL_ORE);
+            mine(h, player, new BlockPos(0, 1, 1));
+            int left = 0;
+            for (int x = 0; x < 20; x++) if (h.getBlockState(new BlockPos(x % 10, 1 + x / 10, 1)).is(Blocks.COAL_ORE)) left++;
+            h.assertValueEqual(left, 20 - 9, "a size of 9 mines 9 blocks");
+
+            // A lower config limit caps the setting
+            config.aiotVeinMaxBlocks = 5;
+            h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 5, "the config's limit still caps it");
+            h.assertValueEqual(new ToolMenuMenu(2, player.getInventory(), player.getInventory().getSelectedSlot()).veinMax(), 5, "and the menu carries the limit to the screen");
+            VeinKey.set(player, false);
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         h.succeed();
     }
 
@@ -256,8 +317,15 @@ public class ModuleGameTest {
         for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
         ServerPlayer player = miner(h, ModuleType.VEIN_MINING, ModuleType.NEXUS_LINK);
         h.assertTrue(AiotModules.relink(player.getMainHandItem(), GlobalPos.of(h.getLevel().dimension(), h.absolutePos(terminal))), "linked");
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
         long start = System.nanoTime();
-        mine(h, player, new BlockPos(2, 2, 2));
+        try {
+            config.aiotVeinMaxBlocks = 64;
+            mine(h, player, new BlockPos(2, 2, 2));
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         long micros = (System.nanoTime() - start) / 1000;
         net.storagenexus.StorageNexus.LOG.info("Vein of 64 with a Nexus Link into 14 barrels: {} microseconds", micros);
 

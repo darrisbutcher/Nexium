@@ -28,7 +28,8 @@ import java.util.List;
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
  *   <li><b>Vein mining</b>, for blocks in {@code #storagenexus:vein_mineable} (ores and logs): every block of the same
- *       kind touching it, corners included, up to {@value #MAX_VEIN} in all.</li>
+ *       kind touching it, corners included, up to the size set in the tool menu (never above the config's limit) in all. Only while the
+ *       player holds the Vein Mine key.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
  *       looking ahead, the floor or ceiling when looking down or up). Only blocks the AIOT is made for and no harder
  *       than about twice the mined block; never blocks with contents, such as chests.</li>
@@ -42,6 +43,7 @@ public final class AiotMining {
     private static boolean busy;
 
     public static void init() {
+        VeinKey.init();
         PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
             if (!busy && player instanceof ServerPlayer serverPlayer) afterBreak(level, serverPlayer, pos, state);
         });
@@ -52,8 +54,9 @@ public final class AiotMining {
         if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return;
         List<BlockPos> extra;
         NexusConfig config = NexusConfig.get();
-        if (config.aiotVeinMining && AiotModules.active(tool, ModuleType.VEIN_MINING) && state.is(VEIN_MINEABLE)) {
-            extra = vein(level, pos, state);
+        if (config.aiotVeinMining && AiotModules.active(tool, ModuleType.VEIN_MINING) && state.is(VEIN_MINEABLE)
+                && VeinKey.held(player)) {
+            extra = vein(level, pos, state, AiotModules.veinSize(tool));
         } else if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
             extra = area(level, player, pos, state, tool);
         } else {
@@ -85,12 +88,12 @@ public final class AiotMining {
     }
 
     /**
-     * The other blocks of this kind connected to {@code start} (corners count), nearest first, up to the configured
-     * limit. Blocks of the same ore group count as one kind, so the deepslate and stone variants of an ore join up.
+     * The other blocks of this kind connected to {@code start} (corners count), nearest first, up to {@code size}
+     * blocks in all. Blocks of the same ore group count as one kind, so the deepslate and stone variants of an ore join up.
      * Only loaded chunks are looked at, so a vein never makes the server load or generate one.
      */
-    static List<BlockPos> vein(Level level, BlockPos start, BlockState startState) {
-        int limit = NexusConfig.get().aiotVeinMaxBlocks - 1;
+    static List<BlockPos> vein(Level level, BlockPos start, BlockState startState, int size) {
+        int limit = size - 1;
         Block block = startState.getBlock();
         TagKey<Block> group = oreGroup(startState);
         List<BlockPos> found = new ArrayList<>();

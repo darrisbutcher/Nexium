@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:crafting_terminal"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.terminal.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.terminal.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/connector"
+}

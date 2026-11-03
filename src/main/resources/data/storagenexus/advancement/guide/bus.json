@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:import_export_bus"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.bus.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.bus.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/connector"
+}

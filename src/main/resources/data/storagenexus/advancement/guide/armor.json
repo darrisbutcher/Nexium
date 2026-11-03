@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexium_chestplate"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.armor.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.armor.description"
+    },
+    "frame": "challenge",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/ingot"
+}
