@@ -197,10 +197,17 @@ public class ModuleGameTest {
     public void veinMiningStopsAtTheLimit(GameTestHelper h) {
         // A 5x5x4 block of coal ore (100 blocks): vein mining takes 64
         for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
-        mine(h, player, new BlockPos(2, 1, 2));
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
         int left = 0;
-        for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
+        try {
+            config.aiotVeinMaxBlocks = 64;
+            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            mine(h, player, new BlockPos(2, 1, 2));
+            for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         h.assertValueEqual(left, 100 - 64, "64 blocks mined, the rest left");
         h.succeed();
     }
@@ -310,8 +317,15 @@ public class ModuleGameTest {
         for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
         ServerPlayer player = miner(h, ModuleType.VEIN_MINING, ModuleType.NEXUS_LINK);
         h.assertTrue(AiotModules.relink(player.getMainHandItem(), GlobalPos.of(h.getLevel().dimension(), h.absolutePos(terminal))), "linked");
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
         long start = System.nanoTime();
-        mine(h, player, new BlockPos(2, 2, 2));
+        try {
+            config.aiotVeinMaxBlocks = 64;
+            mine(h, player, new BlockPos(2, 2, 2));
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         long micros = (System.nanoTime() - start) / 1000;
         net.storagenexus.StorageNexus.LOG.info("Vein of 64 with a Nexus Link into 14 barrels: {} microseconds", micros);
 

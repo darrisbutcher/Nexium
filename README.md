@@ -262,7 +262,7 @@ when taken out.
   obsidian around stone), and never blocks with contents such as chests.
 * **Vein Mining**: mining an ore or a log (block tag `storagenexus:vein_mineable`: `#minecraft:ores`, `#c:ores`,
   logs, ancient debris, nether quartz and gold ores) mines every block of the same kind touching it, corners included,
-  up to the size set in the tool menu (at most `aiotVeinMaxBlocks`, 64 by default). **Hold the Vein Mine key**
+  up to the size set in the tool menu (at most `aiotVeinMaxBlocks`, 256 by default). **Hold the Vein Mine key**
   (**V** by default, under Controls > Key Binds > Nexium) while mining; without it you mine one block, and without
   the module the key does nothing. With 3x3 also on, ores and logs are vein mined (key held) and everything else 3x3 mined.
 * Both mine each block as you would: Fortune, Silk Touch and the Nexus Link apply, each block costs 1 durability (it
@@ -453,7 +453,7 @@ counts.
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
 | `aiotVeinMining` | `true` | The Vein Mining module works |
-| `aiotVeinMaxBlocks` | `64` | Most blocks one vein mining swing takes, 1 to 512; the tool menu's vein size can go up to this |
+| `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512; the tool menu's vein size can go up to this. A config from before 1.6.0 that still says 64 is raised to 256 once |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |

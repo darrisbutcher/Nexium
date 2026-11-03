@@ -83,7 +83,24 @@ public class SlotsClientTest implements FabricClientGameTest {
                 return found.toString().trim();
             });
             System.out.println("[nexus] creative extra slots: " + placed);
-            if (!placed.equals("46@127,6 47@127,33 48@127,60 49@127,87")) throw new AssertionError("creative inventory places the extra slots at " + placed);
+            // None of them may sit on top of another slot (the inventory rows, armor, offhand, hotbar)
+            String overlaps = ctx.computeOnClient(mc -> {
+                StringBuilder bad = new StringBuilder();
+                if (mc.gui.screen() instanceof CreativeModeInventoryScreen screen) {
+                    var slots = screen.getMenu().slots;
+                    for (Slot a : slots) {
+                        if (!(a.container instanceof ExtraSlots)) continue;
+                        for (Slot b : slots) {
+                            if (a != b && Math.abs(a.x - b.x) < 16 && Math.abs(a.y - b.y) < 16) {
+                                bad.append(a.getContainerSlot()).append(" overlaps slot ").append(b.getContainerSlot()).append(" at ").append(b.x).append(',').append(b.y).append("; ");
+                            }
+                        }
+                    }
+                }
+                return bad.toString();
+            });
+            if (!overlaps.isEmpty()) throw new AssertionError("creative extra slots overlap other slots: " + overlaps);
+            if (!placed.equals("46@127,6 47@127,33 48@145,6 49@145,33")) throw new AssertionError("creative inventory places the extra slots at " + placed);
             String survival = ctx.computeOnClient(mc -> {
                 Slot trinket = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_TRINKET);
                 Slot wings = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS);
