@@ -15,7 +15,7 @@ import net.storagenexus.essentials.slots.ExtraSlots;
 
 /** Client side of the Essentials features, set up by {@link net.storagenexus.client.StorageNexusClient}. */
 public final class NexusEssentialsClient {
-    /** Key binds are listed under Storage Nexus. */
+    /** Key binds are listed under Nexium. */
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(StorageNexus.id("main"));
     /** Switches the magnet in the trinket slot on or off. M by default; change it under Controls > Key Binds. */
     public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexusessentials.toggle_magnet",

@@ -18,7 +18,7 @@ import net.storagenexus.nexium.NexiumArmor;
 import net.storagenexus.registry.ModMenus;
 
 /**
- * The tool menu key: G by default, listed under Storage Nexus in Controls > Key Binds next to the magnet's. Holding an
+ * The tool menu key: G by default, listed under Nexium in Controls > Key Binds next to the magnet's. Holding an
  * AIOT or a Nexium tool, it asks the server for the tool menu (which has slots for modules); otherwise, wearing Nexium
  * armor, it opens the armor menu.
  */

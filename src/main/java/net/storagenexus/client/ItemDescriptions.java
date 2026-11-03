@@ -16,7 +16,7 @@ import net.storagenexus.registry.ModComponents;
 import java.util.List;
 
 /**
- * Adds a short "what is this for" description under every Storage Nexus item, from the
+ * Adds a short "what is this for" description under every Nexium item, from the
  * lang keys {@code <item>.desc}, {@code <item>.desc2}, ... and a red {@code <item>.warn}. Wooden
  * drawers share one description per size, and the AIOTs one for every material.
  */

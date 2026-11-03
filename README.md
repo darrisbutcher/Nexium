@@ -1,4 +1,4 @@
-# Storage Nexus (Fabric, Minecraft 26.3)
+# Nexium (Fabric, Minecraft 26.3)
 
 Drawers + a Tom's Simple Storage-style network + cross-dimensional tablets and item links +
 Ender IO-style item and fluid conduits + **all-in-one tools** (AIOTs) + **Nexium**, a tier above netherite + the
@@ -8,19 +8,26 @@ with its own trinket slot, a wings slot for an elytra, protection enchantments o
 a bedrock-breaking elixir, picking up mobs, Fortune on ancient debris and a 1-block iron farm).
 
 Every item, the Essentials ones included (Magnet, Elixir of Bedrock Breaking, Iron Farm), is in the
-**Storage Nexus** creative tab.
+**Nexium** creative tab.
+
+## Renamed from Storage Nexus
+
+The mod used to be called **Storage Nexus** and is now **Nexium**. Only the name changed: the mod id (`storagenexus`),
+every item and block id and the config file are the same, so worlds, `/give` commands and recipes carry over. The jar is
+now `nexium-<version>.jar`, so **delete the old `storage-nexus-*.jar` from your `mods` folder** when you update: both
+jars are the same mod and Fabric won't load two copies.
 
 ## Coming from Nexus Essentials
 
-Nexus Essentials is now part of Storage Nexus. **Delete `nexus-essentials-*.jar` from your `mods` folder** when you
-install this version. If one is left behind, Fabric skips it without a word (Storage Nexus provides the
+Nexus Essentials is now part of Nexium. **Delete `nexus-essentials-*.jar` from your `mods` folder** when you
+install this version. If one is left behind, Fabric skips it without a word (Nexium provides the
 `nexusessentials` mod id now), so it does no harm, but it is dead weight.
 
 Nothing in your worlds changes: the Essentials items and blocks keep their `nexusessentials:` ids (so
 `/give @s nexusessentials:magnet` still works), magnets and elytra stay in the trinket and wings slots, placed Iron
 Farms keep running, Captured Mobs keep their mob, and `config/nexusessentials.json` is still the Essentials config.
-The only visible changes: the Essentials items moved from the vanilla creative tabs to the Storage Nexus tab, and
-the magnet key bind is listed under Storage Nexus in Controls (it stays on the key you chose).
+The only visible changes: the Essentials items moved from the vanilla creative tabs to the Nexium tab, and
+the magnet key bind is listed under Nexium in Controls (it stays on the key you chose).
 
 ## Building
 
@@ -36,7 +43,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/storage-nexus-1.5.0.jar` (not the `-sources` one). Put it in
+The mod jar ends up in `build/libs/nexium-1.6.0.jar` (not the `-sources` one). Put it in
 your `mods` folder next to **Fabric API** for 26.3. It is needed on both the client and the server.
 
 Built and tested against Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3 and
@@ -57,7 +64,7 @@ there fails the test.
 
 There are also client tests that open a real Minecraft client (`./gradlew runClientGameTest`): one opens every
 screen and clicks the terminal grid; one fills the trinket and wings slots and checks where they sit in the survival
-and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Storage Nexus; one puts the
+and creative inventories; one checks the magnet's key bind is on the Key Binds screen under Nexium; one puts the
 AIOTs and Nexium gear on the hotbar, checks a diamond AIOT's tooltip (modules included), opens the tool menu with its
 key and clicks it to Silk Touch, checks a Nexium pickaxe gives Haste II, opens the armor menu and switches a bonus
 off, and shows the Nexium armor worn (by a baby zombie too) and a trimmed chestplate's icon; and one saves and quits a world with filled barrels
@@ -74,7 +81,7 @@ Essentials worlds keep loading and the two never mix.
 
 ## How it works in game
 
-Every item's tooltip says what it does, and the **Storage Nexus Guide** (given once when you join a
+Every item's tooltip says what it does, and the **Nexium Guide** (given once when you join a
 world, or crafted from a book and any drawer) explains everything in game.
 
 ### Drawers
@@ -217,7 +224,7 @@ world, or crafted from a book and any drawer) explains everything in game.
 * A grindstone takes the inactive enchantment off with the others. Piglins love the Golden AIOT.
 
 ### Tool menu
-* Hold an AIOT or a Nexium tool and press **G** (rebind it under Controls > Key Binds > Storage Nexus, next to the
+* Hold an AIOT or a Nexium tool and press **G** (rebind it under Controls > Key Binds > Nexium, next to the
   magnet). Press it again or Esc to close. The tool stays in its hotbar slot (outlined) while the menu is open.
 * **Mining**: on an AIOT holding both Silk Touch and Fortune, switches which one is active. The AIOT's gem shows it on
   the hotbar: **green for Fortune, blue for Silk Touch** (purple when it doesn't hold both). Whichever is active
@@ -256,7 +263,7 @@ when taken out.
 * **Vein Mining**: mining an ore or a log (block tag `storagenexus:vein_mineable`: `#minecraft:ores`, `#c:ores`,
   logs, ancient debris, nether quartz and gold ores) mines every block of the same kind touching it, corners included,
   up to the size set in the tool menu (at most `aiotVeinMaxBlocks`, 64 by default). **Hold the Vein Mine key**
-  (**V** by default, under Controls > Key Binds > Storage Nexus) while mining; without it you mine one block, and without
+  (**V** by default, under Controls > Key Binds > Nexium) while mining; without it you mine one block, and without
   the module the key does nothing. With 3x3 also on, ores and logs are vein mined (key held) and everything else 3x3 mined.
 * Both mine each block as you would: Fortune, Silk Touch and the Nexus Link apply, each block costs 1 durability (it
   stops if the AIOT breaks), and spawn protection is respected. **Sneak** to mine just the one block.
@@ -345,7 +352,7 @@ The features that used to be the Nexus Essentials mod. The Guide's last pages co
   item owners still apply. It pulls back what you drop yourself too, once the usual 2-second pickup delay is
   over, so press **M** to switch it off before throwing something away.
 * **Sneak + right-click** it (in your hand) to change the range: 4, 8, 12, 16 blocks (up to `magnetMaxRange`).
-* Press **M** to switch it on or off (rebind under Controls > Key Binds > Storage Nexus). It glints while it is on.
+* Press **M** to switch it on or off (rebind under Controls > Key Binds > Nexium). It glints while it is on.
 
 ### Elytra enchanting
 * At an anvil, elytra take Protection, Fire Protection, Blast Protection and Projectile Protection from enchanted

@@ -658,7 +658,7 @@ public class EssentialsGameTest {
 
     // ---------------------------------------------------------------- creative tab
 
-    /** Since the merge, the Essentials items are in the Storage Nexus creative tab, after its own items, and not in vanilla's. */
+    /** Since the merge, the Essentials items are in the Nexium creative tab, after its own items, and not in vanilla's. */
     @GameTest(environment = EssentialsEnvironment.ID)
     public void essentialsItemsAreInTheStorageNexusTab(GameTestHelper h) {
         CreativeModeTabs.tryRebuildTabContents(h.getLevel().enabledFeatures(), true, h.getLevel().registryAccess());
@@ -666,7 +666,7 @@ public class EssentialsGameTest {
                 CreativeModeTabs.FOOD_AND_DRINKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
         for (Item item : List.of(ModItems.MAGNET, ModItems.BEDROCK_BREAKER_ELIXIR, ModItems.IRON_FARM)) {
             ItemStack stack = new ItemStack(item);
-            h.assertTrue(ModTab.TAB.contains(stack), item + " is in the Storage Nexus tab");
+            h.assertTrue(ModTab.TAB.contains(stack), item + " is in the Nexium tab");
             for (ResourceKey<CreativeModeTab> tab : vanillaTabs) {
                 h.assertFalse(BuiltInRegistries.CREATIVE_MODE_TAB.getValueOrThrow(tab).contains(stack), item + " is not in " + tab.identifier());
             }

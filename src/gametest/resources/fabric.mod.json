@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "storagenexus-gametest",
   "version": "1.0.0",
-  "name": "Storage Nexus Game Tests",
-  "description": "In-game tests for Storage Nexus. Not shipped with the mod.",
+  "name": "Nexium Game Tests",
+  "description": "In-game tests for Nexium. Not shipped with the mod.",
   "environment": "*",
   "entrypoints": {
     "fabric-client-gametest": [

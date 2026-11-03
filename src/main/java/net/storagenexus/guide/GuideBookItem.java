@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
-/** The Storage Nexus guide. Its pages are lang keys, shown in the vanilla book screen. */
+/** The Nexium guide. Its pages are lang keys, shown in the vanilla book screen. */
 public class GuideBookItem extends Item {
     /** Set by the client entrypoint; opening a screen is client-only code. */
     public static Runnable openScreen = () -> {};
