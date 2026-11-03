@@ -3,3 +3,6 @@ accessWidener v2 official
 # The Crafting Terminal reuses vanilla's recipe-book screen, which fixes the screen size at 176x166.
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+
+# The guide's book screen draws its own recipe cards over the page the player is on, so it needs the page number.
+accessible field net/minecraft/client/gui/screens/inventory/BookViewScreen currentPage I

@@ -8,6 +8,7 @@
   "entrypoints": {
     "fabric-client-gametest": [
       "net.storagenexus.gametest.client.AdvancementTabClientTest",
+      "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
@@ -25,6 +26,7 @@
       "net.storagenexus.gametest.ControllerGameTest",
       "net.storagenexus.gametest.EssentialsGameTest",
       "net.storagenexus.gametest.FeaturesGameTest",
+      "net.storagenexus.gametest.GuideGameTest",
       "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
       "net.storagenexus.gametest.ModuleGameTest",
