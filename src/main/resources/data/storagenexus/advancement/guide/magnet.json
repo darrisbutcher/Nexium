@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexusessentials:magnet"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.magnet.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.magnet.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:area_mining_module"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.area.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.area.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/aiot"
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexium_boots"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.restock.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.restock.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/ingot"
+}

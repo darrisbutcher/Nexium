@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:dimensional_link_card"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.link.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.link.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/connector"
+}

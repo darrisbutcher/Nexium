@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:fluid_intake"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.intake.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.intake.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/conduit"
+}

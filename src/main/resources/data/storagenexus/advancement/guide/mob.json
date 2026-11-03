@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexusessentials:captured_mob"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.mob.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.mob.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

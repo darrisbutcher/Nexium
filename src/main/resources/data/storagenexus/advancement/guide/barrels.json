@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:iron_barrel"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.barrels.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.barrels.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:oak_drawer_1x1"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.drawers.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.drawers.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

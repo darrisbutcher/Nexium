@@ -8,6 +8,10 @@ a 1-block iron farm and more).
 Every item is in the **Nexium** creative tab. The **Nexium Guide** (given once when you join a world, or crafted from
 a book and any drawer) explains everything in game, and every tooltip says what its item does.
 
+The **Nexium advancement tab** (press **L**) is a quick map of everything in the mod: 33 nodes with an icon and a short
+description each, all unlocked from the start. For a bigger, easier-to-read advancements screen, try the optional
+[Better Advancements](https://modrinth.com/mod/Q2OqKxDG) mod: the tab works with it automatically, and Nexium doesn't need it.
+
 ## Install and build
 
 Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on both the client and the server.

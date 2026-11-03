@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexium_ingot"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.ingot.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.ingot.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}

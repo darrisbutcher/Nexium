@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:nexium_pickaxe"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.gear.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.gear.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/ingot"
+}

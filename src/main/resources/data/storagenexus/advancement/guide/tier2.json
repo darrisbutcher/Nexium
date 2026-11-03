@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:ender_fluid_conduit"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.tier2.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.tier2.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/conduit"
+}

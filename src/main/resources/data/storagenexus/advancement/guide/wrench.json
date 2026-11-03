@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:conduit_wrench"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.wrench.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.wrench.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/conduit"
+}

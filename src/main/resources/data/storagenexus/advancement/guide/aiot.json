@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "storagenexus:copper_aiot"
+    },
+    "title": {
+      "translate": "advancement.storagenexus.aiot.title"
+    },
+    "description": {
+      "translate": "advancement.storagenexus.aiot.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "storagenexus:guide/root"
+}
