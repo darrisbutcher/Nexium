@@ -86,7 +86,7 @@ def vignette(im,amt=.55):
     dark=Image.new("RGBA",(w,h),(4,3,10,255)); mask=ImageChops.invert(v).point(lambda x:int(x*amt))
     im.paste(dark,(0,0),mask); return im
 
-def logo(text="DRAGONFALL",scale=10,sub="A NEXIUM SERIES",subscale=None,glowcol=EM):
+def logo(text="DRAGONFALL",scale=10,sub=None,subscale=None,glowcol=EM):
     t=title(text,scale); L=with_glow(t,glowcol,scale*2,1.3,pad=scale*8)
     if sub:
         s=title(sub,subscale or max(2,scale//3),face=GOLDFACE,extrude=2)
