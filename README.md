@@ -22,7 +22,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 
 ```
 # Windows
-gradlew.bat build
+.\gradlew.bat build
 # macOS / Linux
 ./gradlew build
 ```
