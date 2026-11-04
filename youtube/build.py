@@ -101,7 +101,6 @@ def save(im,name): im.save(os.path.join(OUT,name)); print(name,im.size)
 if __name__=="__main__":
     # ---- 1. logos (transparent) ----
     save(logo("DRAGONFALL",14,None),"02_logo_dragonfall.png")
-    nx=title("NEXIUM",14); save(with_glow(nx,EM,28,1.3,pad=100),"03_logo_nexium.png")
     # ---- 2. banner 2560x1440 (safe area 1546x423 centre) ----
     low=scene(dragon_xy=(2,8),dragon_scale=.55,tilt=-12,seed=7,dim=.12)
     ban=finish(low,8); vignette(ban,.6)

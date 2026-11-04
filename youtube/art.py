@@ -1,9 +1,9 @@
-"""Dragonfall x Nexium channel art. Everything is generated from code in this folder: no stock art, no outside fonts."""
+"""Dragonfall channel art. Everything is generated from code in this folder: no stock art, no outside fonts."""
 import random, math
 from PIL import Image, ImageFilter, ImageDraw, ImageChops
 from font import bitmap
 
-# ---- palette (sampled from the Nexium ingot/block/icon textures + our own accents)
+# ---- palette (emerald/obsidian + our own accents)
 BLACK=(8,11,9); OBS=(21,28,24); STONE=(33,44,38); MOSS=(51,66,57)
 EM_D=(31,127,82); EM=(34,176,122); MINT=(157,255,208); WHITE=(236,255,246)
 VOID_D=(8,6,22); VOID=(26,12,52); VIOLET=(58,30,110); PURPLE=(110,60,190)
@@ -31,7 +31,7 @@ def sprite(rows,mirror=False):
             if c in SPR_PAL: px[x,y]=SPR_PAL[c]+(255,)
     return im
 
-# Nexium crystal: tall faceted gem (mirrored)
+# emerald crystal: tall faceted gem (mirrored)
 CRYSTAL=sprite([
 "......##",
 ".....#ll",
@@ -160,7 +160,7 @@ def with_glow(im,color,radius,strength=1.4,pad=None):
 def paste_c(dst,src,cx,cy): dst.alpha_composite(src,(int(cx-src.width/2),int(cy-src.height/2)))
 
 def wings_emblem(scale):
-    """Crest: Nexium crystal flanked by a pair of spread wings (all pixel-drawn)."""
+    """Crest: emerald crystal flanked by a pair of spread wings (all pixel-drawn)."""
     wing=sprite([
 "..............................##",
 ".............................#pp",
