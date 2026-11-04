@@ -100,13 +100,12 @@ def save(im,name): im.save(os.path.join(OUT,name)); print(name,im.size)
 
 if __name__=="__main__":
     # ---- 1. logos (transparent) ----
-    save(logo("DRAGONFALL",14,"A NEXIUM SERIES"),"01_logo_dragonfall_tagline.png")
     save(logo("DRAGONFALL",14,None),"02_logo_dragonfall.png")
     nx=title("NEXIUM",14); save(with_glow(nx,EM,28,1.3,pad=100),"03_logo_nexium.png")
     # ---- 2. banner 2560x1440 (safe area 1546x423 centre) ----
     low=scene(dragon_xy=(2,8),dragon_scale=.55,tilt=-12,seed=7,dim=.12)
     ban=finish(low,8); vignette(ban,.6)
-    lg=logo("DRAGONFALL",8,"A NEXIUM SERIES",subscale=3)
+    lg=logo("DRAGONFALL",8,None)
     paste_c(ban,lg,1280,720); save(ban.convert("RGB"),"04_channel_banner_2560x1440.png")
     # safe-area guide (for your reference)
     g=ban.copy(); d=ImageDraw.Draw(g); d.rectangle([1280-773,720-211,1280+773,720+211],outline=(255,60,60,255),width=4)
@@ -134,7 +133,7 @@ if __name__=="__main__":
     save(th.convert("RGB"),"07_thumbnail_template_1280x720.png")
     # ---- 6. intro title card 1920x1080 ----
     il=scene(dragon_xy=(125,2),dragon_scale=.6,tilt=-10,seed=13,dim=.2); ic=finish(il,6); vignette(ic,.65)
-    paste_c(ic,logo("DRAGONFALL",9,"A NEXIUM SERIES",subscale=3),960,600); save(ic.convert("RGB"),"08_intro_title_card_1920x1080.png")
+    paste_c(ic,logo("DRAGONFALL",9,None),960,600); save(ic.convert("RGB"),"08_intro_title_card_1920x1080.png")
     # ---- 7. end screen 1920x1080 ----
     el=scene(dragon=False,seed=21,dim=.45); ec=finish(el,6); vignette(ec,.5)
     th2=title("THANKS FOR WATCHING",4); ec.alpha_composite(with_glow(th2,EM,8,1.0,pad=24),((1920-th2.width)//2-24,50))
@@ -147,9 +146,8 @@ if __name__=="__main__":
     save(ec.convert("RGB"),"09_end_screen_1920x1080.png")
     # ---- 8. lower third 1920x1080 transparent ----
     lt=Image.new("RGBA",(1920,1080),(0,0,0,0))
-    p=up(bevel_panel(70,18,fill=(8,10,14,235)),8); lt.alpha_composite(with_glow(p,EM,10,.6,pad=30),(80-30,820-30))
-    tt=title("DRAGONFALL",3,extrude=1); lt.alpha_composite(tt,(80+30,820+20)); 
-    sb=title("A NEXIUM SERIES",2,face=GOLDFACE,extrude=1); lt.alpha_composite(sb,(80+30,820+78))
+    p=up(bevel_panel(84,14,fill=(8,10,14,235)),8); lt.alpha_composite(with_glow(p,EM,10,.6,pad=30),(80-30,820-30))
+    tt=title("DRAGONFALL",3,extrude=1); lt.alpha_composite(tt,(80+30,820+(p.height-tt.height)//2)); 
     cr=up(outline_low(CRYSTAL),5); lt.alpha_composite(cr,(80+p.width-cr.width-30,820+(p.height-cr.height)//2))
     save(lt,"10_lower_third_1920x1080.png")
     # ---- 9. episode badges ----
