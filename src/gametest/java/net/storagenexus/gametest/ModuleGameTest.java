@@ -413,4 +413,62 @@ public class ModuleGameTest {
         h.assertTrue(lone.isEmpty(), "it is used up");
         h.succeed();
     }
+
+    @GameTest
+    public void tunnelLengthStepsInTheToolMenu(GameTestHelper h) {
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotTunnelMaxLength;
+        try {
+            ServerPlayer player = miner(h, ModuleType.AREA_MINING);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 1, "a new 3x3 module is a plain 3x3");
+            int[] expected = {2, 4, 8, 16, 24, 32, 1};
+            for (int length : expected) {
+                h.assertTrue(ToolMenu.cycleTunnelLength(player, player.getMainHandItem()), "the button works with the module in");
+                h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the next tunnel length");
+            }
+            // The server's limit cuts the steps short: 2, 4, 8, then off
+            config.aiotTunnelMaxLength = 8;
+            for (int length : new int[]{2, 4, 8, 1}) {
+                ToolMenu.cycleTunnelLength(player, player.getMainHandItem());
+                h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the next length, limit 8");
+            }
+            // No 3x3 module, no tunnel
+            ServerPlayer other = miner(h, ModuleType.VEIN_MINING);
+            h.assertFalse(ToolMenu.cycleTunnelLength(other, other.getMainHandItem()), "nothing to set without a 3x3 module");
+        } finally {
+            config.aiotTunnelMaxLength = max;
+        }
+        h.succeed();
+    }
+
+    @GameTest
+    public void aTunnelMinesLayersAwayFromThePlayer(GameTestHelper h) {
+        // A solid block of stone 3 wide, 3 high and 5 deep (z = 3 to 7), with obsidian at the back of the first layer
+        for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) for (int z = 3; z <= 7; z++) h.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+        h.setBlock(new BlockPos(1, 1, 3), Blocks.OBSIDIAN);
+        ServerPlayer player = miner(h, ModuleType.AREA_MINING);
+        ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 2
+        ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 4
+        BlockPos center = new BlockPos(2, 2, 3);
+        lookAt(h, player, center);
+        int damage = player.getMainHandItem().getDamageValue();
+        mine(h, player, center);
+        for (int z = 3; z <= 6; z++) {
+            for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) {
+                if (x == 1 && y == 1 && z == 3) continue;
+                h.assertBlockPresent(Blocks.AIR, new BlockPos(x, y, z));
+            }
+        }
+        h.assertBlockPresent(Blocks.OBSIDIAN, new BlockPos(1, 1, 3));
+        for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.assertBlockPresent(Blocks.STONE, new BlockPos(x, y, 7));
+        h.assertValueEqual(player.getMainHandItem().getDamageValue() - damage, 4 * 9 - 1, "1 durability per block: 35 (obsidian left)");
+
+        // Sneaking still mines the one block
+        for (int z = 3; z <= 6; z++) for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+        player.setShiftKeyDown(true);
+        mine(h, player, center);
+        h.assertBlockPresent(Blocks.AIR, center);
+        h.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 4));
+        h.succeed();
+    }
 }

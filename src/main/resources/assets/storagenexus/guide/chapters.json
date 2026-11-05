@@ -113,6 +113,7 @@
         {"type": "text", "id": "nexuslink"},
         {"type": "text", "id": "nexuslink2"},
         {"type": "text", "id": "area"},
+        {"type": "text", "id": "tunnel"},
         {"type": "text", "id": "vein"},
         {"type": "text", "id": "both"},
         {"type": "recipes", "id": "recipes", "recipes": ["aiot_merge", "aiot_netherite"]},

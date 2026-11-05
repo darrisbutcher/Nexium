@@ -83,6 +83,10 @@ public final class NexusConfig {
     public Integer configVersion;
     /** The 3x3 Mining module works. */
     public boolean aiotAreaMining = true;
+    /** Longest tunnel the 3x3 Mining module can dig, in 3x3 layers. Players pick a shorter one (2, 4, 8, 16, 24, 32) per tool in the tool menu. */
+    public int aiotTunnelMaxLength = 32;
+    /** Client side: outline the blocks the AIOT in your hand would mine along with the one you look at. */
+    public boolean aiotMiningPreview = true;
     /** The Nexus Link module works (drops go to the linked storage network). */
     public boolean aiotNexusLink = true;
 
@@ -132,6 +136,7 @@ public final class NexusConfig {
         ironFarmBreadSeconds = Math.max(1, Math.min(60 * 60, ironFarmBreadSeconds));
         ironFarmCooldownMultiplier = Math.max(0, Math.min(100, ironFarmCooldownMultiplier));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
+        aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
         restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));
     }

@@ -30,7 +30,7 @@ import net.storagenexus.registry.ModComponents;
 public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     private static final int BUTTON_X = 8, BUTTON_WIDTH = 160, MODULE_BUTTON_X = 28, MODULE_BUTTON_WIDTH = 140;
     private static final int MODULES_LABEL_Y = ToolMenuMenu.MODULE_SLOT_Y - 12;
-    private Button modeButton, hasteButton, armorButton, veinButton;
+    private Button modeButton, hasteButton, armorButton, veinButton, tunnelButton;
     private final Button[] moduleButtons = new Button[AiotModules.SLOTS];
     private final SideHints hints = new SideHints();
 
@@ -47,8 +47,12 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
                 .bounds(leftPos + BUTTON_X, topPos + 22, BUTTON_WIDTH, 16).build());
         hasteButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_HASTE))
                 .bounds(leftPos + BUTTON_X, topPos + 40, BUTTON_WIDTH, 16).build());
+        // Vein size and tunnel length share a row, a half each
+        int half = (BUTTON_WIDTH - 2) / 2;
         veinButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_VEIN_SIZE))
-                .bounds(leftPos + BUTTON_X, topPos + 58, BUTTON_WIDTH, 16).build());
+                .bounds(leftPos + BUTTON_X, topPos + 58, half, 16).build());
+        tunnelButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TUNNEL))
+                .bounds(leftPos + BUTTON_X + half + 2, topPos + 58, half, 16).build());
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             final int slot = i;
             moduleButtons[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_MODULE + slot))
@@ -96,6 +100,18 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         ItemStack vein = ItemStack.EMPTY;
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.VEIN_MINING) vein = menu.getSlot(i).getItem();
+        }
+        tunnelButton.visible = aiot;
+        ItemStack area = ItemStack.EMPTY;
+        for (int i = 0; i < AiotModules.SLOTS; i++) {
+            if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.AREA_MINING) area = menu.getSlot(i).getItem();
+        }
+        if (area.isEmpty()) {
+            set(tunnelButton, false, Component.translatable("screen.storagenexus.tool_menu.tunnel_none"), "screen.storagenexus.tool_menu.tunnel_none.tooltip");
+        } else {
+            int length = Math.max(1, Math.min(menu.tunnelMax(), area.getOrDefault(ModComponents.TUNNEL_LENGTH, 1)));
+            set(tunnelButton, true, Component.translatable(length == 1 ? "screen.storagenexus.tool_menu.tunnel_off"
+                    : "screen.storagenexus.tool_menu.tunnel_length", length), "screen.storagenexus.tool_menu.tunnel.tooltip");
         }
         if (vein.isEmpty()) {
             set(veinButton, false, Component.translatable("screen.storagenexus.tool_menu.vein_none"), "screen.storagenexus.tool_menu.vein_none.tooltip");

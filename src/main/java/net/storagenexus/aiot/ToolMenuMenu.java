@@ -23,6 +23,8 @@ public class ToolMenuMenu extends BaseMenu {
     public static final int BTN_SWAP_SILK_TOUCH_FORTUNE = 0, BTN_TOGGLE_HASTE = 1, BTN_TOGGLE_MODULE = 2;
     /** Steps the Vein Mining module to its next size. */
     public static final int BTN_VEIN_SIZE = BTN_TOGGLE_MODULE + AiotModules.SLOTS;
+    /** Steps the 3x3 Mining module's tunnel length. */
+    public static final int BTN_TUNNEL = BTN_VEIN_SIZE + 1;
     public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88, MODULE_ROW = 18, INVENTORY_Y = 155;
 
     private final Player player;
@@ -39,6 +41,8 @@ public class ToolMenuMenu extends BaseMenu {
     private boolean loading;
     /** The server's vein size limit, synced so the screen caps the size the way the server does (the config is server-side). */
     private final DataSlot veinMax = DataSlot.standalone();
+    /** The server's tunnel length limit, synced the same way. */
+    private final DataSlot tunnelMax = DataSlot.standalone();
 
     /** Both sides: {@code toolSlot} is the selected hotbar slot when the menu was opened. */
     public ToolMenuMenu(int id, Inventory inventory, Integer toolSlot) {
@@ -70,7 +74,11 @@ public class ToolMenuMenu extends BaseMenu {
             });
         }
         addDataSlot(veinMax);
-        if (!player.level().isClientSide()) veinMax.set(NexusConfig.get().aiotVeinMaxBlocks);
+        addDataSlot(tunnelMax);
+        if (!player.level().isClientSide()) {
+            veinMax.set(NexusConfig.get().aiotVeinMaxBlocks);
+            tunnelMax.set(NexusConfig.get().aiotTunnelMaxLength);
+        }
         addPlayerSlots(inventory, 8, INVENTORY_Y);
     }
 
@@ -82,6 +90,11 @@ public class ToolMenuMenu extends BaseMenu {
     /** The most blocks a vein mining swing may mine on this server. */
     public int veinMax() {
         return veinMax.get();
+    }
+
+    /** The longest tunnel a 3x3 Mining swing may dig on this server. */
+    public int tunnelMax() {
+        return tunnelMax.get();
     }
 
     public int toolSlot() {
@@ -130,6 +143,13 @@ public class ToolMenuMenu extends BaseMenu {
             ToolMenu.toggleHaste(serverPlayer, tool());
         } else if (id == BTN_VEIN_SIZE) {
             if (ToolMenu.cycleVeinSize(serverPlayer, tool())) {
+                loading = true;
+                NonNullList<ItemStack> installed = AiotModules.slots(tool());
+                for (int i = 0; i < AiotModules.SLOTS; i++) modules.setItem(i, installed.get(i));
+                loading = false;
+            }
+        } else if (id == BTN_TUNNEL) {
+            if (ToolMenu.cycleTunnelLength(serverPlayer, tool())) {
                 loading = true;
                 NonNullList<ItemStack> installed = AiotModules.slots(tool());
                 for (int i = 0; i < AiotModules.SLOTS; i++) modules.setItem(i, installed.get(i));

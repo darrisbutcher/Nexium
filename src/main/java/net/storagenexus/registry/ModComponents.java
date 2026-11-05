@@ -62,6 +62,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
             b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a 3x3 Mining module: how many 3x3 layers deep one swing tunnels (1 = a plain 3x3), set in the tool menu. */
+    public static final DataComponentType<Integer> TUNNEL_LENGTH = register("tunnel_length",
+            b -> b.persistent(Codec.intRange(1, 64)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
             b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
