@@ -8,6 +8,8 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.storagenexus.aiot.module.AiotModules;
+import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.nexium.NexiumHaste;
 import net.storagenexus.nexium.NexiumMaterials;
 import net.storagenexus.registry.ModComponents;
@@ -68,6 +70,23 @@ public final class ToolMenu {
         player.sendOverlayMessage(Component.translatable(nowOn ? "message.storagenexus.tool_menu.module_on"
                 : "message.storagenexus.tool_menu.module_off", module.getHoverName()));
         return true;
+    }
+
+    /**
+     * The 3x3 key: switches the 3x3 Mining Module of the AIOT in the main hand on or off, with a message above the
+     * hotbar. Does nothing when the main hand holds something else, and says so when the AIOT has no such module.
+     */
+    public static void toggleArea(ServerPlayer player) {
+        ItemStack tool = player.getMainHandItem();
+        if (!(tool.getItem() instanceof AiotItem)) return;
+        var slots = AiotModules.slots(tool);
+        for (int slot = 0; slot < slots.size(); slot++) {
+            if (slots.get(slot).getItem() instanceof ModuleItem item && item.type() == ModuleType.AREA_MINING) {
+                toggleModule(player, tool, slot);
+                return;
+            }
+        }
+        player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
     }
 
     private ToolMenu() {}

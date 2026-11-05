@@ -23,7 +23,8 @@ import java.util.List;
  *   <li>of enchantments that can't go together (Sharpness, Smite, Bane of Arthropods), the highest level, Sharpness
  *       on a tie;</li>
  *   <li>curses, so crafting never gets rid of one;</li>
- *   <li>durability: the AIOT has exactly the uses the five tools had left;</li>
+ *   <li>durability: the AIOT keeps the share of its durability the five tools had left, so five fresh tools make a
+ *       full AIOT and worn ones a worn one;</li>
  *   <li>the anvil repair cost of the most expensive tool, so crafting can't reset it.</li>
  * </ul>
  */
@@ -48,8 +49,10 @@ public final class AiotMerge {
             usesLeft += tool.isDamageableItem() ? tool.getMaxDamage() - tool.getDamageValue() : tool.getMaxDamage();
         }
         if (result.isDamageableItem()) {
+            // The AIOT holds DURABILITY_FACTOR times the five tools' uses, and each use left counts that much
             int max = result.getMaxDamage();
-            result.setDamageValue(Math.clamp(max - usesLeft, 0, max - 1));
+            int left = Math.round(usesLeft * AiotTier.DURABILITY_FACTOR);
+            result.setDamageValue(Math.clamp(max - left, 0, max - 1));
         }
 
         int repairCost = 0;

@@ -182,7 +182,7 @@ public class NexiumGameTest {
         List<ItemStack> tools = AiotTier.NEXIUM.tools().stream().map(ItemStack::new).toList();
         ItemStack merged = craft(h, tools);
         h.assertTrue(merged.is(ModItems.AIOTS.get(AiotTier.NEXIUM)), "five Nexium tools make a Nexium AIOT, got " + merged);
-        h.assertTrue(merged.getMaxDamage() == 12500, "it holds their 12,500 uses");
+        h.assertTrue(merged.getMaxDamage() == 18750, "it holds one and a half times their 12,500 uses");
         ItemStack upgraded = smith(h, new ItemStack(ModItems.AIOTS.get(AiotTier.NETHERITE)), new ItemStack(ModItems.NEXIUM_BLOCK));
         h.assertTrue(upgraded.is(ModItems.AIOTS.get(AiotTier.NEXIUM)), "netherite AIOT + Block of Nexium = Nexium AIOT, got " + upgraded);
         h.assertTrue(smith(h, new ItemStack(ModItems.AIOTS.get(AiotTier.NETHERITE)), new ItemStack(ModItems.NEXIUM_INGOT)).isEmpty(),

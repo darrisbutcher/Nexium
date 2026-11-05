@@ -17,8 +17,10 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.aiot.AiotTier;
+import net.storagenexus.aiot.ToolMenu;
 import net.storagenexus.aiot.ToolMenuMenu;
 import net.storagenexus.aiot.module.AiotModules;
+import net.storagenexus.aiot.module.ModuleItem;
 import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.aiot.module.VeinKey;
 import net.storagenexus.registry.ModBlocks;
@@ -351,6 +353,64 @@ public class ModuleGameTest {
         player.gameMode.useItemOn(player, h.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
         GlobalPos link = player.getMainHandItem().get(ModComponents.TERMINAL_LINK);
         h.assertTrue(link != null && link.pos().equals(abs), "sneak + right-click links the module to the terminal, got " + link);
+        h.succeed();
+    }
+
+    @GameTest
+    public void theAreaKeySwitchesTheModule(GameTestHelper h) {
+        // A 3x3 wall of stone at z = 3, centred on (2, 2, 3)
+        for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.setBlock(new BlockPos(x, y, 3), Blocks.STONE);
+        ServerPlayer player = miner(h, ModuleType.AREA_MINING);
+        BlockPos center = new BlockPos(2, 2, 3);
+        lookAt(h, player, center);
+        h.assertTrue(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "3x3 starts on");
+
+        ToolMenu.toggleArea(player);
+        h.assertFalse(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "the key turns 3x3 off");
+        mine(h, player, center);
+        int stoneLeft = 0;
+        for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) if (h.getBlockState(new BlockPos(x, y, 3)).is(Blocks.STONE)) stoneLeft++;
+        h.assertValueEqual(stoneLeft, 8, "with 3x3 off only the one block is mined");
+
+        ToolMenu.toggleArea(player);
+        h.assertTrue(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "and the key turns it back on");
+
+        // An AIOT without the module, and any other item, are left alone
+        ServerPlayer other = miner(h, ModuleType.VEIN_MINING);
+        ToolMenu.toggleArea(other);
+        h.assertTrue(AiotModules.active(other.getMainHandItem(), ModuleType.VEIN_MINING), "the key leaves the other modules alone");
+        other.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND_PICKAXE));
+        ToolMenu.toggleArea(other);
+        h.assertTrue(other.getMainHandItem().is(Items.DIAMOND_PICKAXE), "and a plain pickaxe");
+        h.succeed();
+    }
+
+    @GameTest
+    public void modulesDropWhenTheAiotBreaks(GameTestHelper h) {
+        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK, ModuleType.AREA_MINING, ModuleType.VEIN_MINING);
+        ItemStack tool = player.getMainHandItem();
+        AiotModules.toggle(tool, 1); // 3x3 off: the module keeps that when it drops
+        tool.setDamageValue(tool.getMaxDamage() - 1);
+        BlockPos target = new BlockPos(2, 2, 3);
+        h.setBlock(target, Blocks.STONE);
+        lookAt(h, player, target);
+        mine(h, player, target);
+
+        h.assertTrue(player.getMainHandItem().isEmpty(), "the AIOT broke with that last block");
+        List<ItemStack> modules = h.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(4)).stream()
+                .map(ItemEntity::getItem).filter(stack -> stack.getItem() instanceof ModuleItem).toList();
+        h.assertValueEqual(modules.size(), 3, "all three modules dropped");
+        for (ModuleType type : ModuleType.values()) {
+            h.assertTrue(modules.stream().anyMatch(stack -> stack.is(ModItems.MODULES.get(type))), "the " + type.id() + " module dropped");
+        }
+        h.assertTrue(modules.stream().filter(stack -> stack.is(ModItems.MODULES.get(ModuleType.AREA_MINING)))
+                .allMatch(stack -> stack.has(ModComponents.MODULE_OFF)), "the 3x3 module is still switched off");
+
+        // An AIOT that wears out with nobody holding it has nowhere to drop them, and is just used up
+        ItemStack lone = miner(h, ModuleType.AREA_MINING).getMainHandItem();
+        lone.setDamageValue(lone.getMaxDamage() - 1);
+        lone.hurtAndBreak(1, h.getLevel(), null, item -> {});
+        h.assertTrue(lone.isEmpty(), "it is used up");
         h.succeed();
     }
 }
