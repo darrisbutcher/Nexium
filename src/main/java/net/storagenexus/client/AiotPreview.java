@@ -16,7 +16,7 @@ import net.storagenexus.essentials.config.NexusConfig;
 import java.util.List;
 
 /**
- * A faint glowing outline around the blocks an AIOT would mine along with the one you look at: the rest of a vein
+ * A faint pale green glowing outline around the blocks an AIOT would mine along with the one you look at: the rest of a vein
  * (with the Vein Mine key held), a 3x3, or a tunnel. It uses the same rules the server mines by
  * ({@link AiotMining#extraBlocks}), so what is outlined is what goes, and it can be switched off with the client's
  * {@code aiotMiningPreview} setting. Sneaking mines one block, so nothing is outlined.
@@ -24,8 +24,8 @@ import java.util.List;
 public final class AiotPreview {
     /** Most blocks outlined at once; a long tunnel is 9 blocks a layer. */
     private static final int MAX_OUTLINED = 600;
-    /** A soft pale blue line (about 55% opaque) and a barely-there fill, so a long tunnel does not turn into a wall of colour. */
-    private static final GizmoStyle STYLE = GizmoStyle.strokeAndFill(0x8CBFEFFF, 1.2F, 0x087FD8FF);
+    /** A soft pale green line (about 55% opaque) and a barely-there fill, so a long tunnel does not turn into a wall of colour. */
+    private static final GizmoStyle STYLE = GizmoStyle.strokeAndFill(0x8CC4FFD0, 1.2F, 0x087FEFA0);
 
     private static List<BlockPos> blocks = List.of();
 

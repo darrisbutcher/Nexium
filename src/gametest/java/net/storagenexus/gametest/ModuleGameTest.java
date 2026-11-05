@@ -476,4 +476,27 @@ public class ModuleGameTest {
         h.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 4));
         h.succeed();
     }
+
+    @GameTest
+    public void veinMiningTakesAnythingButStone(GameTestHelper h) {
+        // Rows along x: dirt (z = 1), stone and cobblestone (z = 3), two chests (z = 5)
+        for (int x = 1; x <= 4; x++) {
+            h.setBlock(new BlockPos(x, 1, 1), Blocks.DIRT);
+            h.setBlock(new BlockPos(x, 1, 3), x % 2 == 0 ? Blocks.COBBLESTONE : Blocks.STONE);
+        }
+        h.setBlock(new BlockPos(1, 1, 5), Blocks.CHEST);
+        h.setBlock(new BlockPos(2, 1, 5), Blocks.CHEST);
+        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        mine(h, player, new BlockPos(1, 1, 1));
+        for (int x = 1; x <= 4; x++) h.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, 1));
+        mine(h, player, new BlockPos(1, 1, 3));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(1, 1, 3));
+        h.assertBlockPresent(Blocks.COBBLESTONE, new BlockPos(2, 1, 3));
+        h.assertBlockPresent(Blocks.STONE, new BlockPos(3, 1, 3));
+        mine(h, player, new BlockPos(2, 1, 3));
+        h.assertBlockPresent(Blocks.STONE, new BlockPos(3, 1, 3));
+        mine(h, player, new BlockPos(1, 1, 5));
+        h.assertBlockPresent(Blocks.CHEST, new BlockPos(2, 1, 5));
+        h.succeed();
+    }
 }

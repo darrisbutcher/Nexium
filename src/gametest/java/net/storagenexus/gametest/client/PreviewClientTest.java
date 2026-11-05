@@ -13,13 +13,14 @@ import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.client.AiotPreview;
+import net.storagenexus.client.ToolMenuClient;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.registry.ModItems;
 
 /**
  * Looking at a stone wall with a diamond AIOT whose 3x3 Mining module has a tunnel of 8: the blocks it would mine
  * (8 layers of 3x3, less the one looked at) are outlined, and a screenshot shows the outline. With a tunnel of 1 it
- * is the plain 3x3, and a plain pickaxe outlines nothing.
+ * is the plain 3x3, with the Vein Mine key held on dirt the vein is outlined, and a plain pickaxe outlines nothing.
  */
 public class PreviewClientTest implements FabricClientGameTest {
     @Override
@@ -63,6 +64,25 @@ public class PreviewClientTest implements FabricClientGameTest {
             int plain = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(plain == 8, "a plain 3x3 outlines the 8 around the one looked at, got " + plain);
             System.out.println("[nexus] 3x3 preview: " + ctx.takeScreenshot("nexus_preview_3x3"));
+
+            // Vein mining takes any block but stone: with the key held on a wall of dirt, the vein is outlined, up to its size
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                BlockPos base = player.blockPosition();
+                for (int x = -4; x <= 4; x++) for (int y = -1; y <= 5; y++) for (int z = 3; z <= 12; z++) {
+                    player.level().setBlockAndUpdate(base.offset(x, y, z), Blocks.DIRT.defaultBlockState());
+                }
+                ItemStack aiot = player.getMainHandItem();
+                var slots = AiotModules.slots(aiot);
+                slots.set(1, new ItemStack(ModItems.MODULES.get(ModuleType.VEIN_MINING)));
+                AiotModules.setSlots(aiot, slots);
+            });
+            ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
+            ctx.waitTicks(10);
+            int vein = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
+            check(vein == 255, "a vein in a wall of dirt outlines up to the size, 255 more blocks, got " + vein);
+            System.out.println("[nexus] vein preview: " + ctx.takeScreenshot("nexus_preview_vein"));
+            ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
 
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0)
                     .setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE)));
