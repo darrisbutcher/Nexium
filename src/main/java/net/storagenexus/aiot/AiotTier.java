@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * The AIOT materials: the five vanilla tool materials from copper up, and Nexium. Each AIOT mines like that
- * material's tools, hits as hard as its axe at a sword's speed, and holds every use of the five tools it is
- * crafted from.
+ * The AIOT materials: the six vanilla tool materials from stone up, and Nexium. Each AIOT mines like that
+ * material's tools, hits as hard as its axe at a sword's speed, and holds one and a half times every use of the five
+ * tools it is crafted from.
  */
 public enum AiotTier {
+    STONE("stone", ToolMaterial.STONE, 7.0F, () -> List.of(
+            Items.STONE_PICKAXE, Items.STONE_AXE, Items.STONE_SHOVEL, Items.STONE_HOE, Items.STONE_SWORD)),
     COPPER("copper", ToolMaterial.COPPER, 7.0F, () -> List.of(
             Items.COPPER_PICKAXE, Items.COPPER_AXE, Items.COPPER_SHOVEL, Items.COPPER_HOE, Items.COPPER_SWORD)),
     IRON("iron", ToolMaterial.IRON, 6.0F, () -> List.of(
@@ -31,6 +33,8 @@ public enum AiotTier {
 
     /** How many vanilla tools an AIOT is made from, and so how many times a single tool's durability it holds. */
     public static final int TOOLS_PER_AIOT = 5;
+    /** An AIOT lasts this many times the durability of its five tools together (rounded to a whole number of uses). */
+    public static final float DURABILITY_FACTOR = 1.5F;
     /** Attack speed modifier of a sword (4.0 base - 2.4 = 1.6 attacks a second). */
     public static final float SWORD_ATTACK_SPEED = -2.4F;
 
@@ -67,7 +71,7 @@ public enum AiotTier {
     }
 
     public int durability() {
-        return TOOLS_PER_AIOT * material.durability();
+        return Math.round(TOOLS_PER_AIOT * material.durability() * DURABILITY_FACTOR);
     }
 
     /** Pickaxe, axe, shovel, hoe and sword of this material: the merge recipe's ingredients. */

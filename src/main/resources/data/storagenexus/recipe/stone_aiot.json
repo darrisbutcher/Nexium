@@ -1,0 +1,14 @@
+{
+  "type": "storagenexus:aiot_merge",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:stone_pickaxe",
+    "minecraft:stone_axe",
+    "minecraft:stone_shovel",
+    "minecraft:stone_hoe",
+    "minecraft:stone_sword"
+  ],
+  "result": {
+    "id": "storagenexus:stone_aiot"
+  }
+}

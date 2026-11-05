@@ -91,8 +91,9 @@ public class AiotGameTest {
 
     @GameTest
     public void statsMatchTheChosenOptions(GameTestHelper h) {
-        // Durability option 1: all five tools' durability; vanilla's numbers for each material, times five
-        int[] expectedDurability = {950, 1250, 160, 7805, 10155, 12500};
+        // Durability: five tools' worth of each material's vanilla durability, times 1.5 (stone, copper, iron, golden,
+        // diamond, netherite, Nexium)
+        int[] expectedDurability = {983, 1425, 1875, 240, 11708, 15233, 18750};
         for (AiotTier tier : AiotTier.values()) {
             ItemStack stack = new ItemStack(aiot(tier));
             String name = tier.id();
@@ -224,8 +225,8 @@ public class AiotGameTest {
             ItemStack result = craft(h, tools);
             h.assertTrue(result.is(aiot(tier)), "five " + tier.id() + " tools make a " + tier.id() + " AIOT, got " + result);
             h.assertTrue(result.getDamageValue() == 0, tier.id() + " AIOT from fresh tools is undamaged");
-            h.assertTrue(result.getMaxDamage() == 5 * new ItemStack(tier.tools().getFirst()).getMaxDamage(),
-                    tier.id() + " AIOT holds the five tools' durability");
+            h.assertTrue(result.getMaxDamage() == Math.round(5 * new ItemStack(tier.tools().getFirst()).getMaxDamage() * 1.5F),
+                    tier.id() + " AIOT holds one and a half times the five tools' durability");
         }
         h.succeed();
     }
@@ -276,8 +277,8 @@ public class AiotGameTest {
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.MENDING)) == 1, "Mending kept: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.VANISHING_CURSE)) == 1, "the curse stays: " + all);
 
-        // Uses left: 561 + 1561 + 1000 + 1561 + 1561 = 6244 of 7805, so 1561 used
-        h.assertTrue(result.getDamageValue() == 1561, "the AIOT has the uses the tools had left, damage 1561, got " + result.getDamageValue());
+        // Uses left: 561 + 1561 + 1000 + 1561 + 1561 = 6244 of 7805; the AIOT holds 1.5 times that, 9366 of 11708, so 2342 used
+        h.assertTrue(result.getDamageValue() == 2342, "the AIOT keeps the tools' wear, damage 2342, got " + result.getDamageValue());
         h.assertTrue(result.getOrDefault(DataComponents.REPAIR_COST, 0) == 7, "the highest repair cost (7) carries over");
         h.succeed();
     }

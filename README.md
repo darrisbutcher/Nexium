@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.6.1.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.7.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -90,17 +90,18 @@ while a tablet is open.
 ## Tools and Nexium
 
 ### All-in-one tools (AIOT)
-* A pickaxe, axe, shovel, hoe and sword in one item: **Copper, Iron, Golden, Diamond, Netherite and Nexium AIOT**.
+* A pickaxe, axe, shovel, hoe and sword in one item: **Stone, Copper, Iron, Golden, Diamond, Netherite and Nexium AIOT**.
 * **Crafting**: all five tools of one material anywhere in the crafting grid. Enchantments carry over at their highest
   level, Silk Touch and Fortune both stay (one active, one inactive), the best of Sharpness / Smite / Bane of
-  Arthropods stays, curses stay, and the AIOT has exactly the durability the five tools had left.
+  Arthropods stays, curses stay, and the AIOT lasts 1.5 times as long as the five tools together (five fresh tools
+  make a full AIOT; worn ones a worn one).
 * **Netherite**: at a smithing table, a Diamond AIOT, a netherite upgrade template and a netherite block.
   **Nexium**: a Netherite AIOT, a template and a Block of Nexium.
 
-  | | Copper | Iron | Golden | Diamond | Netherite | Nexium |
-  |---|---|---|---|---|---|---|
-  | Durability | 950 | 1,250 | 160 | 7,805 | 10,155 | 12,500 |
-  | Attack damage | 9 | 9 | 7 | 9 | 10 | 11 |
+  | | Stone | Copper | Iron | Golden | Diamond | Netherite | Nexium |
+  |---|---|---|---|---|---|---|---|
+  | Durability | 983 | 1,425 | 1,875 | 240 | 11,708 | 15,233 | 18,750 |
+  | Attack damage | 9 | 9 | 9 | 7 | 9 | 10 | 11 |
 
 * **Combat**: as hard as that material's axe at a sword's speed, with the sword's sweeping attack, and it disables
   shields.
@@ -127,12 +128,14 @@ while a tablet is open.
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
   go into that terminal's network in any dimension; what the network can't take drops as usual.
-* **3x3 Mining**: mines the 3x3 around the block, facing you. Only blocks the AIOT is made for, at most about twice as
+* **3x3 Mining**: mines the 3x3 around the block, facing you. Press **X** (rebind under Controls > Key Binds >
+  Nexium) to switch it on or off for the AIOT in your hand. Only blocks the AIOT is made for, at most about twice as
   hard as the block you mined, and never blocks with contents such as chests.
 * **Vein Mining**: mining an ore or log mines every block of the same kind touching it, up to the size set in the tool
   menu. **Hold the Vein Mine key** (**V**) while mining; without it, or without the module, you mine one block.
 * Each block costs 1 durability, Fortune, Silk Touch and the Nexus Link apply, and spawn protection is respected.
   **Sneak** to mine just one block.
+* If an AIOT breaks, the modules in it drop at your feet (on/off setting and Nexus Link terminal kept).
 
 ### Nexium
 * **Nexium Ingot**: a block of diamond, a block of emerald, a block of netherite and a netherite upgrade template in a
