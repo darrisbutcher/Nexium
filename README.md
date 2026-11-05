@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.8.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.8.1.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -117,7 +117,7 @@ while a tablet is open.
 * **Haste II**: turns a Nexium tool's Haste II on or off. The setting is saved on the tool.
 * **Vein size**: steps how many blocks one vein mining swing mines (4, 9, 18, 32 ... up to `aiotVeinMaxBlocks`).
 * **Tunnel**: steps how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 4, 8, 16, 24, 32 (up to
-  `aiotTunnelMaxLength`).
+  `aiotTunnelMaxLength`). Press **Z** (rebindable) to step it without opening the menu.
 * **Modules** (AIOTs only): three slots. Put a module in like any item; the button beside each slot turns it on or off.
 * The **Armor** button goes to the armor menu, and its **Tools** button comes back.
 

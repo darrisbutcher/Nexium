@@ -25,9 +25,11 @@ public final class ModPayloads {
         PayloadTypeRegistry.serverboundPlay().register(ToolMenuPayload.TYPE, ToolMenuPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.VeinKeyPayload.TYPE, net.storagenexus.aiot.module.VeinKeyPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.AreaTogglePayload.TYPE, net.storagenexus.aiot.module.AreaTogglePayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.TunnelStepPayload.TYPE, net.storagenexus.aiot.module.TunnelStepPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ArmorBonusPayload.TYPE, ArmorBonusPayload.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ArmorBonusPayload.TYPE, (payload, context) -> NexiumArmor.toggle(context.player(), payload.bonus()));
         ServerPlayNetworking.registerGlobalReceiver(net.storagenexus.aiot.module.AreaTogglePayload.TYPE, (payload, context) -> ToolMenu.toggleArea(context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(net.storagenexus.aiot.module.TunnelStepPayload.TYPE, (payload, context) -> ToolMenu.stepTunnel(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(ToolMenuPayload.TYPE, (payload, context) -> ToolMenu.open(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(DrawerClickPayload.TYPE,
                 (payload, context) -> DrawerInteraction.handleClick(context.player(), payload));

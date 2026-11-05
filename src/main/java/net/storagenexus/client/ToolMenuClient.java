@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.storagenexus.aiot.ToolMenu;
 import net.storagenexus.aiot.ToolMenuPayload;
 import net.storagenexus.aiot.module.AreaTogglePayload;
+import net.storagenexus.aiot.module.TunnelStepPayload;
 import net.storagenexus.aiot.module.VeinKeyPayload;
 import net.storagenexus.client.screen.ArmorMenuScreen;
 import net.storagenexus.client.screen.ToolMenuScreen;
@@ -33,12 +34,18 @@ public final class ToolMenuClient {
     private static boolean veinSent;
 
     /** Press with an AIOT in hand to switch its 3x3 Mining Module on or off. */
+    /** Press with an AIOT in hand to step its tunnel length (off, 2, 4, 8, 16, 24, 32). */
+    public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.storagenexus.step_tunnel",
+            InputConstants.KEY_Z, NexusEssentialsClient.CATEGORY);
+
+    /** Press with an AIOT in hand to switch its 3x3 Mining Module on or off. */
     public static final KeyMapping TOGGLE_AREA = new KeyMapping("key.storagenexus.toggle_area",
             InputConstants.KEY_X, NexusEssentialsClient.CATEGORY);
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(VEIN_MINE);
         KeyMappingHelper.registerKeyMapping(TOGGLE_AREA);
+        KeyMappingHelper.registerKeyMapping(STEP_TUNNEL);
         KeyMappingHelper.registerKeyMapping(TOOL_MENU);
         MenuScreens.register(ModMenus.TOOL_MENU, ToolMenuScreen::new);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -50,6 +57,9 @@ public final class ToolMenuClient {
             }
             while (TOGGLE_AREA.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(AreaTogglePayload.INSTANCE);
+            }
+            while (STEP_TUNNEL.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(TunnelStepPayload.INSTANCE);
             }
             while (TOOL_MENU.consumeClick()) {
                 if (client.player == null || client.gui.screen() != null) continue;

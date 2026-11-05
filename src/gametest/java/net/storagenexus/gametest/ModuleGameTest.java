@@ -432,8 +432,13 @@ public class ModuleGameTest {
                 ToolMenu.cycleTunnelLength(player, player.getMainHandItem());
                 h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the next length, limit 8");
             }
+            // The Z key steps it the same way
+            ToolMenu.stepTunnel(player);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 2, "the key steps it from off to 2");
             // No 3x3 module, no tunnel
             ServerPlayer other = miner(h, ModuleType.VEIN_MINING);
+            ToolMenu.stepTunnel(other);
+            h.assertValueEqual(AiotModules.tunnelLength(other.getMainHandItem()), 1, "the key does nothing without a 3x3 module");
             h.assertFalse(ToolMenu.cycleTunnelLength(other, other.getMainHandItem()), "nothing to set without a 3x3 module");
         } finally {
             config.aiotTunnelMaxLength = max;
