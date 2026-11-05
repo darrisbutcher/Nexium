@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.7.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.9.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -116,6 +116,8 @@ while a tablet is open.
   Fortune, blue for Silk Touch**.
 * **Haste II**: turns a Nexium tool's Haste II on or off. The setting is saved on the tool.
 * **Vein size**: steps how many blocks one vein mining swing mines (4, 9, 18, 32 ... up to `aiotVeinMaxBlocks`).
+* **Tunnel**: steps how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 4, 8, 16, 24, 32 (up to
+  `aiotTunnelMaxLength`). Press **Z** (rebindable) to step it without opening the menu.
 * **Modules** (AIOTs only): three slots. Put a module in like any item; the button beside each slot turns it on or off.
 * The **Armor** button goes to the armor menu, and its **Tools** button comes back.
 
@@ -124,15 +126,21 @@ while a tablet is open.
 |---|---|---|
 | **Nexus Link** | Dimensional Link Card in the middle, ender pearls on the sides, iron ingots in the corners | What the AIOT mines goes straight into a storage network |
 | **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
-| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Mines whole ore veins and tree trunks |
+| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Mines whole veins of ore, logs, dirt and more (not stone) |
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
   go into that terminal's network in any dimension; what the network can't take drops as usual.
 * **3x3 Mining**: mines the 3x3 around the block, facing you. Press **X** (rebind under Controls > Key Binds >
-  Nexium) to switch it on or off for the AIOT in your hand. Only blocks the AIOT is made for, at most about twice as
+  Nexium) to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
+  many 3x3 layers going away from you, one swing, with the same rules for every block. Only blocks the AIOT is made for, at most about twice as
   hard as the block you mined, and never blocks with contents such as chests.
-* **Vein Mining**: mining an ore or log mines every block of the same kind touching it, up to the size set in the tool
-  menu. **Hold the Vein Mine key** (**V**) while mining; without it, or without the module, you mine one block.
+* **Vein Mining**: mining any block except the stone family (stone, granite, cobblestone, deepslate, netherrack ... the
+  `#storagenexus:vein_excluded` block tag, which a data pack can change) mines every block of the same kind touching
+  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined.
+  **Hold the Vein Mine key** (**V**) while mining; without it, or without the module, you mine one block.
+* With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
+  look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
+  outlined. It uses the same rules as the mining, and `aiotMiningPreview` (client) turns it off.
 * Each block costs 1 durability, Fortune, Silk Touch and the Nexus Link apply, and spawn protection is respected.
   **Sneak** to mine just one block.
 * If an AIOT breaks, the modules in it drop at your feet (on/off setting and Nexus Link terminal kept).
@@ -270,6 +278,8 @@ server's file is the one that counts.
 | `aiotVeinMining` | `true` | The Vein Mining module works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
+| `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
+| `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |

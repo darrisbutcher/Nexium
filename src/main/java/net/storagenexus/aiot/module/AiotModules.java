@@ -93,6 +93,36 @@ public final class AiotModules {
         return 0;
     }
 
+    /** Tunnel lengths the tool menu steps through after "off", up to the config's limit. */
+    private static final int[] TUNNEL_STEPS = {2, 4, 8, 16, 24, 32};
+
+    /** How many 3x3 layers deep one 3x3 Mining swing digs with this AIOT: its module's setting, 1 (a plain 3x3) if unset, never above the config's limit. */
+    public static int tunnelLength(ItemStack tool) {
+        int max = NexusConfig.get().aiotTunnelMaxLength;
+        return Math.max(1, Math.min(max, find(tool, ModuleType.AREA_MINING).getOrDefault(ModComponents.TUNNEL_LENGTH, 1)));
+    }
+
+    /** Steps the installed 3x3 Mining module to its next tunnel length: off, 2, 4, 8, 16, 24, 32 (those within the limit), then off again. Returns it (1 = off), or 0 if there is no such module. */
+    public static int cycleTunnelLength(ItemStack tool) {
+        NonNullList<ItemStack> slots = slots(tool);
+        for (int i = 0; i < SLOTS; i++) {
+            if (!(slots.get(i).getItem() instanceof ModuleItem item) || item.type() != ModuleType.AREA_MINING) continue;
+            int max = NexusConfig.get().aiotTunnelMaxLength;
+            int current = tunnelLength(tool);
+            int next = 1;
+            for (int step : TUNNEL_STEPS) {
+                if (step > current && step <= max) { next = step; break; }
+            }
+            ItemStack module = slots.get(i).copy();
+            if (next == 1) module.remove(ModComponents.TUNNEL_LENGTH);
+            else module.set(ModComponents.TUNNEL_LENGTH, next);
+            slots.set(i, module);
+            setSlots(tool, slots);
+            return next;
+        }
+        return 0;
+    }
+
     /** Links the AIOT's installed Nexus Link to a terminal. Returns false if it has none. */
     public static boolean relink(ItemStack tool, GlobalPos terminal) {
         NonNullList<ItemStack> slots = slots(tool);

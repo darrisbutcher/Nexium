@@ -27,17 +27,20 @@ import java.util.List;
  * mined as if the player had mined each one: same drops (Fortune, Silk Touch, a Nexus Link), 1 durability each, spawn
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
- *   <li><b>Vein mining</b>, for blocks in {@code #storagenexus:vein_mineable} (ores and logs): every block of the same
- *       kind touching it, corners included, up to the size set in the tool menu (never above the config's limit) in all. Only while the
- *       player holds the Vein Mine key.</li>
+ *   <li><b>Vein mining</b>, for any block the AIOT is made for except the stone family ({@code #storagenexus:vein_excluded}:
+ *       stone, cobblestone, granite, deepslate, netherrack and the like) and blocks with contents: every block of the
+ *       same kind touching it, corners included, up to the size set in the tool menu (never above the config's limit)
+ *       in all. Only while the player holds the Vein Mine key.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
  *       looking ahead, the floor or ceiling when looking down or up). Only blocks the AIOT is made for and no harder
- *       than about twice the mined block; never blocks with contents, such as chests.</li>
+ *       than about twice the mined block; never blocks with contents, such as chests. With a tunnel length set in the
+ *       tool menu, the same 3x3 in each of that many layers going away from the player.</li>
  * </ul>
- * With both on, an ore or log is vein mined and anything else 3x3 mined.
+ * With both on, anything but stone is vein mined (key held) and stone is 3x3 mined.
  */
 public final class AiotMining {
-    public static final TagKey<Block> VEIN_MINEABLE = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_mineable"));
+    /** The stone family: vein mining leaves it to the 3x3, since a vein of stone is the whole cave wall. */
+    public static final TagKey<Block> VEIN_EXCLUDED = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_excluded"));
 
     /** Set while mining the extra blocks, so they don't set off more of their own. */
     private static boolean busy;
@@ -51,17 +54,7 @@ public final class AiotMining {
 
     private static void afterBreak(Level level, ServerPlayer player, BlockPos pos, BlockState state) {
         ItemStack tool = player.getMainHandItem();
-        if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return;
-        List<BlockPos> extra;
-        NexusConfig config = NexusConfig.get();
-        if (config.aiotVeinMining && AiotModules.active(tool, ModuleType.VEIN_MINING) && state.is(VEIN_MINEABLE)
-                && VeinKey.held(player)) {
-            extra = vein(level, pos, state, AiotModules.veinSize(tool));
-        } else if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
-            extra = area(level, player, pos, state, tool);
-        } else {
-            return;
-        }
+        List<BlockPos> extra = extraBlocks(level, player, tool, pos, state, VeinKey.held(player));
         if (extra.isEmpty()) return;
         busy = true;
         try {
@@ -78,6 +71,27 @@ public final class AiotMining {
         } finally {
             busy = false;
         }
+    }
+
+    /**
+     * The blocks mined along with {@code pos} when {@code player} mines it with {@code tool}: a vein, a 3x3 or a tunnel,
+     * or none (an empty list). Shared by the server, which mines them, and the client, which outlines them as a preview.
+     */
+    public static List<BlockPos> extraBlocks(Level level, Player player, ItemStack tool, BlockPos pos, BlockState state, boolean veinKeyHeld) {
+        if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return List.of();
+        NexusConfig config = NexusConfig.get();
+        if (config.aiotVeinMining && AiotModules.active(tool, ModuleType.VEIN_MINING) && veinKeyHeld && veinable(level, pos, state, tool)) {
+            return vein(level, pos, state, AiotModules.veinSize(tool));
+        }
+        if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
+            return area(level, player, pos, state, tool, AiotModules.tunnelLength(tool));
+        }
+        return List.of();
+    }
+
+    /** Whether vein mining takes this block: not stone, not a block with contents or one that can't be broken, and one the tool is made for. */
+    private static boolean veinable(Level level, BlockPos pos, BlockState state, ItemStack tool) {
+        return !state.is(VEIN_EXCLUDED) && !state.hasBlockEntity() && state.getDestroySpeed(level, pos) >= 0 && tool.getDestroySpeed(state) > 1.0F;
     }
 
     /** The ore group a block belongs to ({@code #c:ores/diamond} and the like), or null if it stands alone. */
@@ -121,24 +135,32 @@ public final class AiotMining {
         return found;
     }
 
-    /** The other 8 blocks of the 3x3 around {@code center}, across the direction the player is looking. */
-    static List<BlockPos> area(Level level, Player player, BlockPos center, BlockState centerState, ItemStack tool) {
+    /**
+     * The other blocks of the 3x3 around {@code center}, across the direction the player is looking, and with
+     * {@code layers} above 1, of the same 3x3 in each of the next layers further in: a tunnel {@code layers} deep. Nearest
+     * layer first. Only loaded chunks are looked at.
+     */
+    static List<BlockPos> area(Level level, Player player, BlockPos center, BlockState centerState, ItemStack tool, int layers) {
         Direction facing = Direction.orderedByNearest(player)[0];
         float centerHardness = centerState.getDestroySpeed(level, center);
         List<BlockPos> found = new ArrayList<>();
-        for (int a = -1; a <= 1; a++) {
-            for (int b = -1; b <= 1; b++) {
-                if (a == 0 && b == 0) continue;
-                BlockPos pos = switch (facing.getAxis()) {
-                    case X -> center.offset(0, a, b);
-                    case Y -> center.offset(a, 0, b);
-                    case Z -> center.offset(a, b, 0);
-                };
-                BlockState state = level.getBlockState(pos);
-                float hardness = state.getDestroySpeed(level, pos);
-                if (state.isAir() || hardness < 0 || hardness > centerHardness * 2 + 0.5F) continue;
-                if (state.hasBlockEntity() || tool.getDestroySpeed(state) <= 1.0F) continue;
-                found.add(pos);
+        for (int layer = 0; layer < layers; layer++) {
+            BlockPos middle = center.relative(facing, layer);
+            for (int a = -1; a <= 1; a++) {
+                for (int b = -1; b <= 1; b++) {
+                    if (layer == 0 && a == 0 && b == 0) continue;
+                    BlockPos pos = switch (facing.getAxis()) {
+                        case X -> middle.offset(0, a, b);
+                        case Y -> middle.offset(a, 0, b);
+                        case Z -> middle.offset(a, b, 0);
+                    };
+                    if (!level.hasChunkAt(pos)) continue;
+                    BlockState state = level.getBlockState(pos);
+                    float hardness = state.getDestroySpeed(level, pos);
+                    if (state.isAir() || hardness < 0 || hardness > centerHardness * 2 + 0.5F) continue;
+                    if (state.hasBlockEntity() || tool.getDestroySpeed(state) <= 1.0F) continue;
+                    found.add(pos);
+                }
             }
         }
         return found;

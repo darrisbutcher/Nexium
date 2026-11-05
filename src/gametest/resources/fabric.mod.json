@@ -10,6 +10,7 @@
       "net.storagenexus.gametest.client.AdvancementTabClientTest",
       "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
+      "net.storagenexus.gametest.client.PreviewClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",

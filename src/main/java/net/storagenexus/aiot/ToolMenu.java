@@ -62,6 +62,15 @@ public final class ToolMenu {
         return true;
     }
 
+    /** Steps the 3x3 Mining module's tunnel length. Returns false if the tool has no such module. */
+    public static boolean cycleTunnelLength(ServerPlayer player, ItemStack stack) {
+        int length = AiotModules.cycleTunnelLength(stack);
+        if (length == 0) return false;
+        player.sendOverlayMessage(length == 1 ? Component.translatable("message.storagenexus.tool_menu.tunnel_off")
+                : Component.translatable("message.storagenexus.tool_menu.tunnel", length));
+        return true;
+    }
+
     /** Switches the module in this slot on or off. Returns false if the slot is empty. */
     public static boolean toggleModule(ServerPlayer player, ItemStack stack, int slot) {
         ItemStack module = AiotModules.slots(stack).get(slot);
@@ -87,6 +96,19 @@ public final class ToolMenu {
             }
         }
         player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+    }
+
+    /**
+     * The tunnel key: steps the tunnel length of the AIOT in the main hand (off, 2, 4, 8, 16, 24, 32, up to the
+     * server's limit), with a message above the hotbar. Does nothing when the main hand holds something else, and says
+     * so when the AIOT has no 3x3 Mining module.
+     */
+    public static void stepTunnel(ServerPlayer player) {
+        ItemStack tool = player.getMainHandItem();
+        if (!(tool.getItem() instanceof AiotItem)) return;
+        if (!cycleTunnelLength(player, tool)) {
+            player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+        }
     }
 
     private ToolMenu() {}
