@@ -22,6 +22,7 @@ import net.storagenexus.drawer.DrawerControllerBlock;
 import net.storagenexus.drawer.DrawerWood;
 import net.storagenexus.elevator.ElevatorBlock;
 import net.storagenexus.fluid.FluidDrawerBlock;
+import net.storagenexus.freezer.FreezerBlock;
 import net.storagenexus.fluid.FluidIntakeBlock;
 import net.storagenexus.fluid.LavaSpringBlock;
 import net.storagenexus.network.FilteredConnectorBlock;
@@ -94,6 +95,11 @@ public final class ModBlocks {
     public static final ElevatorBlock ELEVATOR = register("elevator", ElevatorBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)
                     .lightLevel(s -> 6).requiresCorrectToolForDrops(), true);
+
+    /** Freezes water into ice, packed ice and blue ice; dyeable. */
+    public static final FreezerBlock FREEZER = register("freezer", FreezerBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops(), true);
 
     /** Placed by conduit items, so it has no BlockItem of its own. */
     public static final ConduitBundleBlock CONDUIT_BUNDLE = register("conduit_bundle", ConduitBundleBlock::new,

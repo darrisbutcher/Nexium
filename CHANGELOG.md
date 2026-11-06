@@ -11,6 +11,15 @@ Pull requests are squash merged, so each one is a single commit on `main`.
   right for, including obsidian, crying obsidian, hay bales, melons, pumpkins and every kind of leaves (not the stone family).
   A Vein Mining module is now optional: it sets the size and can switch vein mining off. Obsidian needs a tool strong enough
   to drop it.
+* **Five more one-block farms**, each made from a named double chest like the Iron Farm: Villager Breeder (a baby villager
+  every 20 minutes), Piglin Barter Farm (gold ingots for the vanilla barter loot), Zombified Piglin Farm (gold nuggets and
+  rare ingots at Looting V rates, no rotten flesh), Wither Skeleton Farm (coal, bones, skulls) and Shulker Farm (shulker
+  shells). Chest names, recipes and cycle times are in the README and the config.
+* **Freezer**: fill it with water and it freezes ice, packed ice or blue ice (a button switches; blue ice takes 90
+  seconds). Dyeable like leather armor, washed in a cauldron. Packed ice now crafts back into 9 ice and blue ice into 9
+  packed ice.
+* **Soul sand to sand** in a Blast Furnace, no experience, at an ore's speed.
+* Guide pages for all of it, with contents links.
 
 ## 1.12.0
 

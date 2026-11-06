@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "dyed_freezer",
+  "result": {
+    "id": "storagenexus:freezer"
+  },
+  "target": "storagenexus:freezer"
+}

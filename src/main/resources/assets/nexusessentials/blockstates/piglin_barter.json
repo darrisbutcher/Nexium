@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/piglin_barter"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/piglin_barter"
+    }
+  }
+}

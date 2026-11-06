@@ -13,6 +13,7 @@ import net.storagenexus.barrel.BarrelMenu;
 import net.storagenexus.conduit.ConduitConfigMenu;
 import net.storagenexus.dimension.DimensionalMenu;
 import net.storagenexus.filter.FilterMenu;
+import net.storagenexus.freezer.FreezerMenu;
 import net.storagenexus.network.ConnectorMenu;
 import net.storagenexus.network.LevelEmitterMenu;
 import net.storagenexus.network.NetworkBusMenu;
@@ -41,6 +42,9 @@ public final class ModMenus {
     /** Opening data: the hotbar slot holding the tool. */
     public static final ExtendedMenuType<ToolMenuMenu, Integer> TOOL_MENU = register("tool_menu",
             new ExtendedMenuType<>(ToolMenuMenu::new, ByteBufCodecs.VAR_INT));
+
+    public static final ExtendedMenuType<FreezerMenu, BlockPos> FREEZER = register("freezer",
+            new ExtendedMenuType<>(FreezerMenu::new, BlockPos.STREAM_CODEC));
 
     private static <T extends AbstractContainerMenu, M extends MenuType<T>> M register(String name, M type) {
         return Registry.register(BuiltInRegistries.MENU, StorageNexus.id(name), type);

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "blocks",
+  "ingredient": "minecraft:soul_sand",
+  "result": {
+    "id": "minecraft:sand"
+  },
+  "experience": 0.0,
+  "cookingtime": 100
+}

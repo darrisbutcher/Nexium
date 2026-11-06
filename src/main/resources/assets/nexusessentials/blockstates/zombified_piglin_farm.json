@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/zombified_piglin_farm"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/zombified_piglin_farm"
+    }
+  }
+}
