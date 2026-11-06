@@ -36,8 +36,8 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
 
 Add a `## X.Y.Z` section to `CHANGELOG.md`, set `mod_version` to match, merge to `main`, then push a tag:
 `git tag vX.Y.Z && git push origin vX.Y.Z`. The Release workflow builds the jar and publishes a GitHub Release with it, using
-that changelog section as the notes. For an older version, create its tag on the right commit, then run the workflow by hand
-(Actions > Release > Run workflow) with the tag name.
+that changelog section as the notes. To release without pushing a tag, or for an older version, run the workflow by hand (Actions > Release > Run workflow)
+with the tag name and the commit that version shipped in; it creates the tag on that commit.
 
 ## Storage
 
