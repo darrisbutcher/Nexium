@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "PPP",
+    "PCP"
+  ],
+  "key": {
+    "P": "minecraft:poplar_planks",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "storagenexus:poplar_drawer_1x2",
+    "count": 2
+  }
+}

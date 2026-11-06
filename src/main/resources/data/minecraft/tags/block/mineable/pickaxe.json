@@ -16,6 +16,7 @@
     "storagenexus:conduit_bundle",
     "storagenexus:import_export_bus",
     "storagenexus:level_emitter",
+    "storagenexus:elevator",
     "storagenexus:lava_spring",
     "storagenexus:iron_barrel",
     "storagenexus:gold_barrel",

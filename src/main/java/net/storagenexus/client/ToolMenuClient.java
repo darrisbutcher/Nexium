@@ -33,7 +33,6 @@ public final class ToolMenuClient {
             InputConstants.KEY_V, NexusEssentialsClient.CATEGORY);
     private static boolean veinSent;
 
-    /** Press with an AIOT in hand to switch its 3x3 Mining Module on or off. */
     /** Press with an AIOT in hand to step its tunnel length (off, 2, 4, 8, 16, 24, 32). */
     public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.storagenexus.step_tunnel",
             InputConstants.KEY_Z, NexusEssentialsClient.CATEGORY);

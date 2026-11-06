@@ -13,6 +13,7 @@ import net.storagenexus.dimension.DimensionalOutputBlockEntity;
 import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
 import net.storagenexus.drawer.DrawerControllerBlockEntity;
+import net.storagenexus.elevator.ElevatorBlockEntity;
 import net.storagenexus.fluid.FluidDrawerBlockEntity;
 import net.storagenexus.barrel.TieredBarrelBlockEntity;
 import net.storagenexus.fluid.FluidIntakeBlockEntity;
@@ -35,6 +36,8 @@ public final class ModBlockEntities {
             new BlockEntityType<>(NetworkBusBlockEntity::new, Set.of(ModBlocks.NETWORK_BUS)));
     public static final BlockEntityType<LevelEmitterBlockEntity> LEVEL_EMITTER = register("level_emitter",
             new BlockEntityType<>(LevelEmitterBlockEntity::new, Set.of(ModBlocks.LEVEL_EMITTER)));
+    public static final BlockEntityType<ElevatorBlockEntity> ELEVATOR = register("elevator",
+            new BlockEntityType<>(ElevatorBlockEntity::new, Set.of(ModBlocks.ELEVATOR)));
     public static final BlockEntityType<TieredBarrelBlockEntity> TIERED_BARREL = register("tiered_barrel",
             new BlockEntityType<>(TieredBarrelBlockEntity::new, new java.util.HashSet<Block>(ModBlocks.BARRELS.values())));
     public static final BlockEntityType<FluidIntakeBlockEntity> FLUID_INTAKE = register("fluid_intake",

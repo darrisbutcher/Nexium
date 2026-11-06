@@ -87,6 +87,8 @@ public final class NexusConfig {
     public int aiotTunnelMaxLength = 32;
     /** Client side: outline the blocks the AIOT in your hand would mine along with the one you look at. */
     public boolean aiotMiningPreview = true;
+    /** Client side: show the AIOT's mode and module states in the corner of the screen while you hold it. */
+    public boolean aiotHud = true;
     /** The Nexus Link module works (drops go to the linked storage network). */
     public boolean aiotNexusLink = true;
 

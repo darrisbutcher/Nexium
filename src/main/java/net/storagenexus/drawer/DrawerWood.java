@@ -11,6 +11,7 @@ public enum DrawerWood {
     MANGROVE("mangrove", "Mangrove", "mangrove_planks", "stripped_mangrove_log"),
     CHERRY("cherry", "Cherry", "cherry_planks", "stripped_cherry_log"),
     PALE_OAK("pale_oak", "Pale Oak", "pale_oak_planks", "stripped_pale_oak_log"),
+    POPLAR("poplar", "Poplar", "poplar_planks", "stripped_poplar_log"),
     BAMBOO("bamboo", "Bamboo", "bamboo_planks", "stripped_bamboo_block"),
     CRIMSON("crimson", "Crimson", "crimson_planks", "stripped_crimson_stem"),
     WARPED("warped", "Warped", "warped_planks", "stripped_warped_stem");
