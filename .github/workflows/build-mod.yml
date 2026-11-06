@@ -2,7 +2,7 @@ name: Build Minecraft Mod
 
 on:
   push:
-    branches: [ "main" ] # Change to your default branch name if different
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -15,9 +15,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 21
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
-        java-version: '21' # Use '17' if you are developing for Minecraft 1.18 to 1.20.4
+        java-version: '21'
         distribution: 'temurin'
         cache: 'gradle'
 
@@ -31,4 +31,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: minecraft-mod-jar
-        path: build/libs/!(*-sources|*-dev).jar # Grabs the release JAR, ignores sources/dev variants
+        path: |
+          build/libs/*.jar
+          !build/libs/*-sources.jar
+          !build/libs/*-dev.jar
