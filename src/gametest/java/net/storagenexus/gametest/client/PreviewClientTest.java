@@ -53,7 +53,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             int tunnel = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(tunnel == 8 * 9 - 1, "a tunnel of 8 outlines 71 blocks, got " + tunnel);
             String hudTunnel = ctx.computeOnClient(mc -> hud(mc));
-            check(hudTunnel.equals("3x3 tunnel: 8 deep"), "the HUD reads the tunnel length, got: " + hudTunnel);
+            check(hudTunnel.startsWith("3x3 tunnel: 8 deep"), "the HUD reads the tunnel length, got: " + hudTunnel);
             System.out.println("[nexus] tunnel preview: " + ctx.takeScreenshot("nexus_preview_tunnel"));
 
             world.getServer().runOnServer(server -> {
@@ -66,7 +66,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             ctx.waitTicks(10);
             int plain = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             String hudPlain = ctx.computeOnClient(mc -> hud(mc));
-            check(hudPlain.equals("3x3: on"), "the HUD reads 3x3 on, got: " + hudPlain);
+            check(hudPlain.startsWith("3x3: on"), "the HUD reads 3x3 on, got: " + hudPlain);
             check(plain == 8, "a plain 3x3 outlines the 8 around the one looked at, got " + plain);
             System.out.println("[nexus] 3x3 preview: " + ctx.takeScreenshot("nexus_preview_3x3"));
 

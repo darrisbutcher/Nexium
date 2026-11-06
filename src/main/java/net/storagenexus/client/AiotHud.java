@@ -51,8 +51,8 @@ public final class AiotHud {
                         : Component.translatable("hud.storagenexus.aiot.area_on"), ON));
             }
         }
-        if (!AiotModules.find(tool, ModuleType.VEIN_MINING).isEmpty()) {
-            out.add(AiotModules.active(tool, ModuleType.VEIN_MINING)
+        if (NexusConfig.get().aiotVeinMining) {
+            out.add(AiotModules.veinOn(tool)
                     ? new Line(Component.translatable("hud.storagenexus.aiot.vein", AiotModules.veinSize(tool),
                             ToolMenuClient.VEIN_MINE.getTranslatedKeyMessage()), ON)
                     : new Line(Component.translatable("hud.storagenexus.aiot.vein_off"), OFF));

@@ -133,7 +133,7 @@ while a tablet is open.
 |---|---|---|
 | **Nexus Link** | Dimensional Link Card in the middle, ender pearls on the sides, iron ingots in the corners | What the AIOT mines goes straight into a storage network |
 | **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
-| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Mines whole veins of ore, logs, dirt and more (not stone) |
+| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Optional: sets the vein size and can switch vein mining off (an AIOT vein mines without it) |
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
   go into that terminal's network in any dimension; what the network can't take drops as usual.
@@ -143,8 +143,8 @@ while a tablet is open.
   hard as the block you mined, and never blocks with contents such as chests.
 * **Vein Mining**: mining any block except the stone family (stone, granite, cobblestone, deepslate, netherrack ... the
   `#storagenexus:vein_excluded` block tag, which a data pack can change) mines every block of the same kind touching
-  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined.
-  **Hold the Vein Mine key** (**V**) while mining; without it, or without the module, you mine one block.
+  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a diamond-grade AIOT).
+  **Hold the Vein Mine key** (**V**) while mining; without it, you mine one block. No module is needed: a Vein Mining module only sets the size and a switch.
 * With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
   look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
   outlined. It uses the same rules as the mining, and `aiotMiningPreview` (client) turns it off.
@@ -319,7 +319,7 @@ server's file is the one that counts.
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
-| `aiotVeinMining` | `true` | The Vein Mining module works |
+| `aiotVeinMining` | `true` | Vein mining works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |

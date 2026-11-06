@@ -7,6 +7,10 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 * **Guide**: the Essentials contents now link the Higher levels, Elevator and Master Librarian pages; the Mobs chapter points
   to the Nexus Librarian chest; the AIOT chapter has a page on the mining outline and the readout.
+* **Vein mining needs no module**: hold the Vein Mine key (V) with an AIOT and it mines the whole vein of any block the tool is
+  right for, including obsidian, crying obsidian, hay bales, melons, pumpkins and every kind of leaves (not the stone family).
+  A Vein Mining module is now optional: it sets the size and can switch vein mining off. Obsidian needs a tool strong enough
+  to drop it.
 
 ## 1.12.0
 
