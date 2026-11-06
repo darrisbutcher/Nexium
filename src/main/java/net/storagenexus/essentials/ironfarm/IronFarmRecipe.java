@@ -122,7 +122,8 @@ public final class IronFarmRecipe {
         EntityType<?> mob = mobOf(stack);
         if (mob != null) {
             if (mob.builtInRegistryHolder().is(ModTags.IRON_FARM_ZOMBIES)) return Part.ZOMBIES;
-            if (mob.builtInRegistryHolder().is(ModTags.IRON_FARM_VILLAGERS)) return Part.VILLAGERS;
+            // A Master Librarian from a librarian chest is not material for another recipe
+            if (mob.builtInRegistryHolder().is(ModTags.IRON_FARM_VILLAGERS)) return net.storagenexus.essentials.librarian.Librarian.isMade(stack) ? null : Part.VILLAGERS;
             return null;
         }
         if (stack.is(ModTags.IRON_FARM_TORCHES)) return Part.TORCHES;

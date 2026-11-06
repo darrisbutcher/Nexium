@@ -27,6 +27,7 @@
       "net.storagenexus.gametest.ConduitGameTest",
       "net.storagenexus.gametest.ControllerGameTest",
       "net.storagenexus.gametest.ElevatorGameTest",
+      "net.storagenexus.gametest.EnchantLibrarianGameTest",
       "net.storagenexus.gametest.EssentialsGameTest",
       "net.storagenexus.gametest.FeaturesGameTest",
       "net.storagenexus.gametest.GuideGameTest",

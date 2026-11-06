@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.12.0
+
+* **Higher enchantment levels**: Protection (all four kinds), Unbreaking, Looting, Fortune and Respiration go up to V, in the
+  enchanting table, at an anvil, in loot chests and from villagers.
+* **Fewer exclusions**: all four protections on one piece, Mending with Infinity, Sharpness with Smite. Bane of Arthropods
+  still excludes both.
+* **Master Librarian**: rename a chest "Nexus Librarian" and put in exactly 12 villagers (spawn eggs or Captured Mobs) to get a
+  level 5 librarian as a Captured Mob. He sells a book of every enchantment at its highest level (Mending too, no curses) at
+  the villagers' prices. Config `librarianChestName` and `librarianVillagers`.
+
 ## 1.11.0
 
 * **Elevator**: a flat Nexium platform. Elevators in the same column (same X and Z) link from the bottom of the world to the

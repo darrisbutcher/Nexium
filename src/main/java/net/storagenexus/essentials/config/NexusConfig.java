@@ -60,6 +60,12 @@ public final class NexusConfig {
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
     public boolean ancientDebrisDropsScrap = true;
 
+    // --- Librarian chest
+    /** The name (set in an anvil) a chest needs to turn into a Master Librarian. Upper and lower case don't matter. */
+    public String librarianChestName = "Nexus Librarian";
+    /** How many villagers (spawn eggs or Captured Mobs) the librarian chest takes. */
+    public int librarianVillagers = 12;
+
     // --- Iron farm
     /** The name (set in an anvil) a double chest needs to turn into an Iron Farm. Upper and lower case don't matter. */
     public String ironFarmChestName = "Nexus Iron Farm";
@@ -132,6 +138,8 @@ public final class NexusConfig {
     private void clamp() {
         magnetMaxRange = Math.max(4, Math.min(64, magnetMaxRange));
         bedrockBreakerSeconds = Math.max(1, Math.min(24 * 60 * 60, bedrockBreakerSeconds));
+        if (librarianChestName == null || librarianChestName.isBlank()) librarianChestName = "Nexus Librarian";
+        librarianVillagers = Math.max(1, Math.min(54, librarianVillagers));
         if (ironFarmChestName == null || ironFarmChestName.isBlank()) ironFarmChestName = "Nexus Iron Farm";
         ironFarmGolemTicks = Math.max(1, Math.min(24000, ironFarmGolemTicks));
         ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));

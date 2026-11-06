@@ -271,8 +271,8 @@ public class AiotGameTest {
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 0, "Silk Touch isn't active: " + all);
         h.assertTrue(inactive.getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "Silk Touch waits, inactive: " + all);
         h.assertTrue(result.get(ModComponents.MINING_MODE) == MiningMode.FORTUNE, "the mining mode is Fortune (green gem)");
-        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SMITE)) == 5, "Smite V beats Sharpness III: " + all);
-        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SHARPNESS)) == 0, "Sharpness III lost to Smite V: " + all);
+        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SMITE)) == 5, "Smite V stays: " + all);
+        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SHARPNESS)) == 3, "Sharpness III stays beside Smite V, they work together: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.SWEEPING_EDGE)) == 2, "Sweeping Edge kept: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.MENDING)) == 1, "Mending kept: " + all);
         h.assertTrue(active.getLevel(enchantment(h, Enchantments.VANISHING_CURSE)) == 1, "the curse stays: " + all);
@@ -284,14 +284,16 @@ public class AiotGameTest {
     }
 
     @GameTest
-    public void sharpnessWinsATie(GameTestHelper h) {
+    public void sharpnessAndSmiteStayTogetherButBaneLoses(GameTestHelper h) {
         List<ItemStack> tools = new ArrayList<>(freshTools(AiotTier.IRON));
         tools.get(1).enchant(enchantment(h, Enchantments.BANE_OF_ARTHROPODS), 3); // axe
         tools.get(4).enchant(enchantment(h, Enchantments.SHARPNESS), 3); // sword
         tools.get(3).enchant(enchantment(h, Enchantments.SMITE), 3); // hoe (only by command, but it shouldn't matter)
         ItemEnchantments active = craft(h, tools).getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SHARPNESS)) == 3, "Sharpness wins the tie: " + active);
-        h.assertTrue(active.size() == 1, "only one damage enchantment stays: " + active);
+        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SHARPNESS)) == 3, "Sharpness stays: " + active);
+        h.assertTrue(active.getLevel(enchantment(h, Enchantments.SMITE)) == 3, "Smite stays beside it: " + active);
+        h.assertTrue(active.getLevel(enchantment(h, Enchantments.BANE_OF_ARTHROPODS)) == 0, "Bane of Arthropods still excludes both: " + active);
+        h.assertTrue(active.size() == 2, "sharpness and smite only: " + active);
         h.succeed();
     }
 
