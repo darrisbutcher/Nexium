@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.12.1
+
+* **Guide**: the Essentials contents now link the Higher levels, Elevator and Master Librarian pages; the Mobs chapter points
+  to the Nexus Librarian chest; the AIOT chapter has a page on the mining outline and the readout.
+
 ## 1.12.0
 
 * **Higher enchantment levels**: Protection (all four kinds), Unbreaking, Looting, Fortune and Respiration go up to V, in the
