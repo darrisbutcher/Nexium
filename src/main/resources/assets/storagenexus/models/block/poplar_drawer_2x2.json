@@ -1,0 +1,8 @@
+{
+  "parent": "storagenexus:block/drawer_2x2_template",
+  "textures": {
+    "front": "minecraft:block/poplar_planks",
+    "side": "minecraft:block/poplar_planks",
+    "trim": "minecraft:block/stripped_poplar_log"
+  }
+}

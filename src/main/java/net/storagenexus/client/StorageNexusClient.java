@@ -78,6 +78,7 @@ public class StorageNexusClient implements ClientModInitializer {
         NexusEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();
+        AiotHud.init();
 
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {

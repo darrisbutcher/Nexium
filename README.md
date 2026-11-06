@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.9.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.10.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -141,6 +141,8 @@ while a tablet is open.
 * With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
   look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
   outlined. It uses the same rules as the mining, and `aiotMiningPreview` (client) turns it off.
+* A small readout in the bottom right corner shows what the AIOT in your hand is set to: Silk Touch or Fortune (when it
+  holds both) and each module's state (3x3 on, tunnel depth, vein size, Nexus Link). `aiotHud` (client) turns it off.
 * Each block costs 1 durability, Fortune, Silk Touch and the Nexus Link apply, and spawn protection is respected.
   **Sneak** to mine just one block.
 * If an AIOT breaks, the modules in it drop at your feet (on/off setting and Nexus Link terminal kept).
@@ -280,6 +282,7 @@ server's file is the one that counts.
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
+| `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |

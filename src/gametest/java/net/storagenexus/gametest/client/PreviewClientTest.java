@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleType;
+import net.storagenexus.client.AiotHud;
 import net.storagenexus.client.AiotPreview;
 import net.storagenexus.client.ToolMenuClient;
 import net.storagenexus.registry.ModComponents;
@@ -51,6 +52,8 @@ public class PreviewClientTest implements FabricClientGameTest {
             ctx.waitTicks(20);
             int tunnel = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(tunnel == 8 * 9 - 1, "a tunnel of 8 outlines 71 blocks, got " + tunnel);
+            String hudTunnel = ctx.computeOnClient(mc -> hud(mc));
+            check(hudTunnel.equals("3x3 tunnel: 8 deep"), "the HUD reads the tunnel length, got: " + hudTunnel);
             System.out.println("[nexus] tunnel preview: " + ctx.takeScreenshot("nexus_preview_tunnel"));
 
             world.getServer().runOnServer(server -> {
@@ -62,6 +65,8 @@ public class PreviewClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(10);
             int plain = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
+            String hudPlain = ctx.computeOnClient(mc -> hud(mc));
+            check(hudPlain.equals("3x3: on"), "the HUD reads 3x3 on, got: " + hudPlain);
             check(plain == 8, "a plain 3x3 outlines the 8 around the one looked at, got " + plain);
             System.out.println("[nexus] 3x3 preview: " + ctx.takeScreenshot("nexus_preview_3x3"));
 
@@ -81,6 +86,8 @@ public class PreviewClientTest implements FabricClientGameTest {
             ctx.waitTicks(10);
             int vein = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(vein == 255, "a vein in a wall of dirt outlines up to the size, 255 more blocks, got " + vein);
+            String hudVein = ctx.computeOnClient(mc -> hud(mc));
+            check(hudVein.startsWith("3x3: on | Vein: up to 256 (hold V"), "the HUD lists both modules, got: " + hudVein);
             System.out.println("[nexus] vein preview: " + ctx.takeScreenshot("nexus_preview_vein"));
             ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
 
@@ -88,7 +95,13 @@ public class PreviewClientTest implements FabricClientGameTest {
                     .setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE)));
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "a plain pickaxe outlines nothing");
+            check(ctx.computeOnClient(mc -> hud(mc).isEmpty()), "a plain pickaxe shows no HUD");
         }
+    }
+
+    private static String hud(net.minecraft.client.Minecraft mc) {
+        return AiotHud.lines(mc, mc.player.getMainHandItem()).stream().map(l -> l.text().getString())
+                .collect(java.util.stream.Collectors.joining(" | "));
     }
 
     private static void check(boolean ok, String what) {
