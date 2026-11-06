@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4 # No newer version available yet, warning is safe to ignore here
 
     - name: Set up JDK 21
       uses: actions/setup-java@v5
