@@ -138,6 +138,24 @@ public class FreezerGameTest {
     }
 
     @GameTest
+    @SuppressWarnings("removal")
+    public void aCauldronOfWaterWashesTheDyeOff(GameTestHelper h) {
+        h.setBlock(POS, Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+        net.minecraft.server.level.ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack dyed = new ItemStack(ModBlocks.FREEZER);
+        dyed.set(DataComponents.DYED_COLOR, new DyedItemColor(0xB02E26));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, dyed);
+        BlockPos abs = h.absolutePos(POS);
+        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), Direction.UP, abs, false);
+        var result = h.getLevel().getBlockState(abs).useItemOn(player.getMainHandItem(), h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        h.assertTrue(result.consumesAction(), "the cauldron takes the Freezer");
+        h.assertTrue(!player.getMainHandItem().has(DataComponents.DYED_COLOR), "the dye washed off");
+        h.assertValueEqual(h.getBlockState(POS).getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL), 2, "and the cauldron lost a level");
+        h.succeed();
+    }
+
+    @GameTest
     public void redstoneAndAFullOutputPauseIt(GameTestHelper h) {
         FreezerBlockEntity f = freezer(h);
         f.setWater(BUCKET);
