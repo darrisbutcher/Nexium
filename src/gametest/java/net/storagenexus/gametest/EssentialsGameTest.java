@@ -526,11 +526,11 @@ public class EssentialsGameTest {
         anvil.createResult();
         h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.BLAST_PROTECTION), anvil.getSlot(2).getItem()), 3, "Blast Protection on a plain elytra");
 
-        // Chestplates keep the vanilla one-protection rule
+        // Chestplates take every protection at once too
         anvil.getSlot(0).set(enchanted(h, new ItemStack(Items.DIAMOND_CHESTPLATE), Enchantments.PROTECTION, 4));
         anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.FIRE_PROTECTION), 4)));
         anvil.createResult();
-        h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.FIRE_PROTECTION), anvil.getSlot(2).getItem()), 0, "no Fire Protection added to a Protection chestplate");
+        h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.FIRE_PROTECTION), anvil.getSlot(2).getItem()), 4, "Fire Protection added to a Protection chestplate");
         h.succeed();
     }
 

@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.essentials.config.NexusConfig;
+import net.storagenexus.essentials.librarian.LibrarianChest;
 import net.storagenexus.essentials.registry.ModItems;
 import org.jspecify.annotations.Nullable;
 
@@ -30,7 +31,8 @@ import java.util.Map;
 
 /**
  * Turns a double chest named "Nexus Iron Farm" (the {@code ironFarmChestName} setting) into an Iron Farm item as
- * soon as it holds exactly the recipe ({@link IronFarmRecipe}). Chests are looked at the end of the tick they
+ * soon as it holds exactly the recipe ({@link IronFarmRecipe}). A chest named "Nexus Librarian" is handled the same way
+ * by {@link LibrarianChest}. Chests are looked at the end of the tick they
  * change in (players, hoppers, anything), and when a player closes one that isn't ready they're told what's wrong.
  */
 public final class IronFarmChest {
@@ -62,11 +64,16 @@ public final class IronFarmChest {
         if (!(state.getBlock() instanceof ChestBlock)) return;
         BlockPos pos = chest.getBlockPos();
         BlockPos other = state.getValue(ChestBlock.TYPE) == ChestType.SINGLE ? null : ChestBlock.getConnectedBlockPos(pos, state);
-        if (!isNamed(chest) && !(other != null && level.isLoaded(other)
-                && level.getBlockEntity(other) instanceof ChestBlockEntity half && isNamed(half))) return;
+        if (!isSpecial(chest) && !(other != null && level.isLoaded(other)
+                && level.getBlockEntity(other) instanceof ChestBlockEntity half && isSpecial(half))) return;
         // Both halves of a double chest report changes and closing: count them once, under the lower position
         Key key = new Key(level, other != null && other.compareTo(pos) < 0 ? other : pos);
         if (player != null || !PENDING.containsKey(key)) PENDING.put(key, player);
+    }
+
+    /** A chest with one of the names that turn it into something. */
+    private static boolean isSpecial(ChestBlockEntity chest) {
+        return isNamed(chest) || LibrarianChest.isNamed(chest);
     }
 
     public static boolean isNamed(ChestBlockEntity chest) {
@@ -86,7 +93,12 @@ public final class IronFarmChest {
     public static void process(ServerLevel level, BlockPos pos, @Nullable ServerPlayer player) {
         if (!level.isLoaded(pos)) return;
         List<ChestBlockEntity> halves = halves(level, pos);
-        if (halves.isEmpty() || halves.stream().noneMatch(IronFarmChest::isNamed)) return;
+        if (halves.isEmpty()) return;
+        if (halves.stream().anyMatch(LibrarianChest::isNamed)) {
+            LibrarianChest.process(level, halves, player);
+            return;
+        }
+        if (halves.stream().noneMatch(IronFarmChest::isNamed)) return;
 
         List<ItemStack> slots = new ArrayList<>(IronFarmRecipe.CHEST_SLOTS);
         for (ChestBlockEntity half : halves) {

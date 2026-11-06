@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.11.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.12.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -212,7 +212,27 @@ vanilla. Endermen never pick up blocks.
   or off.
 
 ### Elytra enchanting
-At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once.
+At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).
+
+### Enchantment levels and exclusions
+* **Level V**: Protection, Fire Protection, Blast Protection, Projectile Protection, Unbreaking, Looting, Fortune and Respiration
+  go up to V in the enchanting table, at an anvil (two IV books make a V), in loot chests and from villagers.
+* **Together**: all four protections on one piece, Mending with Infinity, and Sharpness with Smite. Bane of Arthropods still
+  excludes both, and Fortune still excludes Silk Touch.
+* This is done with data files (`data/minecraft/enchantment`), so a data pack can change it.
+
+### Master Librarian
+Rename a chest **Nexus Librarian** in an anvil (single or double) and put in exactly **12 villagers**, spawn eggs or Captured
+Mobs and nothing else. The chest and the villagers are used up and a **Master Librarian** pops out as a Captured Mob: right-click
+a block to let him out.
+
+* He sells an **enchanted book of every enchantment at its highest level**: Mending and the other treasure enchantments
+  too, level V ones included, but no curses. A trade takes emeralds and a book, at the villagers' own prices: 2 emeralds plus
+  up to 5 + 3 per level more, doubled for treasure enchantments, never above 64. Each trade has the usual 12 uses.
+* He is level 5 with every trade unlocked. A librarian made this way is not one of the villagers a chest wants, so it can't be
+  fed back in.
+* A chest that is not ready tells you what is missing when you close it. `librarianChestName` and `librarianVillagers` change
+  the name and the number.
 
 ### Elevator
 
@@ -285,6 +305,8 @@ server's file is the one that counts.
 | `endermenPickUpBlocks` | `false` | Endermen pick up blocks (vanilla) |
 | `magnetMaxRange` | `16` | Largest magnet range, 4 to 64 blocks |
 | `magnetPullsXp` | `true` | Magnets pull experience orbs too |
+| `librarianChestName` | `Nexus Librarian` | The name a chest needs to make a Master Librarian |
+| `librarianVillagers` | `12` | How many villagers that chest takes, 1 to 54 |
 | `elytraProtectionEnchantments` | `true` | Elytra accept all four protection enchantments |
 | `netheriteArmorCalmsPiglins` | `true` | Netherite armor keeps piglins calm |
 | `bedrockBreakerSeconds` | `300` | How long the elixir lasts |

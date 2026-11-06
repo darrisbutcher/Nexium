@@ -171,10 +171,14 @@
         {"type": "text", "id": "magnet"},
         {"type": "text", "id": "magnet2"},
         {"type": "text", "id": "elytra"},
+        {"type": "text", "id": "enchants"},
+        {"type": "text", "id": "enchants2"},
         {"type": "text", "id": "piglins"},
         {"type": "text", "id": "debris"},
         {"type": "text", "id": "elevator"},
         {"type": "text", "id": "elevator2"},
+        {"type": "text", "id": "librarian"},
+        {"type": "text", "id": "librarian2"},
         {"type": "recipes", "id": "recipes", "recipes": ["magnet", "elevator"]}
       ]
     },
