@@ -1,0 +1,98 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "storagenexus:block/freezer_side_base",
+    "front_b": "storagenexus:block/freezer_front_base",
+    "front_o": "storagenexus:block/freezer_front_over",
+    "side_b": "storagenexus:block/freezer_side_base",
+    "side_o": "storagenexus:block/freezer_side_over",
+    "top_b": "storagenexus:block/freezer_top_base",
+    "top_o": "storagenexus:block/freezer_top_over",
+    "bottom_b": "storagenexus:block/freezer_bottom_base",
+    "bottom_o": "storagenexus:block/freezer_bottom_over"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front_b",
+          "tintindex": 0,
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side_b",
+          "tintindex": 0,
+          "cullface": "south"
+        },
+        "west": {
+          "texture": "#side_b",
+          "tintindex": 0,
+          "cullface": "west"
+        },
+        "east": {
+          "texture": "#side_b",
+          "tintindex": 0,
+          "cullface": "east"
+        },
+        "up": {
+          "texture": "#top_b",
+          "tintindex": 0,
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom_b",
+          "tintindex": 0,
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front_o",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side_o",
+          "cullface": "south"
+        },
+        "west": {
+          "texture": "#side_o",
+          "cullface": "west"
+        },
+        "east": {
+          "texture": "#side_o",
+          "cullface": "east"
+        },
+        "up": {
+          "texture": "#top_o",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom_o",
+          "cullface": "down"
+        }
+      }
+    }
+  ]
+}

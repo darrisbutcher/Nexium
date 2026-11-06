@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/villager_breeder"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/villager_breeder"
+    }
+  }
+}

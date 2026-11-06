@@ -14,6 +14,7 @@ import net.storagenexus.drawer.CompactingDrawerBlockEntity;
 import net.storagenexus.drawer.DrawerBlockEntity;
 import net.storagenexus.drawer.DrawerControllerBlockEntity;
 import net.storagenexus.elevator.ElevatorBlockEntity;
+import net.storagenexus.freezer.FreezerBlockEntity;
 import net.storagenexus.fluid.FluidDrawerBlockEntity;
 import net.storagenexus.barrel.TieredBarrelBlockEntity;
 import net.storagenexus.fluid.FluidIntakeBlockEntity;
@@ -52,6 +53,9 @@ public final class ModBlockEntities {
             new BlockEntityType<>(DimensionalOutputBlockEntity::new, Set.of(ModBlocks.DIMENSIONAL_OUTPUT)));
     public static final BlockEntityType<ConduitBundleBlockEntity> CONDUIT_BUNDLE = register("conduit_bundle",
             new BlockEntityType<>(ConduitBundleBlockEntity::new, Set.of(ModBlocks.CONDUIT_BUNDLE)));
+
+    public static final BlockEntityType<FreezerBlockEntity> FREEZER = register("freezer",
+            new BlockEntityType<>(FreezerBlockEntity::new, Set.of(ModBlocks.FREEZER)));
 
     private static <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType<T> type) {
         return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, StorageNexus.id(name), type);

@@ -27,7 +27,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.12.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.12.1.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -133,7 +133,7 @@ while a tablet is open.
 |---|---|---|
 | **Nexus Link** | Dimensional Link Card in the middle, ender pearls on the sides, iron ingots in the corners | What the AIOT mines goes straight into a storage network |
 | **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
-| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Mines whole veins of ore, logs, dirt and more (not stone) |
+| **Vein Mining** | Diamond in the middle, lapis lazuli on the sides, iron ingots in the corners | Optional: sets the vein size and can switch vein mining off (an AIOT vein mines without it) |
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
   go into that terminal's network in any dimension; what the network can't take drops as usual.
@@ -143,8 +143,8 @@ while a tablet is open.
   hard as the block you mined, and never blocks with contents such as chests.
 * **Vein Mining**: mining any block except the stone family (stone, granite, cobblestone, deepslate, netherrack ... the
   `#storagenexus:vein_excluded` block tag, which a data pack can change) mines every block of the same kind touching
-  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined.
-  **Hold the Vein Mine key** (**V**) while mining; without it, or without the module, you mine one block.
+  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a diamond-grade AIOT).
+  **Hold the Vein Mine key** (**V**) while mining; without it, you mine one block. No module is needed: a Vein Mining module only sets the size and a switch.
 * With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
   look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
   outlined. It uses the same rules as the mining, and `aiotMiningPreview` (client) turns it off.
@@ -292,6 +292,32 @@ Touch still drops the block.
   loaf is eaten the slot locks for 10x as long as the boost lasted, and the farm keeps working at normal speed.
 * A full output or a **redstone signal** pauses the farm. Breaking it keeps its boost and cooldown in the item.
 
+### More one-block farms
+Made like the Iron Farm: rename a **double chest** in an anvil, fill it with exactly the recipe (mobs can be spawn eggs or
+Captured Mobs, and a full stack of the filler item goes in every other slot), and it turns into the farm. Place it anywhere;
+hoppers and pipes take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its
+progress in the item. Close the chest early and the chat says what is missing.
+
+| Farm | Chest name | Recipe | Makes |
+|---|---|---|---|
+| **Villager Breeder** | `Nexus Villager Breeder` | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks; planks fill | A baby villager (a Captured Mob) every 20 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
+| **Piglin Barter Farm** | `Nexus Piglin Barter` | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks; netherrack fills | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
+| **Zombified Piglin Farm** | `Nexus Zombified Piglin` | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots; netherrack fills | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
+| **Wither Skeleton Farm** | `Nexus Wither Skeleton Farm` | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks; netherrack fills | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
+| **Shulker Farm** | `Nexus Shulker Farm` | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls; end stone bricks fill | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
+
+### Freezer
+* **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
+* **Fill it with water** with a water bucket or a pipe (fluid conduit, Dimensional Output). The tank holds 8 buckets and
+  only takes water. It freezes **ice** (1 bucket, 5 seconds), and its button switches it to **packed ice** (9 buckets,
+  45 seconds) or **blue ice** (81 buckets, 90 seconds). The water is used up steadily while it works, so a tank that runs
+  dry waits for more. Hoppers and pipes take the ice from below; a full output or a redstone signal pauses it.
+* **Dyeable like leather armor**: put it in the crafting grid with dyes (several mix). The body and frame take the colour;
+  the frost, glow and water don't. A cauldron of water washes it. It keeps its colour, water and mode when broken.
+* **Ice recipes**: 9 ice make packed ice and 9 packed ice make blue ice (vanilla); packed ice also crafts into 9 ice and
+  blue ice into 9 packed ice.
+* **Soul sand to sand**: a Blast Furnace smelts soul sand into sand, with no experience, at an ore's speed (5 seconds).
+
 ## Settings
 
 `config/nexusessentials.json` is created on first launch. Changes take effect after a restart. On a server, the
@@ -319,7 +345,10 @@ server's file is the one that counts.
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
-| `aiotVeinMining` | `true` | The Vein Mining module works |
+| `villagerBreederChestName`, `piglinBarterChestName`, `zombifiedPiglinChestName`, `witherSkeletonChestName`, `shulkerFarmChestName` | `"Nexus Villager Breeder"`, `"Nexus Piglin Barter"`, `"Nexus Zombified Piglin"`, `"Nexus Wither Skeleton Farm"`, `"Nexus Shulker Farm"` | The name a double chest needs to become each farm |
+| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks` | `24000`, `120`, `80`, `120`, `600` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
+| `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
+| `aiotVeinMining` | `true` | Vein mining works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |

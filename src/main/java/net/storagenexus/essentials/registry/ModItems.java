@@ -16,10 +16,14 @@ import net.storagenexus.essentials.NexusEssentials;
 import net.storagenexus.essentials.bedrock.BedrockBreakerElixirItem;
 import net.storagenexus.essentials.capture.CapturedMobItem;
 import net.storagenexus.essentials.config.NexusConfig;
+import net.storagenexus.essentials.farm.FarmItem;
+import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.ironfarm.IronFarmItem;
 import net.storagenexus.essentials.magnet.MagnetItem;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public final class ModItems {
@@ -48,6 +52,17 @@ public final class ModItems {
             .useBlockDescriptionPrefix()
             .rarity(Rarity.UNCOMMON));
 
+    /** The other one-block farms. Only made from named chests, but creative players find them in the Nexium tab. */
+    public static final Map<FarmKind, FarmItem> FARMS = new EnumMap<>(FarmKind.class);
+
+    static {
+        for (FarmKind kind : FarmKind.values()) {
+            FARMS.put(kind, register(kind.id(), p -> new FarmItem(kind, ModBlocks.FARMS.get(kind), p), new Item.Properties()
+                    .useBlockDescriptionPrefix()
+                    .rarity(Rarity.UNCOMMON)));
+        }
+    }
+
     private static <T extends Item> T register(String name, Function<Item.Properties, T> factory, Item.Properties props) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, NexusEssentials.id(name));
         T item = factory.apply(props.setId(key));
@@ -59,7 +74,8 @@ public final class ModItems {
      * What the Nexium creative tab shows after its own items. The Captured Mob is left out: an empty one is
      * meaningless, so it only comes from picking up a mob.
      */
-    public static final List<Item> TAB_ORDER = List.of(MAGNET, BEDROCK_BREAKER_ELIXIR, IRON_FARM);
+    public static final List<Item> TAB_ORDER = java.util.stream.Stream.concat(
+            java.util.stream.Stream.of(MAGNET, BEDROCK_BREAKER_ELIXIR, IRON_FARM), FARMS.values().stream()).map(i -> (Item) i).toList();
 
     public static void init() {}
 

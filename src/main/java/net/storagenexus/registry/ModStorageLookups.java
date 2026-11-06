@@ -15,6 +15,8 @@ public final class ModStorageLookups {
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.FLUID_INTAKE);
         ItemStorage.SIDED.registerForBlockEntity((be, dir) -> be.getItemStorage(), ModBlockEntities.DIMENSIONAL_INPUT);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.DIMENSIONAL_INPUT);
+        FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank(), ModBlockEntities.FREEZER);
+        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, dir), ModBlockEntities.FREEZER);
     }
 
     private ModStorageLookups() {}

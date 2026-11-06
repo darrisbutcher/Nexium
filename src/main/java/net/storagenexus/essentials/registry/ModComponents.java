@@ -29,6 +29,10 @@ public final class ModComponents {
     public static final DataComponentType<IronFarmTimers> IRON_FARM_TIMERS = register("iron_farm_timers",
             b -> b.persistent(IronFarmTimers.CODEC).networkSynchronized(IronFarmTimers.STREAM_CODEC));
 
+    /** How far a farm got towards its next cycle, kept in the dropped item. */
+    public static final DataComponentType<Integer> FARM_PROGRESS = register("farm_progress",
+            b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexusEssentials.id(name),
                 op.apply(DataComponentType.builder()).build());

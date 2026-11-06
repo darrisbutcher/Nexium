@@ -5,11 +5,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.farm.FarmMenu;
 import net.storagenexus.essentials.ironfarm.IronFarmMenu;
 
 public final class ModMenus {
     public static final ExtendedMenuType<IronFarmMenu, BlockPos> IRON_FARM = Registry.register(BuiltInRegistries.MENU,
             NexusEssentials.id("iron_farm"), new ExtendedMenuType<>(IronFarmMenu::new, BlockPos.STREAM_CODEC));
+
+    public static final ExtendedMenuType<FarmMenu, BlockPos> FARM = Registry.register(BuiltInRegistries.MENU,
+            NexusEssentials.id("farm"), new ExtendedMenuType<>(FarmMenu::new, BlockPos.STREAM_CODEC));
 
     public static void init() {}
 

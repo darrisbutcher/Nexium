@@ -62,6 +62,14 @@ public final class AiotModules {
         return nowOn;
     }
 
+    /**
+     * Whether vein mining is on for this tool. It needs no module: an AIOT without one always vein mines (at the config's
+     * limit). A Vein Mining module only adjusts it, with its size and its on/off switch.
+     */
+    public static boolean veinOn(ItemStack tool) {
+        return find(tool, ModuleType.VEIN_MINING).isEmpty() || active(tool, ModuleType.VEIN_MINING);
+    }
+
     /** Sizes the tool menu steps through, below the config's limit (which is always the last one). */
     private static final int[] VEIN_STEPS = {4, 9, 18, 32, 64, 128, 256};
 

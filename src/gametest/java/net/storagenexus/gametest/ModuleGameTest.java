@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -224,11 +225,15 @@ public class ModuleGameTest {
         VeinKey.set(player, true);
         mine(h, player, new BlockPos(2, 1, 1));
         h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 1)); // key held: the rest of the vein
-        // No module, key held: still one block
+        // No module needed: key held, the whole vein; key up, one block
         for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
         ServerPlayer plain = miner(h);
+        VeinKey.set(plain, false);
         mine(h, plain, new BlockPos(1, 1, 1));
         h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1));
+        VeinKey.set(plain, true);
+        mine(h, plain, new BlockPos(2, 1, 1));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 1));
         VeinKey.set(player, false);
         VeinKey.set(plain, false);
         h.succeed();
@@ -497,6 +502,32 @@ public class ModuleGameTest {
         h.assertBlockPresent(Blocks.STONE, new BlockPos(3, 1, 3));
         mine(h, player, new BlockPos(1, 1, 5));
         h.assertBlockPresent(Blocks.CHEST, new BlockPos(2, 1, 5));
+        h.succeed();
+    }
+
+    @GameTest
+    public void veinMiningNeedsNoModuleAndTakesObsidianCropsAndLeaves(GameTestHelper h) {
+        // Rows along x, one block type each, z = 1, 3, 5 ... (no module in the AIOT)
+        Block[] blocks = {Blocks.OBSIDIAN, Blocks.CRYING_OBSIDIAN, Blocks.HAY_BLOCK, Blocks.MELON, Blocks.PUMPKIN,
+                Blocks.OAK_LEAVES, Blocks.CHERRY_LEAVES, Blocks.MANGROVE_LEAVES};
+        for (int row = 0; row < blocks.length; row++) {
+            for (int x = 1; x <= 3; x++) h.setBlock(new BlockPos(x, 1, row), blocks[row]);
+        }
+        ServerPlayer player = miner(h);
+        for (int row = 0; row < blocks.length; row++) {
+            mine(h, player, new BlockPos(1, 1, row));
+            h.assertBlockPresent(Blocks.AIR, new BlockPos(3, 1, row));
+        }
+        // Obsidian needs a diamond-grade tool to drop anything, so a stone AIOT takes one block only
+        for (int x = 1; x <= 3; x++) h.setBlock(new BlockPos(x, 1, 9), Blocks.OBSIDIAN);
+        ServerPlayer weak = h.makeMockServerPlayerInLevel();
+        weak.setGameMode(GameType.SURVIVAL);
+        weak.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.AIOTS.get(AiotTier.STONE)));
+        VeinKey.set(weak, true);
+        mine(h, weak, new BlockPos(1, 1, 9));
+        h.assertBlockPresent(Blocks.OBSIDIAN, new BlockPos(2, 1, 9));
+        VeinKey.set(player, false);
+        VeinKey.set(weak, false);
         h.succeed();
     }
 }

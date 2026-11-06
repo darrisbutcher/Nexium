@@ -80,6 +80,29 @@ public final class NexusConfig {
     /** Golems drop 0-2 poppies as well as 3-5 iron, like real ones. */
     public boolean ironFarmPoppies = true;
 
+    // --- Other one-block farms (each made from a double chest with this name, like the Iron Farm)
+    public String villagerBreederChestName = "Nexus Villager Breeder";
+    public String piglinBarterChestName = "Nexus Piglin Barter";
+    public String zombifiedPiglinChestName = "Nexus Zombified Piglin";
+    public String witherSkeletonChestName = "Nexus Wither Skeleton Farm";
+    public String shulkerFarmChestName = "Nexus Shulker Farm";
+    /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 24000 is 20 minutes. */
+    public int villagerBreederTicks = 24000;
+    /** Ticks per barter (1 gold ingot each), like a real piglin's 6 seconds. */
+    public int piglinBarterTicks = 120;
+    /** Ticks between kills: gold nuggets and the rare gold ingot, as if Looting V (no player needed). */
+    public int zombifiedPiglinTicks = 80;
+    /** Ticks between kills: coal, bones and the wither skeleton skull (7.5%, Looting V odds). */
+    public int witherSkeletonTicks = 120;
+    /** Ticks between kills: a shulker shell about 4 times in 5 (Looting V odds). */
+    public int shulkerFarmTicks = 600;
+
+    // --- Freezer
+    /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
+    public int freezerIceTicks = 100;
+    public int freezerPackedIceTicks = 900;
+    public int freezerBlueIceTicks = 1800;
+
     // --- AIOT modules (server-side only)
     /** The Vein Mining module works. Off, installed modules do nothing. */
     public boolean aiotVeinMining = true;
@@ -135,6 +158,10 @@ public final class NexusConfig {
         }
     }
 
+    private static String name(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
     private void clamp() {
         magnetMaxRange = Math.max(4, Math.min(64, magnetMaxRange));
         bedrockBreakerSeconds = Math.max(1, Math.min(24 * 60 * 60, bedrockBreakerSeconds));
@@ -145,6 +172,19 @@ public final class NexusConfig {
         ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));
         ironFarmBreadSeconds = Math.max(1, Math.min(60 * 60, ironFarmBreadSeconds));
         ironFarmCooldownMultiplier = Math.max(0, Math.min(100, ironFarmCooldownMultiplier));
+        villagerBreederChestName = name(villagerBreederChestName, "Nexus Villager Breeder");
+        piglinBarterChestName = name(piglinBarterChestName, "Nexus Piglin Barter");
+        zombifiedPiglinChestName = name(zombifiedPiglinChestName, "Nexus Zombified Piglin");
+        witherSkeletonChestName = name(witherSkeletonChestName, "Nexus Wither Skeleton Farm");
+        shulkerFarmChestName = name(shulkerFarmChestName, "Nexus Shulker Farm");
+        villagerBreederTicks = Math.max(1, Math.min(1_000_000, villagerBreederTicks));
+        piglinBarterTicks = Math.max(1, Math.min(1_000_000, piglinBarterTicks));
+        zombifiedPiglinTicks = Math.max(1, Math.min(1_000_000, zombifiedPiglinTicks));
+        witherSkeletonTicks = Math.max(1, Math.min(1_000_000, witherSkeletonTicks));
+        shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
+        freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
+        freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));
+        freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
         aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));

@@ -97,7 +97,7 @@
       "id": "aiot",
       "cover": "tools",
       "pages": [
-        {"type": "contents", "entries": ["aiot", "crafting", "stats", "using", "enchants", "upgrade", "menu", "modules", "nexuslink", "area", "vein", "recipes"]},
+        {"type": "contents", "entries": ["aiot", "crafting", "stats", "using", "enchants", "upgrade", "menu", "modules", "nexuslink", "area", "vein", "readout", "recipes"]},
         {"type": "text", "id": "aiot"},
         {"type": "text", "id": "crafting"},
         {"type": "text", "id": "stats"},
@@ -116,6 +116,7 @@
         {"type": "text", "id": "tunnel"},
         {"type": "text", "id": "vein"},
         {"type": "text", "id": "both"},
+        {"type": "text", "id": "readout"},
         {"type": "recipes", "id": "recipes", "recipes": ["aiot_merge", "aiot_netherite"]},
         {"type": "recipes", "id": "recipes2", "recipes": ["aiot_nexium", "m_area"]},
         {"type": "recipes", "id": "recipes3", "recipes": ["m_vein", "m_link"]}
@@ -158,7 +159,8 @@
       "id": "essentials",
       "cover": "essent",
       "pages": [
-        {"type": "contents", "entries": ["essentials", "explosions", "slots", "arrows", "totem", "wings", "magnet", "magnet2", "elytra", "piglins", "debris", "recipes"]},
+        {"type": "contents", "entries": ["essentials", "explosions", "slots", "arrows", "totem", "wings", "magnet", "magnet2"]},
+        {"type": "contents", "entries": ["elytra", "enchants", "piglins", "debris", "elevator", "librarian", "freezer", "sand", "recipes"]},
         {"type": "text", "id": "essentials"},
         {"type": "text", "id": "explosions"},
         {"type": "text", "id": "tnt"},
@@ -179,14 +181,19 @@
         {"type": "text", "id": "elevator2"},
         {"type": "text", "id": "librarian"},
         {"type": "text", "id": "librarian2"},
-        {"type": "recipes", "id": "recipes", "recipes": ["magnet", "elevator"]}
+        {"type": "text", "id": "freezer"},
+        {"type": "text", "id": "freezer2"},
+        {"type": "text", "id": "sand"},
+        {"type": "recipes", "id": "recipes", "recipes": ["magnet", "elevator"]},
+        {"type": "recipes", "id": "recipes2", "recipes": ["freezer"]}
       ]
     },
     {
       "id": "mobs",
       "cover": "mobs",
       "pages": [
-        {"type": "contents", "entries": ["mobs", "limits", "know", "elixir", "farm", "make", "recipe", "notes", "bread", "running", "recipes"]},
+        {"type": "contents", "entries": ["mobs", "limits", "know", "elixir", "farm", "make", "recipe", "notes", "bread", "running"]},
+        {"type": "contents", "entries": ["farms", "breeder", "barter", "zpiglin", "witherfarm", "shulkerfarm", "librarian", "recipes"]},
         {"type": "text", "id": "mobs"},
         {"type": "text", "id": "kept"},
         {"type": "text", "id": "limits"},
@@ -203,6 +210,13 @@
         {"type": "text", "id": "bread"},
         {"type": "text", "id": "bread2"},
         {"type": "text", "id": "running"},
+        {"type": "text", "id": "farms"},
+        {"type": "text", "id": "breeder"},
+        {"type": "text", "id": "barter"},
+        {"type": "text", "id": "zpiglin"},
+        {"type": "text", "id": "witherfarm"},
+        {"type": "text", "id": "shulkerfarm"},
+        {"type": "text", "id": "librarian"},
         {"type": "recipes", "id": "recipes", "recipes": ["elixir"]}
       ]
     }

@@ -24,6 +24,12 @@
     "storagenexus:netherite_barrel",
     "storagenexus:emerald_barrel",
     "nexusessentials:iron_farm",
-    "storagenexus:nexium_block"
+    "storagenexus:nexium_block",
+    "nexusessentials:villager_breeder",
+    "nexusessentials:piglin_barter",
+    "nexusessentials:zombified_piglin_farm",
+    "nexusessentials:wither_skeleton_farm",
+    "nexusessentials:shulker_farm",
+    "storagenexus:freezer"
   ]
 }

@@ -73,7 +73,7 @@ public final class IronFarmChest {
 
     /** A chest with one of the names that turn it into something. */
     private static boolean isSpecial(ChestBlockEntity chest) {
-        return isNamed(chest) || LibrarianChest.isNamed(chest);
+        return isNamed(chest) || LibrarianChest.isNamed(chest) || net.storagenexus.essentials.farm.FarmChest.isNamed(chest);
     }
 
     public static boolean isNamed(ChestBlockEntity chest) {
@@ -97,6 +97,13 @@ public final class IronFarmChest {
         if (halves.stream().anyMatch(LibrarianChest::isNamed)) {
             LibrarianChest.process(level, halves, player);
             return;
+        }
+        for (ChestBlockEntity half : halves) {
+            net.storagenexus.essentials.farm.FarmKind kind = net.storagenexus.essentials.farm.FarmChest.kindOf(half);
+            if (kind != null) {
+                net.storagenexus.essentials.farm.FarmChest.process(level, kind, halves, player);
+                return;
+            }
         }
         if (halves.stream().noneMatch(IronFarmChest::isNamed)) return;
 

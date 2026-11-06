@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "storagenexus:block/freezer",
+    "tints": [
+      {
+        "type": "minecraft:dye",
+        "default": -11699564
+      }
+    ]
+  }
+}

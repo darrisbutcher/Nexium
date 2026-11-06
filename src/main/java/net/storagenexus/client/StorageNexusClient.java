@@ -50,6 +50,8 @@ public class StorageNexusClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.DIMENSIONAL, DimensionalScreen::new);
         MenuScreens.register(ModMenus.CONDUIT_CONFIG, ConduitConfigScreen::new);
         MenuScreens.register(ModMenus.FILTER, FilterScreen::new);
+        MenuScreens.register(ModMenus.FREEZER, net.storagenexus.client.screen.FreezerScreen::new);
+        FreezerTint.init();
 
         // Front displays and labels. If any of these fail to compile on a newer 26.x build,
         // the mod still works without them: delete the line and the matching renderer class.

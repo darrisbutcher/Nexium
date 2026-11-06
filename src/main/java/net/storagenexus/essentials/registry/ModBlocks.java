@@ -9,7 +9,12 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.farm.FarmBlock;
+import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.ironfarm.IronFarmBlock;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 import java.util.function.Function;
 
@@ -20,6 +25,16 @@ public final class ModBlocks {
      */
     public static final IronFarmBlock IRON_FARM = register("iron_farm", IronFarmBlock::new, BlockBehaviour.Properties.of()
             .mapColor(MapColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL));
+
+    /** The other one-block farms, made from named double chests like the Iron Farm. */
+    public static final Map<FarmKind, FarmBlock> FARMS = new EnumMap<>(FarmKind.class);
+
+    static {
+        for (FarmKind kind : FarmKind.values()) {
+            FARMS.put(kind, register(kind.id(), p -> new FarmBlock(kind, p), BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL)));
+        }
+    }
 
     private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory, BlockBehaviour.Properties props) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, NexusEssentials.id(name));

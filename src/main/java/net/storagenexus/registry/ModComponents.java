@@ -96,6 +96,14 @@ public final class ModComponents {
             b -> b.persistent(FluidDrawerBlockEntity.SlotData.CODEC.listOf())
                     .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(FluidDrawerBlockEntity.SlotData.CODEC.listOf())));
 
+    /** Water (in Fabric droplets) a Freezer held when it was broken. */
+    public static final DataComponentType<Long> FREEZER_WATER = register("freezer_water",
+            b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
+
+    /** What a Freezer was making when it was broken (0 ice, 1 packed ice, 2 blue ice). */
+    public static final DataComponentType<Integer> FREEZER_MODE = register("freezer_mode",
+            b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, StorageNexus.id(name),
                 op.apply(DataComponentType.builder()).build());
