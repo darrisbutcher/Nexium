@@ -1,0 +1,62 @@
+name: Release
+
+# Publishes a GitHub Release with the jar when a version tag is pushed (git tag v1.12.0 && git push origin v1.12.0).
+# The notes are the matching "## 1.12.0" section of CHANGELOG.md. Run it by hand (Actions > Release > Run workflow) with an
+# existing tag to publish a release for an older version; the tag must already exist and point at that version's commit.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to release, for example v1.9.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: The tag must match mod_version
+        run: |
+          VERSION="${TAG#v}"
+          ACTUAL=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          if [ "$VERSION" != "$ACTUAL" ]; then
+            echo "Tag $TAG does not match mod_version=$ACTUAL in gradle.properties" >&2
+            exit 1
+          fi
+      - name: Build the jar
+        run: ./gradlew build --no-daemon -x test -x runGameTest
+      - name: Write the release notes
+        run: |
+          VERSION="${TAG#v}"
+          # The CHANGELOG section for this version; its heading may carry a note, like "## 1.9.0 (includes 1.8.0)"
+          awk -v v="$VERSION" '
+            /^## / { if (on) exit; h=$2; on=(h==v) ; next }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "See CHANGELOG.md for what changed." > notes.md; fi
+          printf '\nFull history: [CHANGELOG.md](https://github.com/%s/blob/main/CHANGELOG.md)\n' "$GITHUB_REPOSITORY" >> notes.md
+      - name: Publish the release
+        run: |
+          JAR="build/libs/nexium-${TAG#v}.jar"
+          test -f "$JAR"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$JAR" --clobber
+            gh release edit "$TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" "$JAR" --title "Nexium ${TAG#v}" --notes-file notes.md --verify-tag
+          fi
