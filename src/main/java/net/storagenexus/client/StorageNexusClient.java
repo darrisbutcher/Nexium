@@ -80,6 +80,8 @@ public class StorageNexusClient implements ClientModInitializer {
         AiotPreview.init();
         AiotHud.init();
 
+        ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.elevator.ElevatorOpenPayload.TYPE, (payload, context) ->
+                context.client().gui.setScreen(new net.storagenexus.client.screen.ElevatorScreen(payload)));
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {
                 menu.receiveSync(payload);

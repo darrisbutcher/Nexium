@@ -157,6 +157,9 @@ public class SaveLoadGameTest {
         cases.add(new Case("Drawer 2x2", drawer2x2, List.of(
                 part(DrawerBlockEntity.class, "items in the last section", be -> insert(be.slot(be.slotCount() - 1), Items.EMERALD, 7)))));
 
+        cases.add(new Case("Elevator", ModBlocks.ELEVATOR, List.of(
+                part(net.storagenexus.elevator.ElevatorBlockEntity.class, "floor name", be -> be.setFloorName("Roof")))));
+
         cases.add(new Case("Compacting Drawer", ModBlocks.COMPACTING_DRAWER, List.of(
                 part(CompactingDrawerBlockEntity.class, "contents", be -> {
                     try (Transaction tx = Transaction.openOuter()) {

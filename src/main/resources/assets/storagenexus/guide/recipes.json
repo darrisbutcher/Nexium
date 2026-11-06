@@ -52,6 +52,7 @@
     "n_block": {"type": "shaped", "pattern": ["###", "###", "###"], "key": {"#": "storagenexus:nexium_ingot"}, "result": {"id": "storagenexus:nexium_block"}},
     "n_gear": {"type": "smithing", "template": "minecraft:netherite_upgrade_smithing_template", "base": "minecraft:netherite_pickaxe", "addition": "storagenexus:nexium_ingot", "result": {"id": "storagenexus:nexium_pickaxe"}, "note": "tools", "verify": "storagenexus:nexium_pickaxe_smithing"},
     "a_helmet": {"type": "smithing", "template": "minecraft:netherite_upgrade_smithing_template", "base": "minecraft:netherite_helmet", "addition": "storagenexus:nexium_ingot", "result": {"id": "storagenexus:nexium_helmet"}, "note": "pieces", "verify": "storagenexus:nexium_helmet_smithing"},
+    "elevator": {"type": "shaped", "pattern": ["BBB", "IRI", "I I"], "key": {"B": "minecraft:polished_blackstone", "I": "minecraft:iron_ingot", "R": "minecraft:redstone_block"}, "result": {"id": "storagenexus:elevator", "count": 2}},
     "magnet": {"type": "shaped", "pattern": ["R L", "I I", "III"], "key": {"I": "minecraft:iron_ingot", "L": "minecraft:lapis_lazuli", "R": "minecraft:redstone"}, "result": {"id": "nexusessentials:magnet"}},
     "elixir": {"type": "shaped", "pattern": [" O ", "DBD", " O "], "key": {"B": "minecraft:glass_bottle", "D": "minecraft:diamond", "O": "minecraft:obsidian"}, "result": {"id": "nexusessentials:bedrock_breaker_elixir"}}
   }

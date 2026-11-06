@@ -173,7 +173,9 @@
         {"type": "text", "id": "elytra"},
         {"type": "text", "id": "piglins"},
         {"type": "text", "id": "debris"},
-        {"type": "recipes", "id": "recipes", "recipes": ["magnet"]}
+        {"type": "text", "id": "elevator"},
+        {"type": "text", "id": "elevator2"},
+        {"type": "recipes", "id": "recipes", "recipes": ["magnet", "elevator"]}
       ]
     },
     {

@@ -20,6 +20,7 @@ import net.storagenexus.drawer.ControllerSlaveBlock;
 import net.storagenexus.drawer.DrawerBlock;
 import net.storagenexus.drawer.DrawerControllerBlock;
 import net.storagenexus.drawer.DrawerWood;
+import net.storagenexus.elevator.ElevatorBlock;
 import net.storagenexus.fluid.FluidDrawerBlock;
 import net.storagenexus.fluid.FluidIntakeBlock;
 import net.storagenexus.fluid.LavaSpringBlock;
@@ -88,6 +89,11 @@ public final class ModBlocks {
     public static final DimensionalAnchorBlock DIMENSIONAL_ANCHOR = register("dimensional_anchor", DimensionalAnchorBlock::new, heavy(), true);
     public static final DimensionalInputBlock DIMENSIONAL_INPUT = register("dimensional_input", DimensionalInputBlock::new, heavy(), true);
     public static final DimensionalOutputBlock DIMENSIONAL_OUTPUT = register("dimensional_output", DimensionalOutputBlock::new, heavy(), true);
+
+    /** A quarter-block Nexium platform; elevators in one column take you between floors. */
+    public static final ElevatorBlock ELEVATOR = register("elevator", ElevatorBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)
+                    .lightLevel(s -> 6).requiresCorrectToolForDrops(), true);
 
     /** Placed by conduit items, so it has no BlockItem of its own. */
     public static final ConduitBundleBlock CONDUIT_BUNDLE = register("conduit_bundle", ConduitBundleBlock::new,
