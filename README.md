@@ -32,6 +32,13 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
 
+### Releasing
+
+Add a `## X.Y.Z` section to `CHANGELOG.md`, set `mod_version` to match, merge to `main`, then push a tag:
+`git tag vX.Y.Z && git push origin vX.Y.Z`. The Release workflow builds the jar and publishes a GitHub Release with it, using
+that changelog section as the notes. For an older version, create its tag on the right commit, then run the workflow by hand
+(Actions > Release > Run workflow) with the tag name.
+
 ## Storage
 
 ### Drawers
