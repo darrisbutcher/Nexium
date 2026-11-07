@@ -137,6 +137,8 @@ public final class StorageNetwork {
         List<Source<ItemVariant>> items = new ArrayList<>();
         List<Source<FluidVariant>> fluids = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
+        // An inventory touched by two connectors counts once, at the higher of their priorities
+        faces.sort(Comparator.comparingInt((Face f) -> f.priority).reversed());
         for (Face f : faces) {
             if (claimedByController.contains(f.pos)) continue;
             if (!seen.add(f.pos)) continue; // one inventory, one entry, even if two connectors touch it
@@ -168,7 +170,7 @@ public final class StorageNetwork {
         return false;
     }
 
-    /** Inserts preferring higher priority and inventories that already hold the item. */
+    /** Inserts by priority, highest first; within a priority, into inventories that already hold the item first. */
     public long insertItem(ItemVariant resource, long maxAmount, TransactionContext tx) {
         return insert(items, resource, maxAmount, tx, s -> allowsItem(s, resource));
     }
@@ -185,16 +187,27 @@ public final class StorageNetwork {
         return extract(fluids, resource, maxAmount, tx, s -> allowsFluid(s, resource));
     }
 
+    /**
+     * Fills the highest priority first. Within one priority, inventories that already hold the resource come first, so
+     * like items stay together; a lower priority inventory only gets what the higher ones can't take, even if it already
+     * holds some. {@code sources} is sorted by priority, highest first.
+     */
     private static <T> long insert(List<Source<T>> sources, T resource, long maxAmount, TransactionContext tx,
                                    Predicate<Source<T>> allowed) {
         long inserted = 0;
-        for (int pass = 0; pass < 2 && inserted < maxAmount; pass++) {
-            for (Source<T> s : sources) {
-                if (inserted >= maxAmount) break;
-                if (!s.valid() || !allowed.test(s) || !s.storage.supportsInsertion()) continue;
-                if (pass == 0 && !contains(s.storage, resource)) continue;
-                inserted += s.storage.insert(resource, maxAmount - inserted, tx);
+        for (int start = 0; start < sources.size() && inserted < maxAmount; ) {
+            int priority = sources.get(start).priority;
+            int end = start;
+            while (end < sources.size() && sources.get(end).priority == priority) end++;
+            for (int pass = 0; pass < 2 && inserted < maxAmount; pass++) {
+                for (int i = start; i < end && inserted < maxAmount; i++) {
+                    Source<T> s = sources.get(i);
+                    if (!s.valid() || !allowed.test(s) || !s.storage.supportsInsertion()) continue;
+                    if (pass == 0 && !contains(s.storage, resource)) continue;
+                    inserted += s.storage.insert(resource, maxAmount - inserted, tx);
+                }
             }
+            start = end;
         }
         return inserted;
     }

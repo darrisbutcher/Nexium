@@ -60,7 +60,7 @@ public class DrawerControllerBlock extends BaseEntityBlock {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof DrawerControllerBlockEntity be)) return InteractionResult.PASS;
-        if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND; // info, reach, double-click dump
+        if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND; // drawer count, double-click dump, sneak: reach
         if (stack.getItem() instanceof BucketItem || stack.is(Items.BUCKET)) {
             if (!level.isClientSide()) FluidStorageUtil.interactWithFluidStorage(be.getFluidStorage(), player, hand);
             return InteractionResult.SUCCESS;
@@ -78,12 +78,16 @@ public class DrawerControllerBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DrawerControllerBlockEntity be) {
-            if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
-                be.insertAllFromInventory(player);
-            } else {
+            if (player.isSecondaryUseActive()) {
+                // Sneak + right-click: show (or hide) the reach outline
                 boolean showing = level instanceof ServerLevel server && be.toggleRangeDisplay(server);
                 player.sendOverlayMessage(Component.translatable(showing ? "message.storagenexus.controller_info"
                         : "message.storagenexus.controller_info_hidden", be.drawerCount(), DrawerControllerBlockEntity.RANGE));
+            } else if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
+                be.insertAllFromInventory(player);
+            } else {
+                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_count",
+                        be.drawerCount(), DrawerControllerBlockEntity.RANGE));
             }
         }
         return InteractionResult.SUCCESS;

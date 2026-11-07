@@ -124,7 +124,7 @@ public class DrawerControllerBlockEntity extends BlockEntity {
         return false;
     }
 
-    /** How long the reach outline stays up after clicking the controller. */
+    /** How long the reach outline stays up after sneak + right-clicking the controller. */
     private static final int RANGE_DISPLAY_TICKS = 60 * 20;
     /** Particles last about 3 seconds; redraw a little sooner so the outline stays solid. */
     private static final int RANGE_REDRAW_TICKS = 40;
@@ -140,6 +140,11 @@ public class DrawerControllerBlockEntity extends BlockEntity {
         rangeDisplayUntil = now + RANGE_DISPLAY_TICKS;
         showRange(level);
         return true;
+    }
+
+    /** Whether the reach outline is showing. */
+    public boolean rangeShown(Level level) {
+        return rangeDisplayUntil > level.getGameTime();
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerBlockEntity be) {
