@@ -52,3 +52,47 @@ jobs:
             build/run/clientGameTest/screenshots
             build/run/clientGameTest/logs
           if-no-files-found: ignore
+
+  release:
+    # Publishes a GitHub Release (tag, jar and notes) when main gets a mod_version that has no release yet, so a release
+    # needs no tag and no manual run: raise mod_version in gradle.properties, add the "## <version>" section to
+    # CHANGELOG.md and merge. The release appears once the build and the client tests have passed. A merge that keeps
+    # the same mod_version publishes nothing, and this job never runs on pull requests.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, client-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to create the tag and the release
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Does this version already have a release?
+        id: version
+        run: |
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '\r ')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "v$VERSION already has a release, nothing to publish"
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+      # The jar the build job made and tested
+      - uses: actions/download-artifact@v4
+        if: steps.version.outputs.new == 'true'
+        with:
+          name: nexium
+          path: jar
+      - name: Publish the release
+        if: steps.version.outputs.new == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # The notes are the "## <version>" section of CHANGELOG.md
+          awk -v v="$VERSION" '/^## / { if (on) exit; on=($2==v); next } on { print }' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "See CHANGELOG.md for what changed." > notes.md
+          # This creates the tag too, on the commit that was built
+          gh release create "v$VERSION" "jar/nexium-$VERSION.jar" \
+            --title "Nexium $VERSION" --notes-file notes.md --target "$GITHUB_SHA"

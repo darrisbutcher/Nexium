@@ -18,6 +18,10 @@ description each, all unlocked from the start. For a bigger, easier-to-read adva
 
 ## Install and build
 
+Get the jar from the repository's **Releases** page, or build it yourself as below. A release is published automatically
+whenever a new `mod_version` (in `gradle.properties`) is merged to `main`: it has that version's jar and its notes from
+`CHANGELOG.md`.
+
 Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on both the client and the server.
 
 ```
