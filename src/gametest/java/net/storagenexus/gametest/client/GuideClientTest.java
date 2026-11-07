@@ -4,26 +4,26 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.network.chat.Component;
-import net.storagenexus.client.guide.GuideBookScreen;
-import net.storagenexus.client.guide.GuideChaptersScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.storagenexus.client.guide.CodexScreen;
 import net.storagenexus.client.guide.GuideScreens;
 import net.storagenexus.guide.GuideBookItem;
 import net.storagenexus.guide.GuideData;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Nexium Guide on a real client: the item opens the chapter picker, a card opens its chapter as a book, closing the book
- * comes back to the picker, and every page of every chapter fits the book's 14 lines of 114 pixels. Takes screenshots of the
- * picker, text pages, a contents page and recipe cards.
+ * The Nexium Codex on a real client: the guide item opens it, every topic lays out without a word sticking out of the page,
+ * a link clicked with the mouse opens its topic, back and forward work, search finds topics, and the lookup key over an item
+ * in the inventory opens that item's page (Escape comes back to the inventory). Takes screenshots along the way.
  */
 public class GuideClientTest implements FabricClientGameTest {
-    private static final int PAGE_LINES = 14, PAGE_WIDTH = 114;
-
     @Override
     public void runTest(ClientGameTestContext ctx) {
         ctx.getInput().resizeWindow(1280, 720);
@@ -31,117 +31,103 @@ public class GuideClientTest implements FabricClientGameTest {
             ctx.waitTicks(10);
             GuideData data = ctx.computeOnClient(mc -> GuideScreens.load(mc.getResourceManager()));
 
-            // The item opens the picker, and hovering a card shows what its chapter covers
+            // The guide item opens the Codex on its first topic
             ctx.runOnClient(mc -> GuideBookItem.openScreen.run());
             ctx.waitTicks(5);
-            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof GuideChaptersScreen), "the guide item opens the chapter picker");
-            System.out.println("[nexus] guide picker: " + ctx.takeScreenshot("nexus_guide_picker"));
-            int tools = chapterIndex(data, "aiot");
-            hover(ctx, tools);
-            System.out.println("[nexus] guide picker hover: " + ctx.takeScreenshot("nexus_guide_picker_hover"));
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof CodexScreen), "the guide item opens the Codex");
+            check(data.home().equals(codex(ctx, CodexScreen::topic)), "it opens on the first topic");
+            System.out.println("[nexus] codex home: " + ctx.takeScreenshot("nexus_codex_home"));
 
-            // Clicking a card opens that chapter; Escape in the book comes back to the picker
-            click(ctx, chapterIndex(data, "drawers"));
-            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof GuideBookScreen), "a card opens its chapter as a book");
-            System.out.println("[nexus] guide chapter opened: " + ctx.takeScreenshot("nexus_guide_chapter"));
+            // Every topic lays out inside the page, and has something on it
+            List<String> problems = new ArrayList<>();
+            for (String id : data.topics().keySet()) {
+                ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).open(id));
+                boolean fits = codex(ctx, CodexScreen::fitsWidth);
+                int height = codex(ctx, CodexScreen::contentHeight);
+                if (!fits || height < 60) problems.add(id + (fits ? " is empty" : " has a word past the right edge"));
+                String title = codex(ctx, s -> s.title(id));
+                if (title == null || title.isBlank() || title.contains("Format error")) problems.add(id + " has a broken title: " + title);
+            }
+            check(problems.isEmpty(), "every topic fits the page: " + problems);
 
-            // A contents line jumps to its page: "Using a drawer" is the second line, "Recipes" the last
-            GuideData.Chapter drawers = data.chapter("drawers");
-            clickContents(ctx, 1);
-            check(currentPage(ctx) == drawers.indexOf("using"), "the contents link to 'Using a drawer' turns to that page");
-            ctx.runOnClient(mc -> ((GuideBookScreen) mc.gui.screen()).setPage(0));
-            ctx.waitTicks(2);
-            clickContents(ctx, 12);
-            check(currentPage(ctx) == drawers.indexOf("recipes"), "the contents link to 'Recipes' turns to the recipe pages");
+            // A link in the text, clicked with the mouse, opens its topic; back and forward walk the history
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).open("area"));
+            ctx.waitTicks(3);
+            List<String> links = codex(ctx, CodexScreen::links);
+            check(links.contains("aiot") && links.contains("tunnels"), "the 3x3 Mining page links to the AIOT and Tunnels pages, got " + links);
+            System.out.println("[nexus] codex topic: " + ctx.takeScreenshot("nexus_codex_topic"));
+            clickAt(ctx, codex(ctx, s -> s.linkSpot("aiot")));
+            check("aiot".equals(codex(ctx, CodexScreen::topic)), "clicking the AIOT link opens that page");
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).back());
+            check("area".equals(codex(ctx, CodexScreen::topic)), "back returns to 3x3 Mining");
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).forward());
+            check("aiot".equals(codex(ctx, CodexScreen::topic)), "forward goes to the AIOT page again");
+
+            // A page with recipe cards
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).open("barrels"));
+            ctx.waitTicks(3);
+            System.out.println("[nexus] codex recipes: " + ctx.takeScreenshot("nexus_codex_recipes"));
+
+            // Search lists matching topics, best (title) matches first
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).setSearch("freezer"));
+            ctx.waitTicks(3);
+            List<String> found = codex(ctx, CodexScreen::sidebarTopics);
+            check(!found.isEmpty() && found.getFirst().equals("freezer"), "searching 'freezer' finds the Freezer first, got " + found);
+            System.out.println("[nexus] codex search: " + ctx.takeScreenshot("nexus_codex_search"));
+            ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).setSearch(""));
+            ctx.setScreen(() -> null);
+            ctx.waitTicks(3);
+
+            // Items find their pages (vanilla items don't)
+            check("freezer".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:freezer")))), "the Freezer's page");
+            check("drawers".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:oak_drawer_1x1")))), "a drawer's page");
+            check("aiot".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:diamond_aiot")))), "an AIOT's page");
+            check(ctx.computeOnClient(mc -> GuideScreens.topicFor(new ItemStack(Items.DIAMOND))) == null, "a diamond has no page");
+
+            // The lookup key over an item in the inventory opens its page; Escape comes back to the inventory
+            world.getServer().runCommand("clear @a");
+            world.getServer().runCommand("give @a storagenexus:freezer");
+            ctx.waitTicks(5);
+            ctx.setScreen(() -> new InventoryScreen(ctx.computeOnClient(mc -> mc.player)));
+            ctx.waitTicks(5);
+            double[] slot = ctx.computeOnClient(mc -> {
+                InventoryScreen screen = (InventoryScreen) mc.gui.screen();
+                Slot hotbar = screen.getMenu().slots.get(36);
+                int left = (screen.width - 176) / 2, top = (screen.height - 166) / 2;
+                return new double[]{left + hotbar.x + 8, top + hotbar.y + 8};
+            });
+            moveTo(ctx, slot);
+            ctx.getInput().pressKey(InputConstants.KEY_H);
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof CodexScreen), "H over the Freezer opens the Codex");
+            check("freezer".equals(codex(ctx, CodexScreen::topic)), "on the Freezer's page");
+            System.out.println("[nexus] codex lookup: " + ctx.takeScreenshot("nexus_codex_lookup"));
             ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
             ctx.waitTicks(5);
-            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof GuideChaptersScreen), "closing a chapter goes back to the picker");
-            ctx.setScreen(() -> null);
-
-            // Every page fits the book
-            List<String> tooLong = ctx.computeOnClient(mc -> {
-                List<String> problems = new ArrayList<>();
-                for (GuideData.Chapter chapter : data.chapters()) {
-                    List<Component> pages = GuideBookScreen.pageComponents(chapter);
-                    for (int i = 0; i < pages.size(); i++) {
-                        int lines = mc.font.split(pages.get(i), PAGE_WIDTH).size();
-                        if (lines > PAGE_LINES) problems.add(chapter.id() + " page " + (i + 1) + " takes " + lines + " lines");
-                        if (chapter.pages().get(i) instanceof GuideData.ContentsPage contents) {
-                            // The chapter's title heads the page (and may take two lines); every entry must stay on one
-                            Component heading = Component.translatable(chapter.titleKey()).withStyle(ChatFormatting.BOLD);
-                            int expected = mc.font.split(heading, PAGE_WIDTH).size() + contents.targets().size();
-                            if (lines != expected) problems.add(chapter.id() + " contents wraps a line (" + lines + " lines, expected " + expected + ")");
-                        }
-                    }
-                }
-                return problems;
-            });
-            check(tooLong.isEmpty(), "every guide page fits the book: " + tooLong);
-
-            // Pages worth looking at
-            show(ctx, data, "start", "welcome", "nexus_guide_start");
-            show(ctx, data, "drawers", "contents", "nexus_guide_drawers_contents");
-            show(ctx, data, "drawers", "capacity", "nexus_guide_drawers_capacity");
-            show(ctx, data, "drawers", "recipes", "nexus_guide_recipes_drawers");
-            show(ctx, data, "network", "recipes2", "nexus_guide_recipes_network");
-            show(ctx, data, "links", "recipes5", "nexus_guide_recipes_conduits");
-            show(ctx, data, "aiot", "recipes", "nexus_guide_recipes_aiot");
-            show(ctx, data, "aiot", "recipes2", "nexus_guide_recipes_smithing");
-            show(ctx, data, "armor", "bonuses", "nexus_guide_armor_bonuses");
-            show(ctx, data, "mobs", "recipe", "nexus_guide_iron_farm");
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof InventoryScreen), "Escape comes back to the inventory");
             ctx.setScreen(() -> null);
         }
     }
 
-    private static int chapterIndex(GuideData data, String id) {
-        for (int i = 0; i < data.chapters().size(); i++) if (data.chapters().get(i).id().equals(id)) return i;
-        throw new AssertionError("No chapter " + id);
+    private static ItemStack stack(String id) {
+        return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
     }
 
-    private static void show(ClientGameTestContext ctx, GuideData data, String chapterId, String pageId, String screenshot) {
-        GuideData.Chapter chapter = data.chapter(chapterId);
-        int index = chapter.indexOf(pageId);
-        check(index >= 0, chapterId + " has a page " + pageId);
-        ctx.setScreen(() -> new GuideBookScreen(data, chapter, null));
-        ctx.waitTicks(2);
-        // The page can only be turned once the screen has set up its page buttons
-        ctx.runOnClient(mc -> ((GuideBookScreen) mc.gui.screen()).setPage(index));
-        ctx.waitTicks(3);
-        System.out.println("[nexus] " + screenshot + ": " + ctx.takeScreenshot(screenshot));
+    private static <T> T codex(ClientGameTestContext ctx, java.util.function.Function<CodexScreen, T> get) {
+        return ctx.computeOnClient(mc -> get.apply((CodexScreen) mc.gui.screen()));
     }
 
-    /** Moves the mouse onto the picker's card for this chapter. */
-    private static void hover(ClientGameTestContext ctx, int card) {
-        double[] centre = ctx.computeOnClient(mc -> {
-            AbstractWidget widget = (AbstractWidget) mc.gui.screen().children().get(card);
-            double scale = mc.getWindow().getGuiScale();
-            return new double[]{(widget.getX() + widget.getWidth() / 2.0) * scale, (widget.getY() + widget.getHeight() / 2.0) * scale};
-        });
-        ctx.getInput().setCursorPos(centre[0], centre[1]);
+    private static void moveTo(ClientGameTestContext ctx, double[] guiSpot) {
+        check(guiSpot != null, "the spot to point at exists");
+        double scale = ctx.computeOnClient(mc -> mc.getWindow().getGuiScale());
+        ctx.getInput().setCursorPos(guiSpot[0] * scale, guiSpot[1] * scale);
         ctx.waitTicks(3);
     }
 
-    private static void click(ClientGameTestContext ctx, int card) {
-        hover(ctx, card);
+    private static void clickAt(ClientGameTestContext ctx, double[] guiSpot) {
+        moveTo(ctx, guiSpot);
         ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
-        ctx.waitTicks(5);
-    }
-
-    /** Clicks the nth line of a book's contents page: the text starts 36 across and 30 down, under a one-line heading. */
-    private static void clickContents(ClientGameTestContext ctx, int entry) {
-        double[] spot = ctx.computeOnClient(mc -> {
-            double scale = mc.getWindow().getGuiScale();
-            int bookLeft = (mc.getWindow().getGuiScaledWidth() - 192) / 2;
-            return new double[]{(bookLeft + 36 + 10) * scale, (2 + 30 + 9 * (1 + entry) + 4) * scale};
-        });
-        ctx.getInput().setCursorPos(spot[0], spot[1]);
-        ctx.waitTicks(2);
-        ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
-        ctx.waitTicks(3);
-    }
-
-    private static int currentPage(ClientGameTestContext ctx) {
-        return ctx.computeOnClient(mc -> ((GuideBookScreen) mc.gui.screen()).currentPage);
+        ctx.waitTicks(4);
     }
 
     private static void check(boolean ok, String what) {

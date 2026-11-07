@@ -16,7 +16,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.storagenexus.dimension.AnchorRegistry;
 import net.storagenexus.network.TerminalBlock;
 import net.storagenexus.registry.ModComponents;
 
@@ -24,8 +23,8 @@ import java.util.function.Consumer;
 
 /**
  * Sneak-right-click a terminal to link. Right-click anywhere to open that terminal's network:
- * no range limit and any dimension, as long as the terminal's chunk is loaded (or covered by a
- * Dimensional Anchor set to on-demand).
+ * no range limit and any dimension, as long as the terminal's chunk is loaded (a Dimensional Anchor
+ * keeps it so).
  */
 public class StorageTabletItem extends Item {
     public StorageTabletItem(Properties properties) {
@@ -62,22 +61,17 @@ public class StorageTabletItem extends Item {
             return InteractionResult.FAIL;
         }
         BlockPos pos = link.pos();
-        Runnable release = null;
-        if (!target.isLoaded(pos)) release = AnchorRegistry.get(server).loadOnDemand(target, pos);
         if (!target.isLoaded(pos)) {
-            if (release != null) release.run();
             offline(player);
             return InteractionResult.FAIL;
         }
         if (!(target.getBlockState(pos).getBlock() instanceof TerminalBlock)) {
-            if (release != null) release.run();
             player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_terminal_missing").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
-        final Runnable onClose = release;
         TerminalBlock.open((ServerPlayer) player, target, pos, true,
                 p -> holdsLinkedTablet(p, link) && target.isLoaded(pos) && target.getBlockState(pos).getBlock() instanceof TerminalBlock,
-                onClose);
+                null);
         return InteractionResult.SUCCESS;
     }
 

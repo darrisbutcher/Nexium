@@ -12,50 +12,34 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The guide's chapters and recipe cards, read from {@code assets/storagenexus/guide/chapters.json} and
- * {@code recipes.json}. Text is not in here: every page, chapter title and recipe name is a lang key built from the ids
- * ({@code guide.storagenexus.<chapter>.<page>}), so wording lives in the lang file like everything else.
+ * The Nexium Codex: its categories and topics ({@code assets/storagenexus/codex/codex.json}) and the recipe cards topics show
+ * ({@code assets/storagenexus/guide/recipes.json}). Text is not in here: a topic is made of text pages, and every page is a
+ * lang key ({@code guide.storagenexus.<page>}) whose first line is its heading, so wording lives in the lang file like
+ * everything else. The first page's heading is the topic's title.
  */
-public record GuideData(List<Chapter> chapters, Map<String, Recipe> recipes) {
-    /** A page of a chapter. A recipe sheet holds up to two recipe cards, drawn over a blank page. */
-    public sealed interface Page permits TextPage, ContentsPage, RecipeSheet {}
+public record GuideData(List<Category> categories, Map<String, Topic> topics, Map<String, Recipe> recipes) {
 
-    public record TextPage(String id) implements Page {}
-
-    /** A clickable list that jumps to the pages with these ids. */
-    public record ContentsPage(List<String> targets) implements Page {}
-
-    public record RecipeSheet(String id, List<String> recipeIds) implements Page {}
-
-    public record Chapter(String id, String cover, List<Page> pages) {
+    /** A group in the Codex's sidebar. A topic may sit in more than one category. */
+    public record Category(String id, String icon, List<String> topics) {
         public String titleKey() {
-            return "guide.storagenexus.chapter." + id;
+            return "codex.storagenexus.category." + id;
+        }
+    }
+
+    /**
+     * One page of the Codex. {@code pages} are lang keys without the {@code guide.storagenexus.} prefix; {@code items} are
+     * the items (or {@code #tags}) whose lookup key opens this topic, besides {@code icon}; {@code aliases} are other words
+     * that link here from other topics' text, besides the title; {@code see} are the "See also" topics.
+     */
+    public record Topic(String id, List<String> pages, String icon, List<String> recipes, List<String> items,
+                        List<String> aliases, List<String> see) {
+        public static String pageKey(String page) {
+            return "guide.storagenexus." + page;
         }
 
-        public String topicsKey() {
-            return titleKey() + ".topics";
-        }
-
-        public String pageKey(String pageId) {
-            return "guide.storagenexus." + id + "." + pageId;
-        }
-
-        /** Lang key of the contents line that links to the page with this id. */
-        public String contentsKey(String pageId) {
-            return "guide.storagenexus." + id + ".toc." + pageId;
-        }
-
-        /** The 0-based index of the page with this id, or -1. */
-        public int indexOf(String pageId) {
-            for (int i = 0; i < pages.size(); i++) {
-                String id = switch (pages.get(i)) {
-                    case TextPage t -> t.id();
-                    case RecipeSheet r -> r.id();
-                    case ContentsPage c -> "contents";
-                };
-                if (id.equals(pageId)) return i;
-            }
-            return -1;
+        /** The lang key of the first page, whose heading is the topic's title. */
+        public String titleKey() {
+            return pageKey(pages.getFirst());
         }
     }
 
@@ -87,33 +71,51 @@ public record GuideData(List<Chapter> chapters, Map<String, Recipe> recipes) {
         }
     }
 
-    public Chapter chapter(String id) {
-        for (Chapter c : chapters) if (c.id().equals(id)) return c;
-        throw new IllegalArgumentException("No guide chapter " + id);
+    public Topic topic(String id) {
+        Topic topic = topics.get(id);
+        if (topic == null) throw new IllegalArgumentException("No Codex topic " + id);
+        return topic;
     }
 
-    public static GuideData parse(JsonObject chaptersJson, JsonObject recipesJson) {
+    /** The first category that lists this topic (for the sidebar and the breadcrumb), or null. */
+    public Category categoryOf(String topicId) {
+        for (Category c : categories) if (c.topics().contains(topicId)) return c;
+        return null;
+    }
+
+    /** The topic the Codex opens on. */
+    public String home() {
+        return categories.getFirst().topics().getFirst();
+    }
+
+    public static GuideData parse(JsonObject codexJson, JsonObject recipesJson) {
         Map<String, Recipe> recipes = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> e : recipesJson.getAsJsonObject("recipes").entrySet()) {
             recipes.put(e.getKey(), parseRecipe(e.getKey(), e.getValue().getAsJsonObject()));
         }
-        List<Chapter> chapters = new ArrayList<>();
-        for (JsonElement ce : chaptersJson.getAsJsonArray("chapters")) {
-            JsonObject c = ce.getAsJsonObject();
-            List<Page> pages = new ArrayList<>();
-            for (JsonElement pe : c.getAsJsonArray("pages")) pages.add(parsePage(pe.getAsJsonObject()));
-            chapters.add(new Chapter(c.get("id").getAsString(), c.get("cover").getAsString(), List.copyOf(pages)));
+        Map<String, Topic> topics = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> e : codexJson.getAsJsonObject("topics").entrySet()) {
+            JsonObject t = e.getValue().getAsJsonObject();
+            List<String> pages = strings(t.getAsJsonArray("pages"));
+            if (pages.isEmpty()) throw new IllegalArgumentException("Codex topic " + e.getKey() + " has no pages");
+            topics.put(e.getKey(), new Topic(e.getKey(), pages, t.get("icon").getAsString(), optional(t, "recipes"),
+                    optional(t, "items"), optional(t, "aliases"), optional(t, "see")));
         }
-        return new GuideData(List.copyOf(chapters), Collections.unmodifiableMap(recipes));
+        List<Category> categories = new ArrayList<>();
+        for (JsonElement ce : codexJson.getAsJsonArray("categories")) {
+            JsonObject c = ce.getAsJsonObject();
+            List<String> list = strings(c.getAsJsonArray("topics"));
+            for (String id : list) {
+                if (!topics.containsKey(id)) throw new IllegalArgumentException("Codex category " + c.get("id") + " lists unknown topic " + id);
+            }
+            categories.add(new Category(c.get("id").getAsString(), c.get("icon").getAsString(), list));
+        }
+        if (categories.isEmpty() || categories.getFirst().topics().isEmpty()) throw new IllegalArgumentException("The Codex has no topics");
+        return new GuideData(List.copyOf(categories), Collections.unmodifiableMap(topics), Collections.unmodifiableMap(recipes));
     }
 
-    private static Page parsePage(JsonObject p) {
-        return switch (p.get("type").getAsString()) {
-            case "text" -> new TextPage(p.get("id").getAsString());
-            case "contents" -> new ContentsPage(strings(p.getAsJsonArray("entries")));
-            case "recipes" -> new RecipeSheet(p.get("id").getAsString(), strings(p.getAsJsonArray("recipes")));
-            default -> throw new IllegalArgumentException("Unknown guide page type " + p.get("type"));
-        };
+    private static List<String> optional(JsonObject object, String key) {
+        return object.has(key) ? strings(object.getAsJsonArray(key)) : List.of();
     }
 
     private static Recipe parseRecipe(String id, JsonObject r) {

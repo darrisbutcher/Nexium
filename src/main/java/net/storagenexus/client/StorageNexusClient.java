@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.storagenexus.client.guide.CodexClient;
 import net.storagenexus.client.guide.GuideScreens;
 import net.storagenexus.client.render.CompactingDrawerRenderer;
 import net.storagenexus.client.render.DrawerRenderer;
@@ -77,6 +78,7 @@ public class StorageNexusClient implements ClientModInitializer {
         ItemDescriptions.init();
         ContentsTooltip.init();
         GuideBookItem.openScreen = GuideScreens::open;
+        CodexClient.init();
         NexusEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();

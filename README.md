@@ -7,10 +7,13 @@ a 1-block iron farm and more).
 
 Every item is in the **Nexium** creative tab, and every tooltip says what its item does.
 
-The **Nexium Guide** (given once when you join a world, or crafted from a book and any drawer) is the in-game manual.
-Right-click it to pick one of nine chapters (Start Here, Drawers & Barrels, Storage Network, Links & Conduits, All-in-one
-Tools, Nexium, Nexium Armor, Essentials, and Mobs, Elixir & Iron Farm). Each opens as a book that describes every item,
-how to use it and, at the end, its crafting recipes drawn as crafting grids. Closing a book comes back to the chapter list.
+The **Nexium Codex** is the in-game manual, a small built-in wiki. Right-click the **Nexium Guide** (given once when you join
+a world, or crafted from a book and any drawer) to open it, or press **H** outside a screen. The sidebar lists 11 categories
+(Getting Started, Storage, Storage Network, Transport & Links, All-in-one Tools, Nexium & Armor, Equipment Slots, Farms &
+Machines, Mobs & Villagers, Enchanting & Effects, World Tweaks) and a search box finds any topic. Each topic is one page
+that scrolls: words that name another topic are links, recipes are drawn as crafting grids (click an ingredient to open its
+page), and "See also" lists related topics. Back and forward work like a browser. In any inventory, hover over an item and
+press **H** to open its page; Escape brings you back. Every item in the mod has a page.
 
 The **Nexium advancement tab** (press **L**) is a quick map of everything in the mod: 33 nodes with an icon and a short
 description each, all unlocked from the start. For a bigger, easier-to-read advancements screen, try the optional
@@ -31,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.12.2.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.13.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -71,8 +74,8 @@ on). What is inside stays inside.
 
 ### Tablets
 Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to link it, with no range limit and in any
-dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** loads a 3x3 chunk area, always or only
-while a tablet is open.
+dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** keeps the 3x3 chunks around it loaded;
+place it or right-click it to outline those chunks for a minute.
 
 ### Dimensional Input / Output
 * Click an Input with a **Dimensional Link Card**, then click Outputs. Each link has a name (rename the card in an
