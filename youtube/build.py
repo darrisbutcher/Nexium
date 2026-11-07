@@ -98,6 +98,12 @@ def logo(text="DRAGONFALL",scale=10,sub=None,subscale=None,glowcol=EM):
 
 def save(im,name): im.save(os.path.join(OUT,name)); print(name,im.size)
 
+def make_episode_badges(n=100):
+    d=os.path.join(OUT,"episode_badges"); os.makedirs(d,exist_ok=True)
+    for i in range(1,n+1):
+        t=title(f"EP {i}",9,face=GOLDFACE,extrude=2); with_glow(t,EMBER,16,1.1,pad=60).save(os.path.join(d,f"ep_{i:03d}.png"))
+    print(n,"badges")
+
 if __name__=="__main__":
     # ---- 1. logos (transparent) ----
     save(logo("DRAGONFALL",14,None),"02_logo_dragonfall.png")
@@ -149,6 +155,5 @@ if __name__=="__main__":
     tt=title("DRAGONFALL",3,extrude=1); lt.alpha_composite(tt,(80+30,820+(p.height-tt.height)//2)); 
     cr=up(outline_low(CRYSTAL),5); lt.alpha_composite(cr,(80+p.width-cr.width-30,820+(p.height-cr.height)//2))
     save(lt,"10_lower_third_1920x1080.png")
-    # ---- 9. episode badges ----
-    for n in (1,2,3):
-        t=title(f"EP {n}",9,face=GOLDFACE,extrude=2); save(with_glow(t,EMBER,16,1.1,pad=60),f"11_episode_badge_ep{n}.png")
+    # ---- 9. episode badges 1-100 ----
+    make_episode_badges()
