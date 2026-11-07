@@ -87,6 +87,27 @@ public class PreviewClientTest implements FabricClientGameTest {
             System.out.println("[nexus] vein preview: " + ctx.takeScreenshot("nexus_preview_vein"));
             ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
 
+            // The readout shows for a while (1 second here instead of 20), then hides; the 3x3 key shows it again
+            check(ctx.computeOnClient(mc -> AiotHud.visible()), "the readout is up while an AIOT is in use");
+            ctx.runOnClient(mc -> {
+                net.storagenexus.essentials.config.NexusConfig.get().aiotHudSeconds = 1;
+                AiotHud.show();
+            });
+            ctx.waitTicks(30);
+            check(!ctx.computeOnClient(mc -> AiotHud.visible()), "the readout hides after its time");
+            ctx.getInput().pressKey(ToolMenuClient.TOGGLE_AREA);
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> AiotHud.visible()), "the 3x3 key shows the readout again");
+            String hudOff = ctx.computeOnClient(mc -> hud(mc));
+            check(hudOff.startsWith("3x3: off"), "and it reads the 3x3 switched off, got: " + hudOff);
+            ctx.waitTicks(30);
+            check(!ctx.computeOnClient(mc -> AiotHud.visible()), "hidden again");
+            ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
+            ctx.waitTicks(40);
+            check(ctx.computeOnClient(mc -> AiotHud.visible()), "the readout stays up while the vein key is held");
+            ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
+            ctx.runOnClient(mc -> net.storagenexus.essentials.config.NexusConfig.get().aiotHudSeconds = 20);
+
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0)
                     .setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE)));
             ctx.waitTicks(10);

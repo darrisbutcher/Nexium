@@ -109,6 +109,8 @@ public final class NexusConfig {
     public boolean aiotMiningPreview = true;
     /** Client side: show the AIOT's mode and module states in the corner of the screen while you hold it. */
     public boolean aiotHud = true;
+    /** Client side: seconds the AIOT readout stays up after you switch to an AIOT or press its 3x3, tunnel or vein key. 0 keeps it up. */
+    public int aiotHudSeconds = 20;
     /** The Nexus Link module works (drops go to the linked storage network). */
     public boolean aiotNexusLink = true;
 
@@ -166,6 +168,7 @@ public final class NexusConfig {
         freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));
         freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
+        aiotHudSeconds = Math.max(0, Math.min(600, aiotHudSeconds));
         aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
         restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));
