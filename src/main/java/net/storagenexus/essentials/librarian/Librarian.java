@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The Master Librarian a "Nexus Librarian" chest makes: a level 5 librarian that sells an enchanted book of every
+ * The Master Librarian the Farm Assembler makes: a level 5 librarian that sells an enchanted book of every
  * enchantment (curses excepted) at its highest level, Mending and the other treasure enchantments included. Prices
  * follow the villagers' own book formula: 2 emeralds plus up to 5 + 3 per level more, doubled for treasure
  * enchantments, never above 64; each trade also takes a book. It comes out as a Captured Mob item.
  */
 public final class Librarian {
-    /** Marks the Captured Mob item the chest makes, so it can't be fed back in as one of the villagers a chest wants. */
+    /** Marks the Captured Mob item the Assembler makes, so it can't be fed back in as one of the villagers a recipe wants. */
     private static final String MARKER = "storagenexus_librarian";
     private static final int MAX_USES = 12;
     private static final int XP = 15;
@@ -79,7 +79,7 @@ public final class Librarian {
         return stack;
     }
 
-    /** Whether this item came out of a librarian chest. */
+    /** Whether this item is a Master Librarian the Assembler made. */
     public static boolean isMade(ItemStack stack) {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getBooleanOr(MARKER, false);
     }

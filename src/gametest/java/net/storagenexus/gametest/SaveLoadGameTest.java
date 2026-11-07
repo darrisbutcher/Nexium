@@ -251,6 +251,11 @@ public class SaveLoadGameTest {
                 part(IronFarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.IRON_INGOT, 5))),
                 part(IronFarmBlockEntity.class, "bread", be -> be.setItem(IronFarmBlockEntity.BREAD_SLOT, new ItemStack(Items.BREAD, 3))),
                 part(IronFarmBlockEntity.class, "timers", be -> be.setTimers(new IronFarmTimers(10, 20, 30, 40))))));
+        cases.add(new Case("Farm Assembler", net.storagenexus.essentials.registry.ModBlocks.FARM_ASSEMBLER, List.of(
+                part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "target", be -> be.select(net.storagenexus.essentials.assembler.AssemblyTarget.SHULKER, null)),
+                part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "materials", be -> be.accept(new ItemStack(Items.TORCH, 5))),
+                part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "finished farm", be -> be.output().setItem(0,
+                        new ItemStack(net.storagenexus.essentials.registry.ModItems.IRON_FARM))))));
         cases.add(new Case("Freezer", ModBlocks.FREEZER, List.of(
                 part(net.storagenexus.freezer.FreezerBlockEntity.class, "water", be -> be.setWater(3 * FluidConstants.BUCKET)),
                 part(net.storagenexus.freezer.FreezerBlockEntity.class, "ice", be -> be.setItem(0, new ItemStack(Items.ICE, 5))),

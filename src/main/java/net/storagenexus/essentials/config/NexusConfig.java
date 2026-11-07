@@ -60,15 +60,11 @@ public final class NexusConfig {
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
     public boolean ancientDebrisDropsScrap = true;
 
-    // --- Librarian chest
-    /** The name (set in an anvil) a chest needs to turn into a Master Librarian. Upper and lower case don't matter. */
-    public String librarianChestName = "Nexus Librarian";
-    /** How many villagers (spawn eggs or Captured Mobs) the librarian chest takes. */
+    // --- Master Librarian
+    /** How many villagers (spawn eggs or Captured Mobs) the Farm Assembler takes to make a Master Librarian. */
     public int librarianVillagers = 12;
 
     // --- Iron farm
-    /** The name (set in an anvil) a double chest needs to turn into an Iron Farm. Upper and lower case don't matter. */
-    public String ironFarmChestName = "Nexus Iron Farm";
     /** Ticks between golems at normal speed. 150 (7.5 seconds) is about 1,900 iron an hour, like four 3-villager farms. */
     public int ironFarmGolemTicks = 150;
     /** How many times faster the farm works while it has bread. */
@@ -80,12 +76,7 @@ public final class NexusConfig {
     /** Golems drop 0-2 poppies as well as 3-5 iron, like real ones. */
     public boolean ironFarmPoppies = true;
 
-    // --- Other one-block farms (each made from a double chest with this name, like the Iron Farm)
-    public String villagerBreederChestName = "Nexus Villager Breeder";
-    public String piglinBarterChestName = "Nexus Piglin Barter";
-    public String zombifiedPiglinChestName = "Nexus Zombified Piglin";
-    public String witherSkeletonChestName = "Nexus Wither Skeleton Farm";
-    public String shulkerFarmChestName = "Nexus Shulker Farm";
+    // --- Other one-block farms (made at the Farm Assembler, like the Iron Farm)
     /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 24000 is 20 minutes. */
     public int villagerBreederTicks = 24000;
     /** Ticks per barter (1 gold ingot each), like a real piglin's 6 seconds. */
@@ -158,25 +149,14 @@ public final class NexusConfig {
         }
     }
 
-    private static String name(String value, String fallback) {
-        return value == null || value.isBlank() ? fallback : value;
-    }
-
     private void clamp() {
         magnetMaxRange = Math.max(4, Math.min(64, magnetMaxRange));
         bedrockBreakerSeconds = Math.max(1, Math.min(24 * 60 * 60, bedrockBreakerSeconds));
-        if (librarianChestName == null || librarianChestName.isBlank()) librarianChestName = "Nexus Librarian";
         librarianVillagers = Math.max(1, Math.min(54, librarianVillagers));
-        if (ironFarmChestName == null || ironFarmChestName.isBlank()) ironFarmChestName = "Nexus Iron Farm";
         ironFarmGolemTicks = Math.max(1, Math.min(24000, ironFarmGolemTicks));
         ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));
         ironFarmBreadSeconds = Math.max(1, Math.min(60 * 60, ironFarmBreadSeconds));
         ironFarmCooldownMultiplier = Math.max(0, Math.min(100, ironFarmCooldownMultiplier));
-        villagerBreederChestName = name(villagerBreederChestName, "Nexus Villager Breeder");
-        piglinBarterChestName = name(piglinBarterChestName, "Nexus Piglin Barter");
-        zombifiedPiglinChestName = name(zombifiedPiglinChestName, "Nexus Zombified Piglin");
-        witherSkeletonChestName = name(witherSkeletonChestName, "Nexus Wither Skeleton Farm");
-        shulkerFarmChestName = name(shulkerFarmChestName, "Nexus Shulker Farm");
         villagerBreederTicks = Math.max(1, Math.min(1_000_000, villagerBreederTicks));
         piglinBarterTicks = Math.max(1, Math.min(1_000_000, piglinBarterTicks));
         zombifiedPiglinTicks = Math.max(1, Math.min(1_000_000, zombifiedPiglinTicks));

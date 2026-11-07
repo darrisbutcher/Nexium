@@ -33,95 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** The other one-block farms: the named chests that make them, and what each one makes. */
+/** The other one-block farms: what each one makes. */
 public class FarmGameTest {
-    private static final BlockPos LEFT = new BlockPos(2, 1, 2), RIGHT = new BlockPos(3, 1, 2);
     private static final BlockPos FARM = new BlockPos(4, 2, 4);
 
     // ---------------------------------------------------------------- helpers
 
-    private static List<ChestBlockEntity> doubleChest(GameTestHelper h, String name) {
-        h.setBlock(LEFT, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.NORTH).setValue(ChestBlock.TYPE, ChestType.LEFT));
-        h.setBlock(RIGHT, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.NORTH).setValue(ChestBlock.TYPE, ChestType.RIGHT));
-        List<ChestBlockEntity> halves = List.of(h.getBlockEntity(LEFT, ChestBlockEntity.class), h.getBlockEntity(RIGHT, ChestBlockEntity.class));
-        ItemStack named = new ItemStack(Items.CHEST);
-        named.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        halves.get(0).applyComponentsFromItemStack(named);
-        return halves;
-    }
 
-    private static void fill(List<ChestBlockEntity> halves, List<ItemStack> stacks) {
-        int i = 0;
-        for (ChestBlockEntity half : halves) {
-            for (int slot = 0; slot < half.getContainerSize(); slot++, i++) {
-                half.setItem(slot, i < stacks.size() ? stacks.get(i).copy() : ItemStack.EMPTY);
-            }
-            half.setChanged();
-        }
-    }
 
-    private static ItemStack captured(EntityType<?> type) {
-        return MobCapture.toItem(new CapturedMob(type, new CompoundTag(), Optional.empty(), 20.0F, 20.0F, false));
-    }
 
-    private static void add(List<ItemStack> list, Item item, int count) {
-        while (count > 0) {
-            int n = Math.min(count, item.getDefaultMaxStackSize());
-            list.add(new ItemStack(item, n));
-            count -= n;
-        }
-    }
 
-    /** The recipe's materials for a kind, with mobs as spawn eggs or as Captured Mobs, then the filler. */
-    private static List<ItemStack> recipe(FarmKind kind, boolean capturedMobs) {
-        List<ItemStack> list = new ArrayList<>();
-        switch (kind) {
-            case VILLAGER_BREEDER -> {
-                if (capturedMobs) for (int i = 0; i < 2; i++) list.add(captured(EntityTypes.VILLAGER));
-                else list.add(new ItemStack(Items.VILLAGER_SPAWN_EGG, 2));
-                for (int i = 0; i < 4; i++) list.add(new ItemStack(i % 2 == 0 ? Items.BED.red() : Items.BED.white()));
-                add(list, Items.COMPOSTER, 2);
-                add(list, Items.HAY_BLOCK, 8);
-                add(list, Items.EMERALD_BLOCK, 2);
-                while (list.size() < FarmRecipe.CHEST_SLOTS) list.add(new ItemStack(Items.OAK_PLANKS, 64));
-            }
-            case PIGLIN_BARTER -> {
-                if (capturedMobs) for (int i = 0; i < 2; i++) list.add(captured(EntityTypes.PIGLIN));
-                else list.add(new ItemStack(Items.PIGLIN_SPAWN_EGG, 2));
-                add(list, Items.GOLD_BLOCK, 9);
-                add(list, Items.SOUL_SAND, 16);
-                add(list, Items.CRIMSON_PLANKS, 8);
-                add(list, Items.BIRCH_PLANKS, 8);
-                while (list.size() < FarmRecipe.CHEST_SLOTS) list.add(new ItemStack(Items.NETHERRACK, 64));
-            }
-            case ZOMBIFIED_PIGLIN -> {
-                if (capturedMobs) for (int i = 0; i < 4; i++) list.add(captured(EntityTypes.ZOMBIFIED_PIGLIN));
-                else list.add(new ItemStack(Items.ZOMBIFIED_PIGLIN_SPAWN_EGG, 4));
-                add(list, Items.MAGMA_BLOCK, 8);
-                add(list, Items.NETHER_BRICKS, 20);
-                add(list, Items.GOLD_INGOT, 16);
-                while (list.size() < FarmRecipe.CHEST_SLOTS) list.add(new ItemStack(Items.NETHERRACK, 64));
-            }
-            case WITHER_SKELETON -> {
-                if (capturedMobs) for (int i = 0; i < 4; i++) list.add(captured(EntityTypes.WITHER_SKELETON));
-                else list.add(new ItemStack(Items.WITHER_SKELETON_SPAWN_EGG, 4));
-                add(list, Items.NETHER_BRICK_FENCE, 16);
-                add(list, Items.SOUL_SAND, 8);
-                add(list, Items.COAL_BLOCK, 4);
-                add(list, Items.MAGMA_BLOCK, 4);
-                while (list.size() < FarmRecipe.CHEST_SLOTS) list.add(new ItemStack(Items.NETHERRACK, 64));
-            }
-            case SHULKER -> {
-                if (capturedMobs) for (int i = 0; i < 4; i++) list.add(captured(EntityTypes.SHULKER));
-                else list.add(new ItemStack(Items.SHULKER_SPAWN_EGG, 4));
-                add(list, Items.PURPUR_BLOCK, 32);
-                add(list, Items.END_ROD, 8);
-                add(list, Items.ENDER_PEARL, 8);
-                while (list.size() < FarmRecipe.CHEST_SLOTS) list.add(new ItemStack(Items.END_STONE_BRICKS, 64));
-            }
-        }
-        return list;
-    }
 
     private static FarmBlockEntity farm(GameTestHelper h, FarmKind kind) {
         h.setBlock(FARM, ModBlocks.FARMS.get(kind));
@@ -140,66 +61,6 @@ public class FarmGameTest {
 
     private static void cycles(GameTestHelper h, FarmBlockEntity farm, int n) {
         for (int i = 0; i < n; i++) farm.cycle(h.getLevel(), farm.kind(), h.getLevel().getRandom());
-    }
-
-    // ---------------------------------------------------------------- the chests
-
-    private static void chestBecomes(GameTestHelper h, FarmKind kind, String name, boolean capturedMobs) {
-        fill(doubleChest(h, name), recipe(kind, capturedMobs));
-        h.runAfterDelay(2, () -> {
-            h.assertBlockNotPresent(Blocks.CHEST, LEFT);
-            h.assertBlockNotPresent(Blocks.CHEST, RIGHT);
-            h.assertItemEntityPresent(ModItems.FARMS.get(kind), LEFT, 2.0);
-            h.assertTrue(h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(h.absolutePos(LEFT)).inflate(3)).size() == 1,
-                    "only the farm dropped");
-            h.succeed();
-        });
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void villagerBreederChest(GameTestHelper h) {
-        chestBecomes(h, FarmKind.VILLAGER_BREEDER, "Nexus Villager Breeder", false);
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void piglinBarterChest(GameTestHelper h) {
-        chestBecomes(h, FarmKind.PIGLIN_BARTER, "Nexus Piglin Barter", true);
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void zombifiedPiglinChest(GameTestHelper h) {
-        chestBecomes(h, FarmKind.ZOMBIFIED_PIGLIN, " nexus ZOMBIFIED piglin ", false);
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void witherSkeletonChest(GameTestHelper h) {
-        chestBecomes(h, FarmKind.WITHER_SKELETON, "Nexus Wither Skeleton Farm", true);
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void shulkerChest(GameTestHelper h) {
-        chestBecomes(h, FarmKind.SHULKER, "Nexus Shulker Farm", false);
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void wrongChestStaysAndRecipesDoNotMix(GameTestHelper h) {
-        // The shulker recipe in a chest named for the wither skeleton farm: nothing happens
-        fill(doubleChest(h, "Nexus Wither Skeleton Farm"), recipe(FarmKind.SHULKER, false));
-        FarmRecipe wither = FarmRecipe.of(FarmKind.WITHER_SKELETON);
-        FarmRecipe.Check check = wither.check(recipe(FarmKind.SHULKER, false));
-        h.assertTrue(!wither.complete(check), "another farm's materials are not this recipe");
-        h.assertTrue(!wither.problems(check).isEmpty(), "the player is told what's wrong");
-        // One short: three wither skeletons
-        List<ItemStack> stacks = recipe(FarmKind.WITHER_SKELETON, false);
-        stacks.set(0, new ItemStack(Items.WITHER_SKELETON_SPAWN_EGG, 3));
-        stacks.add(0, new ItemStack(Items.NETHERRACK, 64));
-        stacks.remove(stacks.size() - 1);
-        h.assertTrue(!wither.complete(wither.check(stacks)), "a skeleton short");
-        h.assertTrue(wither.complete(wither.check(recipe(FarmKind.WITHER_SKELETON, false))), "the full recipe is complete");
-        h.runAfterDelay(2, () -> {
-            h.assertBlockPresent(Blocks.CHEST, LEFT);
-            h.succeed();
-        });
     }
 
     // ---------------------------------------------------------------- what they make

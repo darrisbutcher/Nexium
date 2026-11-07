@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.0
+
+* **Farm Assembler**: a new block that makes the one-block farms and the Master Librarian, replacing the renamed chests.
+  Pick what to make from its list, put in what it needs (Add from inventory, shift-click, or hoppers and pipes), watch
+  each material fill up with a bar and a tick, and press Build. It only takes what is still needed; picking something else
+  hands back what was in, and breaking it drops everything. Recipe: a crafting table, 4 iron ingots and 4 lapis lazuli.
+* **Same costs**: each farm takes its old recipe plus the filler block its double chest held (for example 1,408 smooth
+  stone for the Iron Farm, 3,008 end stone bricks for the Shulker Farm); the Master Librarian takes 12 villagers.
+* **Renamed chests no longer turn into farms or the Master Librarian.** The chest-name settings are gone from the config;
+  `librarianVillagers` stays.
+
 ## 1.13.1
 
 * **AIOTs redrawn at 32x32**: the curved pick-and-axe head is chunkier, each tier is back in its original colours with
