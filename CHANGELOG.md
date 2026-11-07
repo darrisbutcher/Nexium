@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.2
+
+* **Connector priority works as set**: items go into the highest priority inventory that takes them. Before, any
+  inventory that already held some of the item was filled first whatever its priority, so a lower priority barrel holding
+  a few could take everything ahead of a higher priority Drawer Controller. Within one priority, items still join their
+  own kind first. An inventory touched by two connectors now uses the higher of their priorities.
+* The Farm Assembler's game tests now run (they were missing from the test list), and a check makes sure every game test
+  class is listed.
+
 ## 1.14.1
 
 * **AIOT readout by the hotbar shows for 20 seconds**: after you switch to an AIOT, press the 3x3 (X), tunnel (Z) or vein

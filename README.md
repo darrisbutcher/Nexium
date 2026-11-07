@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.14.1.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.14.2.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -64,7 +64,10 @@ on). What is inside stays inside.
 
 ### Simple network
 * **Storage Connector** reads every inventory touching it; **Filtered Connector** reads only the one it faces,
-  through a filter. Both have a priority. **Inventory Cable** links connectors and terminals. No power.
+  through a filter. Both have a priority: items go into the highest priority inventory that takes them, even if a lower
+  one already holds some, and come out of the lowest first. At the same priority, items join their own kind first. A Drawer
+  Controller behind a connector only fills drawers that already hold the item or are locked to it. **Inventory Cable**
+  links connectors and terminals. No power.
 * **Import/Export Bus**: placed on an inventory or tank, **Import** pulls items and fluids into the network and
   **Export** pushes them out (32 items or a bucket every half second). An optional filter limits what moves.
 * **Level Emitter**: a redstone signal while the network holds at least (or fewer than) an amount of one item or fluid.
