@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.14.2.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.14.3.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -74,7 +74,9 @@ on). What is inside stays inside.
 * **Level Emitter**: a redstone signal while the network holds at least (or fewer than) an amount of one item or fluid.
 * **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting, a network
   fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
-  the network (neither mod is required).
+  the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
+  The terminal's search and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
+  turns it off). Neither mod is required.
 
 ### Tablets
 Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to link it, with no range limit and in any
@@ -367,6 +369,7 @@ server's file is the one that counts.
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
+| `terminalSearchSync` | `true` | Client: the terminals' search and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout stays up after switching to an AIOT or pressing X, Z or V; 0 keeps it up |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |

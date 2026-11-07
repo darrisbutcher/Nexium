@@ -134,6 +134,24 @@ public class TerminalClientTest implements FabricClientGameTest {
                 String grid2 = ctx.computeOnClient(mc -> ((TerminalMenu) mc.player.containerMenu).getResultSlot().getItem().toString());
                 System.out.println("FILLGRID after JEI +: result=" + grid2);
                 if (!grid2.equals("1 minecraft:crafting_table")) throw new AssertionError("JEI + did not fill the grid: " + grid2);
+
+                // JEI's "+" on a recipe nothing can make marks all 9 of its slots as missing (JEI draws them red)
+                int missing = ctx.computeOnClient(JeiCheck::missingForDiamondBlock);
+                System.out.println("FILLGRID jei missing slots for a diamond block: " + missing);
+                if (missing != 9) throw new AssertionError("expected 9 missing slots for a diamond block, got " + missing);
+
+                // Typing in the terminal's search sets JEI's, and typing in JEI's sets the terminal's
+                ctx.runOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).setSearchText("plank"));
+                ctx.waitTicks(3);
+                String jeiText = ctx.computeOnClient(mc -> JeiCheck.filterText());
+                if (!"plank".equals(jeiText)) throw new AssertionError("the terminal's search didn't reach JEI: " + jeiText);
+                ctx.runOnClient(mc -> JeiCheck.setFilterText("stone"));
+                ctx.waitTicks(3);
+                String termText = ctx.computeOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).searchText());
+                if (!"stone".equals(termText)) throw new AssertionError("JEI's search didn't reach the terminal: " + termText);
+                System.out.println("FILLGRID search sync ok");
+                ctx.runOnClient(mc -> JeiCheck.setFilterText(""));
+                ctx.waitTicks(3);
             }
             // ---- the other screens must open and render without crashing
             ctx.runOnClient(mc -> mc.gui.setScreen(null));

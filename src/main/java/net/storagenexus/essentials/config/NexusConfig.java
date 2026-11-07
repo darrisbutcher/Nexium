@@ -111,6 +111,8 @@ public final class NexusConfig {
     public boolean aiotHud = true;
     /** Client side: seconds the AIOT readout stays up after you switch to an AIOT or press its 3x3, tunnel or vein key. 0 keeps it up. */
     public int aiotHudSeconds = 20;
+    /** Client side: the Storage and Crafting Terminal's search and JEI's (or REI's) stay the same. */
+    public boolean terminalSearchSync = true;
     /** The Nexus Link module works (drops go to the linked storage network). */
     public boolean aiotNexusLink = true;
 

@@ -11,6 +11,7 @@ import net.storagenexus.terminal.FillGridPayload;
 import net.storagenexus.terminal.TerminalMenu;
 import net.storagenexus.terminal.TerminalSyncPayload;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +31,18 @@ public final class RecipeTransfer {
      * items, counting what each slot uses up.
      */
     public static boolean canCraft(TerminalMenu menu, Player player, List<List<Item>> slots) {
-        Map<Item, Long> available = new HashMap<>();
-        for (TerminalSyncPayload.ItemEntry e : menu.clientItems()) available.merge(e.stack().getItem(), e.count(), Long::sum);
-        for (ItemStack s : player.getInventory().getNonEquipmentItems()) if (!s.isEmpty()) available.merge(s.getItem(), (long) s.getCount(), Long::sum);
-        for (net.minecraft.world.inventory.Slot s : menu.getInputGridSlots()) {
-            ItemStack st = s.getItem();
-            if (!st.isEmpty()) available.merge(st.getItem(), (long) st.getCount(), Long::sum);
-        }
-        for (List<Item> options : slots) {
+        return missing(menu, player, slots).isEmpty();
+    }
+
+    /**
+     * Which recipe slots (indices into {@code slots}, each the items it accepts) nothing in the network, the inventory or
+     * the grid can fill, counting what each filled slot uses up. Empty slots in the list are skipped.
+     */
+    public static List<Integer> missing(TerminalMenu menu, Player player, List<List<Item>> slots) {
+        Map<Item, Long> available = available(menu, player);
+        List<Integer> missing = new ArrayList<>();
+        for (int i = 0; i < slots.size(); i++) {
+            List<Item> options = slots.get(i);
             if (options.isEmpty()) continue;
             boolean found = false;
             for (Item item : options) {
@@ -48,9 +53,21 @@ public final class RecipeTransfer {
                     break;
                 }
             }
-            if (!found) return false;
+            if (!found) missing.add(i);
         }
-        return true;
+        return missing;
+    }
+
+    /** What the network (as this client last saw it), the player's inventory and the crafting grid hold, by item. */
+    private static Map<Item, Long> available(TerminalMenu menu, Player player) {
+        Map<Item, Long> available = new HashMap<>();
+        for (TerminalSyncPayload.ItemEntry e : menu.clientItems()) available.merge(e.stack().getItem(), e.count(), Long::sum);
+        for (ItemStack s : player.getInventory().getNonEquipmentItems()) if (!s.isEmpty()) available.merge(s.getItem(), (long) s.getCount(), Long::sum);
+        for (net.minecraft.world.inventory.Slot s : menu.getInputGridSlots()) {
+            ItemStack st = s.getItem();
+            if (!st.isEmpty()) available.merge(st.getItem(), (long) st.getCount(), Long::sum);
+        }
+        return available;
     }
 
     public static void fill(ResourceKey<Recipe<?>> recipe, boolean maxItems) {

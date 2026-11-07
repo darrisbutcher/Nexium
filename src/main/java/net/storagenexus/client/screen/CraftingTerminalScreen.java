@@ -84,6 +84,16 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         clearButton.setPosition(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()));
     }
 
+    /** The terminal's search text (for the client test). */
+    public String searchText() {
+        return view.searchText();
+    }
+
+    /** Types into the terminal's search (for the client test). */
+    public void setSearchText(String text) {
+        view.setSearchText(text);
+    }
+
     @Override
     public void containerTick() {
         super.containerTick();

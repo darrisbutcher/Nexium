@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.3
+
+* **Terminal search follows JEI and REI**: typing in a Storage or Crafting Terminal's search also searches JEI's (or REI's)
+  item list, and typing in theirs searches the terminal; a terminal opened with an empty search takes theirs. The client
+  setting `terminalSearchSync` turns it off.
+* **Missing ingredients are marked**: when the network, your inventory and the grid can't make a recipe, JEI's "+" now marks
+  the exact slots that are missing in red, and REI's lists the missing items in its tooltip, instead of only saying
+  something is missing.
+
 ## 1.14.2
 
 * **Connector priority works as set**: items go into the highest priority inventory that takes them. Before, any
