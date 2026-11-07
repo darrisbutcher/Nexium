@@ -60,6 +60,10 @@ public final class NexusConfig {
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
     public boolean ancientDebrisDropsScrap = true;
 
+    // --- Anvil
+    /** The most levels an anvil asks, so it never says "Too Expensive!" (1 to 39). 0 keeps vanilla's limit of 40. */
+    public int anvilMaxCost = 39;
+
     // --- Master Librarian
     /** How many villagers (spawn eggs or Captured Mobs) the Farm Assembler takes to make a Master Librarian. */
     public int librarianVillagers = 12;
@@ -171,6 +175,7 @@ public final class NexusConfig {
         freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
         aiotHudSeconds = Math.max(0, Math.min(600, aiotHudSeconds));
+        anvilMaxCost = Math.max(0, Math.min(39, anvilMaxCost));
         aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
         restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));

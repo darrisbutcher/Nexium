@@ -509,6 +509,36 @@ public class EssentialsGameTest {
     // ---------------------------------------------------------------- elytra enchanting
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void anvilIsNeverTooExpensive(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        AnvilMenu anvil = new AnvilMenu(1, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(CENTER)));
+        // A much-worked sword (prior work 63 levels) taking Sharpness V: vanilla's cost would be far over 40
+        ItemStack sword = enchanted(h, new ItemStack(Items.DIAMOND_SWORD), Enchantments.UNBREAKING, 3);
+        sword.set(net.minecraft.core.component.DataComponents.REPAIR_COST, 63);
+        anvil.getSlot(0).set(sword);
+        anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.SHARPNESS), 5)));
+        anvil.createResult();
+        h.assertTrue(!anvil.getSlot(2).getItem().isEmpty(), "the result is there (vanilla would show Too Expensive)");
+        h.assertValueEqual(anvil.getCost(), 39, "the cost stops at 39 levels");
+        h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.SHARPNESS), anvil.getSlot(2).getItem()), 5, "Sharpness V went on");
+        // A cheap job is unchanged
+        anvil.getSlot(0).set(new ItemStack(Items.DIAMOND_SWORD));
+        anvil.createResult();
+        h.assertTrue(anvil.getCost() < 39, "a cheap job keeps its real cost: " + anvil.getCost());
+        // With the setting at 0, vanilla's limit is back
+        net.storagenexus.essentials.config.NexusConfig.get().anvilMaxCost = 0;
+        try {
+            anvil.getSlot(0).set(sword.copy());
+            anvil.createResult();
+            h.assertTrue(anvil.getSlot(2).getItem().isEmpty(), "vanilla: too expensive, no result");
+        } finally {
+            net.storagenexus.essentials.config.NexusConfig.get().anvilMaxCost = 39;
+        }
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void anvilPutsEveryProtectionOnElytra(GameTestHelper h) {
         ServerPlayer player = player(h);
         AnvilMenu anvil = new AnvilMenu(1, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(CENTER)));

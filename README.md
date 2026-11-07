@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.14.3.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.14.4.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -225,6 +225,10 @@ vanilla. Endermen never pick up blocks.
 ### Elytra enchanting
 At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).
 
+### Anvil: never Too Expensive
+An anvil never says **Too Expensive!**: a job that would cost 40 levels or more costs **39** instead, so a much-worked
+item can always be repaired, renamed or enchanted. `anvilMaxCost` sets the cap (1 to 39); 0 brings vanilla's limit back.
+
 ### Enchantment levels and exclusions
 * **Level V**: Protection, Fire Protection, Blast Protection, Projectile Protection, Unbreaking, Looting, Fortune and Respiration
   go up to V in the enchanting table, at an anvil (two IV books make a V), in loot chests and from villagers.
@@ -356,6 +360,7 @@ server's file is the one that counts.
 | `mobPickUp` | `true` | Sneak + right-click picks up mobs |
 | `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
+| `anvilMaxCost` | `39` | The most levels an anvil asks, so it is never Too Expensive (1 to 39); 0 keeps vanilla's limit |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
