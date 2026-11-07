@@ -513,27 +513,32 @@ public class EssentialsGameTest {
         ServerPlayer player = player(h);
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         AnvilMenu anvil = new AnvilMenu(1, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(CENTER)));
-        // A much-worked sword (prior work 63 levels) taking Sharpness V: vanilla's cost would be far over 40
+        // A much-worked sword (prior work 63 levels) taking Sharpness V: the cost is far over 40
         ItemStack sword = enchanted(h, new ItemStack(Items.DIAMOND_SWORD), Enchantments.UNBREAKING, 3);
         sword.set(net.minecraft.core.component.DataComponents.REPAIR_COST, 63);
         anvil.getSlot(0).set(sword);
         anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.SHARPNESS), 5)));
         anvil.createResult();
         h.assertTrue(!anvil.getSlot(2).getItem().isEmpty(), "the result is there (vanilla would show Too Expensive)");
-        h.assertValueEqual(anvil.getCost(), 39, "the cost stops at 39 levels");
+        int cost = anvil.getCost();
+        h.assertTrue(cost >= 40, "it costs the full amount, 40 or more levels: " + cost);
         h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.SHARPNESS), anvil.getSlot(2).getItem()), 5, "Sharpness V went on");
-        // A cheap job is unchanged
-        anvil.getSlot(0).set(new ItemStack(Items.DIAMOND_SWORD));
-        anvil.createResult();
-        h.assertTrue(anvil.getCost() < 39, "a cheap job keeps its real cost: " + anvil.getCost());
-        // With the setting at 0, vanilla's limit is back
-        net.storagenexus.essentials.config.NexusConfig.get().anvilMaxCost = 0;
+        // Too few levels: it can't be taken; enough: it can, and costs the full amount
+        player.setExperienceLevels(cost - 1);
+        h.assertFalse(anvil.getSlot(2).mayPickup(player), "one level short can't take it");
+        player.setExperienceLevels(cost + 5);
+        h.assertTrue(anvil.getSlot(2).mayPickup(player), "with enough levels it can be taken");
+        anvil.getSlot(2).onTake(player, anvil.getSlot(2).getItem());
+        h.assertValueEqual(player.experienceLevel, 5, "the full cost in levels was paid");
+        // With the setting off, vanilla's limit is back
+        net.storagenexus.essentials.config.NexusConfig.get().anvilNoCostLimit = false;
         try {
             anvil.getSlot(0).set(sword.copy());
+            anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.SHARPNESS), 5)));
             anvil.createResult();
             h.assertTrue(anvil.getSlot(2).getItem().isEmpty(), "vanilla: too expensive, no result");
         } finally {
-            net.storagenexus.essentials.config.NexusConfig.get().anvilMaxCost = 39;
+            net.storagenexus.essentials.config.NexusConfig.get().anvilNoCostLimit = true;
         }
         h.succeed();
     }

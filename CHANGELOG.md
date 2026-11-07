@@ -5,9 +5,9 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 ## 1.14.4
 
-* **The anvil is never Too Expensive**: a job that would cost 40 levels or more now costs 39 and can be taken, instead of
-  the result disappearing. Cheaper jobs cost what they did. The setting `anvilMaxCost` (default 39) sets the cap; 0 brings
-  back vanilla's limit.
+* **The anvil is never Too Expensive**: a job that costs 40 levels or more can now be done for its full cost, as long as you
+  have the levels, instead of the result disappearing. The screen shows the real cost instead of "Too Expensive!". The
+  setting `anvilNoCostLimit` (on by default) set to false brings back vanilla's limit.
 
 ## 1.14.3
 

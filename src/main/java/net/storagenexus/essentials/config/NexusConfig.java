@@ -61,8 +61,8 @@ public final class NexusConfig {
     public boolean ancientDebrisDropsScrap = true;
 
     // --- Anvil
-    /** The most levels an anvil asks, so it never says "Too Expensive!" (1 to 39). 0 keeps vanilla's limit of 40. */
-    public int anvilMaxCost = 39;
+    /** An anvil never says "Too Expensive!": any job can be done, for its full cost in levels. False keeps vanilla's limit of 40. */
+    public boolean anvilNoCostLimit = true;
 
     // --- Master Librarian
     /** How many villagers (spawn eggs or Captured Mobs) the Farm Assembler takes to make a Master Librarian. */
@@ -175,7 +175,6 @@ public final class NexusConfig {
         freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
         aiotHudSeconds = Math.max(0, Math.min(600, aiotHudSeconds));
-        anvilMaxCost = Math.max(0, Math.min(39, anvilMaxCost));
         aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
         restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));

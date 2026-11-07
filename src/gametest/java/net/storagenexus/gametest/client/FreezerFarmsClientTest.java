@@ -150,6 +150,38 @@ public class FreezerFarmsClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> mc.player.getInventory().countItem(Items.DIRT) == 12 && mc.player.getInventory().countItem(Items.END_STONE_BRICKS) == 0),
                     "the dirt stayed and the bricks went in");
             System.out.println("[nexus] farm assembler built: " + ctx.takeScreenshot("nexus_farm_assembler_built"));
+            ctx.computeOnClient(mc -> {
+                mc.player.closeContainer();
+                return null;
+            });
+            ctx.waitTicks(5);
+
+            // An anvil job over 40 levels: the screen shows its full cost, not "Too Expensive!", and the result is there
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                BlockPos pos = base.offset(-3, 0, 4);
+                var level = player.level();
+                level.setBlockAndUpdate(pos, Blocks.ANVIL.defaultBlockState());
+                player.setExperienceLevels(100);
+                ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
+                sword.set(DataComponents.REPAIR_COST, 63);
+                var sharpness = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                        .getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS);
+                ItemStack book = net.minecraft.world.item.enchantment.EnchantmentHelper.createBook(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(sharpness, 5));
+                player.openMenu(new net.minecraft.world.SimpleMenuProvider((id, inv, p) -> {
+                    var anvil = new net.minecraft.world.inventory.AnvilMenu(id, inv, net.minecraft.world.inventory.ContainerLevelAccess.create(level, pos));
+                    anvil.getSlot(0).set(sword);
+                    anvil.getSlot(1).set(book);
+                    return anvil;
+                }, net.minecraft.network.chat.Component.translatable("container.repair")));
+            });
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.AnvilScreen), "the anvil screen opens");
+            int anvilCost = ctx.computeOnClient(mc -> ((net.minecraft.world.inventory.AnvilMenu) mc.player.containerMenu).getCost());
+            check(anvilCost >= 40, "the anvil asks the full cost, got " + anvilCost);
+            check(ctx.computeOnClient(mc -> !mc.player.containerMenu.getSlot(2).getItem().isEmpty()), "the anvil's result is there");
+            System.out.println("[nexus] anvil over 40 levels (" + anvilCost + "): " + ctx.takeScreenshot("nexus_anvil_full_cost"));
         }
     }
 

@@ -226,8 +226,8 @@ vanilla. Endermen never pick up blocks.
 At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).
 
 ### Anvil: never Too Expensive
-An anvil never says **Too Expensive!**: a job that would cost 40 levels or more costs **39** instead, so a much-worked
-item can always be repaired, renamed or enchanted. `anvilMaxCost` sets the cap (1 to 39); 0 brings vanilla's limit back.
+An anvil never says **Too Expensive!**: any job can be done, for its **full cost** in levels (the screen shows it, say
+"Enchantment Cost: 68"), as long as you have the levels. `anvilNoCostLimit` set to false brings vanilla's 40-level limit back.
 
 ### Enchantment levels and exclusions
 * **Level V**: Protection, Fire Protection, Blast Protection, Projectile Protection, Unbreaking, Looting, Fortune and Respiration
@@ -360,7 +360,7 @@ server's file is the one that counts.
 | `mobPickUp` | `true` | Sneak + right-click picks up mobs |
 | `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
-| `anvilMaxCost` | `39` | The most levels an anvil asks, so it is never Too Expensive (1 to 39); 0 keeps vanilla's limit |
+| `anvilNoCostLimit` | `true` | An anvil is never Too Expensive: any job, for its full cost in levels; false keeps vanilla's limit |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
