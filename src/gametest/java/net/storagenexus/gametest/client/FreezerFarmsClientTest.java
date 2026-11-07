@@ -11,6 +11,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.block.Blocks;
 import net.storagenexus.client.screen.FreezerScreen;
+import net.storagenexus.essentials.assembler.AssemblyTarget;
+import net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity;
+import net.storagenexus.essentials.assembler.FarmAssemblerMenu;
+import net.storagenexus.essentials.client.FarmAssemblerScreen;
 import net.storagenexus.essentials.client.FarmScreen;
 import net.storagenexus.essentials.farm.FarmBlockEntity;
 import net.storagenexus.essentials.farm.FarmKind;
@@ -20,10 +24,12 @@ import net.storagenexus.freezer.FreezerMenu;
 import net.storagenexus.freezer.FreezerMode;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.storagenexus.registry.ModBlocks;
+import net.storagenexus.util.Menus;
 
 /**
  * The Freezer and the farms on the real client: dyed and undyed Freezers are drawn (screenshots), its screen opens and its
- * mode button switches what it makes, and a farm's screen opens. Screenshots show them.
+ * mode button switches what it makes, a farm's screen opens, and the Farm Assembler fills from the inventory and builds a
+ * farm. Screenshots show them.
  */
 public class FreezerFarmsClientTest implements FabricClientGameTest {
     private static BlockPos base;
@@ -103,7 +109,62 @@ public class FreezerFarmsClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FarmScreen), "right-clicking a farm opens its screen");
             check(ctx.computeOnClient(mc -> ((FarmScreen) mc.gui.screen()).getMenu().kind() == FarmKind.PIGLIN_BARTER), "it is the barter farm");
             System.out.println("[nexus] barter farm screen: " + ctx.takeScreenshot("nexus_barter_screen"));
+            ctx.computeOnClient(mc -> {
+                mc.player.closeContainer();
+                return null;
+            });
+            ctx.waitTicks(5);
+
+            // The Farm Assembler, part-filled for a Shulker Farm, with the rest in the player's inventory
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                BlockPos pos = base.offset(3, 0, 2);
+                player.level().setBlockAndUpdate(pos, net.storagenexus.essentials.registry.ModBlocks.FARM_ASSEMBLER.defaultBlockState());
+                FarmAssemblerBlockEntity assembler = (FarmAssemblerBlockEntity) player.level().getBlockEntity(pos);
+                assembler.select(AssemblyTarget.SHULKER, null);
+                assembler.accept(new ItemStack(Items.SHULKER_SPAWN_EGG, 4));
+                assembler.accept(new ItemStack(Items.PURPUR_BLOCK, 32));
+                assembler.accept(new ItemStack(Items.END_ROD, 5));
+                assembler.accept(new ItemStack(Items.ENDER_PEARL, 8));
+                for (int i = 0; i < 30; i++) assembler.accept(new ItemStack(Items.END_STONE_BRICKS, 64));
+                player.getInventory().clearContent();
+                player.getInventory().setItem(0, new ItemStack(Items.END_ROD, 3));
+                for (int i = 0; i < 17; i++) player.getInventory().setItem(9 + i, new ItemStack(Items.END_STONE_BRICKS, 64));
+                player.getInventory().setItem(27, new ItemStack(Items.DIRT, 12));
+                Menus.open(player, net.minecraft.network.chat.Component.translatable("block.nexusessentials.farm_assembler"), pos,
+                        (id, inventory, p) -> new FarmAssemblerMenu(id, inventory, assembler));
+            });
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FarmAssemblerScreen), "the Farm Assembler's screen opens");
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().target() == AssemblyTarget.SHULKER), "on the Shulker Farm");
+            check(!ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().complete()), "not complete yet");
+            System.out.println("[nexus] farm assembler: " + ctx.takeScreenshot("nexus_farm_assembler"));
+
+            // Add from inventory takes the 3 end rods and 1,088 end stone bricks it still needs; then Build
+            clickAt(ctx, FarmAssemblerMenu.LIST_X + FarmAssemblerMenu.LIST_W / 2, FarmAssemblerMenu.ADD_Y + 7);
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().complete()), "Add from inventory completed it");
+            System.out.println("[nexus] farm assembler ready: " + ctx.takeScreenshot("nexus_farm_assembler_ready"));
+            clickAt(ctx, FarmAssemblerMenu.BUILD_X + FarmAssemblerMenu.BUILD_W / 2, FarmAssemblerMenu.HEADER_Y + 8);
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().slots.get(0).getItem()
+                    .is(net.storagenexus.essentials.registry.ModItems.FARMS.get(FarmKind.SHULKER))), "Build made a Shulker Farm");
+            check(ctx.computeOnClient(mc -> mc.player.getInventory().countItem(Items.DIRT) == 12 && mc.player.getInventory().countItem(Items.END_STONE_BRICKS) == 0),
+                    "the dirt stayed and the bricks went in");
+            System.out.println("[nexus] farm assembler built: " + ctx.takeScreenshot("nexus_farm_assembler_built"));
         }
+    }
+
+    /** Clicks at a point given in the Farm Assembler screen's own coordinates. */
+    private static void clickAt(ClientGameTestContext ctx, int guiX, int guiY) {
+        double[] at = ctx.computeOnClient(mc -> {
+            var screen = mc.gui.screen();
+            double scale = mc.getWindow().getGuiScale();
+            int left = (screen.width - FarmAssemblerMenu.WIDTH) / 2, top = (screen.height - FarmAssemblerMenu.HEIGHT) / 2;
+            return new double[]{(left + guiX) * scale, (top + guiY) * scale};
+        });
+        ctx.getInput().setCursorPos(at[0], at[1]);
+        ctx.waitTicks(2);
+        ctx.getInput().pressMouse(com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT);
+        ctx.waitTicks(6);
     }
 
     private static void check(boolean ok, String what) {

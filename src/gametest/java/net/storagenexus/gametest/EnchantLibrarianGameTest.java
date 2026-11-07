@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.AABB;
 import net.storagenexus.essentials.capture.CapturedMob;
 import net.storagenexus.essentials.capture.MobCapture;
-import net.storagenexus.essentials.ironfarm.IronFarmChest;
 import net.storagenexus.essentials.ironfarm.IronFarmRecipe;
 import net.storagenexus.essentials.librarian.Librarian;
 import net.storagenexus.essentials.registry.ModComponents;
@@ -38,9 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** Higher enchantment levels and fewer exclusions, and the "Nexus Librarian" chest that makes a Master Librarian. */
+/** Higher enchantment levels and fewer exclusions, and the Master Librarian the Farm Assembler makes. */
 public class EnchantLibrarianGameTest {
-    private static final BlockPos CHEST = new BlockPos(2, 1, 2);
 
     private static Holder<Enchantment> enchantment(GameTestHelper h, ResourceKey<Enchantment> key) {
         return h.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key);
@@ -123,76 +121,11 @@ public class EnchantLibrarianGameTest {
         ItemStack stack = Librarian.create(h.getLevel());
         CapturedMob mob = stack.get(ModComponents.CAPTURED_MOB);
         h.assertTrue(mob != null && mob.type() == EntityTypes.VILLAGER, "a captured villager");
-        h.assertTrue(Librarian.isMade(stack), "marked as made by a librarian chest");
+        h.assertTrue(Librarian.isMade(stack), "marked as made by the Farm Assembler");
         String data = mob.data().toString();
         h.assertTrue(data.contains("librarian"), "a librarian: " + data.substring(0, Math.min(200, data.length())));
         h.assertTrue(data.contains("minecraft:enchanted_book"), "with the books");
         h.assertTrue(IronFarmRecipe.partOf(stack) == null, "it does not count as a villager for another recipe");
         h.succeed();
-    }
-
-    private static ItemStack villager() {
-        return MobCapture.toItem(new CapturedMob(EntityTypes.VILLAGER, new CompoundTag(), Optional.empty(), 20.0F, 20.0F, false));
-    }
-
-    private static ChestBlockEntity chest(GameTestHelper h, String name) {
-        h.setBlock(CHEST, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.NORTH).setValue(ChestBlock.TYPE, ChestType.SINGLE));
-        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
-        ItemStack named = new ItemStack(Items.CHEST);
-        named.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        chest.applyComponentsFromItemStack(named);
-        return chest;
-    }
-
-    private static void fill(ChestBlockEntity chest, List<ItemStack> stacks) {
-        for (int i = 0; i < chest.getContainerSize(); i++) chest.setItem(i, i < stacks.size() ? stacks.get(i) : ItemStack.EMPTY);
-        chest.setChanged();
-    }
-
-    @GameTest
-    public void aNamedChestWithTwelveVillagersMakesAMasterLibrarian(GameTestHelper h) {
-        ChestBlockEntity chest = chest(h, "Nexus Librarian");
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < 12; i++) stacks.add(villager());
-        fill(chest, stacks);
-        IronFarmChest.process(h.getLevel(), h.absolutePos(CHEST), null);
-        h.runAfterDelay(2, () -> {
-            h.assertBlockNotPresent(Blocks.CHEST, CHEST);
-            List<ItemEntity> items = h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(h.absolutePos(CHEST)).inflate(3));
-            boolean found = items.stream().anyMatch(e -> Librarian.isMade(e.getItem()));
-            h.assertTrue(found, "the librarian dropped where the chest was");
-            h.succeed();
-        });
-    }
-
-    @GameTest
-    public void aChestWithTheWrongContentsKeepsEverythingAndTellsThePlayer(GameTestHelper h) {
-        ChestBlockEntity chest = chest(h, "Nexus Librarian");
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < 11; i++) stacks.add(villager());
-        fill(chest, stacks);
-        ServerPlayer player = h.makeMockServerPlayerInLevel();
-        IronFarmChest.process(h.getLevel(), h.absolutePos(CHEST), player);
-        h.runAfterDelay(2, () -> {
-            h.assertBlockPresent(Blocks.CHEST, CHEST);
-            // Twelve villagers plus a stray item is not ready either
-            stacks.add(villager());
-            stacks.add(new ItemStack(Items.DIRT));
-            fill(chest, stacks);
-            IronFarmChest.process(h.getLevel(), h.absolutePos(CHEST), player);
-            h.runAfterDelay(2, () -> {
-                h.assertBlockPresent(Blocks.CHEST, CHEST);
-                // A librarian made by a chest is not one of the twelve
-                List<ItemStack> again = new ArrayList<>();
-                for (int i = 0; i < 11; i++) again.add(villager());
-                again.add(Librarian.create(h.getLevel()));
-                fill(chest, again);
-                IronFarmChest.process(h.getLevel(), h.absolutePos(CHEST), player);
-                h.runAfterDelay(2, () -> {
-                    h.assertBlockPresent(Blocks.CHEST, CHEST);
-                    h.succeed();
-                });
-            });
-        });
     }
 }

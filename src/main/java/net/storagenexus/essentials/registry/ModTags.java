@@ -19,7 +19,7 @@ public final class ModTags {
     public static final TagKey<DamageType> CAPTURED_MOB_RESISTS = TagKey.create(Registries.DAMAGE_TYPE, NexusEssentials.id("captured_mob_resists"));
 
 
-    // What a "Nexus Iron Farm" chest takes. Mobs count as their spawn egg or as a Captured Mob item.
+    // What the Iron Farm takes at the Farm Assembler. Mobs count as their spawn egg or as a Captured Mob item.
     /** The 4 mobs that scare the villagers: zombie, husk, drowned and zombie villager. */
     public static final TagKey<EntityType<?>> IRON_FARM_ZOMBIES = TagKey.create(Registries.ENTITY_TYPE, NexusEssentials.id("iron_farm_zombies"));
     /** The 12 villagers. */

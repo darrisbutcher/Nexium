@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:crafting_table",
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:lapis_lazuli"
+  },
+  "pattern": [
+    "LIL",
+    "ICI",
+    "LIL"
+  ],
+  "result": {
+    "id": "nexusessentials:farm_assembler"
+  }
+}

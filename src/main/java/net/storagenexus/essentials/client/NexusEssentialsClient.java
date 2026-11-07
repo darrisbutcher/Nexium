@@ -25,6 +25,7 @@ public final class NexusEssentialsClient {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         MenuScreens.register(ModMenus.IRON_FARM, IronFarmScreen::new);
         MenuScreens.register(ModMenus.FARM, FarmScreen::new);
+        MenuScreens.register(ModMenus.FARM_ASSEMBLER, FarmAssemblerScreen::new);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);

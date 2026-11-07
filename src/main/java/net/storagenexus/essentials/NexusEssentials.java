@@ -5,7 +5,6 @@ import net.storagenexus.StorageNexus;
 import net.storagenexus.essentials.capture.MobCapture;
 import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.essentials.elytra.ElytraEnchanting;
-import net.storagenexus.essentials.ironfarm.IronFarmChest;
 import net.storagenexus.essentials.loot.AncientDebrisLoot;
 import net.storagenexus.essentials.magnet.MagnetLogic;
 import net.storagenexus.essentials.registry.ModBlockEntities;
@@ -50,7 +49,6 @@ public final class NexusEssentials {
         MobCapture.init();
         ElytraEnchanting.init();
         AncientDebrisLoot.init();
-        IronFarmChest.init();
     }
 
     private NexusEssentials() {}

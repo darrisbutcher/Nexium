@@ -7,8 +7,6 @@
   },
   "mixins": [
     "BlockBehaviourMixin",
-    "BlockEntityMixin",
-    "ChestBlockEntityMixin",
     "EnchantmentHelperMixin",
     "EndermanTakeBlockGoalMixin",
     "InventoryMenuMixin",

@@ -8,7 +8,7 @@ import net.storagenexus.essentials.config.NexusConfig;
 import java.util.Locale;
 
 /**
- * The one-block farms besides the Iron Farm. Each is built from a double chest with its own name and recipe
+ * The one-block farms besides the Iron Farm. Each is made at the Farm Assembler from its recipe
  * ({@link FarmRecipe}), is placed anywhere, and every {@link #cycleTicks()} makes what its kind makes into 27
  * output slots that hoppers can only take from below. A farm with an {@link Input} also has an input slot.
  */
@@ -62,18 +62,6 @@ public enum FarmKind {
             case ZOMBIFIED_PIGLIN -> c.zombifiedPiglinTicks;
             case WITHER_SKELETON -> c.witherSkeletonTicks;
             case SHULKER -> c.shulkerFarmTicks;
-        };
-    }
-
-    /** The name a double chest needs to become this farm, from the config. */
-    public String chestName() {
-        NexusConfig c = NexusConfig.get();
-        return switch (this) {
-            case VILLAGER_BREEDER -> c.villagerBreederChestName;
-            case PIGLIN_BARTER -> c.piglinBarterChestName;
-            case ZOMBIFIED_PIGLIN -> c.zombifiedPiglinChestName;
-            case WITHER_SKELETON -> c.witherSkeletonChestName;
-            case SHULKER -> c.shulkerFarmChestName;
         };
     }
 

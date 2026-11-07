@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nexusessentials:block/farm_assembler"
+    }
+  }
+}

@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.13.1.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.14.0.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -225,17 +225,15 @@ At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from 
 * This is done with data files (`data/minecraft/enchantment`), so a data pack can change it.
 
 ### Master Librarian
-Rename a chest **Nexus Librarian** in an anvil (single or double) and put in exactly **12 villagers**, spawn eggs or Captured
-Mobs and nothing else. The chest and the villagers are used up and a **Master Librarian** pops out as a Captured Mob: right-click
-a block to let him out.
+At a **Farm Assembler**, pick **Master Librarian**, put in **12 villagers** (spawn eggs or Captured Mobs) and press Build. The
+villagers are used up and a **Master Librarian** comes out as a Captured Mob: right-click a block to let him out.
 
 * He sells an **enchanted book of every enchantment at its highest level**: Mending and the other treasure enchantments
   too, level V ones included, but no curses. A trade takes emeralds and a book, at the villagers' own prices: 2 emeralds plus
   up to 5 + 3 per level more, doubled for treasure enchantments, never above 64. Each trade has the usual 12 uses.
-* He is level 5 with every trade unlocked. A librarian made this way is not one of the villagers a chest wants, so it can't be
-  fed back in.
-* A chest that is not ready tells you what is missing when you close it. `librarianChestName` and `librarianVillagers` change
-  the name and the number.
+* He is level 5 with every trade unlocked. A librarian made this way doesn't count as a villager for any recipe, so it can't
+  be fed back in.
+* `librarianVillagers` changes how many villagers he takes.
 
 ### Elevator
 
@@ -272,9 +270,21 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
 Ancient debris drops **netherite scrap** instead of itself: 2 per block, multiplied by Fortune like diamond ore. Silk
 Touch still drops the block.
 
+### Farm Assembler
+Makes the one-block farms below and the Master Librarian. **Recipe**: a crafting table in the middle, 4 iron ingots on the
+sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
+
+* Right-click it, pick what to make from the list on the left, and put in what it needs. The right side shows how much of
+  each material is in, with a bar and a tick for each line that is done.
+* **Add from inventory** moves everything it still needs out of your inventory. Shift-clicking items, or hoppers and pipes
+  above or beside it, add them too. It only takes what is still needed, in any mix of kinds and in any order.
+* **Build** makes it once everything is in; take it from the slot next to the button. Picking something else hands back
+  what was in, and breaking the Assembler drops it.
+* The farms cost what their old renamed double chests did: the materials plus the filler block the chest's other slots
+  held, as listed below.
+
 ### Iron Farm
-* **Making one**: place a chest, rename another chest **Nexus Iron Farm** in an anvil and put it next to the first to
-  make a double chest. Fill it with exactly:
+* **Making one**: at a Farm Assembler, pick **Iron Farm** and put in:
 
   | Material | Amount | Counts |
   |---|---|---|
@@ -285,10 +295,9 @@ Touch still drops the block.
   | Signs | 16 | Any sign or hanging sign |
   | Trapdoors | 12 | Any trapdoor |
   | Beds | 12 | Any colour |
-  | Smooth Stone | every other slot | Full stacks of 64 |
+  | Smooth Stone | 1,408 | Smooth stone |
 
-  The moment the chest holds exactly this, it and everything in it disappear and the **Iron Farm** pops out. Close
-  the chest early and the chat says what's missing.
+  Then press Build.
 * **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron and 0-2 poppies, about **1,900 iron an
   hour**. Hoppers and pipes take the output from below.
 * **Bread**: bread in the bread slot makes the farm **10x faster**, eating one loaf every 30 seconds. When the last
@@ -296,18 +305,16 @@ Touch still drops the block.
 * A full output or a **redstone signal** pauses the farm. Breaking it keeps its boost and cooldown in the item.
 
 ### More one-block farms
-Made like the Iron Farm: rename a **double chest** in an anvil, fill it with exactly the recipe (mobs can be spawn eggs or
-Captured Mobs, and a full stack of the filler item goes in every other slot), and it turns into the farm. Place it anywhere;
-hoppers and pipes take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its
-progress in the item. Close the chest early and the chat says what is missing.
+Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Place it anywhere; hoppers and pipes
+take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its progress in the item.
 
-| Farm | Chest name | Recipe | Makes |
-|---|---|---|---|
-| **Villager Breeder** | `Nexus Villager Breeder` | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks; planks fill | A baby villager (a Captured Mob) every 20 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
-| **Piglin Barter Farm** | `Nexus Piglin Barter` | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks; netherrack fills | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
-| **Zombified Piglin Farm** | `Nexus Zombified Piglin` | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots; netherrack fills | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
-| **Wither Skeleton Farm** | `Nexus Wither Skeleton Farm` | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks; netherrack fills | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
-| **Shulker Farm** | `Nexus Shulker Farm` | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls; end stone bricks fill | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
+| Farm | Recipe | Makes |
+|---|---|---|
+| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 2,880 planks | A baby villager (a Captured Mob) every 20 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
+| **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 3,136 netherrack | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
+| **Zombified Piglin Farm** | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots, 3,008 netherrack | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
+| **Wither Skeleton Farm** | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks, 2,944 netherrack | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
+| **Shulker Farm** | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls, 3,008 end stone bricks | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
 
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
@@ -334,21 +341,18 @@ server's file is the one that counts.
 | `endermenPickUpBlocks` | `false` | Endermen pick up blocks (vanilla) |
 | `magnetMaxRange` | `16` | Largest magnet range, 4 to 64 blocks |
 | `magnetPullsXp` | `true` | Magnets pull experience orbs too |
-| `librarianChestName` | `Nexus Librarian` | The name a chest needs to make a Master Librarian |
-| `librarianVillagers` | `12` | How many villagers that chest takes, 1 to 54 |
+| `librarianVillagers` | `12` | How many villagers the Master Librarian takes at the Farm Assembler, 1 to 54 |
 | `elytraProtectionEnchantments` | `true` | Elytra accept all four protection enchantments |
 | `netheriteArmorCalmsPiglins` | `true` | Netherite armor keeps piglins calm |
 | `bedrockBreakerSeconds` | `300` | How long the elixir lasts |
 | `mobPickUp` | `true` | Sneak + right-click picks up mobs |
 | `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
-| `ironFarmChestName` | `"Nexus Iron Farm"` | The name a double chest needs to become an Iron Farm |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
-| `villagerBreederChestName`, `piglinBarterChestName`, `zombifiedPiglinChestName`, `witherSkeletonChestName`, `shulkerFarmChestName` | `"Nexus Villager Breeder"`, `"Nexus Piglin Barter"`, `"Nexus Zombified Piglin"`, `"Nexus Wither Skeleton Farm"`, `"Nexus Shulker Farm"` | The name a double chest needs to become each farm |
 | `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks` | `24000`, `120`, `80`, `120`, `600` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |

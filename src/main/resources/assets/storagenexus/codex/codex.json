@@ -93,8 +93,9 @@
     },
     {
       "id": "farms",
-      "icon": "nexusessentials:iron_farm",
+      "icon": "nexusessentials:farm_assembler",
       "topics": [
+        "farm_assembler",
         "iron_farm",
         "farms",
         "breeder",
@@ -1133,6 +1134,28 @@
         "enchant_levels"
       ]
     },
+    "farm_assembler": {
+      "pages": [
+        "mobs.assembler",
+        "mobs.assembler2"
+      ],
+      "icon": "nexusessentials:farm_assembler",
+      "recipes": [
+        "assembler"
+      ],
+      "items": [
+        "nexusessentials:farm_assembler"
+      ],
+      "aliases": [
+        "Farm Assembler",
+        "Assembler"
+      ],
+      "see": [
+        "iron_farm",
+        "farms",
+        "librarian"
+      ]
+    },
     "iron_farm": {
       "pages": [
         "mobs.farm",
@@ -1141,7 +1164,6 @@
         "mobs.recipe",
         "mobs.notes",
         "mobs.notes2",
-        "mobs.close",
         "mobs.bread",
         "mobs.bread2",
         "mobs.running"
@@ -1155,6 +1177,7 @@
         "Iron Farms"
       ],
       "see": [
+        "farm_assembler",
         "farms",
         "mobs"
       ]
@@ -1169,6 +1192,7 @@
         "More farms"
       ],
       "see": [
+        "farm_assembler",
         "breeder",
         "barter",
         "zpiglin",
@@ -1309,10 +1333,10 @@
       ],
       "icon": "minecraft:enchanted_book",
       "aliases": [
-        "Master Librarian",
-        "Nexus Librarian"
+        "Master Librarian"
       ],
       "see": [
+        "farm_assembler",
         "mobs",
         "enchant_levels"
       ]
