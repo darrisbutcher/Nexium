@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.13.1
+
+* **AIOTs redrawn at 32x32**: the curved pick-and-axe head is chunkier, each tier is back in its original colours with
+  flat, Minecraft-style shading, and the gold-framed gem, wrapped grip and jewelled pommel stay. The Fortune and Silk
+  Touch gem colours (green, pale blue) now recolour the gem itself instead of sitting beside it.
+
 ## 1.13.0
 
 * **The Nexium Codex replaces the guide book.** The guide item now opens a built-in wiki: a sidebar with 11 categories
