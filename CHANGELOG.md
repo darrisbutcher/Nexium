@@ -14,8 +14,10 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 * **Look up any item**: in any inventory, hover over an item and press H (Look up in the Codex, in Controls) to open its
   page; Escape comes back to the inventory. Outside a screen, H opens the Codex. Items with a page say so in their tooltip.
   A game test makes sure every item in the mod has a page.
-* **Every texture redrawn at 64x64**: new AIOTs (a crystal pick-and-scythe head with a gold-framed purple gem, a wrapped
-  grip, and the blade in each tier's material), new Nexium armor (crystal plates, gold trim and purple gems, on the items
+* **New AIOTs at 32x32**: a curved pick-and-axe head with a gold-framed purple gem, a wrapped grip and a jewelled pommel,
+  in each tier's original colours with flat, Minecraft-style shading. The gem turns green in Fortune mode and pale blue in
+  Silk Touch mode.
+* **Every other texture redrawn at 64x64**: new Nexium armor (crystal plates, gold trim and purple gems, on the items
   and on the armor you wear), Nexium tools with wrapped grips, gold rivets on upgrades, modules and filters, and every
   block, item, GUI sprite and the mod icon at four times the detail. Blocks keep their layouts, so cables, connectors and
   dyed Freezers look right.
