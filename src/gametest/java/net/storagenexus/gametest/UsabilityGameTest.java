@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.drawer.DrawerBlockEntity;
+import net.storagenexus.drawer.DrawerControllerBlockEntity;
 import net.storagenexus.drawer.DrawerWood;
 import net.storagenexus.registry.ModBlocks;
 import net.storagenexus.upgrade.UpgradeMenu;
@@ -115,6 +116,26 @@ public class UsabilityGameTest {
         rightClick(h, player, controller, Direction.UP);
         h.assertValueEqual(be.slot(0).getAmount(), 65L, "cobble sent to the drawer by the controller");
         h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
+    public void controllerReachOutlineNeedsSneakRightClick(GameTestHelper h) {
+        BlockPos controller = POS.east();
+        h.setBlock(controller, ModBlocks.DRAWER_CONTROLLER);
+        DrawerControllerBlockEntity be = h.getBlockEntity(controller, DrawerControllerBlockEntity.class);
+        ServerPlayer player = emptyHandedPlayer(h);
+        rightClick(h, player, controller, Direction.UP);
+        h.assertFalse(be.rangeShown(h.getLevel()), "a plain right-click only tells the drawer count");
+        h.runAfterDelay(15, () -> {
+            player.setShiftKeyDown(true);
+            rightClick(h, player, controller, Direction.UP);
+            h.assertTrue(be.rangeShown(h.getLevel()), "sneak + right-click shows the reach");
+            h.runAfterDelay(15, () -> {
+                rightClick(h, player, controller, Direction.UP);
+                h.assertFalse(be.rangeShown(h.getLevel()), "again hides it");
+                h.succeed();
+            });
+        });
     }
 
     @GameTest(maxTicks = 40)

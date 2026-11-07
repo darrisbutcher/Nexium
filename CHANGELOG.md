@@ -9,6 +9,8 @@ Pull requests are squash merged, so each one is a single commit on `main`.
   inventory that already held some of the item was filled first whatever its priority, so a lower priority barrel holding
   a few could take everything ahead of a higher priority Drawer Controller. Within one priority, items still join their
   own kind first. An inventory touched by two connectors now uses the higher of their priorities.
+* **Drawer Controller reach outline needs sneak + right-click**: a plain empty-hand right-click now only says how many
+  drawers it controls, so checking it (or double-clicking to dump your inventory) no longer covers the area in particles.
 * The Farm Assembler's game tests now run (they were missing from the test list), and a check makes sure every game test
   class is listed.
 

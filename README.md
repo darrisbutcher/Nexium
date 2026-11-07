@@ -54,8 +54,9 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
   9:1 or 4:1 recipe), 54 stacks of the largest form.
 * Breaking a drawer keeps its contents and upgrades in the item, like a shulker box.
 * **Drawer Controller**: drawers touching it or each other within **12 blocks** form a cluster. Right-click to send
-  items into the drawer already holding them; double-click dumps your inventory. **Controller Slave** extends the
-  reach, and slaves can chain.
+  items into the drawer already holding them; double-click dumps your inventory. With an empty hand, right-click shows
+  how many drawers it controls; **sneak + right-click** outlines its reach for a minute (again to hide). **Controller
+  Slave** extends the reach, and slaves can chain.
 
 ### Barrels
 **Iron, Gold, Diamond, Emerald and Netherite Barrels** hold 45, 66, 84, 102 and 120 slots. Right-click a barrel with
