@@ -9,10 +9,18 @@ import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.registry.ModComponents;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
 /**
  * Modules installed in an AIOT. They live in the AIOT's {@code storagenexus:modules} component (one slot per module
  * type, so {@link #SLOTS} slots), and each module item carries its own on/off switch ({@code storagenexus:module_off})
  * and, for the Nexus Link, its terminal link. Taking a module out keeps both.
+ *
+ * <p>AIOTs saved when there were three module types (the Vein Mining Module has been retired, see
+ * {@link RetiredModuleItem}) are read as they are: a module keeps its slot when that slot still exists, otherwise it moves
+ * to a free one, and anything that is no longer a module is left out until the next time the slots are written.
  */
 public final class AiotModules {
     public static final int SLOTS = ModuleType.values().length;
@@ -20,8 +28,40 @@ public final class AiotModules {
     /** The AIOT's module slots, always {@link #SLOTS} long (empty stacks for empty slots). */
     public static NonNullList<ItemStack> slots(ItemStack tool) {
         NonNullList<ItemStack> list = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-        tool.getOrDefault(ModComponents.MODULES, ItemContainerContents.EMPTY).copyInto(list);
+        List<ItemStack> stored = tool.getOrDefault(ModComponents.MODULES, ItemContainerContents.EMPTY).itemCopies().toList();
+        EnumSet<ModuleType> seen = EnumSet.noneOf(ModuleType.class);
+        List<ItemStack> displaced = new ArrayList<>();
+        for (int i = 0; i < stored.size(); i++) {
+            ItemStack stack = stored.get(i);
+            if (!(stack.getItem() instanceof ModuleItem item) || !seen.add(item.type())) continue;
+            if (i < SLOTS) list.set(i, stack);
+            else displaced.add(stack);
+        }
+        for (ItemStack stack : displaced) {
+            for (int i = 0; i < SLOTS; i++) {
+                if (list.get(i).isEmpty()) {
+                    list.set(i, stack);
+                    break;
+                }
+            }
+        }
         return list;
+    }
+
+    /** Everything stored in the AIOT's module data, retired modules included (what drops when the AIOT breaks). */
+    public static List<ItemStack> stored(ItemStack tool) {
+        return tool.getOrDefault(ModComponents.MODULES, ItemContainerContents.EMPTY).nonEmptyItemCopyStream().toList();
+    }
+
+    /**
+     * Takes any retired Vein Mining Module out of this AIOT and returns it (the AIOT keeps the modules it still uses, as
+     * {@link #slots} reads them). Empty when there is none.
+     */
+    public static List<ItemStack> takeRetired(ItemStack tool) {
+        if (!(tool.getItem() instanceof AiotItem)) return List.of();
+        List<ItemStack> retired = stored(tool).stream().filter(stack -> stack.getItem() instanceof RetiredModuleItem).toList();
+        if (!retired.isEmpty()) setSlots(tool, slots(tool));
+        return retired;
     }
 
     public static void setSlots(ItemStack tool, NonNullList<ItemStack> slots) {
@@ -62,43 +102,28 @@ public final class AiotModules {
         return nowOn;
     }
 
-    /**
-     * Whether vein mining is on for this tool. It needs no module: an AIOT without one always vein mines (at the config's
-     * limit). A Vein Mining module only adjusts it, with its size and its on/off switch.
-     */
-    public static boolean veinOn(ItemStack tool) {
-        return find(tool, ModuleType.VEIN_MINING).isEmpty() || active(tool, ModuleType.VEIN_MINING);
-    }
-
     /** Sizes the tool menu steps through, below the config's limit (which is always the last one). */
     private static final int[] VEIN_STEPS = {4, 9, 18, 32, 64, 128, 256};
 
-    /** Most blocks one vein mining swing mines with this AIOT: its module's setting, never above the config's limit. */
+    /** Most blocks one vein mining swing mines with this AIOT: the size set in its tool menu, never above the config's limit. */
     public static int veinSize(ItemStack tool) {
         int max = NexusConfig.get().aiotVeinMaxBlocks;
-        return Math.max(1, Math.min(max, find(tool, ModuleType.VEIN_MINING).getOrDefault(ModComponents.VEIN_SIZE, max)));
+        return Math.max(1, Math.min(max, tool.getOrDefault(ModComponents.VEIN_SIZE, max)));
     }
 
-    /** Steps the installed Vein Mining module to the next size (back to the smallest after the limit). Returns it, or 0 if there is none. */
+    /** Steps the AIOT's vein size to the next one (back to the smallest after the limit). Returns it, or 0 if this isn't an AIOT. */
     public static int cycleVeinSize(ItemStack tool) {
-        NonNullList<ItemStack> slots = slots(tool);
-        for (int i = 0; i < SLOTS; i++) {
-            if (!(slots.get(i).getItem() instanceof ModuleItem item) || item.type() != ModuleType.VEIN_MINING) continue;
-            int max = NexusConfig.get().aiotVeinMaxBlocks;
-            int current = veinSize(tool);
-            int next = max;
-            boolean found = false;
-            for (int step : VEIN_STEPS) {
-                if (step > current && step < max) { next = step; found = true; break; }
-            }
-            if (!found && current >= max) next = Math.min(VEIN_STEPS[0], max);
-            ItemStack module = slots.get(i).copy();
-            module.set(ModComponents.VEIN_SIZE, next);
-            slots.set(i, module);
-            setSlots(tool, slots);
-            return next;
+        if (!(tool.getItem() instanceof AiotItem)) return 0;
+        int max = NexusConfig.get().aiotVeinMaxBlocks;
+        int current = veinSize(tool);
+        int next = max;
+        boolean found = false;
+        for (int step : VEIN_STEPS) {
+            if (step > current && step < max) { next = step; found = true; break; }
         }
-        return 0;
+        if (!found && current >= max) next = Math.min(VEIN_STEPS[0], max);
+        tool.set(ModComponents.VEIN_SIZE, next);
+        return next;
     }
 
     /** Tunnel lengths the tool menu steps through after "off", up to the config's limit. */

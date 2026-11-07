@@ -104,7 +104,7 @@ public final class NexusConfig {
     public int freezerBlueIceTicks = 1800;
 
     // --- AIOT modules (server-side only)
-    /** The Vein Mining module works. Off, installed modules do nothing. */
+    /** Vein mining works: with the Vein Mine key held, an AIOT mines a whole vein. Off, the key does nothing. No module is needed. */
     public boolean aiotVeinMining = true;
     /** Most blocks one vein mining swing mines, the first included. Players pick a smaller size per tool in the tool menu. */
     public int aiotVeinMaxBlocks = 256;

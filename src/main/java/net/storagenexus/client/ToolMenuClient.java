@@ -28,7 +28,7 @@ public final class ToolMenuClient {
     public static final KeyMapping TOOL_MENU = new KeyMapping("key.storagenexus.tool_menu",
             InputConstants.KEY_G, NexusEssentialsClient.CATEGORY);
 
-    /** Hold while mining to vein mine (with a Vein Mining module in the AIOT). */
+    /** Hold while mining with an AIOT to vein mine (no module needed). */
     public static final KeyMapping VEIN_MINE = new KeyMapping("key.storagenexus.vein_mine",
             InputConstants.KEY_V, NexusEssentialsClient.CATEGORY);
     private static boolean veinSent;

@@ -58,7 +58,7 @@ public final class ModComponents {
     public static final DataComponentType<Unit> MODULE_OFF = register("module_off",
             b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
-    /** On a Vein Mining module: most blocks one swing mines, set in the tool menu (up to the config's limit). */
+    /** On an AIOT: most blocks one vein mining swing mines, set in its tool menu (up to the config's limit). */
     public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
             b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));
 

@@ -77,17 +77,13 @@ public class PreviewClientTest implements FabricClientGameTest {
                 for (int x = -4; x <= 4; x++) for (int y = -1; y <= 5; y++) for (int z = 3; z <= 12; z++) {
                     player.level().setBlockAndUpdate(base.offset(x, y, z), Blocks.DIRT.defaultBlockState());
                 }
-                ItemStack aiot = player.getMainHandItem();
-                var slots = AiotModules.slots(aiot);
-                slots.set(1, new ItemStack(ModItems.MODULES.get(ModuleType.VEIN_MINING)));
-                AiotModules.setSlots(aiot, slots);
             });
             ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
             ctx.waitTicks(10);
             int vein = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(vein == 255, "a vein in a wall of dirt outlines up to the size, 255 more blocks, got " + vein);
             String hudVein = ctx.computeOnClient(mc -> hud(mc));
-            check(hudVein.startsWith("3x3: on | Vein: up to 256 (hold V"), "the HUD lists both modules, got: " + hudVein);
+            check(hudVein.startsWith("3x3: on | Vein: up to 256 (hold V"), "the HUD lists the 3x3 module and the vein size, got: " + hudVein);
             System.out.println("[nexus] vein preview: " + ctx.takeScreenshot("nexus_preview_vein"));
             ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
 

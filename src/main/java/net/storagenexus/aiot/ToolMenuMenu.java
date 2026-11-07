@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.aiot.module.RetiredModuleItem;
 import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
@@ -21,11 +22,13 @@ import net.storagenexus.util.BaseMenu;
  */
 public class ToolMenuMenu extends BaseMenu {
     public static final int BTN_SWAP_SILK_TOUCH_FORTUNE = 0, BTN_TOGGLE_HASTE = 1, BTN_TOGGLE_MODULE = 2;
-    /** Steps the Vein Mining module to its next size. */
+    /** Steps the AIOT's vein size. */
     public static final int BTN_VEIN_SIZE = BTN_TOGGLE_MODULE + AiotModules.SLOTS;
     /** Steps the 3x3 Mining module's tunnel length. */
     public static final int BTN_TUNNEL = BTN_VEIN_SIZE + 1;
-    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88, MODULE_ROW = 18, INVENTORY_Y = 155;
+    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88, MODULE_ROW = 18;
+    /** The player inventory sits below the module rows. */
+    public static final int INVENTORY_Y = MODULE_SLOT_Y + AiotModules.SLOTS * MODULE_ROW + 13;
 
     private final Player player;
     /** The hotbar slot holding the tool. */
@@ -49,6 +52,14 @@ public class ToolMenuMenu extends BaseMenu {
         super(ModMenus.TOOL_MENU, id);
         this.player = inventory.player;
         this.toolSlot = toolSlot;
+        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            // An AIOT saved with the retired Vein Mining Module hands it back as its materials
+            int retired = AiotModules.takeRetired(tool()).size();
+            if (retired > 0) {
+                RetiredModuleItem.refund(serverPlayer, retired);
+                serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.storagenexus.retired_module_returned"));
+            }
+        }
         if (!player.level().isClientSide()) {
             loading = true;
             NonNullList<ItemStack> installed = AiotModules.slots(tool());
@@ -142,12 +153,7 @@ public class ToolMenuMenu extends BaseMenu {
         } else if (id == BTN_TOGGLE_HASTE) {
             ToolMenu.toggleHaste(serverPlayer, tool());
         } else if (id == BTN_VEIN_SIZE) {
-            if (ToolMenu.cycleVeinSize(serverPlayer, tool())) {
-                loading = true;
-                NonNullList<ItemStack> installed = AiotModules.slots(tool());
-                for (int i = 0; i < AiotModules.SLOTS; i++) modules.setItem(i, installed.get(i));
-                loading = false;
-            }
+            ToolMenu.cycleVeinSize(serverPlayer, tool());
         } else if (id == BTN_TUNNEL) {
             if (ToolMenu.cycleTunnelLength(serverPlayer, tool())) {
                 loading = true;

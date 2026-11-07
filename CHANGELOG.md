@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.12.2
+
+* **The Vein Mining Module is retired.** Vein mining never needed it: hold the Vein Mine key (V) with an AIOT. The vein
+  size is now set on the AIOT itself, with the Vein button in the tool menu, and an AIOT has two module slots (Nexus Link
+  and 3x3 Mining). The module can't be crafted any more. It stays in the game only so that worlds don't lose anything:
+  an AIOT, chest or shulker box that holds one still loads, right-clicking it gives back its materials (4 iron ingots,
+  4 lapis lazuli, a diamond), and so does opening the tool menu of an AIOT that still has one installed. AIOTs saved with
+  three module slots keep their Nexus Link and 3x3 Mining modules.
+
 ## 1.12.1
 
 * **Guide**: the Essentials contents now link the Higher levels, Elevator and Master Librarian pages; the Mobs chapter points

@@ -23,8 +23,8 @@ abstract class ItemStackBreakMixin {
     private void storagenexus$dropModules(int damage, ServerPlayer player, Consumer<ItemStack> onBreak, CallbackInfo ci) {
         ItemStack self = (ItemStack) (Object) this;
         if (player == null || !(self.getItem() instanceof AiotItem)) return;
-        for (ItemStack module : AiotModules.slots(self)) {
-            if (!module.isEmpty()) player.spawnAtLocation(player.level(), module.copy());
+        for (ItemStack module : AiotModules.stored(self)) {
+            player.spawnAtLocation(player.level(), module.copy());
         }
         self.remove(ModComponents.MODULES);
     }
