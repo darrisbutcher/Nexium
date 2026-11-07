@@ -22,6 +22,7 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 * **Dimensional Anchor always loads**: the On-demand mode is gone, so an anchor keeps its 3x3 chunks loaded all the time.
   Anchors that were set to On-demand now always load too. Placing an anchor, or right-clicking it, outlines the chunks it
   loads for 1 minute (the chunk borders as a grid at its height, with posts at the corners); right-click again to hide it.
+  The anchor is now teal-green instead of purple.
 
 ## 1.12.2
 
