@@ -12,6 +12,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.storagenexus.client.compat.RecipeViewerSearch;
+import net.storagenexus.essentials.config.NexusConfig;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -65,6 +67,8 @@ final class TerminalView {
     private boolean ownsMouse;
     private int seenRevision = -1;
     private String lastQuery = "";
+    /** The search text both this terminal and the recipe viewer (JEI or REI) last agreed on. */
+    private String synced = "";
     private final List<Entry> visible = new ArrayList<>();
 
     TerminalView(TerminalMenu menu, Font font) {
@@ -80,6 +84,10 @@ final class TerminalView {
         search.setMaxLength(50);
         search.setBordered(true);
         search.setValue(query);
+        // Opening with an empty search takes the recipe viewer's, so both start the same
+        String viewer = syncing() ? RecipeViewerSearch.get() : null;
+        if (query.isEmpty() && viewer != null && !viewer.isBlank()) search.setValue(viewer);
+        synced = search.getValue();
         add.accept(search);
         sortButton = Button.builder(sortLabel(), b -> {
             sort = Sort.values()[(sort.ordinal() + 1) % Sort.values().length];
@@ -158,8 +166,42 @@ final class TerminalView {
     }
 
     void tick() {
+        syncWithRecipeViewer();
         String q = search.getValue().toLowerCase(Locale.ROOT).trim();
         if (menu.clientRevision() != seenRevision || !q.equals(lastQuery)) refilter();
+    }
+
+    private static boolean syncing() {
+        return NexusConfig.get().terminalSearchSync;
+    }
+
+    /**
+     * Keeps the terminal's search and the recipe viewer's the same: whichever changed since they last agreed is copied to
+     * the other (typing here wins if both changed in the same tick).
+     */
+    private void syncWithRecipeViewer() {
+        if (!syncing()) return;
+        String mine = search.getValue();
+        if (!mine.equals(synced)) {
+            RecipeViewerSearch.set(mine);
+            synced = mine;
+            return;
+        }
+        String theirs = RecipeViewerSearch.get();
+        if (theirs != null && !theirs.equals(synced)) {
+            search.setValue(theirs.length() > 50 ? theirs.substring(0, 50) : theirs);
+            synced = search.getValue();
+        }
+    }
+
+    /** The terminal's search text (for the client test). */
+    public String searchText() {
+        return search == null ? "" : search.getValue();
+    }
+
+    /** Types into the terminal's search (for the client test). */
+    public void setSearchText(String text) {
+        if (search != null) search.setValue(text);
     }
 
     // ---- Rendering ------------------------------------------------------------------------------
