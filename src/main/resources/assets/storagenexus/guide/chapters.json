@@ -119,7 +119,7 @@
         {"type": "text", "id": "readout"},
         {"type": "recipes", "id": "recipes", "recipes": ["aiot_merge", "aiot_netherite"]},
         {"type": "recipes", "id": "recipes2", "recipes": ["aiot_nexium", "m_area"]},
-        {"type": "recipes", "id": "recipes3", "recipes": ["m_vein", "m_link"]}
+        {"type": "recipes", "id": "recipes3", "recipes": ["m_link"]}
       ]
     },
     {

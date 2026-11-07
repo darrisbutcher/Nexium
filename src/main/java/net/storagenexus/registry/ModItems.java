@@ -13,6 +13,7 @@ import net.storagenexus.StorageNexus;
 import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.aiot.AiotTier;
 import net.storagenexus.aiot.module.ModuleItem;
+import net.storagenexus.aiot.module.RetiredModuleItem;
 import net.storagenexus.aiot.module.ModuleType;
 import net.storagenexus.barrel.BarrelTier;
 import net.storagenexus.barrel.BarrelUpgradeItem;
@@ -86,6 +87,17 @@ public final class ModItems {
         for (ModuleType type : ModuleType.values()) {
             MODULES.put(type, register(type.id() + "_module", p -> new ModuleItem(p, type), new Item.Properties().stacksTo(1)));
         }
+    }
+
+    /**
+     * What is left of the Vein Mining Module: vein mining needs no module now. Kept under its old id so AIOTs and
+     * containers that still hold one load as before; it can't be crafted and isn't in the creative tab.
+     */
+    public static final RetiredModuleItem RETIRED_VEIN_MINING_MODULE = register("vein_mining_module", RetiredModuleItem::new,
+            new Item.Properties().stacksTo(1));
+
+    static {
+        TAB_ORDER.remove(RETIRED_VEIN_MINING_MODULE);
     }
 
     // Nexium: the tier above netherite (see NexiumMaterials). Everything Nexium survives fire and lava.

@@ -79,7 +79,7 @@ public class ModuleGameTest {
         h.assertTrue(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "it is installed in the AIOT, and on");
         h.assertFalse(menu.getSlot(1).mayPlace(module(ModuleType.AREA_MINING)), "only one of each module");
         h.assertFalse(menu.getSlot(1).mayPlace(new ItemStack(Items.DIAMOND)), "only modules go in module slots");
-        h.assertTrue(menu.getSlot(1).mayPlace(module(ModuleType.VEIN_MINING)), "a different module fits");
+        h.assertTrue(menu.getSlot(1).mayPlace(module(ModuleType.NEXUS_LINK)), "a different module fits");
 
         menu.clickMenuButton(player, ToolMenuMenu.BTN_TOGGLE_MODULE);
         h.assertFalse(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "the switch turns it off");
@@ -174,7 +174,7 @@ public class ModuleGameTest {
         BlockPos apart = new BlockPos(1, 4, 4);
         h.setBlock(apart, Blocks.IRON_ORE);
         h.setBlock(new BlockPos(1, 1, 2), Blocks.STONE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING, ModuleType.AREA_MINING);
+        ServerPlayer player = miner(h, ModuleType.AREA_MINING);
         mine(h, player, vein.getFirst());
         for (BlockPos p : vein) h.assertBlockPresent(Blocks.AIR, p);
         h.assertBlockPresent(Blocks.IRON_ORE, apart);
@@ -186,9 +186,9 @@ public class ModuleGameTest {
         mine(h, player, new BlockPos(5, 1, 5));
         for (int y = 1; y <= 5; y++) h.assertBlockPresent(Blocks.AIR, new BlockPos(5, y, 5));
 
-        // Both switched off: one block at a time
+        // The key up and the 3x3 module switched off: one block at a time
         AiotModules.toggle(player.getMainHandItem(), 0);
-        AiotModules.toggle(player.getMainHandItem(), 1);
+        VeinKey.set(player, false);
         for (int y = 1; y <= 3; y++) h.setBlock(new BlockPos(5, y, 5), Blocks.OAK_LOG);
         player.setShiftKeyDown(false);
         mine(h, player, new BlockPos(5, 1, 5));
@@ -205,7 +205,7 @@ public class ModuleGameTest {
         int left = 0;
         try {
             config.aiotVeinMaxBlocks = 64;
-            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            ServerPlayer player = miner(h);
             mine(h, player, new BlockPos(2, 1, 2));
             for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
         } finally {
@@ -218,24 +218,15 @@ public class ModuleGameTest {
     @GameTest
     public void veinMiningNeedsTheKeyHeld(GameTestHelper h) {
         for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        // No module in the AIOT: the key is all it takes
+        ServerPlayer player = miner(h);
         VeinKey.set(player, false);
         mine(h, player, new BlockPos(1, 1, 1));
         h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1)); // key up: one block
         VeinKey.set(player, true);
         mine(h, player, new BlockPos(2, 1, 1));
         h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 1)); // key held: the rest of the vein
-        // No module needed: key held, the whole vein; key up, one block
-        for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
-        ServerPlayer plain = miner(h);
-        VeinKey.set(plain, false);
-        mine(h, plain, new BlockPos(1, 1, 1));
-        h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(2, 1, 1));
-        VeinKey.set(plain, true);
-        mine(h, plain, new BlockPos(2, 1, 1));
-        h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 1));
         VeinKey.set(player, false);
-        VeinKey.set(plain, false);
         h.succeed();
     }
 
@@ -245,14 +236,14 @@ public class ModuleGameTest {
         int max = config.aiotVeinMaxBlocks;
         try {
             config.aiotVeinMaxBlocks = 64;
-            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            ServerPlayer player = miner(h);
             ToolMenuMenu menu = new ToolMenuMenu(1, player.getInventory(), player.getInventory().getSelectedSlot());
             h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 64, "defaults to the config's limit");
             menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
             h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 4, "wraps to the smallest after the limit");
             menu.clickMenuButton(player, ToolMenuMenu.BTN_VEIN_SIZE);
             h.assertValueEqual(AiotModules.veinSize(player.getMainHandItem()), 9, "then steps up");
-            h.assertTrue(menu.getSlot(0).getItem().has(ModComponents.VEIN_SIZE), "the slot shows the new size");
+            h.assertTrue(player.getMainHandItem().has(ModComponents.VEIN_SIZE), "the AIOT itself keeps the new size, with no module");
 
             for (int x = 0; x < 20; x++) h.setBlock(new BlockPos(x % 10, 1 + x / 10, 1), Blocks.COAL_ORE);
             mine(h, player, new BlockPos(0, 1, 1));
@@ -279,7 +270,7 @@ public class ModuleGameTest {
         h.setBlock(b, Blocks.DEEPSLATE_DIAMOND_ORE);
         h.setBlock(c, Blocks.DIAMOND_ORE);
         h.setBlock(iron, Blocks.IRON_ORE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        ServerPlayer player = miner(h);
         mine(h, player, a);
         h.assertBlockPresent(Blocks.AIR, b);
         h.assertBlockPresent(Blocks.AIR, c);
@@ -294,7 +285,7 @@ public class ModuleGameTest {
         int max = config.aiotVeinMaxBlocks;
         try {
             for (int x = 1; x <= 4; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.COAL_ORE);
-            ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+            ServerPlayer player = miner(h);
             config.aiotVeinMaxBlocks = 3;
             mine(h, player, new BlockPos(1, 1, 1));
             h.assertBlockPresent(Blocks.COAL_ORE, new BlockPos(4, 1, 1)); // 3 of the 4: the limit is a setting
@@ -322,7 +313,7 @@ public class ModuleGameTest {
         }
         // 100 blocks of coal ore, 64 of which a swing takes
         for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING, ModuleType.NEXUS_LINK);
+        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK);
         h.assertTrue(AiotModules.relink(player.getMainHandItem(), GlobalPos.of(h.getLevel().dimension(), h.absolutePos(terminal))), "linked");
         var config = net.storagenexus.essentials.config.NexusConfig.get();
         int max = config.aiotVeinMaxBlocks;
@@ -381,9 +372,9 @@ public class ModuleGameTest {
         h.assertTrue(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "and the key turns it back on");
 
         // An AIOT without the module, and any other item, are left alone
-        ServerPlayer other = miner(h, ModuleType.VEIN_MINING);
+        ServerPlayer other = miner(h, ModuleType.NEXUS_LINK);
         ToolMenu.toggleArea(other);
-        h.assertTrue(AiotModules.active(other.getMainHandItem(), ModuleType.VEIN_MINING), "the key leaves the other modules alone");
+        h.assertTrue(AiotModules.active(other.getMainHandItem(), ModuleType.NEXUS_LINK), "the key leaves the other modules alone");
         other.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND_PICKAXE));
         ToolMenu.toggleArea(other);
         h.assertTrue(other.getMainHandItem().is(Items.DIAMOND_PICKAXE), "and a plain pickaxe");
@@ -392,7 +383,7 @@ public class ModuleGameTest {
 
     @GameTest
     public void modulesDropWhenTheAiotBreaks(GameTestHelper h) {
-        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK, ModuleType.AREA_MINING, ModuleType.VEIN_MINING);
+        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK, ModuleType.AREA_MINING);
         ItemStack tool = player.getMainHandItem();
         AiotModules.toggle(tool, 1); // 3x3 off: the module keeps that when it drops
         tool.setDamageValue(tool.getMaxDamage() - 1);
@@ -404,7 +395,7 @@ public class ModuleGameTest {
         h.assertTrue(player.getMainHandItem().isEmpty(), "the AIOT broke with that last block");
         List<ItemStack> modules = h.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(4)).stream()
                 .map(ItemEntity::getItem).filter(stack -> stack.getItem() instanceof ModuleItem).toList();
-        h.assertValueEqual(modules.size(), 3, "all three modules dropped");
+        h.assertValueEqual(modules.size(), 2, "both modules dropped");
         for (ModuleType type : ModuleType.values()) {
             h.assertTrue(modules.stream().anyMatch(stack -> stack.is(ModItems.MODULES.get(type))), "the " + type.id() + " module dropped");
         }
@@ -441,7 +432,7 @@ public class ModuleGameTest {
             ToolMenu.stepTunnel(player);
             h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 2, "the key steps it from off to 2");
             // No 3x3 module, no tunnel
-            ServerPlayer other = miner(h, ModuleType.VEIN_MINING);
+            ServerPlayer other = miner(h, ModuleType.NEXUS_LINK);
             ToolMenu.stepTunnel(other);
             h.assertValueEqual(AiotModules.tunnelLength(other.getMainHandItem()), 1, "the key does nothing without a 3x3 module");
             h.assertFalse(ToolMenu.cycleTunnelLength(other, other.getMainHandItem()), "nothing to set without a 3x3 module");
@@ -491,7 +482,7 @@ public class ModuleGameTest {
         }
         h.setBlock(new BlockPos(1, 1, 5), Blocks.CHEST);
         h.setBlock(new BlockPos(2, 1, 5), Blocks.CHEST);
-        ServerPlayer player = miner(h, ModuleType.VEIN_MINING);
+        ServerPlayer player = miner(h);
         mine(h, player, new BlockPos(1, 1, 1));
         for (int x = 1; x <= 4; x++) h.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, 1));
         mine(h, player, new BlockPos(1, 1, 3));
@@ -528,6 +519,148 @@ public class ModuleGameTest {
         h.assertBlockPresent(Blocks.OBSIDIAN, new BlockPos(2, 1, 9));
         VeinKey.set(player, false);
         VeinKey.set(weak, false);
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- the retired Vein Mining Module
+
+    private static net.minecraft.nbt.CompoundTag slotTag(int index, String id) {
+        net.minecraft.nbt.CompoundTag slot = new net.minecraft.nbt.CompoundTag();
+        slot.putInt("slot", index);
+        net.minecraft.nbt.CompoundTag item = new net.minecraft.nbt.CompoundTag();
+        item.putString("id", id);
+        item.putInt("count", 1);
+        slot.put("item", item);
+        return slot;
+    }
+
+    /** An AIOT the way a world saved before the Vein Mining Module was retired holds it: three module slots, vein mining in one. */
+    private static ItemStack oldAiot(GameTestHelper h, int veinSlot, int areaSlot, int linkSlot) {
+        var ops = h.getLevel().registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE);
+        net.minecraft.nbt.CompoundTag aiot = new net.minecraft.nbt.CompoundTag();
+        aiot.putString("id", "storagenexus:diamond_aiot");
+        aiot.putInt("count", 1);
+        net.minecraft.nbt.ListTag modules = new net.minecraft.nbt.ListTag();
+        modules.add(slotTag(veinSlot, "storagenexus:vein_mining_module"));
+        modules.add(slotTag(areaSlot, "storagenexus:area_mining_module"));
+        modules.add(slotTag(linkSlot, "storagenexus:nexus_link_module"));
+        net.minecraft.nbt.CompoundTag components = new net.minecraft.nbt.CompoundTag();
+        components.put("storagenexus:modules", modules);
+        aiot.put("components", components);
+        return ItemStack.CODEC.parse(ops, aiot).result().orElse(ItemStack.EMPTY);
+    }
+
+    @GameTest
+    public void theRetiredModuleKeepsOldAiotsLoadingAndCannotBeCrafted(GameTestHelper h) {
+        // An item id that no longer exists would make the whole AIOT fail to load, so the id stays registered
+        ItemStack old = oldAiot(h, 0, 1, 2);
+        h.assertTrue(!old.isEmpty() && old.is(ModItems.AIOTS.get(AiotTier.DIAMOND)), "an AIOT saved with the Vein Mining Module still loads");
+        h.assertTrue(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.storagenexus.StorageNexus.id("vein_mining_module"))
+                instanceof net.storagenexus.aiot.module.RetiredModuleItem, "the old id is the retired item");
+        // But it is no module any more: no module type, no recipe, not in the creative tab
+        h.assertValueEqual(ModuleType.values().length, 2, "two module types");
+        h.assertTrue(!ModItems.TAB_ORDER.contains(ModItems.RETIRED_VEIN_MINING_MODULE), "not in the creative tab");
+        boolean recipe = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
+                .anyMatch(r -> r.id().identifier().getPath().equals("vein_mining_module"));
+        h.assertTrue(!recipe, "no recipe for it");
+        h.succeed();
+    }
+
+    @GameTest
+    public void oldThreeSlotAiotsKeepTheirOtherModules(GameTestHelper h) {
+        // Vein mining in slot 0, 3x3 in slot 1 (off) and the Nexus Link in the slot that no longer exists
+        ItemStack old = oldAiot(h, 0, 1, 2);
+        var slots = AiotModules.slots(old);
+        h.assertValueEqual(slots.size(), 2, "two slots now");
+        h.assertTrue(slots.get(1).getItem() instanceof ModuleItem m && m.type() == ModuleType.AREA_MINING, "the 3x3 module keeps its slot");
+        h.assertTrue(slots.get(0).getItem() instanceof ModuleItem m && m.type() == ModuleType.NEXUS_LINK, "the Nexus Link moves to the free slot");
+        h.assertValueEqual(AiotModules.stored(old).size(), 3, "the retired module is still in the data until it is taken out");
+
+        // Every layout reads the same way: the two real modules, whatever order they were saved in
+        for (int[] layout : new int[][]{{2, 0, 1}, {1, 2, 0}, {2, 1, 0}, {0, 2, 1}}) {
+            var read = AiotModules.slots(oldAiot(h, layout[0], layout[1], layout[2]));
+            h.assertTrue(!AiotModules.find(oldAiot(h, layout[0], layout[1], layout[2]), ModuleType.NEXUS_LINK).isEmpty()
+                    && !AiotModules.find(oldAiot(h, layout[0], layout[1], layout[2]), ModuleType.AREA_MINING).isEmpty(), "both modules found");
+            h.assertTrue(read.stream().filter(stack -> !stack.isEmpty()).count() == 2, "and exactly two stacks");
+        }
+        // A layout saved with the current two slots is read as it is
+        ItemStack current = new ItemStack(ModItems.AIOTS.get(AiotTier.DIAMOND));
+        var mine = AiotModules.slots(current);
+        mine.set(1, module(ModuleType.AREA_MINING));
+        AiotModules.setSlots(current, mine);
+        h.assertTrue(AiotModules.slots(current).get(0).isEmpty() && AiotModules.slots(current).get(1).getItem() instanceof ModuleItem,
+                "a module in the second slot stays in the second slot");
+        h.succeed();
+    }
+
+    @GameTest
+    public void openingTheToolMenuHandsBackARetiredModule(GameTestHelper h) {
+        ServerPlayer player = miner(h);
+        ItemStack old = oldAiot(h, 0, 1, 2);
+        player.setItemInHand(InteractionHand.MAIN_HAND, old);
+        ToolMenuMenu menu = new ToolMenuMenu(1, player.getInventory(), player.getInventory().getSelectedSlot());
+        h.assertValueEqual(AiotModules.stored(player.getMainHandItem()).size(), 2, "the retired module is out of the AIOT");
+        h.assertTrue(!AiotModules.find(player.getMainHandItem(), ModuleType.AREA_MINING).isEmpty()
+                && !AiotModules.find(player.getMainHandItem(), ModuleType.NEXUS_LINK).isEmpty(), "and the other two stay");
+        h.assertValueEqual(player.getInventory().countItem(Items.DIAMOND), 1, "its diamond came back");
+        h.assertValueEqual(player.getInventory().countItem(Items.LAPIS_LAZULI), 4, "its 4 lapis");
+        h.assertValueEqual(player.getInventory().countItem(Items.IRON_INGOT), 4, "and its 4 iron ingots");
+        // The menu shows the modules that are left
+        h.assertTrue(menu.getSlot(0).getItem().getItem() instanceof ModuleItem && menu.getSlot(1).getItem().getItem() instanceof ModuleItem, "both slots are filled");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aLooseRetiredModuleGivesItsMaterialsWhenUsed(GameTestHelper h) {
+        ServerPlayer player = miner(h);
+        player.getInventory().clearContent();
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RETIRED_VEIN_MINING_MODULE));
+        // The way the game does it when the player right-clicks with it in hand
+        var result = player.gameMode.useItem(player, h.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND);
+        h.assertTrue(result.consumesAction(), "right-clicking it does something");
+        h.assertTrue(!player.getMainHandItem().is(ModItems.RETIRED_VEIN_MINING_MODULE), "and uses it up, " + player.getMainHandItem());
+        h.assertTrue(player.getMainHandItem().is(Items.IRON_INGOT), "it turns into its iron: " + player.getMainHandItem());
+        h.assertValueEqual(player.getInventory().countItem(Items.DIAMOND), 1, "a diamond");
+        h.assertValueEqual(player.getInventory().countItem(Items.LAPIS_LAZULI), 4, "4 lapis");
+        h.assertValueEqual(player.getInventory().countItem(Items.IRON_INGOT), 4, "4 iron ingots");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aRetiredModuleInsideABreakingAiotStillDrops(GameTestHelper h) {
+        ServerPlayer player = miner(h);
+        ItemStack old = oldAiot(h, 0, 1, 2);
+        player.setItemInHand(InteractionHand.MAIN_HAND, old);
+        old.setDamageValue(old.getMaxDamage() - 1);
+        BlockPos target = new BlockPos(2, 2, 3);
+        h.setBlock(target, Blocks.STONE);
+        lookAt(h, player, target);
+        VeinKey.set(player, false);
+        mine(h, player, target);
+        h.assertTrue(player.getMainHandItem().isEmpty(), "the AIOT broke");
+        long dropped = h.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(4)).stream()
+                .map(ItemEntity::getItem).filter(stack -> stack.is(ModItems.RETIRED_VEIN_MINING_MODULE) || stack.getItem() instanceof ModuleItem).count();
+        h.assertValueEqual(dropped, 3L, "all three stacks dropped, the retired one too");
+        h.succeed();
+    }
+
+    @GameTest
+    public void veinSizeNeedsNoModule(GameTestHelper h) {
+        ServerPlayer player = miner(h);
+        ItemStack tool = player.getMainHandItem();
+        var config = net.storagenexus.essentials.config.NexusConfig.get();
+        int max = config.aiotVeinMaxBlocks;
+        try {
+            config.aiotVeinMaxBlocks = 256;
+            h.assertValueEqual(AiotModules.veinSize(tool), 256, "an AIOT with no modules mines up to the limit");
+            h.assertValueEqual(AiotModules.cycleVeinSize(tool), 4, "the button steps from the limit back to 4");
+            h.assertValueEqual(AiotModules.cycleVeinSize(tool), 9, "then 9");
+            h.assertValueEqual(AiotModules.cycleVeinSize(tool), 18, "then 18");
+            h.assertValueEqual(AiotModules.veinSize(tool), 18, "and the AIOT remembers it");
+            h.assertValueEqual(AiotModules.cycleVeinSize(new ItemStack(Items.DIAMOND_PICKAXE)), 0, "a plain pickaxe has no vein size");
+        } finally {
+            config.aiotVeinMaxBlocks = max;
+        }
         h.succeed();
     }
 }

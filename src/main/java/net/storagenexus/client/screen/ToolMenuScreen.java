@@ -97,10 +97,6 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         hints.set(armorButton, Component.translatable("screen.storagenexus.tool_menu.armor.tooltip"));
         boolean aiot = tool.getItem() instanceof AiotItem;
         veinButton.visible = aiot;
-        ItemStack vein = ItemStack.EMPTY;
-        for (int i = 0; i < AiotModules.SLOTS; i++) {
-            if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.VEIN_MINING) vein = menu.getSlot(i).getItem();
-        }
         tunnelButton.visible = aiot;
         ItemStack area = ItemStack.EMPTY;
         for (int i = 0; i < AiotModules.SLOTS; i++) {
@@ -113,14 +109,10 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
             set(tunnelButton, true, Component.translatable(length == 1 ? "screen.storagenexus.tool_menu.tunnel_off"
                     : "screen.storagenexus.tool_menu.tunnel_length", length), "screen.storagenexus.tool_menu.tunnel.tooltip");
         }
-        if (vein.isEmpty()) {
-            set(veinButton, false, Component.translatable("screen.storagenexus.tool_menu.vein_none"), "screen.storagenexus.tool_menu.vein_none.tooltip");
-        } else {
-            int max = menu.veinMax(); // the server's limit, synced with the menu
-            int size = Math.max(1, Math.min(max, vein.getOrDefault(ModComponents.VEIN_SIZE, max)));
-            set(veinButton, true, Component.translatable("screen.storagenexus.tool_menu.vein_size", size),
-                    "screen.storagenexus.tool_menu.vein_size.tooltip");
-        }
+        int max = menu.veinMax(); // the server's limit, synced with the menu
+        int size = Math.max(1, Math.min(max, tool.getOrDefault(ModComponents.VEIN_SIZE, max)));
+        set(veinButton, aiot, Component.translatable("screen.storagenexus.tool_menu.vein_size", size),
+                "screen.storagenexus.tool_menu.vein_size.tooltip");
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             Button button = moduleButtons[i];
             button.visible = aiot;

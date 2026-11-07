@@ -52,10 +52,8 @@ public final class AiotHud {
             }
         }
         if (NexusConfig.get().aiotVeinMining) {
-            out.add(AiotModules.veinOn(tool)
-                    ? new Line(Component.translatable("hud.storagenexus.aiot.vein", AiotModules.veinSize(tool),
-                            ToolMenuClient.VEIN_MINE.getTranslatedKeyMessage()), ON)
-                    : new Line(Component.translatable("hud.storagenexus.aiot.vein_off"), OFF));
+            out.add(new Line(Component.translatable("hud.storagenexus.aiot.vein", AiotModules.veinSize(tool),
+                    ToolMenuClient.VEIN_MINE.getTranslatedKeyMessage()), ON));
         }
         if (!AiotModules.find(tool, ModuleType.NEXUS_LINK).isEmpty()) {
             out.add(new Line(Component.translatable(AiotModules.activeLink(tool) != null

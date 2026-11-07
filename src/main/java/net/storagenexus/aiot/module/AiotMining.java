@@ -23,14 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The 3x3 and vein mining modules. When a player mines a block with an AIOT that has one on, the extra blocks are
+ * Vein mining (the Vein Mine key, no module) and the 3x3 Mining module. When a player mines a block with an AIOT that has one on, the extra blocks are
  * mined as if the player had mined each one: same drops (Fortune, Silk Touch, a Nexus Link), 1 durability each, spawn
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
- *   <li><b>Vein mining</b>, needing no module (a Vein Mining module only sets the size and a switch), for any block the AIOT is made for except the stone family ({@code #storagenexus:vein_excluded}:
+ *   <li><b>Vein mining</b>, for any block the AIOT is made for except the stone family ({@code #storagenexus:vein_excluded}:
  *       stone, cobblestone, granite, deepslate, netherrack and the like) and blocks with contents: every block of the
  *       same kind touching it, corners included, up to the size set in the tool menu (never above the config's limit)
- *       in all. Only while the player holds the Vein Mine key.</li>
+ *       in all. Only while the player holds the Vein Mine key; needs no module.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
  *       looking ahead, the floor or ceiling when looking down or up). Only blocks the AIOT is made for and no harder
  *       than about twice the mined block; never blocks with contents, such as chests. With a tunnel length set in the
@@ -80,7 +80,7 @@ public final class AiotMining {
     public static List<BlockPos> extraBlocks(Level level, Player player, ItemStack tool, BlockPos pos, BlockState state, boolean veinKeyHeld) {
         if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return List.of();
         NexusConfig config = NexusConfig.get();
-        if (config.aiotVeinMining && AiotModules.veinOn(tool) && veinKeyHeld && veinable(level, pos, state, tool)) {
+        if (config.aiotVeinMining && veinKeyHeld && veinable(level, pos, state, tool)) {
             return vein(level, pos, state, AiotModules.veinSize(tool));
         }
         if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
