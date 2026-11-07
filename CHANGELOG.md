@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.1
+
+* **AIOT readout by the hotbar shows for 20 seconds**: after you switch to an AIOT, press the 3x3 (X), tunnel (Z) or vein
+  (V) key, or change something in the tool menu, instead of the whole time you hold one. It stays up while V is held and
+  fades out over its last second. The new client setting `aiotHudSeconds` changes the time (0 keeps it up).
+
 ## 1.14.0
 
 * **Farm Assembler**: a new block that makes the one-block farms and the Master Librarian, replacing the renamed chests.

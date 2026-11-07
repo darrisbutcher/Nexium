@@ -55,10 +55,16 @@ public final class ToolMenuClient {
                 if (client.player != null) ClientPlayNetworking.send(new VeinKeyPayload(veinDown));
             }
             while (TOGGLE_AREA.consumeClick()) {
-                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(AreaTogglePayload.INSTANCE);
+                if (client.player != null && client.gui.screen() == null) {
+                    ClientPlayNetworking.send(AreaTogglePayload.INSTANCE);
+                    AiotHud.show();
+                }
             }
             while (STEP_TUNNEL.consumeClick()) {
-                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(TunnelStepPayload.INSTANCE);
+                if (client.player != null && client.gui.screen() == null) {
+                    ClientPlayNetworking.send(TunnelStepPayload.INSTANCE);
+                    AiotHud.show();
+                }
             }
             while (TOOL_MENU.consumeClick()) {
                 if (client.player == null || client.gui.screen() != null) continue;
