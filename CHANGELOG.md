@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.4
+
+* **The anvil is never Too Expensive**: a job that costs 40 levels or more can now be done for its full cost, as long as you
+  have the levels, instead of the result disappearing. The screen shows the real cost instead of "Too Expensive!". The
+  setting `anvilNoCostLimit` (on by default) set to false brings back vanilla's limit.
+
 ## 1.14.3
 
 * **Terminal search follows JEI and REI**: typing in a Storage or Crafting Terminal's search also searches JEI's (or REI's)

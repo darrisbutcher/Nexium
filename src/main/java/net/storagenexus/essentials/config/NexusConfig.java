@@ -60,6 +60,10 @@ public final class NexusConfig {
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
     public boolean ancientDebrisDropsScrap = true;
 
+    // --- Anvil
+    /** An anvil never says "Too Expensive!": any job can be done, for its full cost in levels. False keeps vanilla's limit of 40. */
+    public boolean anvilNoCostLimit = true;
+
     // --- Master Librarian
     /** How many villagers (spawn eggs or Captured Mobs) the Farm Assembler takes to make a Master Librarian. */
     public int librarianVillagers = 12;

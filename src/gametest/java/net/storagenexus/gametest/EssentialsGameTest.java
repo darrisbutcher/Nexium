@@ -509,6 +509,41 @@ public class EssentialsGameTest {
     // ---------------------------------------------------------------- elytra enchanting
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void anvilIsNeverTooExpensive(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        AnvilMenu anvil = new AnvilMenu(1, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(CENTER)));
+        // A much-worked sword (prior work 63 levels) taking Sharpness V: the cost is far over 40
+        ItemStack sword = enchanted(h, new ItemStack(Items.DIAMOND_SWORD), Enchantments.UNBREAKING, 3);
+        sword.set(net.minecraft.core.component.DataComponents.REPAIR_COST, 63);
+        anvil.getSlot(0).set(sword);
+        anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.SHARPNESS), 5)));
+        anvil.createResult();
+        h.assertTrue(!anvil.getSlot(2).getItem().isEmpty(), "the result is there (vanilla would show Too Expensive)");
+        int cost = anvil.getCost();
+        h.assertTrue(cost >= 40, "it costs the full amount, 40 or more levels: " + cost);
+        h.assertValueEqual(EnchantmentHelper.getItemEnchantmentLevel(enchantment(h, Enchantments.SHARPNESS), anvil.getSlot(2).getItem()), 5, "Sharpness V went on");
+        // Too few levels: it can't be taken; enough: it can, and costs the full amount
+        player.setExperienceLevels(cost - 1);
+        h.assertFalse(anvil.getSlot(2).mayPickup(player), "one level short can't take it");
+        player.setExperienceLevels(cost + 5);
+        h.assertTrue(anvil.getSlot(2).mayPickup(player), "with enough levels it can be taken");
+        anvil.getSlot(2).onTake(player, anvil.getSlot(2).getItem());
+        h.assertValueEqual(player.experienceLevel, 5, "the full cost in levels was paid");
+        // With the setting off, vanilla's limit is back
+        net.storagenexus.essentials.config.NexusConfig.get().anvilNoCostLimit = false;
+        try {
+            anvil.getSlot(0).set(sword.copy());
+            anvil.getSlot(1).set(EnchantmentHelper.createBook(new EnchantmentInstance(enchantment(h, Enchantments.SHARPNESS), 5)));
+            anvil.createResult();
+            h.assertTrue(anvil.getSlot(2).getItem().isEmpty(), "vanilla: too expensive, no result");
+        } finally {
+            net.storagenexus.essentials.config.NexusConfig.get().anvilNoCostLimit = true;
+        }
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void anvilPutsEveryProtectionOnElytra(GameTestHelper h) {
         ServerPlayer player = player(h);
         AnvilMenu anvil = new AnvilMenu(1, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(CENTER)));
