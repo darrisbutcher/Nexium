@@ -3,6 +3,23 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.13.0
+
+* **The Nexium Codex replaces the guide book.** The guide item now opens a built-in wiki: a sidebar with 11 categories
+  (Nexium and Nexium Armor are one category now, and the old Essentials and Mobs chapters are split by subject), a search
+  box, and one scrolling page per topic with no page or line limits. Words that name another topic are links, recipes are
+  crafting grids (click an ingredient to open its page), "See also" lists related topics, and back, forward and Home work
+  like a browser. The Codex reopens where you left it. All the old guide text carries over, plus "Using the Codex" and
+  "What's new" pages.
+* **Look up any item**: in any inventory, hover over an item and press H (Look up in the Codex, in Controls) to open its
+  page; Escape comes back to the inventory. Outside a screen, H opens the Codex. Items with a page say so in their tooltip.
+  A game test makes sure every item in the mod has a page.
+* **Every texture redrawn at 64x64**: new AIOTs (a crystal pick-and-scythe head with a gold-framed purple gem, a wrapped
+  grip, and the blade in each tier's material), new Nexium armor (crystal plates, gold trim and purple gems, on the items
+  and on the armor you wear), Nexium tools with wrapped grips, gold rivets on upgrades, modules and filters, and every
+  block, item, GUI sprite and the mod icon at four times the detail. Blocks keep their layouts, so cables, connectors and
+  dyed Freezers look right.
+
 ## 1.12.2
 
 * **The Vein Mining Module is retired.** Vein mining never needed it: hold the Vein Mine key (V) with an AIOT. The vein

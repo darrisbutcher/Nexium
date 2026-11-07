@@ -1,0 +1,1410 @@
+{
+  "categories": [
+    {
+      "id": "start",
+      "icon": "storagenexus:guide",
+      "topics": [
+        "welcome",
+        "codex",
+        "keys",
+        "whats_new",
+        "settings"
+      ]
+    },
+    {
+      "id": "storage",
+      "icon": "storagenexus:diamond_barrel",
+      "topics": [
+        "drawers",
+        "drawer_upgrades",
+        "lock_void",
+        "fluid_drawer",
+        "compacting",
+        "controller",
+        "barrels"
+      ]
+    },
+    {
+      "id": "network",
+      "icon": "storagenexus:crafting_terminal",
+      "topics": [
+        "network",
+        "connector",
+        "filtered",
+        "terminal",
+        "bus",
+        "emitter",
+        "tablet"
+      ]
+    },
+    {
+      "id": "transport",
+      "icon": "storagenexus:item_conduit",
+      "topics": [
+        "conduits",
+        "wrench",
+        "filters",
+        "dlinks",
+        "anchor",
+        "intake",
+        "lava",
+        "elevator"
+      ]
+    },
+    {
+      "id": "tools",
+      "icon": "storagenexus:diamond_aiot",
+      "topics": [
+        "aiot",
+        "aiot_crafting",
+        "aiot_enchants",
+        "tool_menu",
+        "modules",
+        "nexus_link",
+        "area",
+        "tunnels",
+        "vein"
+      ]
+    },
+    {
+      "id": "nexium",
+      "icon": "storagenexus:nexium_ingot",
+      "topics": [
+        "nexium",
+        "nexium_tools",
+        "spear",
+        "armor",
+        "bonuses",
+        "armor_menu",
+        "restock"
+      ]
+    },
+    {
+      "id": "slots",
+      "icon": "nexusessentials:magnet",
+      "topics": [
+        "slots",
+        "arrows",
+        "totem",
+        "wings",
+        "magnet",
+        "elytra"
+      ]
+    },
+    {
+      "id": "farms",
+      "icon": "nexusessentials:iron_farm",
+      "topics": [
+        "iron_farm",
+        "farms",
+        "breeder",
+        "barter",
+        "zpiglin",
+        "witherfarm",
+        "shulkerfarm",
+        "freezer"
+      ]
+    },
+    {
+      "id": "mobs",
+      "icon": "nexusessentials:captured_mob",
+      "topics": [
+        "mobs",
+        "librarian",
+        "piglins"
+      ]
+    },
+    {
+      "id": "enchanting",
+      "icon": "nexusessentials:bedrock_breaker_elixir",
+      "topics": [
+        "enchant_levels",
+        "elixir"
+      ]
+    },
+    {
+      "id": "world",
+      "icon": "minecraft:tnt",
+      "topics": [
+        "explosions",
+        "debris",
+        "sand"
+      ]
+    }
+  ],
+  "topics": {
+    "welcome": {
+      "pages": [
+        "start.welcome",
+        "start.finding"
+      ],
+      "icon": "storagenexus:guide",
+      "items": [
+        "storagenexus:guide"
+      ],
+      "see": [
+        "codex",
+        "keys",
+        "whats_new"
+      ]
+    },
+    "codex": {
+      "pages": [
+        "start.codex"
+      ],
+      "icon": "storagenexus:guide",
+      "aliases": [
+        "Codex",
+        "Nexium Codex"
+      ],
+      "see": [
+        "keys",
+        "welcome"
+      ]
+    },
+    "keys": {
+      "pages": [
+        "start.keys"
+      ],
+      "icon": "minecraft:comparator",
+      "aliases": [
+        "key binds",
+        "Key binds"
+      ],
+      "see": [
+        "tool_menu",
+        "vein",
+        "magnet"
+      ]
+    },
+    "whats_new": {
+      "pages": [
+        "start.new"
+      ],
+      "icon": "storagenexus:nexium_ingot",
+      "see": [
+        "codex",
+        "aiot",
+        "farms"
+      ]
+    },
+    "settings": {
+      "pages": [
+        "start.settings"
+      ],
+      "icon": "minecraft:writable_book",
+      "aliases": [
+        "config file",
+        "nexusessentials.json"
+      ],
+      "see": [
+        "keys"
+      ]
+    },
+    "drawers": {
+      "pages": [
+        "drawers.drawers",
+        "drawers.using",
+        "drawers.bar",
+        "drawers.moving"
+      ],
+      "icon": "storagenexus:oak_drawer_1x1",
+      "recipes": [
+        "d11",
+        "d12",
+        "d22"
+      ],
+      "items": [
+        "#storagenexus:drawers"
+      ],
+      "aliases": [
+        "drawer",
+        "drawers"
+      ],
+      "see": [
+        "drawer_upgrades",
+        "controller",
+        "compacting",
+        "fluid_drawer"
+      ]
+    },
+    "drawer_upgrades": {
+      "pages": [
+        "drawers.upgrades",
+        "drawers.capacity",
+        "drawers.swap"
+      ],
+      "icon": "storagenexus:diamond_capacity_upgrade",
+      "recipes": [
+        "cap_iron",
+        "cap_gold",
+        "cap_diamond",
+        "cap_emerald",
+        "cap_netherite"
+      ],
+      "items": [
+        "storagenexus:iron_capacity_upgrade",
+        "storagenexus:gold_capacity_upgrade",
+        "storagenexus:diamond_capacity_upgrade",
+        "storagenexus:emerald_capacity_upgrade",
+        "storagenexus:netherite_capacity_upgrade"
+      ],
+      "aliases": [
+        "capacity upgrades",
+        "Capacity upgrades",
+        "upgrades"
+      ],
+      "see": [
+        "drawers",
+        "lock_void",
+        "barrels"
+      ]
+    },
+    "lock_void": {
+      "pages": [
+        "drawers.lockvoid"
+      ],
+      "icon": "storagenexus:lock_upgrade",
+      "recipes": [
+        "lock",
+        "void"
+      ],
+      "items": [
+        "storagenexus:lock_upgrade",
+        "storagenexus:void_upgrade"
+      ],
+      "aliases": [
+        "Lock Upgrade",
+        "Void Upgrade",
+        "Lock and Void"
+      ],
+      "see": [
+        "drawer_upgrades",
+        "drawers"
+      ]
+    },
+    "fluid_drawer": {
+      "pages": [
+        "drawers.fluid"
+      ],
+      "icon": "storagenexus:fluid_drawer_1x1",
+      "recipes": [
+        "fluid"
+      ],
+      "items": [
+        "storagenexus:fluid_drawer_1x1"
+      ],
+      "aliases": [
+        "Fluid Drawer",
+        "Fluid Drawers"
+      ],
+      "see": [
+        "drawers",
+        "intake"
+      ]
+    },
+    "compacting": {
+      "pages": [
+        "drawers.compacting"
+      ],
+      "icon": "storagenexus:compacting_drawer",
+      "recipes": [
+        "compact"
+      ],
+      "items": [
+        "storagenexus:compacting_drawer"
+      ],
+      "aliases": [
+        "Compacting Drawer"
+      ],
+      "see": [
+        "drawers"
+      ]
+    },
+    "controller": {
+      "pages": [
+        "drawers.controller",
+        "drawers.slave"
+      ],
+      "icon": "storagenexus:drawer_controller",
+      "recipes": [
+        "ctrl",
+        "slave"
+      ],
+      "items": [
+        "storagenexus:drawer_controller",
+        "storagenexus:controller_slave"
+      ],
+      "aliases": [
+        "Drawer Controller",
+        "Controller Slave"
+      ],
+      "see": [
+        "drawers",
+        "network"
+      ]
+    },
+    "barrels": {
+      "pages": [
+        "drawers.barrels",
+        "drawers.barrelup"
+      ],
+      "icon": "storagenexus:diamond_barrel",
+      "recipes": [
+        "bar_iron",
+        "bar_gold",
+        "bar_diamond",
+        "bar_emerald",
+        "bar_netherite"
+      ],
+      "items": [
+        "storagenexus:iron_barrel",
+        "storagenexus:iron_barrel_upgrade",
+        "storagenexus:gold_barrel",
+        "storagenexus:gold_barrel_upgrade",
+        "storagenexus:diamond_barrel",
+        "storagenexus:diamond_barrel_upgrade",
+        "storagenexus:emerald_barrel",
+        "storagenexus:emerald_barrel_upgrade",
+        "storagenexus:netherite_barrel",
+        "storagenexus:netherite_barrel_upgrade"
+      ],
+      "aliases": [
+        "barrel",
+        "barrels",
+        "Barrel upgrades"
+      ],
+      "see": [
+        "drawers",
+        "drawer_upgrades"
+      ]
+    },
+    "network": {
+      "pages": [
+        "network.network"
+      ],
+      "icon": "storagenexus:crafting_terminal",
+      "aliases": [
+        "storage network",
+        "network"
+      ],
+      "see": [
+        "connector",
+        "terminal",
+        "bus",
+        "emitter"
+      ]
+    },
+    "connector": {
+      "pages": [
+        "network.connector",
+        "network.cable"
+      ],
+      "icon": "storagenexus:storage_connector",
+      "recipes": [
+        "connector",
+        "cable"
+      ],
+      "items": [
+        "storagenexus:storage_connector",
+        "storagenexus:inventory_cable"
+      ],
+      "aliases": [
+        "Storage Connector",
+        "Storage Connectors",
+        "Inventory Cable",
+        "Inventory Cables",
+        "connector",
+        "cable",
+        "cables"
+      ],
+      "see": [
+        "network",
+        "filtered",
+        "terminal"
+      ]
+    },
+    "filtered": {
+      "pages": [
+        "network.filtered"
+      ],
+      "icon": "storagenexus:filtered_connector",
+      "recipes": [
+        "filtered"
+      ],
+      "items": [
+        "storagenexus:filtered_connector"
+      ],
+      "aliases": [
+        "Filtered Connector"
+      ],
+      "see": [
+        "connector",
+        "filters"
+      ]
+    },
+    "terminal": {
+      "pages": [
+        "network.terminal",
+        "network.search",
+        "network.extras",
+        "network.crafting"
+      ],
+      "icon": "storagenexus:crafting_terminal",
+      "recipes": [
+        "terminal"
+      ],
+      "items": [
+        "storagenexus:crafting_terminal"
+      ],
+      "aliases": [
+        "Crafting Terminal",
+        "Crafting Terminals",
+        "terminal"
+      ],
+      "see": [
+        "network",
+        "tablet",
+        "nexus_link"
+      ]
+    },
+    "bus": {
+      "pages": [
+        "network.bus"
+      ],
+      "icon": "storagenexus:import_export_bus",
+      "recipes": [
+        "bus"
+      ],
+      "items": [
+        "storagenexus:import_export_bus"
+      ],
+      "aliases": [
+        "Import/Export Bus",
+        "bus"
+      ],
+      "see": [
+        "network",
+        "emitter"
+      ]
+    },
+    "emitter": {
+      "pages": [
+        "network.emitter"
+      ],
+      "icon": "storagenexus:level_emitter",
+      "recipes": [
+        "emitter"
+      ],
+      "items": [
+        "storagenexus:level_emitter"
+      ],
+      "aliases": [
+        "Level Emitter"
+      ],
+      "see": [
+        "network",
+        "bus"
+      ]
+    },
+    "tablet": {
+      "pages": [
+        "network.tablets"
+      ],
+      "icon": "storagenexus:crafting_storage_tablet",
+      "recipes": [
+        "tablet"
+      ],
+      "items": [
+        "storagenexus:crafting_storage_tablet"
+      ],
+      "aliases": [
+        "Crafting Storage Tablet",
+        "tablet",
+        "Tablets"
+      ],
+      "see": [
+        "terminal",
+        "anchor"
+      ]
+    },
+    "dlinks": {
+      "pages": [
+        "links.links",
+        "links.names",
+        "links.input",
+        "links.moving",
+        "links.dspeed",
+        "links.output",
+        "links.sides",
+        "links.limits"
+      ],
+      "icon": "storagenexus:dimensional_input",
+      "recipes": [
+        "d_input",
+        "d_output",
+        "d_card",
+        "d_speed"
+      ],
+      "items": [
+        "storagenexus:dimensional_input",
+        "storagenexus:dimensional_output",
+        "storagenexus:dimensional_link_card",
+        "storagenexus:transfer_speed_upgrade"
+      ],
+      "aliases": [
+        "Dimensional Input",
+        "Dimensional Output",
+        "Dimensional Link Card",
+        "Transfer Speed Upgrade",
+        "dimensional links"
+      ],
+      "see": [
+        "anchor",
+        "conduits"
+      ]
+    },
+    "anchor": {
+      "pages": [
+        "network.anchor"
+      ],
+      "icon": "storagenexus:dimensional_anchor",
+      "recipes": [
+        "anchor"
+      ],
+      "items": [
+        "storagenexus:dimensional_anchor"
+      ],
+      "aliases": [
+        "Dimensional Anchor"
+      ],
+      "see": [
+        "dlinks",
+        "tablet"
+      ]
+    },
+    "conduits": {
+      "pages": [
+        "links.conduits",
+        "links.channels",
+        "links.settings"
+      ],
+      "icon": "storagenexus:item_conduit",
+      "recipes": [
+        "c_item",
+        "c_fluid",
+        "c_item2",
+        "c_fluid2"
+      ],
+      "items": [
+        "storagenexus:item_conduit",
+        "storagenexus:fluid_conduit",
+        "storagenexus:ender_item_conduit",
+        "storagenexus:ender_fluid_conduit"
+      ],
+      "aliases": [
+        "conduit",
+        "conduits",
+        "Conduits",
+        "Ender conduits"
+      ],
+      "see": [
+        "wrench",
+        "filters",
+        "dlinks"
+      ]
+    },
+    "wrench": {
+      "pages": [
+        "links.wrench"
+      ],
+      "icon": "storagenexus:conduit_wrench",
+      "recipes": [
+        "wrench",
+        "c_speed"
+      ],
+      "items": [
+        "storagenexus:conduit_wrench",
+        "storagenexus:conduit_speed_upgrade"
+      ],
+      "aliases": [
+        "Conduit Wrench",
+        "wrench",
+        "Conduit Speed Upgrade"
+      ],
+      "see": [
+        "conduits"
+      ]
+    },
+    "filters": {
+      "pages": [
+        "links.filters"
+      ],
+      "icon": "storagenexus:basic_filter",
+      "recipes": [
+        "f_basic",
+        "f_adv"
+      ],
+      "items": [
+        "storagenexus:basic_filter",
+        "storagenexus:advanced_filter"
+      ],
+      "aliases": [
+        "Basic Filter",
+        "Advanced Filter",
+        "filter",
+        "filters"
+      ],
+      "see": [
+        "conduits",
+        "filtered"
+      ]
+    },
+    "intake": {
+      "pages": [
+        "links.intake"
+      ],
+      "icon": "storagenexus:fluid_intake",
+      "recipes": [
+        "intake"
+      ],
+      "items": [
+        "storagenexus:fluid_intake"
+      ],
+      "aliases": [
+        "Fluid Intake"
+      ],
+      "see": [
+        "lava",
+        "fluid_drawer"
+      ]
+    },
+    "lava": {
+      "pages": [
+        "links.lava"
+      ],
+      "icon": "storagenexus:lava_spring",
+      "recipes": [
+        "lava"
+      ],
+      "items": [
+        "storagenexus:lava_spring"
+      ],
+      "aliases": [
+        "Infinite Lava Source",
+        "Lava Source"
+      ],
+      "see": [
+        "intake"
+      ]
+    },
+    "elevator": {
+      "pages": [
+        "essentials.elevator",
+        "essentials.elevator2"
+      ],
+      "icon": "storagenexus:elevator",
+      "recipes": [
+        "elevator"
+      ],
+      "items": [
+        "storagenexus:elevator"
+      ],
+      "aliases": [
+        "Elevator",
+        "Elevators"
+      ],
+      "see": [
+        "dlinks"
+      ]
+    },
+    "aiot": {
+      "pages": [
+        "aiot.aiot",
+        "aiot.using",
+        "aiot.stats",
+        "aiot.fighting"
+      ],
+      "icon": "storagenexus:diamond_aiot",
+      "items": [
+        "storagenexus:stone_aiot",
+        "storagenexus:copper_aiot",
+        "storagenexus:iron_aiot",
+        "storagenexus:golden_aiot",
+        "storagenexus:diamond_aiot",
+        "storagenexus:netherite_aiot",
+        "storagenexus:nexium_aiot"
+      ],
+      "aliases": [
+        "AIOT",
+        "AIOTs",
+        "all-in-one tool",
+        "all-in-one tools"
+      ],
+      "see": [
+        "aiot_crafting",
+        "tool_menu",
+        "modules",
+        "vein"
+      ]
+    },
+    "aiot_crafting": {
+      "pages": [
+        "aiot.crafting",
+        "aiot.upgrade",
+        "aiot.upgrade2"
+      ],
+      "icon": "storagenexus:netherite_aiot",
+      "recipes": [
+        "aiot_merge",
+        "aiot_netherite",
+        "aiot_nexium"
+      ],
+      "aliases": [
+        "Netherite AIOT",
+        "Nexium AIOT"
+      ],
+      "see": [
+        "aiot",
+        "nexium"
+      ]
+    },
+    "aiot_enchants": {
+      "pages": [
+        "aiot.enchants",
+        "aiot.silk"
+      ],
+      "icon": "minecraft:enchanted_book",
+      "aliases": [
+        "Silk and Fortune"
+      ],
+      "see": [
+        "aiot",
+        "tool_menu"
+      ]
+    },
+    "tool_menu": {
+      "pages": [
+        "aiot.menu",
+        "aiot.menu2"
+      ],
+      "icon": "storagenexus:golden_aiot",
+      "aliases": [
+        "tool menu",
+        "Tool menu",
+        "Tool Menu"
+      ],
+      "see": [
+        "modules",
+        "aiot",
+        "armor_menu"
+      ]
+    },
+    "modules": {
+      "pages": [
+        "aiot.modules"
+      ],
+      "icon": "storagenexus:area_mining_module",
+      "aliases": [
+        "module",
+        "modules",
+        "AIOT modules"
+      ],
+      "see": [
+        "nexus_link",
+        "area",
+        "vein"
+      ]
+    },
+    "nexus_link": {
+      "pages": [
+        "aiot.nexuslink",
+        "aiot.nexuslink2"
+      ],
+      "icon": "storagenexus:nexus_link_module",
+      "recipes": [
+        "m_link"
+      ],
+      "items": [
+        "storagenexus:nexus_link_module"
+      ],
+      "aliases": [
+        "Nexus Link",
+        "Nexus Link Module"
+      ],
+      "see": [
+        "modules",
+        "terminal",
+        "restock"
+      ]
+    },
+    "area": {
+      "pages": [
+        "aiot.area"
+      ],
+      "icon": "storagenexus:area_mining_module",
+      "recipes": [
+        "m_area"
+      ],
+      "items": [
+        "storagenexus:area_mining_module"
+      ],
+      "aliases": [
+        "3x3 Mining",
+        "3x3 Mining Module",
+        "3x3"
+      ],
+      "see": [
+        "tunnels",
+        "modules",
+        "vein"
+      ]
+    },
+    "tunnels": {
+      "pages": [
+        "aiot.tunnel",
+        "aiot.both",
+        "aiot.readout"
+      ],
+      "icon": "storagenexus:iron_aiot",
+      "aliases": [
+        "Tunnels",
+        "tunnel",
+        "Tunnel",
+        "outline"
+      ],
+      "see": [
+        "area",
+        "vein"
+      ]
+    },
+    "vein": {
+      "pages": [
+        "aiot.vein"
+      ],
+      "icon": "storagenexus:diamond_aiot",
+      "items": [
+        "storagenexus:vein_mining_module"
+      ],
+      "aliases": [
+        "Vein Mining",
+        "vein mining",
+        "vein mine"
+      ],
+      "see": [
+        "area",
+        "tunnels",
+        "aiot"
+      ]
+    },
+    "nexium": {
+      "pages": [
+        "nexium.nexium",
+        "nexium.ingot",
+        "nexium.block"
+      ],
+      "icon": "storagenexus:nexium_ingot",
+      "recipes": [
+        "n_ingot",
+        "n_ingot9",
+        "n_block"
+      ],
+      "items": [
+        "storagenexus:nexium_ingot",
+        "storagenexus:nexium_block"
+      ],
+      "aliases": [
+        "Nexium",
+        "Nexium Ingot",
+        "Nexium Ingots",
+        "Block of Nexium"
+      ],
+      "see": [
+        "nexium_tools",
+        "armor"
+      ]
+    },
+    "nexium_tools": {
+      "pages": [
+        "nexium.gear",
+        "nexium.tools",
+        "nexium.haste",
+        "nexium.haste2",
+        "nexium.haste3"
+      ],
+      "icon": "storagenexus:nexium_pickaxe",
+      "recipes": [
+        "n_gear"
+      ],
+      "items": [
+        "storagenexus:nexium_pickaxe",
+        "storagenexus:nexium_axe",
+        "storagenexus:nexium_shovel",
+        "storagenexus:nexium_hoe",
+        "storagenexus:nexium_sword"
+      ],
+      "aliases": [
+        "Nexium tools",
+        "Nexium gear",
+        "Haste II"
+      ],
+      "see": [
+        "nexium",
+        "spear",
+        "armor"
+      ]
+    },
+    "spear": {
+      "pages": [
+        "nexium.spear"
+      ],
+      "icon": "storagenexus:nexium_spear",
+      "items": [
+        "storagenexus:nexium_spear"
+      ],
+      "aliases": [
+        "Nexium Spear"
+      ],
+      "see": [
+        "nexium_tools"
+      ]
+    },
+    "armor": {
+      "pages": [
+        "armor.armor",
+        "armor.extras"
+      ],
+      "icon": "storagenexus:nexium_chestplate",
+      "recipes": [
+        "a_helmet"
+      ],
+      "items": [
+        "storagenexus:nexium_helmet",
+        "storagenexus:nexium_chestplate",
+        "storagenexus:nexium_leggings",
+        "storagenexus:nexium_boots"
+      ],
+      "aliases": [
+        "Nexium armor",
+        "Nexium armour"
+      ],
+      "see": [
+        "bonuses",
+        "armor_menu",
+        "restock"
+      ]
+    },
+    "bonuses": {
+      "pages": [
+        "armor.bonuses",
+        "armor.bonuses2",
+        "armor.effects"
+      ],
+      "icon": "storagenexus:nexium_helmet",
+      "aliases": [
+        "set bonuses",
+        "Set bonuses",
+        "armor bonuses"
+      ],
+      "see": [
+        "armor",
+        "armor_menu"
+      ]
+    },
+    "armor_menu": {
+      "pages": [
+        "armor.menu"
+      ],
+      "icon": "storagenexus:nexium_boots",
+      "aliases": [
+        "armor menu",
+        "Armor menu"
+      ],
+      "see": [
+        "bonuses",
+        "tool_menu"
+      ]
+    },
+    "restock": {
+      "pages": [
+        "armor.restock",
+        "armor.restock2"
+      ],
+      "icon": "storagenexus:nexium_leggings",
+      "aliases": [
+        "Nexus restock",
+        "restock"
+      ],
+      "see": [
+        "armor",
+        "nexus_link"
+      ]
+    },
+    "slots": {
+      "pages": [
+        "essentials.slots",
+        "essentials.slots2",
+        "essentials.slots3"
+      ],
+      "icon": "minecraft:totem_of_undying",
+      "aliases": [
+        "extra slots",
+        "Extra slots",
+        "trinket slot"
+      ],
+      "see": [
+        "arrows",
+        "totem",
+        "wings",
+        "magnet"
+      ]
+    },
+    "arrows": {
+      "pages": [
+        "essentials.arrows"
+      ],
+      "icon": "minecraft:arrow",
+      "aliases": [
+        "arrow slot",
+        "Arrow slot"
+      ],
+      "see": [
+        "slots"
+      ]
+    },
+    "totem": {
+      "pages": [
+        "essentials.totem"
+      ],
+      "icon": "minecraft:totem_of_undying",
+      "aliases": [
+        "totem slot",
+        "Totem slot"
+      ],
+      "see": [
+        "slots"
+      ]
+    },
+    "wings": {
+      "pages": [
+        "essentials.wings"
+      ],
+      "icon": "minecraft:elytra",
+      "aliases": [
+        "wings slot",
+        "Wings slot"
+      ],
+      "see": [
+        "slots",
+        "elytra"
+      ]
+    },
+    "magnet": {
+      "pages": [
+        "essentials.magnet",
+        "essentials.magnet2"
+      ],
+      "icon": "nexusessentials:magnet",
+      "recipes": [
+        "magnet"
+      ],
+      "items": [
+        "nexusessentials:magnet"
+      ],
+      "aliases": [
+        "Magnet"
+      ],
+      "see": [
+        "slots",
+        "keys"
+      ]
+    },
+    "elytra": {
+      "pages": [
+        "essentials.elytra"
+      ],
+      "icon": "minecraft:elytra",
+      "aliases": [
+        "Elytra enchanting",
+        "elytra"
+      ],
+      "see": [
+        "wings",
+        "enchant_levels"
+      ]
+    },
+    "iron_farm": {
+      "pages": [
+        "mobs.farm",
+        "mobs.farm2",
+        "mobs.make",
+        "mobs.recipe",
+        "mobs.notes",
+        "mobs.notes2",
+        "mobs.close",
+        "mobs.bread",
+        "mobs.bread2",
+        "mobs.running"
+      ],
+      "icon": "nexusessentials:iron_farm",
+      "items": [
+        "nexusessentials:iron_farm"
+      ],
+      "aliases": [
+        "Iron Farm",
+        "Iron Farms"
+      ],
+      "see": [
+        "farms",
+        "mobs"
+      ]
+    },
+    "farms": {
+      "pages": [
+        "mobs.farms"
+      ],
+      "icon": "nexusessentials:piglin_barter",
+      "aliases": [
+        "one-block farms",
+        "More farms"
+      ],
+      "see": [
+        "breeder",
+        "barter",
+        "zpiglin",
+        "witherfarm",
+        "shulkerfarm",
+        "iron_farm"
+      ]
+    },
+    "breeder": {
+      "pages": [
+        "mobs.breeder"
+      ],
+      "icon": "nexusessentials:villager_breeder",
+      "items": [
+        "nexusessentials:villager_breeder"
+      ],
+      "aliases": [
+        "Villager Breeder"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "barter": {
+      "pages": [
+        "mobs.barter"
+      ],
+      "icon": "nexusessentials:piglin_barter",
+      "items": [
+        "nexusessentials:piglin_barter"
+      ],
+      "aliases": [
+        "Piglin Barter Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "zpiglin": {
+      "pages": [
+        "mobs.zpiglin"
+      ],
+      "icon": "nexusessentials:zombified_piglin_farm",
+      "items": [
+        "nexusessentials:zombified_piglin_farm"
+      ],
+      "aliases": [
+        "Zombified Piglin Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "witherfarm": {
+      "pages": [
+        "mobs.witherfarm"
+      ],
+      "icon": "nexusessentials:wither_skeleton_farm",
+      "items": [
+        "nexusessentials:wither_skeleton_farm"
+      ],
+      "aliases": [
+        "Wither Skeleton Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "shulkerfarm": {
+      "pages": [
+        "mobs.shulkerfarm"
+      ],
+      "icon": "nexusessentials:shulker_farm",
+      "items": [
+        "nexusessentials:shulker_farm"
+      ],
+      "aliases": [
+        "Shulker Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "freezer": {
+      "pages": [
+        "essentials.freezer",
+        "essentials.freezer2"
+      ],
+      "icon": "storagenexus:freezer",
+      "recipes": [
+        "freezer"
+      ],
+      "items": [
+        "storagenexus:freezer"
+      ],
+      "aliases": [
+        "Freezer",
+        "Freezers"
+      ],
+      "see": [
+        "sand",
+        "farms"
+      ]
+    },
+    "mobs": {
+      "pages": [
+        "mobs.mobs",
+        "mobs.kept",
+        "mobs.limits",
+        "mobs.know",
+        "mobs.know2"
+      ],
+      "icon": "nexusessentials:captured_mob",
+      "items": [
+        "nexusessentials:captured_mob"
+      ],
+      "aliases": [
+        "Captured Mob",
+        "Captured Mobs",
+        "Picking up mobs",
+        "pick up"
+      ],
+      "see": [
+        "librarian",
+        "iron_farm",
+        "farms"
+      ]
+    },
+    "librarian": {
+      "pages": [
+        "essentials.librarian",
+        "essentials.librarian2"
+      ],
+      "icon": "minecraft:enchanted_book",
+      "aliases": [
+        "Master Librarian",
+        "Nexus Librarian"
+      ],
+      "see": [
+        "mobs",
+        "enchant_levels"
+      ]
+    },
+    "piglins": {
+      "pages": [
+        "essentials.piglins"
+      ],
+      "icon": "minecraft:gold_ingot",
+      "aliases": [
+        "Piglins",
+        "piglins"
+      ],
+      "see": [
+        "barter",
+        "zpiglin"
+      ]
+    },
+    "enchant_levels": {
+      "pages": [
+        "essentials.enchants",
+        "essentials.enchants2"
+      ],
+      "icon": "minecraft:enchanted_book",
+      "aliases": [
+        "Higher levels",
+        "enchantment levels"
+      ],
+      "see": [
+        "librarian",
+        "elytra"
+      ]
+    },
+    "elixir": {
+      "pages": [
+        "mobs.elixir"
+      ],
+      "icon": "nexusessentials:bedrock_breaker_elixir",
+      "recipes": [
+        "elixir"
+      ],
+      "items": [
+        "nexusessentials:bedrock_breaker_elixir"
+      ],
+      "aliases": [
+        "Elixir of Bedrock Breaking",
+        "Bedrock Breaking"
+      ],
+      "see": [
+        "nexium_tools"
+      ]
+    },
+    "explosions": {
+      "pages": [
+        "essentials.explosions",
+        "essentials.tnt"
+      ],
+      "icon": "minecraft:tnt",
+      "aliases": [
+        "Explosions",
+        "explosions",
+        "Endermen"
+      ],
+      "see": [
+        "settings"
+      ]
+    },
+    "debris": {
+      "pages": [
+        "essentials.debris"
+      ],
+      "icon": "minecraft:ancient_debris",
+      "aliases": [
+        "Ancient debris",
+        "ancient debris"
+      ],
+      "see": [
+        "nexium"
+      ]
+    },
+    "sand": {
+      "pages": [
+        "essentials.sand"
+      ],
+      "icon": "minecraft:soul_sand",
+      "aliases": [
+        "Soul sand",
+        "soul sand"
+      ],
+      "see": [
+        "freezer"
+      ]
+    }
+  }
+}

@@ -24,9 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The Nexium Guide's data: every page has its text, every link and recipe id points at something, every cover exists, and
- * every recipe card shows exactly what the real recipe file says, so the book can't go out of date. (That every page fits the
- * book's 14 lines needs the real font, so it is checked by the client test.)
+ * The Nexium Codex's data: every topic has its text, every link, recipe and item id points at something, every item in the
+ * mod has a page, and every recipe card shows exactly what the real recipe file says, so the Codex can't go out of date.
  */
 public class GuideGameTest {
     private static JsonObject json(String path) {
@@ -39,7 +38,7 @@ public class GuideGameTest {
     }
 
     private static GuideData data() {
-        return GuideData.parse(json("/assets/storagenexus/guide/chapters.json"), json("/assets/storagenexus/guide/recipes.json"));
+        return GuideData.parse(json("/assets/storagenexus/codex/codex.json"), json("/assets/storagenexus/guide/recipes.json"));
     }
 
     private static boolean exists(String path) {
@@ -47,46 +46,80 @@ public class GuideGameTest {
     }
 
     @GameTest
-    public void everyPageHasItsText(GameTestHelper h) {
+    public void everyTopicHasItsText(GameTestHelper h) {
         GuideData data = data();
         JsonObject lang = json("/assets/storagenexus/lang/en_us.json");
-        h.assertTrue(data.chapters().size() == 9, "the guide has 9 chapters, found " + data.chapters().size());
-        for (GuideData.Chapter chapter : data.chapters()) {
-            requireText(h, lang, chapter.titleKey());
-            requireText(h, lang, chapter.topicsKey());
-            for (GuideData.Page page : chapter.pages()) {
-                switch (page) {
-                    case GuideData.TextPage text -> {
-                        String full = requireText(h, lang, chapter.pageKey(text.id()));
-                        int split = full.indexOf('\n');
-                        h.assertTrue(split > 0 && !full.substring(split + 1).isBlank(),
-                                chapter.pageKey(text.id()) + " is a heading, a line break and some text");
-                    }
-                    case GuideData.ContentsPage contents -> {
-                        for (String target : contents.targets()) {
-                            h.assertTrue(chapter.indexOf(target) >= 0, chapter.id() + " contents link to missing page " + target);
-                            requireText(h, lang, chapter.contentsKey(target));
-                        }
-                    }
-                    case GuideData.RecipeSheet sheet -> {
-                        h.assertTrue(!sheet.recipeIds().isEmpty() && sheet.recipeIds().size() <= 2,
-                                chapter.id() + " " + sheet.id() + " holds one or two recipes");
-                        for (String id : sheet.recipeIds()) {
-                            h.assertTrue(data.recipes().containsKey(id), chapter.id() + " uses unknown recipe " + id);
-                        }
-                    }
-                }
+        h.assertTrue(data.categories().size() == 11, "the Codex has 11 categories, found " + data.categories().size());
+        java.util.Set<String> listed = new java.util.HashSet<>();
+        for (GuideData.Category category : data.categories()) {
+            requireText(h, lang, category.titleKey());
+            requireItem(h, category.icon(), "category " + category.id());
+            listed.addAll(category.topics());
+        }
+        java.util.Set<String> usedPages = new java.util.HashSet<>();
+        for (GuideData.Topic topic : data.topics().values()) {
+            h.assertTrue(listed.contains(topic.id()), "topic " + topic.id() + " is in a category");
+            for (String page : topic.pages()) {
+                String key = GuideData.Topic.pageKey(page);
+                String full = requireText(h, lang, key);
+                int split = full.indexOf('\n');
+                h.assertTrue(split > 0 && !full.substring(split + 1).isBlank(), key + " is a heading, a line break and some text");
+                usedPages.add(key);
             }
-            h.assertTrue(exists("/assets/storagenexus/textures/gui/sprites/guide/cover_" + chapter.cover() + ".png"),
-                    chapter.id() + " has a cover sprite");
+            for (String id : topic.recipes()) h.assertTrue(data.recipes().containsKey(id), topic.id() + " uses unknown recipe " + id);
+            for (String id : topic.see()) h.assertTrue(data.topics().containsKey(id), topic.id() + " sees unknown topic " + id);
+            requireItem(h, topic.icon(), "topic " + topic.id());
+            for (String ref : topic.items()) requireItem(h, ref, "topic " + topic.id());
+        }
+        for (String key : lang.keySet()) {
+            // page keys are guide.storagenexus.<chapter>.<page>; recipe names, notes and one-word UI strings are not pages
+            if (!key.startsWith("guide.storagenexus.") || key.startsWith("guide.storagenexus.recipe.") || key.startsWith("guide.storagenexus.note.")
+                    || key.substring("guide.storagenexus.".length()).split("\\.").length != 2) continue;
+            h.assertTrue(usedPages.contains(key), key + " is shown in a Codex topic");
         }
         for (GuideData.Recipe recipe : data.recipes().values()) {
             requireText(h, lang, recipe.nameKey());
             if (recipe.note() != null) requireText(h, lang, recipe.noteKey());
         }
-        h.assertTrue(lang.keySet().stream().noneMatch(k -> k.startsWith("guide.storagenexus.page.")), "the old one-book pages are gone");
+        for (String key : List.of("screen.storagenexus.codex", "screen.storagenexus.codex.search", "screen.storagenexus.codex.tip",
+                "screen.storagenexus.codex.see_also", "screen.storagenexus.codex.recipes", "key.storagenexus.codex_lookup", "tooltip.storagenexus.codex")) {
+            requireText(h, lang, key);
+        }
         h.assertTrue(exists("/assets/storagenexus/textures/item/guide.png"), "the guide item has its own icon");
         h.succeed();
+    }
+
+    /** Every item of the mod (both namespaces) opens a page with the lookup key: no new item can be left out of the Codex. */
+    @GameTest
+    public void everyItemHasAPage(GameTestHelper h) {
+        GuideData data = data();
+        List<String> missing = new ArrayList<>();
+        for (Item item : BuiltInRegistries.ITEM) {
+            Identifier id = BuiltInRegistries.ITEM.getKey(item);
+            if (!id.getNamespace().equals("storagenexus") && !id.getNamespace().equals("nexusessentials")) continue;
+            boolean found = false;
+            for (GuideData.Topic topic : data.topics().values()) {
+                for (String ref : topic.items()) found |= refers(ref, item);
+                found |= refers(topic.icon(), item);
+            }
+            if (!found) missing.add(id.toString());
+        }
+        h.assertTrue(missing.isEmpty(), "items with no Codex page: " + missing);
+        h.succeed();
+    }
+
+    private static boolean refers(String ref, Item item) {
+        if (ref.startsWith("#")) return item.builtInRegistryHolder().is(TagKey.create(Registries.ITEM, Identifier.parse(ref.substring(1))));
+        return BuiltInRegistries.ITEM.getKey(item).toString().equals(ref);
+    }
+
+    private static void requireItem(GameTestHelper h, String ref, String where) {
+        if (ref.startsWith("#")) {
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(ref.substring(1)));
+            h.assertTrue(BuiltInRegistries.ITEM.getTagOrEmpty(tag).iterator().hasNext(), where + ": tag " + ref + " has items");
+        } else {
+            h.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.parse(ref)), where + ": unknown item " + ref);
+        }
     }
 
     private static String requireText(GameTestHelper h, JsonObject lang, String key) {
