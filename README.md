@@ -74,8 +74,8 @@ on). What is inside stays inside.
 
 ### Tablets
 Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to link it, with no range limit and in any
-dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** loads a 3x3 chunk area, always or only
-while a tablet is open.
+dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** keeps the 3x3 chunks around it loaded;
+place it or right-click it to outline those chunks for a minute.
 
 ### Dimensional Input / Output
 * Click an Input with a **Dimensional Link Card**, then click Outputs. Each link has a name (rename the card in an

@@ -12,6 +12,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.TicketStorage;
 import net.storagenexus.dimension.AnchorRegistry;
+import net.storagenexus.dimension.DimensionalAnchorBlockEntity;
+import net.storagenexus.registry.ModBlocks;
 
 /**
  * Dimensional Anchors keep their 3x3 chunks loaded with a ticket of their own, and never touch vanilla's forced-chunk
@@ -47,7 +49,7 @@ public class AnchorGameTest {
         level.setChunkForced(other.x(), other.z(), true); // like /forceload add
         GlobalPos anchor = anchorIn(level, center, 64);
 
-        anchors.put(anchor, false);
+        anchors.put(anchor);
         anchors.refreshArea(level, anchor.pos());
         boolean ticketWhilePlaced = hasTicket(level, center);
         boolean centerForced = level.getForceLoadedChunks().contains(center.pack());
@@ -57,7 +59,7 @@ public class AnchorGameTest {
         boolean otherStillForced = level.getForceLoadedChunks().contains(other.pack());
         level.setChunkForced(other.x(), other.z(), false); // clean up before asserting
 
-        h.assertTrue(ticketWhilePlaced, "an always-on anchor holds its chunks with its own ticket");
+        h.assertTrue(ticketWhilePlaced, "an anchor holds its chunks with its own ticket");
         h.assertFalse(centerForced, "it doesn't use the forced flag");
         h.assertFalse(ticketAfterRemoval, "removing the anchor drops its ticket");
         h.assertTrue(otherStillForced, "removing the anchor left a chunk someone else forced still forced");
@@ -65,16 +67,16 @@ public class AnchorGameTest {
     }
 
     @GameTest
-    public void anchorsSharingAChunkAndTabletsKeepItLoadedWhileNeeded(GameTestHelper h) {
+    public void anchorsSharingAChunkKeepItLoadedUntilBothAreGone(GameTestHelper h) {
         ServerLevel level = h.getLevel();
         AnchorRegistry anchors = AnchorRegistry.get(level.getServer());
         ChunkPos center = farChunk(h, 1);
         GlobalPos first = anchorIn(level, center, 64);
         GlobalPos second = anchorIn(level, center, 70);
 
-        anchors.put(first, false);
+        anchors.put(first);
         anchors.refreshArea(level, first.pos());
-        anchors.put(second, false);
+        anchors.put(second);
         anchors.refreshArea(level, second.pos());
         anchors.remove(first);
         anchors.refreshArea(level, first.pos());
@@ -83,22 +85,13 @@ public class AnchorGameTest {
         anchors.refreshArea(level, second.pos());
         h.assertFalse(hasTicket(level, center), "with both anchors gone the chunk is released");
 
-        // An on-demand anchor sleeps until a tablet uses something in its area
-        GlobalPos onDemand = anchorIn(level, center, 64);
-        anchors.put(onDemand, true);
-        anchors.refreshArea(level, onDemand.pos());
-        h.assertFalse(hasTicket(level, center), "a sleeping on-demand anchor holds nothing");
-        Runnable release = anchors.loadOnDemand(level, new ChunkPos(center.x() - 1, center.z() + 1).getMiddleBlockPosition(64));
-        h.assertTrue(release != null, "a tablet target in its 3x3 wakes it");
-        h.assertTrue(hasTicket(level, center), "while the tablet uses it, it holds its chunks");
-        release.run();
-        h.assertFalse(hasTicket(level, center), "when the tablet is done, it lets them go");
-        anchors.remove(onDemand);
-        anchors.refreshArea(level, onDemand.pos());
         h.succeed();
     }
 
-    /** A world from before 1.1.4: its anchors saved as a bare list, and their chunks forced with the vanilla flag. */
+    /**
+     * A world from before 1.1.4: its anchors saved as a bare list, and their chunks forced with the vanilla flag. This one
+     * was set to the On-demand mode, which 1.13.0 removed: it loads its chunks all the time now.
+     */
     @GameTest
     public void oldWorldsSwapForcedChunksForTicketsOnce(GameTestHelper h) {
         ServerLevel level = h.getLevel();
@@ -108,7 +101,7 @@ public class AnchorGameTest {
 
         CompoundTag entry = new CompoundTag();
         entry.put("pos", GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, anchor).getOrThrow());
-        entry.putBoolean("on_demand", false);
+        entry.putBoolean("on_demand", true);
         ListTag oldSave = new ListTag();
         oldSave.add(entry);
         AnchorRegistry loaded = AnchorRegistry.TYPE.codec().parse(NbtOps.INSTANCE, oldSave).getOrThrow();
@@ -129,10 +122,29 @@ public class AnchorGameTest {
         for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) level.setChunkForced(center.x() + dx, center.z() + dz, false);
 
         h.assertValueEqual(stillForced, 0, "forced chunks left around the old anchor");
-        h.assertTrue(ticket, "the anchor holds its chunks with its ticket instead");
+        h.assertTrue(ticket, "the anchor, once On-demand, holds its chunks with its ticket");
         h.assertTrue(newSave instanceof CompoundTag c && c.getBooleanOr("uses_tickets", false), "the new save records that the swap is done");
         h.assertTrue(reloaded.all().contains(anchor), "the new save loads back with its anchor");
         h.succeed();
+    }
+
+    /** Right-clicking shows the loaded chunks for a minute, and right-clicking again hides them; the outline runs out by itself. */
+    @GameTest(maxTicks = DimensionalAnchorBlockEntity.DISPLAY_TICKS + 40)
+    public void anchorShowsItsChunksForAMinute(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.DIMENSIONAL_ANCHOR);
+        DimensionalAnchorBlockEntity anchor = h.getBlockEntity(pos, DimensionalAnchorBlockEntity.class);
+        ServerLevel level = h.getLevel();
+        h.assertFalse(anchor.isShowing(level), "nothing is shown before it is clicked");
+        h.assertTrue(anchor.toggleDisplay(level), "a click shows the chunks");
+        h.assertTrue(anchor.isShowing(level), "they are showing");
+        h.assertFalse(anchor.toggleDisplay(level), "a second click hides them");
+        h.assertFalse(anchor.isShowing(level), "they are hidden");
+        anchor.toggleDisplay(level);
+        h.runAfterDelay(DimensionalAnchorBlockEntity.DISPLAY_TICKS + 1, () -> {
+            h.assertFalse(anchor.isShowing(level), "after a minute the outline is gone");
+            h.succeed();
+        });
     }
 
     /** The far chunks must start out unforced, or a test could release a chunk something else needs. */

@@ -19,6 +19,9 @@ Pull requests are squash merged, so each one is a single commit on `main`.
   and on the armor you wear), Nexium tools with wrapped grips, gold rivets on upgrades, modules and filters, and every
   block, item, GUI sprite and the mod icon at four times the detail. Blocks keep their layouts, so cables, connectors and
   dyed Freezers look right.
+* **Dimensional Anchor always loads**: the On-demand mode is gone, so an anchor keeps its 3x3 chunks loaded all the time.
+  Anchors that were set to On-demand now always load too. Placing an anchor, or right-clicking it, outlines the chunks it
+  loads for 1 minute (the chunk borders as a grid at its height, with posts at the corners); right-click again to hide it.
 
 ## 1.12.2
 

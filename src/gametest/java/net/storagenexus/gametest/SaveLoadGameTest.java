@@ -216,8 +216,7 @@ public class SaveLoadGameTest {
                 part(ConnectorBlockEntity.class, "filter", be -> be.filterContainer().setItem(0, filter.copy())))));
 
         cases.add(new Case("Dimensional Anchor", ModBlocks.DIMENSIONAL_ANCHOR, List.of(
-                part(DimensionalAnchorBlockEntity.class, "active", DimensionalAnchorBlockEntity::activate),
-                part(DimensionalAnchorBlockEntity.class, "on-demand mode", DimensionalAnchorBlockEntity::activate, DimensionalAnchorBlockEntity::toggleMode))));
+                part(DimensionalAnchorBlockEntity.class, "active", DimensionalAnchorBlockEntity::activate))));
 
         List<Part> input = new ArrayList<>(linkParts(DimensionalInputBlockEntity.class, links));
         input.add(part(DimensionalInputBlockEntity.class, "buffered items", be -> be.buffer().setItem(0, new ItemStack(Items.DIAMOND, 12))));

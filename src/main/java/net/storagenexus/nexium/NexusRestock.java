@@ -33,7 +33,7 @@ import java.util.UUID;
  *   <li>when the hunger bar is down by the eat setting (6) or more, the player eats the most filling plain food in
  *       the network (none with effects, such as golden apples, rotten flesh or pufferfish).</li>
  * </ul>
- * The network is reached as for the Nexus Link module (its terminal's chunk loaded, or an on-demand anchor woken).
+ * The network is reached as for the Nexus Link module (its terminal's chunk must be loaded).
  */
 public final class NexusRestock {
     private static final int EAT_CHECK_TICKS = 40;
