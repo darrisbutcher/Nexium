@@ -176,7 +176,8 @@ place it or right-click it to outline those chunks for a minute.
   does opening the tool menu of an AIOT that still has one installed.
 * With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
   look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
-  outlined. It uses the same rules as the mining, and `aiotMiningPreview` (client) turns it off.
+  outlined. It uses the same rules as the mining, and shows for 20 seconds after you switch to an AIOT or press the 3x3
+  (X), tunnel (Z) or vein (V) key, and while V is held, like the readout below. `aiotMiningPreview` (client) turns it off.
 * A small readout in the bottom right corner, by the hotbar, shows what the AIOT in your hand is set to: Silk Touch or
   Fortune (when it holds both) the vein size and each module's state (3x3 on, tunnel depth, Nexus Link). It shows for 20
   seconds after you switch to an AIOT or press the 3x3 (X), tunnel (Z) or vein (V) key, stays up while V is held, then fades
@@ -423,7 +424,7 @@ server's file is the one that counts.
 | `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search and JEI's or REI's stay the same |
-| `aiotHudSeconds` | `20` | Client: seconds that readout stays up after switching to an AIOT or pressing X, Z or V; 0 keeps it up |
+| `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or V; 0 keeps them up |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |
