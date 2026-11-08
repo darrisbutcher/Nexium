@@ -3,6 +3,10 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.16.2
+
+* **Conduit Wrench texture**: removed two stray pixels that floated beside the wrench at its top and right edges.
+
 ## 1.16.1
 
 * **The AIOT's 3x3 and vein outline no longer stays on**: like the readout by the hotbar, it shows for 20 seconds after
