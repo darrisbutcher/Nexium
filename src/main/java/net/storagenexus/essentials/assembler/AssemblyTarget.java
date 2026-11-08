@@ -24,6 +24,10 @@ public enum AssemblyTarget {
     ZOMBIFIED_PIGLIN(FarmKind.ZOMBIFIED_PIGLIN),
     WITHER_SKELETON(FarmKind.WITHER_SKELETON),
     SHULKER(FarmKind.SHULKER),
+    WITCH(FarmKind.WITCH),
+    SUGAR_CANE(FarmKind.SUGAR_CANE),
+    BAMBOO(FarmKind.BAMBOO),
+    NETHER_WART(FarmKind.NETHER_WART),
     LIBRARIAN(null);
 
     /** The most lines any target has (the Iron Farm: seven parts and its smooth stone). */

@@ -97,6 +97,53 @@ public class FarmGameTest {
         h.succeed();
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void witchFarmMakesAWitchsDrops(GameTestHelper h) {
+        FarmBlockEntity farm = farm(h, FarmKind.WITCH);
+        cycles(h, farm, 100);
+        // The vanilla table: up to 2 each of seven things, about 3 kinds a kill, nothing else
+        java.util.Set<net.minecraft.world.item.Item> allowed = java.util.Set.of(Items.GLOWSTONE_DUST, Items.SUGAR, Items.SPIDER_EYE,
+                Items.GLASS_BOTTLE, Items.GUNPOWDER, Items.STICK, Items.REDSTONE);
+        int total = 0;
+        for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) {
+            ItemStack stack = farm.getItem(i);
+            if (stack.isEmpty()) continue;
+            h.assertTrue(allowed.contains(stack.getItem()), "only a witch's drops, got " + stack);
+            total += stack.getCount();
+        }
+        h.assertTrue(total > 400 && total < 1300, "100 witches drop several hundred items (about 8 each): " + total);
+        h.assertTrue(count(farm, Items.REDSTONE) > 0 && count(farm, Items.GLOWSTONE_DUST) > 0, "redstone and glowstone dust among them");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
+    public void cropFarmsMakeTheirCrop(GameTestHelper h) {
+        FarmBlockEntity cane = farm(h, FarmKind.SUGAR_CANE);
+        cycles(h, cane, 10);
+        h.assertValueEqual(count(cane, Items.SUGAR_CANE), 30, "3 sugar cane a cycle");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity bamboo = farm(h, FarmKind.BAMBOO);
+        cycles(h, bamboo, 10);
+        h.assertValueEqual(count(bamboo, Items.BAMBOO), 40, "4 bamboo a cycle");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity wart = farm(h, FarmKind.NETHER_WART);
+        cycles(h, wart, 10);
+        h.assertValueEqual(count(wart, Items.NETHER_WART), 40, "4 nether wart a cycle");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
+    public void theNewFarmsAndTheBreederRunOnTheirTimes(GameTestHelper h) {
+        // The defaults (the test world's saved config has already been moved on from the old 24000, too)
+        h.assertValueEqual(new net.storagenexus.essentials.config.NexusConfig().villagerBreederTicks, 12000, "the breeder: 10 minutes");
+        h.assertValueEqual(FarmKind.VILLAGER_BREEDER.cycleTicks(), 12000, "and an old config moved to it");
+        h.assertValueEqual(FarmKind.WITCH.cycleTicks(), 200, "witches: 10 seconds");
+        h.assertValueEqual(FarmKind.SUGAR_CANE.cycleTicks(), 400, "cane: 20 seconds");
+        h.assertValueEqual(FarmKind.BAMBOO.cycleTicks(), 400, "bamboo: 20 seconds");
+        h.assertValueEqual(FarmKind.NETHER_WART.cycleTicks(), 600, "wart: 30 seconds");
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
     public void piglinBarterTradesGoldForBarterLoot(GameTestHelper h) {
         FarmBlockEntity farm = farm(h, FarmKind.PIGLIN_BARTER);

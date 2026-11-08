@@ -86,6 +86,31 @@ public final class FarmRecipe {
                 item("purpur_blocks", 32, Items.PURPUR_BLOCK),
                 item("end_rods", 8, Items.END_ROD),
                 item("ender_pearls", 8, Items.ENDER_PEARL)));
+        // The newer farms ask a quarter of the filler the first five do: 12 stacks
+        RECIPES.put(FarmKind.WITCH, new FarmRecipe(FarmKind.WITCH,
+                filler("mossy_cobblestone", 12, s -> s.is(Items.MOSSY_COBBLESTONE), Items.MOSSY_COBBLESTONE),
+                mob("witches", 2, EntityTypes.WITCH, Items.WITCH_SPAWN_EGG),
+                item("cauldrons", 8, Items.CAULDRON),
+                item("spruce_planks", 16, Items.SPRUCE_PLANKS),
+                item("lily_pads", 8, Items.LILY_PAD)));
+        RECIPES.put(FarmKind.SUGAR_CANE, new FarmRecipe(FarmKind.SUGAR_CANE,
+                filler("sand", 12, s -> s.is(Items.SAND), Items.SAND),
+                item("sugar_cane", 32, Items.SUGAR_CANE),
+                item("water_buckets", 4, Items.WATER_BUCKET),
+                item("pistons", 8, Items.PISTON),
+                item("observers", 16, Items.OBSERVER)));
+        RECIPES.put(FarmKind.BAMBOO, new FarmRecipe(FarmKind.BAMBOO,
+                filler("dirt", 12, s -> s.is(Items.DIRT), Items.DIRT),
+                item("bamboo", 32, Items.BAMBOO),
+                item("water_buckets", 4, Items.WATER_BUCKET),
+                item("pistons", 8, Items.PISTON),
+                item("observers", 16, Items.OBSERVER)));
+        RECIPES.put(FarmKind.NETHER_WART, new FarmRecipe(FarmKind.NETHER_WART,
+                filler("netherrack", 12, s -> s.is(Items.NETHERRACK), Items.NETHERRACK),
+                item("nether_wart", 32, Items.NETHER_WART),
+                item("soul_sand", 16, Items.SOUL_SAND),
+                item("lava_buckets", 4, Items.LAVA_BUCKET),
+                item("magma_blocks", 8, Items.MAGMA_BLOCK)));
     }
 
     public static FarmRecipe of(FarmKind kind) {

@@ -370,11 +370,18 @@ take the output from below, a full output or a redstone signal pauses it, and br
 
 | Farm | Recipe | Makes |
 |---|---|---|
-| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 2,880 planks | A baby villager (a Captured Mob) every 20 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
+| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 2,880 planks | A baby villager (a Captured Mob) every 10 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
 | **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 3,136 netherrack | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
 | **Zombified Piglin Farm** | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots, 3,008 netherrack | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
 | **Wither Skeleton Farm** | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks, 2,944 netherrack | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
 | **Shulker Farm** | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls, 3,008 end stone bricks | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
+| **Witch Farm** | 2 witches, 8 cauldrons, 16 spruce planks, 8 lily pads, 768 mossy cobblestone | Every 10 seconds: a witch's own drops, as if a player killed her (no Looting): glowstone dust, redstone, gunpowder, sugar, spider eyes, sticks and glass bottles |
+| **Sugar Cane Farm** | 32 sugar cane, 4 water buckets, 8 pistons, 16 observers, 768 sand | 3 sugar cane every 20 seconds |
+| **Bamboo Farm** | 32 bamboo, 4 water buckets, 8 pistons, 16 observers, 768 dirt | 4 bamboo every 20 seconds |
+| **Nether Wart Farm** | 32 nether wart, 16 soul sand, 4 lava buckets, 8 magma blocks, 768 netherrack | 4 nether wart every 30 seconds |
+
+The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. The four newer farms ask a
+quarter of the filler block the first five do.
 
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
@@ -416,7 +423,7 @@ server's file is the one that counts.
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
-| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks` | `24000`, `120`, `80`, `120`, `600` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
+| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |

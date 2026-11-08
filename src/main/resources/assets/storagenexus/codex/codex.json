@@ -107,6 +107,10 @@
         "zpiglin",
         "witherfarm",
         "shulkerfarm",
+        "witchfarm",
+        "canefarm",
+        "bamboofarm",
+        "wartfarm",
         "freezer",
         "harvest"
       ]
@@ -1203,6 +1207,10 @@
         "zpiglin",
         "witherfarm",
         "shulkerfarm",
+        "witchfarm",
+        "canefarm",
+        "bamboofarm",
+        "wartfarm",
         "iron_farm"
       ]
     },
@@ -1566,6 +1574,70 @@
       ],
       "see": [
         "disks"
+      ]
+    },
+    "witchfarm": {
+      "pages": [
+        "mobs.witchfarm"
+      ],
+      "icon": "nexusessentials:witch_farm",
+      "items": [
+        "nexusessentials:witch_farm"
+      ],
+      "aliases": [
+        "Witch Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "canefarm": {
+      "pages": [
+        "mobs.canefarm"
+      ],
+      "icon": "nexusessentials:sugar_cane_farm",
+      "items": [
+        "nexusessentials:sugar_cane_farm"
+      ],
+      "aliases": [
+        "Sugar Cane Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "bamboofarm": {
+      "pages": [
+        "mobs.bamboofarm"
+      ],
+      "icon": "nexusessentials:bamboo_farm",
+      "items": [
+        "nexusessentials:bamboo_farm"
+      ],
+      "aliases": [
+        "Bamboo Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "wartfarm": {
+      "pages": [
+        "mobs.wartfarm"
+      ],
+      "icon": "nexusessentials:nether_wart_farm",
+      "items": [
+        "nexusessentials:nether_wart_farm"
+      ],
+      "aliases": [
+        "Nether Wart Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
       ]
     }
   }

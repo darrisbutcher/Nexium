@@ -22,7 +22,15 @@ public enum FarmKind {
     /** Coal, bones and the rare skull. */
     WITHER_SKELETON("wither_skeleton_farm", Input.NONE, 3),
     /** Shulker shells. */
-    SHULKER("shulker_farm", Input.NONE, 1);
+    SHULKER("shulker_farm", Input.NONE, 1),
+    /** What a witch drops when a player kills her: glowstone dust, sugar, spider eyes, glass bottles, gunpowder, sticks, redstone. */
+    WITCH("witch_farm", Input.NONE, 7),
+    /** Sugar cane. */
+    SUGAR_CANE("sugar_cane_farm", Input.NONE, 1),
+    /** Bamboo. */
+    BAMBOO("bamboo_farm", Input.NONE, 1),
+    /** Nether wart. */
+    NETHER_WART("nether_wart_farm", Input.NONE, 1);
 
     public enum Input { NONE, FOOD, GOLD }
 
@@ -62,6 +70,10 @@ public enum FarmKind {
             case ZOMBIFIED_PIGLIN -> c.zombifiedPiglinTicks;
             case WITHER_SKELETON -> c.witherSkeletonTicks;
             case SHULKER -> c.shulkerFarmTicks;
+            case WITCH -> c.witchFarmTicks;
+            case SUGAR_CANE -> c.sugarCaneFarmTicks;
+            case BAMBOO -> c.bambooFarmTicks;
+            case NETHER_WART -> c.netherWartFarmTicks;
         };
     }
 
