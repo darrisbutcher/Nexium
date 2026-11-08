@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:mangrove_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:mangrove_slab"
   },
   "result": {
     "id": "storagenexus:mangrove_drawer_1x1",

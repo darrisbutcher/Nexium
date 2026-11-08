@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PCP",
+    "PSP",
     "PPP",
-    "PCP"
+    "PSP"
   ],
   "key": {
     "P": "minecraft:warped_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:warped_slab"
   },
   "result": {
     "id": "storagenexus:warped_drawer_1x2",

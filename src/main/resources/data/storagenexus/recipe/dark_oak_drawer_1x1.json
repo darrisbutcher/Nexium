@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:dark_oak_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:dark_oak_slab"
   },
   "result": {
     "id": "storagenexus:dark_oak_drawer_1x1",

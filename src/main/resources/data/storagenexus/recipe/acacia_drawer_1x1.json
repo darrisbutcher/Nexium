@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:acacia_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:acacia_slab"
   },
   "result": {
     "id": "storagenexus:acacia_drawer_1x1",

@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CPC",
+    "SPS",
     "PPP",
-    "CPC"
+    "SPS"
   ],
   "key": {
     "P": "minecraft:pale_oak_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:pale_oak_slab"
   },
   "result": {
     "id": "storagenexus:pale_oak_drawer_2x2",

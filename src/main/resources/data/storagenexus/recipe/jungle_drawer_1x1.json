@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:jungle_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:jungle_slab"
   },
   "result": {
     "id": "storagenexus:jungle_drawer_1x1",

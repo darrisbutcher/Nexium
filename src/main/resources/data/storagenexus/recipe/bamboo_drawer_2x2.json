@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CPC",
+    "SPS",
     "PPP",
-    "CPC"
+    "SPS"
   ],
   "key": {
     "P": "minecraft:bamboo_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:bamboo_slab"
   },
   "result": {
     "id": "storagenexus:bamboo_drawer_2x2",

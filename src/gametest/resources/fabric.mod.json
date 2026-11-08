@@ -28,6 +28,7 @@
       "net.storagenexus.gametest.CompactingCapacityGameTest",
       "net.storagenexus.gametest.ConduitGameTest",
       "net.storagenexus.gametest.ControllerGameTest",
+      "net.storagenexus.gametest.DrawerRecipeGameTest",
       "net.storagenexus.gametest.ElevatorGameTest",
       "net.storagenexus.gametest.EnchantLibrarianGameTest",
       "net.storagenexus.gametest.EssentialsGameTest",
