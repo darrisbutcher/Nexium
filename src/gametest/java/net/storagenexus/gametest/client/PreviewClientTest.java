@@ -70,7 +70,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             check(plain == 8, "a plain 3x3 outlines the 8 around the one looked at, got " + plain);
             System.out.println("[nexus] 3x3 preview: " + ctx.takeScreenshot("nexus_preview_3x3"));
 
-            // Vein mining takes any block but stone: with the key held on a wall of dirt, the vein is outlined, up to its size
+            // With the key held on a wall of dirt, the vein is outlined, up to its size
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 BlockPos base = player.blockPosition();

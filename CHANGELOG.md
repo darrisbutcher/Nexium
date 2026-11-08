@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.17.0
+
+* **Vein mining takes stone and plants**: holding V now vein mines stone, cobblestone, deepslate, netherrack and the rest
+  of the stone family too (without V, the 3x3 module mines as before). Grasses, ferns, bushes, dead bushes, azaleas and
+  leaf litter (`#storagenexus:vein_plants`) vein together as one kind, with any AIOT and at no durability, so a mixed
+  patch clears in one swing. `#storagenexus:vein_excluded` is now empty, for data packs to fill.
+
 ## 1.16.2
 
 * **Conduit Wrench texture**: removed two stray pixels that floated beside the wrench at its top and right edges.

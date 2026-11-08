@@ -167,9 +167,11 @@ place it or right-click it to outline those chunks for a minute.
   Nexium) to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
   many 3x3 layers going away from you, one swing, with the same rules for every block. Only blocks the AIOT is made for, at most about twice as
   hard as the block you mined, and never blocks with contents such as chests.
-* **Vein mining** (no module): mining any block except the stone family (stone, granite, cobblestone, deepslate, netherrack ... the
-  `#storagenexus:vein_excluded` block tag, which a data pack can change) mines every block of the same kind touching
-  it, up to the size set in the tool menu. Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a diamond-grade AIOT).
+* **Vein mining** (no module): mining any block, stone included, mines every block of the same kind touching it, up to
+  the size set in the tool menu. Grasses, ferns, bushes, dead bushes, azaleas and leaf litter (the
+  `#storagenexus:vein_plants` tag) count as one kind, so a mixed patch clears in one swing, and cost no durability.
+  Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a
+  diamond-grade AIOT). A data pack can list blocks to leave out in `#storagenexus:vein_excluded` (empty by default).
   **Hold the Vein Mine key** (**V**) while mining; without it, you mine one block.
 * **The old Vein Mining Module** is retired. It stays in the game only so that AIOTs and chests that hold one still load:
   it can't be crafted, right-clicking it gives back its materials (4 iron ingots, 4 lapis lazuli and a diamond), and so

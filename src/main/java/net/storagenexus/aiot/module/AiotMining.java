@@ -27,8 +27,9 @@ import java.util.List;
  * mined as if the player had mined each one: same drops (Fortune, Silk Touch, a Nexus Link), 1 durability each, spawn
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
- *   <li><b>Vein mining</b>, for any block the AIOT is made for except the stone family ({@code #storagenexus:vein_excluded}:
- *       stone, cobblestone, granite, deepslate, netherrack and the like) and blocks with contents: every block of the
+ *   <li><b>Vein mining</b>, for any block the AIOT is made for, stone included, and for grasses, ferns, bushes and leaf
+ *       litter ({@code #storagenexus:vein_plants}, which vein together as one kind); never blocks with contents or those
+ *       in {@code #storagenexus:vein_excluded} (empty unless a data pack fills it): every block of the
  *       same kind touching it, corners included, up to the size set in the tool menu (never above the config's limit)
  *       in all. Only while the player holds the Vein Mine key; needs no module.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
@@ -36,11 +37,13 @@ import java.util.List;
  *       than about twice the mined block; never blocks with contents, such as chests. With a tunnel length set in the
  *       tool menu, the same 3x3 in each of that many layers going away from the player.</li>
  * </ul>
- * With both on, anything but stone is vein mined (key held) and stone is 3x3 mined.
+ * With both on, holding the Vein Mine key vein mines; without it, the 3x3 module mines.
  */
 public final class AiotMining {
-    /** The stone family: vein mining leaves it to the 3x3, since a vein of stone is the whole cave wall. */
+    /** Blocks vein mining leaves alone: empty by default, for data packs. */
     public static final TagKey<Block> VEIN_EXCLUDED = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_excluded"));
+    /** Grasses, ferns, bushes and leaf litter: vein mined with any AIOT, and as one kind, so a mixed patch clears at once. */
+    public static final TagKey<Block> VEIN_PLANTS = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_plants"));
 
     /** Set while mining the extra blocks, so they don't set off more of their own. */
     private static boolean busy;
@@ -90,13 +93,14 @@ public final class AiotMining {
     }
 
     /**
-     * Whether vein mining takes this block: not stone, not a block with contents or one that can't be broken, and one the
-     * tool is right for: it mines it faster, and where the block needs a tool to drop anything (obsidian), the tool is
-     * strong enough to.
+     * Whether vein mining takes this block: not a block with contents or one that can't be broken, and either a grass,
+     * fern, bush or leaf litter ({@link #VEIN_PLANTS}), or one the tool is right for: it mines it faster, and where the
+     * block needs a tool to drop anything (obsidian), the tool is strong enough to.
      */
     private static boolean veinable(Level level, BlockPos pos, BlockState state, ItemStack tool) {
-        return !state.is(VEIN_EXCLUDED) && !state.hasBlockEntity() && state.getDestroySpeed(level, pos) >= 0 && tool.getDestroySpeed(state) > 1.0F
-                && (!state.requiresCorrectToolForDrops() || tool.isCorrectToolForDrops(state));
+        if (state.is(VEIN_EXCLUDED) || state.hasBlockEntity() || state.getDestroySpeed(level, pos) < 0) return false;
+        if (state.is(VEIN_PLANTS)) return true;
+        return tool.getDestroySpeed(state) > 1.0F && (!state.requiresCorrectToolForDrops() || tool.isCorrectToolForDrops(state));
     }
 
     /** The ore group a block belongs to ({@code #c:ores/diamond} and the like), or null if it stands alone. */
@@ -108,13 +112,14 @@ public final class AiotMining {
 
     /**
      * The other blocks of this kind connected to {@code start} (corners count), nearest first, up to {@code size}
-     * blocks in all. Blocks of the same ore group count as one kind, so the deepslate and stone variants of an ore join up.
+     * blocks in all. Blocks of the same ore group count as one kind, so the deepslate and stone variants of an ore join up;
+     * so do all the plants in {@link #VEIN_PLANTS}.
      * Only loaded chunks are looked at, so a vein never makes the server load or generate one.
      */
     static List<BlockPos> vein(Level level, BlockPos start, BlockState startState, int size) {
         int limit = size - 1;
         Block block = startState.getBlock();
-        TagKey<Block> group = oreGroup(startState);
+        TagKey<Block> group = startState.is(VEIN_PLANTS) ? VEIN_PLANTS : oreGroup(startState);
         List<BlockPos> found = new ArrayList<>();
         LongSet seen = new LongOpenHashSet();
         LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
