@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_transmute",
+  "category": "equipment",
+  "input": "storagenexus:iron_builder",
+  "material": "minecraft:diamond",
+  "result": {
+    "id": "storagenexus:diamond_builder"
+  }
+}

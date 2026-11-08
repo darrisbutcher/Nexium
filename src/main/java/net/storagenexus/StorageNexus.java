@@ -54,6 +54,7 @@ public class StorageNexus implements ModInitializer {
         NexusRestock.init();
         NexusLink.init();
         AiotMining.init();
+        net.storagenexus.builder.BuilderService.init();
         // The quality-of-life features that used to be the Nexus Essentials mod
         NexusEssentials.init();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> AnchorRegistry.get(server).reconcile(server));

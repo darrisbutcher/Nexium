@@ -15,6 +15,8 @@ import net.storagenexus.aiot.AiotItem;
 import net.storagenexus.aiot.MiningMode;
 import net.storagenexus.aiot.module.AiotModules;
 import net.storagenexus.aiot.module.ModuleType;
+import net.storagenexus.builder.BuilderItem;
+import net.storagenexus.builder.BuilderSettings;
 import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.registry.ModComponents;
 
@@ -24,7 +26,7 @@ import java.util.List;
 /**
  * A small readout in the bottom right corner, by the hotbar, for the AIOT in your hand: Silk Touch or Fortune (when it holds
  * both), and the state of each module, such as "3x3: tunnel 8", "Vein: up to 64 (hold V)" or "Nexus Link: off". Green is on,
- * grey is off. It shows for {@code aiotHudSeconds} (20) seconds after you switch to an AIOT, press the 3x3, tunnel or vein key,
+ * grey is off. A Construction Builder gets its mode, plane, size and Nexus Link. It shows for {@code aiotHudSeconds} (20) seconds after you switch to an AIOT, press the 3x3, tunnel or vein key,
  * or something on it changes (from the tool menu, say), stays up while the vein key is held, then fades out. 0 seconds keeps
  * it up while you hold one; the client's {@code aiotHud} setting turns it off.
  */
@@ -47,6 +49,18 @@ public final class AiotHud {
     /** The lines shown for this tool, empty if it is not an AIOT (also used by the client test). */
     public static List<Line> lines(Minecraft client, ItemStack tool) {
         List<Line> out = new ArrayList<>();
+        if (tool.getItem() instanceof BuilderItem builder) {
+            // The Construction Builder: mode and plane, batch size, and its Nexus Link
+            out.add(new Line(Component.translatable("hud.storagenexus.builder.mode",
+                    Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.mode(tool).name().toLowerCase()),
+                    Component.translatable("screen.storagenexus.builder.plane." + BuilderSettings.plane(tool).name().toLowerCase())), MODE));
+            out.add(new Line(Component.translatable("hud.storagenexus.builder.size", BuilderSettings.size(tool), builder.tier().maxBlocks()), ON));
+            if (!BuilderSettings.module(tool).isEmpty()) {
+                boolean on = BuilderSettings.activeLink(tool) != null;
+                out.add(new Line(Component.translatable(on ? "hud.storagenexus.aiot.link_on" : "hud.storagenexus.aiot.link_off"), on ? ON : OFF));
+            }
+            return out;
+        }
         if (!(tool.getItem() instanceof AiotItem)) return out;
         MiningMode mode = tool.get(ModComponents.MINING_MODE);
         if (mode != null && AiotEnchanting.canSwap(tool) && client.level != null) {
@@ -99,7 +113,7 @@ public final class AiotHud {
         }
         ItemStack tool = client.player.getMainHandItem();
         int slot = client.player.getInventory().getSelectedSlot();
-        boolean aiot = tool.getItem() instanceof AiotItem;
+        boolean aiot = tool.getItem() instanceof AiotItem || tool.getItem() instanceof BuilderItem;
         List<String> text = new ArrayList<>();
         if (aiot) for (Line line : lines(client, tool)) text.add(line.text().getString());
         // Switched to an AIOT (another slot, or another item in the same slot), or what it says changed

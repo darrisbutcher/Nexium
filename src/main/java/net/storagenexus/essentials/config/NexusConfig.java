@@ -60,6 +60,12 @@ public final class NexusConfig {
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
     public boolean ancientDebrisDropsScrap = true;
 
+    // --- Crops
+    /** Right-click a fully grown crop to harvest it and replant it; with the vein mining key held, the whole connected patch. */
+    public boolean rightClickHarvest = true;
+    /** Most crops one vein harvest takes. */
+    public int harvestVeinMax = 128;
+
     // --- Anvil
     /** An anvil never says "Too Expensive!": any job can be done, for its full cost in levels. False keeps vanilla's limit of 40. */
     public boolean anvilNoCostLimit = true;
@@ -111,6 +117,8 @@ public final class NexusConfig {
     public int aiotTunnelMaxLength = 32;
     /** Client side: outline the blocks the AIOT in your hand would mine along with the one you look at. */
     public boolean aiotMiningPreview = true;
+    /** Client side: outline where the Construction Builder in your hand would put blocks. */
+    public boolean builderPreview = true;
     /** Client side: show the AIOT's mode and module states in the corner of the screen while you hold it. */
     public boolean aiotHud = true;
     /** Client side: seconds the AIOT readout stays up after you switch to an AIOT or press its 3x3, tunnel or vein key. 0 keeps it up. */
@@ -175,6 +183,7 @@ public final class NexusConfig {
         freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
         aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
         aiotHudSeconds = Math.max(0, Math.min(600, aiotHudSeconds));
+        harvestVeinMax = Math.max(1, Math.min(1024, harvestVeinMax));
         aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
         restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
         restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));

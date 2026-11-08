@@ -167,9 +167,28 @@ place it or right-click it to outline those chunks for a minute.
   **Sneak** to mine just one block.
 * If an AIOT breaks, the modules in it drop at your feet (on/off setting and Nexus Link terminal kept).
 
+### Construction Builder
+Builds out from the block you right-click: every connected block of that kind gets a new block on the face you clicked.
+It places the block in your **offhand**, or else a copy of the one you clicked (facing the same way).
+
+* **Tiers**: Iron places up to **9** blocks a click, Diamond **27**, Netherite **64**, Nexium **128** (and never breaks).
+  Each block costs 1 durability. Iron: `PLP / IGI / I I` (paper, lapis lazuli, iron ingots, a gold nugget). Add a
+  **diamond** in a crafting grid for Diamond; at a smithing table with a netherite upgrade template, a **netherite ingot**
+  makes Netherite and a **Nexium ingot** makes Nexium. Upgrades keep its settings and module.
+* **Modes**: **Extend** (the whole connected face), **Line** (one row, along the way you look) and **Exchange** (swaps
+  the clicked surface for your offhand block and gives you the old blocks; never containers or unbreakable blocks).
+* A **pale blue outline** shows where the blocks will go before you click; `builderPreview` (client) turns it off. The
+  readout by the hotbar shows its mode, plane and size.
+* **Tool menu (G)**: Mode; **Plane** (any, flat or upright: which way it may spread); **Size** (steps down from the tier's
+  limit); **Undo**, which takes back your last build and returns its blocks (the last 2 builds, until you log out; blocks
+  changed since are left alone); and a slot for a **Nexus Link Module** with its on/off switch.
+* Blocks come from your inventory first, then from the storage network of its Nexus Link: sneak + right-click a
+  Crafting Terminal with the builder to link it. Creative players need no blocks. Doors, beds and other two-part blocks
+  are left alone.
+
 ### Nexium
-* **Nexium Ingot**: a block of diamond, a block of emerald, a block of netherite and a netherite upgrade template in a
-  crafting table make **3 ingots**. Nine make a **Block of Nexium** (a beacon base).
+* **Nexium Ingot**: a diamond, an emerald, a netherite ingot and a netherite upgrade template in a crafting table make
+  **3 ingots**. Nine make a **Block of Nexium** (a beacon base).
 * **Gear**: at a smithing table, a netherite upgrade template, the netherite piece and a Nexium ingot. There is a
   Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and boots**, and the Nexium AIOT.
   Everything Nexium survives fire and lava.
@@ -280,6 +299,12 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
   that keeps everything about the mob. **Right-click a block** with it to let the mob out.
 * The Ender Dragon and the Wither can't be picked up, and only a pet's owner can pick it up.
 
+### Right-click harvest
+**Right-click a fully grown crop** (wheat, carrots, potatoes, beetroot, nether wart, cocoa) to harvest it: it drops as if
+broken, less the one seed it is replanted with. **Hold V** (the vein mining key) to harvest the
+whole connected field at once, up to `harvestVeinMax` crops. Sneak to use an item on the crop instead. `rightClickHarvest`
+turns it off.
+
 ### Ancient debris
 Ancient debris drops **netherite scrap** instead of itself: 2 per block, multiplied by Fortune like diamond ore. Silk
 Touch still drops the block.
@@ -362,6 +387,8 @@ server's file is the one that counts.
 | `mobPickUp` | `true` | Sneak + right-click picks up mobs |
 | `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
+| `rightClickHarvest` | `true` | Right-click a grown crop to harvest and replant it |
+| `harvestVeinMax` | `128` | Most crops one harvest takes with V held, 1 to 1024 |
 | `anvilNoCostLimit` | `true` | An anvil is never Too Expensive: any job, for its full cost in levels; false keeps vanilla's limit |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
@@ -375,6 +402,7 @@ server's file is the one that counts.
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
+| `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout stays up after switching to an AIOT or pressing X, Z or V; 0 keeps it up |

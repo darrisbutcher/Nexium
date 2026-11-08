@@ -18,7 +18,8 @@ import java.util.List;
 /**
  * Adds a short "what is this for" description under every Nexium item, from the
  * lang keys {@code <item>.desc}, {@code <item>.desc2}, ... and a red {@code <item>.warn}. Wooden
- * drawers share one description per size, and the AIOTs one for every material.
+ * drawers share one description per size, the AIOTs one for every material and the Construction Builders one for
+ * every tier.
  */
 public final class ItemDescriptions {
     private static final int MAX_LINES = 4;
@@ -34,6 +35,8 @@ public final class ItemDescriptions {
             key = "tooltip.storagenexus.drawer." + drawer.slots();
         } else if (stack.getItem() instanceof AiotItem) {
             key = "tooltip.storagenexus.aiot"; // the same for every material
+        } else if (stack.getItem() instanceof net.storagenexus.builder.BuilderItem) {
+            key = "tooltip.storagenexus.builder"; // the same for every tier
         } else {
             key = stack.getItem().getDescriptionId() + ".desc";
         }

@@ -89,6 +89,17 @@ public final class ModItems {
         }
     }
 
+    /** Construction Builders, one per tier: {@code storagenexus:<tier>_builder}. */
+    public static final Map<net.storagenexus.builder.BuilderTier, net.storagenexus.builder.BuilderItem> BUILDERS =
+            new EnumMap<>(net.storagenexus.builder.BuilderTier.class);
+
+    static {
+        for (var tier : net.storagenexus.builder.BuilderTier.values()) {
+            BUILDERS.put(tier, register(tier.id() + "_builder", p -> new net.storagenexus.builder.BuilderItem(p, tier),
+                    net.storagenexus.builder.BuilderItem.properties(tier)));
+        }
+    }
+
     /**
      * What is left of the Vein Mining Module: vein mining needs no module now. Kept under its old id so AIOTs and
      * containers that still hold one load as before; it can't be crafted and isn't in the creative tab.

@@ -174,10 +174,17 @@ public class GuideGameTest {
                     }
                 }
                 case SHAPELESS -> {
-                    h.assertTrue(type.equals("minecraft:crafting_shapeless") || type.equals("storagenexus:aiot_merge"),
+                    h.assertTrue(type.equals("minecraft:crafting_shapeless") || type.equals("storagenexus:aiot_merge")
+                                    || type.equals("minecraft:crafting_transmute"),
                             card.id() + " is shapeless but " + verify + " is " + type);
                     List<String> wanted = new ArrayList<>();
-                    for (JsonElement e : real.getAsJsonArray("ingredients")) wanted.add(ingredient(e));
+                    if (type.equals("minecraft:crafting_transmute")) {
+                        // An upgrade that keeps the item's settings: the item and one material
+                        wanted.add(ingredient(real.get("input")));
+                        wanted.add(ingredient(real.get("material")));
+                    } else {
+                        for (JsonElement e : real.getAsJsonArray("ingredients")) wanted.add(ingredient(e));
+                    }
                     List<String> shown = card.cells().stream().filter(c -> c != null).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
                     h.assertTrue(shown.size() == wanted.size(), card.id() + ": the card shows " + shown.size() + " ingredients, the recipe wants " + wanted.size());
                     for (String ref : shown) {

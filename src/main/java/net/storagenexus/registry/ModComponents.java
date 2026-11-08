@@ -66,6 +66,18 @@ public final class ModComponents {
     public static final DataComponentType<Integer> TUNNEL_LENGTH = register("tunnel_length",
             b -> b.persistent(Codec.intRange(1, 64)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a Construction Builder: its mode (Extend, Line, Exchange), as an index. */
+    public static final DataComponentType<Integer> BUILDER_MODE = register("builder_mode",
+            b -> b.persistent(Codec.intRange(0, 15)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** On a Construction Builder: which way it spreads (any, horizontal, vertical), as an index. */
+    public static final DataComponentType<Integer> BUILDER_PLANE = register("builder_plane",
+            b -> b.persistent(Codec.intRange(0, 15)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** On a Construction Builder: blocks one click places, set in its tool menu (up to its tier's limit). */
+    public static final DataComponentType<Integer> BUILDER_SIZE = register("builder_size",
+            b -> b.persistent(Codec.intRange(1, 1024)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
             b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));

@@ -43,6 +43,10 @@ public final class ModMenus {
     public static final ExtendedMenuType<ToolMenuMenu, Integer> TOOL_MENU = register("tool_menu",
             new ExtendedMenuType<>(ToolMenuMenu::new, ByteBufCodecs.VAR_INT));
 
+    /** Opening data: the hotbar slot holding the Construction Builder. */
+    public static final ExtendedMenuType<net.storagenexus.builder.BuilderMenu, Integer> BUILDER = register("builder",
+            new ExtendedMenuType<>(net.storagenexus.builder.BuilderMenu::new, ByteBufCodecs.VAR_INT));
+
     public static final ExtendedMenuType<FreezerMenu, BlockPos> FREEZER = register("freezer",
             new ExtendedMenuType<>(FreezerMenu::new, BlockPos.STREAM_CODEC));
 
