@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.storagenexus.essentials.capture.MobCapture;
 import net.storagenexus.essentials.registry.ModBlockEntities;
 import net.storagenexus.essentials.registry.ModComponents;
@@ -116,6 +117,25 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
             case SHULKER -> {
                 if (random.nextFloat() < SHELL_CHANCE) insert(new ItemStack(Items.SHULKER_SHELL));
             }
+            case WITCH -> {
+                // The witch's own loot table, as if a player killed her (Looting 0)
+                var witch = EntityTypes.WITCH.create(level, EntitySpawnReason.SPAWNER);
+                if (witch != null) {
+                    witch.setPos(worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5);
+                    var table = witch.getLootTable();
+                    if (table.isPresent()) {
+                        LootParams params = new LootParams.Builder(level)
+                                .withParameter(LootContextParams.THIS_ENTITY, witch)
+                                .withParameter(LootContextParams.ORIGIN, witch.position())
+                                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
+                                .create(LootContextParamSets.ENTITY);
+                        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) insert(loot);
+                    }
+                }
+            }
+            case SUGAR_CANE -> insert(new ItemStack(Items.SUGAR_CANE, 3));
+            case BAMBOO -> insert(new ItemStack(Items.BAMBOO, 4));
+            case NETHER_WART -> insert(new ItemStack(Items.NETHER_WART, 4));
         }
     }
 

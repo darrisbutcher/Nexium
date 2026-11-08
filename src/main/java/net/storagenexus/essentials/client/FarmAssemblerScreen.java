@@ -30,6 +30,68 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
     private static final int DONE = 0xFF6EE66E, NOT_DONE = 0xFFFFFF55, BAR_DONE = 0xFF50C85A, BAR_NOT_DONE = 0xFFDCBE3C, BAR_BACK = 0xFF0C0C10;
     private static final int BUTTON = 0xFF484854, BUTTON_HOT = 0xFF5A5A82, BUTTON_OFF = 0xFF28282E, BUTTON_TOP = 0xFF78788C, BUTTON_BOTTOM = 0xFF282830;
 
+    /** Rows of the list showing at once; with more targets than that, it scrolls (mouse wheel). */
+    public static final int VISIBLE_ROWS = 7;
+    private static final int SCROLLBAR = 0xFF5A5A82, SCROLLBAR_BACK = 0xFF0C0C10;
+    /** Index of the first row showing. */
+    private int listScroll;
+    private AssemblyTarget lastChosen;
+
+    private static int targets() {
+        return AssemblyTarget.values().length;
+    }
+
+    private int maxScroll() {
+        return Math.max(0, targets() - VISIBLE_ROWS);
+    }
+
+    private boolean scrolls() {
+        return targets() > VISIBLE_ROWS;
+    }
+
+    /** Whether this target's row is showing right now. */
+    private boolean rowShowing(AssemblyTarget t) {
+        return t.ordinal() >= listScroll && t.ordinal() < listScroll + VISIBLE_ROWS;
+    }
+
+    /** The top of this target's row (when it is showing). */
+    private int rowTop(AssemblyTarget t) {
+        return topPos + LIST_Y + 1 + (t.ordinal() - listScroll) * LIST_ROW;
+    }
+
+    /** Where the rows' text may reach: a scroll bar takes a few pixels on the right. */
+    private int rowWidth() {
+        return LIST_W - 2 - (scrolls() ? 4 : 0);
+    }
+
+    /** The list follows a changed choice: the chosen row is always in view. */
+    private void keepChosenInView() {
+        AssemblyTarget chosen = menu.target();
+        if (chosen == lastChosen) return;
+        lastChosen = chosen;
+        if (chosen.ordinal() < listScroll) listScroll = chosen.ordinal();
+        if (chosen.ordinal() >= listScroll + VISIBLE_ROWS) listScroll = chosen.ordinal() - VISIBLE_ROWS + 1;
+        listScroll = Math.max(0, Math.min(maxScroll(), listScroll));
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrolls() && scrollY != 0 && inside(mouseX, mouseY, leftPos + LIST_X, topPos + LIST_Y, LIST_W, VISIBLE_ROWS * LIST_ROW + 2)) {
+            listScroll = Math.max(0, Math.min(maxScroll(), listScroll - (int) Math.signum(scrollY)));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    /** The first row showing (for the client test). */
+    public int listScroll() {
+        return listScroll;
+    }
+
+    public void setListScroll(int rows) {
+        listScroll = Math.max(0, Math.min(maxScroll(), rows));
+    }
+
     public FarmAssemblerScreen(FarmAssemblerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, WIDTH, HEIGHT);
         inventoryLabelX = INVENTORY_X;
@@ -59,19 +121,31 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
         // What it can make
         int lx = leftPos + LIST_X, ly = topPos + LIST_Y;
         AssemblyTarget[] all = AssemblyTarget.values();
-        g.fill(lx, ly, lx + LIST_W, ly + all.length * LIST_ROW + 2, OUTLINE);
-        g.fill(lx + 1, ly + 1, lx + LIST_W - 1, ly + all.length * LIST_ROW + 1, WELL);
+        keepChosenInView();
+        int shown = Math.min(all.length, VISIBLE_ROWS);
+        int rowW = rowWidth();
+        g.fill(lx, ly, lx + LIST_W, ly + shown * LIST_ROW + 2, OUTLINE);
+        g.fill(lx + 1, ly + 1, lx + LIST_W - 1, ly + shown * LIST_ROW + 1, WELL);
         for (AssemblyTarget t : all) {
-            int ry = ly + 1 + t.ordinal() * LIST_ROW;
-            boolean sel = t == chosen, hot = !sel && inside(mouseX, mouseY, lx + 1, ry, LIST_W - 2, LIST_ROW);
+            if (!rowShowing(t)) continue;
+            int ry = rowTop(t);
+            boolean sel = t == chosen, hot = !sel && inside(mouseX, mouseY, lx + 1, ry, rowW, LIST_ROW);
             if (sel) {
-                g.fill(lx + 1, ry, lx + LIST_W - 1, ry + LIST_ROW, SELECTED_EDGE);
-                g.fill(lx + 2, ry + 1, lx + LIST_W - 2, ry + LIST_ROW - 1, SELECTED);
+                g.fill(lx + 1, ry, lx + 1 + rowW, ry + LIST_ROW, SELECTED_EDGE);
+                g.fill(lx + 2, ry + 1, lx + rowW, ry + LIST_ROW - 1, SELECTED);
             } else if (hot) {
-                g.fill(lx + 1, ry, lx + LIST_W - 1, ry + LIST_ROW, ROW);
+                g.fill(lx + 1, ry, lx + 1 + rowW, ry + LIST_ROW, ROW);
             }
             g.item(t.icon(), lx + 2, ry);
-            g.text(font, font.plainSubstrByWidth(t.shortName().getString(), LIST_W - 23), lx + 21, ry + 4, sel ? TEXT : MUTED, sel);
+            g.text(font, font.plainSubstrByWidth(t.shortName().getString(), rowW - 21), lx + 21, ry + 4, sel ? TEXT : MUTED, sel);
+        }
+        if (scrolls()) {
+            // A scroll bar down the right edge of the list
+            int bx = lx + LIST_W - 4, top = ly + 1, height = shown * LIST_ROW;
+            g.fill(bx, top, bx + 3, top + height, SCROLLBAR_BACK);
+            int thumb = Math.max(8, height * VISIBLE_ROWS / all.length);
+            int thumbY = top + (maxScroll() == 0 ? 0 : (height - thumb) * listScroll / maxScroll());
+            g.fill(bx, thumbY, bx + 3, thumbY + thumb, SCROLLBAR);
         }
         button(g, leftPos + LIST_X, topPos + ADD_Y, LIST_W, Component.translatable("screen.nexusessentials.assembler.add"), true,
                 inside(mouseX, mouseY, leftPos + LIST_X, topPos + ADD_Y, LIST_W, BUTTON_H));
@@ -114,7 +188,7 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
         AssemblyTarget chosen = menu.target();
         int lx = leftPos + LIST_X, ly = topPos + LIST_Y;
         for (AssemblyTarget t : AssemblyTarget.values()) {
-            if (inside(mouseX, mouseY, lx + 1, ly + 1 + t.ordinal() * LIST_ROW, LIST_W - 2, LIST_ROW)) {
+            if (rowShowing(t) && inside(mouseX, mouseY, lx + 1, rowTop(t), rowWidth(), LIST_ROW)) {
                 List<Component> lines = new ArrayList<>(List.of(t.displayName().copy().withStyle(ChatFormatting.WHITE), t.makes().copy().withStyle(ChatFormatting.GRAY)));
                 if (t != chosen) lines.add(Component.translatable("screen.nexusessentials.assembler.switch").withStyle(ChatFormatting.DARK_GRAY));
                 g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
@@ -169,7 +243,7 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
             double mx = event.x(), my = event.y();
             int lx = leftPos + LIST_X, ly = topPos + LIST_Y;
             for (AssemblyTarget t : AssemblyTarget.values()) {
-                if (t != menu.target() && inside(mx, my, lx + 1, ly + 1 + t.ordinal() * LIST_ROW, LIST_W - 2, LIST_ROW)) {
+                if (t != menu.target() && rowShowing(t) && inside(mx, my, lx + 1, rowTop(t), rowWidth(), LIST_ROW)) {
                     press(t.ordinal());
                     return true;
                 }

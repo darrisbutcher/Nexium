@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/witch_farm"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/witch_farm"
+    }
+  }
+}

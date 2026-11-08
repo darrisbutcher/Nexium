@@ -132,6 +132,34 @@ public class AssemblerGameTest {
                 add(list, Items.ENDER_PEARL, 8);
                 add(list, Items.END_STONE_BRICKS, 3008);
             }
+            case WITCH -> {
+                mobs(list, capturedMobs, 2, EntityTypes.WITCH, Items.WITCH_SPAWN_EGG);
+                add(list, Items.CAULDRON, 8);
+                add(list, Items.SPRUCE_PLANKS, 16);
+                add(list, Items.LILY_PAD, 8);
+                add(list, Items.MOSSY_COBBLESTONE, 768);
+            }
+            case SUGAR_CANE -> {
+                add(list, Items.SUGAR_CANE, 32);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.PISTON, 8);
+                add(list, Items.OBSERVER, 16);
+                add(list, Items.SAND, 768);
+            }
+            case BAMBOO -> {
+                add(list, Items.BAMBOO, 32);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.PISTON, 8);
+                add(list, Items.OBSERVER, 16);
+                add(list, Items.DIRT, 768);
+            }
+            case NETHER_WART -> {
+                add(list, Items.NETHER_WART, 32);
+                add(list, Items.SOUL_SAND, 16);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
+                add(list, Items.MAGMA_BLOCK, 8);
+                add(list, Items.NETHERRACK, 768);
+            }
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
         }
         return list;
@@ -175,9 +203,11 @@ public class AssemblerGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void theFarmsCostWhatTheirDoubleChestsDid(GameTestHelper h) {
         // The filler: 54 slots of full stacks, less one slot per Captured Mob or bed and a stack's worth of each other part
+        // (The four newer farms ask a quarter of that: 12 stacks.)
         Map<AssemblyTarget, Integer> filler = Map.of(AssemblyTarget.IRON_FARM, 1408, AssemblyTarget.VILLAGER_BREEDER, 2880,
                 AssemblyTarget.PIGLIN_BARTER, 3136, AssemblyTarget.ZOMBIFIED_PIGLIN, 3008, AssemblyTarget.WITHER_SKELETON, 2944,
-                AssemblyTarget.SHULKER, 3008);
+                AssemblyTarget.SHULKER, 3008, AssemblyTarget.WITCH, 768, AssemblyTarget.SUGAR_CANE, 768,
+                AssemblyTarget.BAMBOO, 768, AssemblyTarget.NETHER_WART, 768);
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");

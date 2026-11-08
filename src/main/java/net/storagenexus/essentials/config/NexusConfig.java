@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 public final class NexusConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
     private static NexusConfig instance = new NexusConfig();
 
     // --- Mob griefing
@@ -87,8 +87,8 @@ public final class NexusConfig {
     public boolean ironFarmPoppies = true;
 
     // --- Other one-block farms (made at the Farm Assembler, like the Iron Farm)
-    /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 24000 is 20 minutes. */
-    public int villagerBreederTicks = 24000;
+    /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 12000 is 10 minutes. */
+    public int villagerBreederTicks = 12000;
     /** Ticks per barter (1 gold ingot each), like a real piglin's 6 seconds. */
     public int piglinBarterTicks = 120;
     /** Ticks between kills: gold nuggets and the rare gold ingot, as if Looting V (no player needed). */
@@ -97,6 +97,14 @@ public final class NexusConfig {
     public int witherSkeletonTicks = 120;
     /** Ticks between kills: a shulker shell about 4 times in 5 (Looting V odds). */
     public int shulkerFarmTicks = 600;
+    /** Ticks between kills: a witch's drops, as if a player killed her (no Looting). */
+    public int witchFarmTicks = 200;
+    /** Ticks between harvests: 3 sugar cane. */
+    public int sugarCaneFarmTicks = 400;
+    /** Ticks between harvests: 4 bamboo. */
+    public int bambooFarmTicks = 400;
+    /** Ticks between harvests: 4 nether wart. */
+    public int netherWartFarmTicks = 600;
 
     // --- Freezer
     /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
@@ -153,6 +161,8 @@ public final class NexusConfig {
         instance = loaded == null ? new NexusConfig() : loaded;
         // 1.6.0 raised the vein limit from 64 to 256: a file written before that, still on 64, moves up once
         if (loaded != null && instance.configVersion == null && instance.aiotVeinMaxBlocks == 64) instance.aiotVeinMaxBlocks = 256;
+        // 1.18.0 cut the Villager Breeder from 20 minutes to 10: a file still on the old 24000 moves down once
+        if (loaded != null && (instance.configVersion == null || instance.configVersion < 3) && instance.villagerBreederTicks == 24000) instance.villagerBreederTicks = 12000;
         instance.configVersion = VERSION;
         instance.clamp();
         try {
@@ -177,6 +187,10 @@ public final class NexusConfig {
         piglinBarterTicks = Math.max(1, Math.min(1_000_000, piglinBarterTicks));
         zombifiedPiglinTicks = Math.max(1, Math.min(1_000_000, zombifiedPiglinTicks));
         witherSkeletonTicks = Math.max(1, Math.min(1_000_000, witherSkeletonTicks));
+        witchFarmTicks = Math.max(1, Math.min(1_000_000, witchFarmTicks));
+        sugarCaneFarmTicks = Math.max(1, Math.min(1_000_000, sugarCaneFarmTicks));
+        bambooFarmTicks = Math.max(1, Math.min(1_000_000, bambooFarmTicks));
+        netherWartFarmTicks = Math.max(1, Math.min(1_000_000, netherWartFarmTicks));
         shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
         freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
         freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));

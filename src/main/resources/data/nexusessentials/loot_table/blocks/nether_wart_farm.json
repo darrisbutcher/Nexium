@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexusessentials:farm_progress"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexusessentials:nether_wart_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexusessentials:blocks/nether_wart_farm"
+}

@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.18.0
+
+* **Four more one-block farms**, made at the Farm Assembler: the **Witch Farm** (2 captured witches; a witch's own drops
+  every 10 seconds, as if a player killed her), the **Sugar Cane Farm** (3 sugar cane every 20 s), the **Bamboo Farm**
+  (4 bamboo every 20 s) and the **Nether Wart Farm** (4 nether wart every 30 s). They need no input and ask 768 of their
+  filler block instead of the 2,900 to 3,100 the first five do. Times are settings: `witchFarmTicks`, `sugarCaneFarmTicks`,
+  `bambooFarmTicks`, `netherWartFarmTicks`.
+* **The Assembler's list scrolls** (mouse wheel, with a scroll bar) now that it has eleven entries, and keeps the chosen
+  one in view.
+* **The Villager Breeder takes 10 minutes** instead of 20 (`villagerBreederTicks` 12000). A config file still on the old
+  24000 is moved to 12000 once.
+
 ## 1.17.1
 
 * **Right-click clears a search**: a right-click on the search box of a terminal or of the Codex clears it, with the cursor
