@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
@@ -139,6 +140,16 @@ public class CodexScreen extends Screen {
     /** The topics the sidebar lists right now (search results while searching). */
     public List<String> sidebarTopics() {
         return sideRows.stream().filter(r -> r.topic() != null).map(SideRow::topic).toList();
+    }
+
+    /** The search text (for the client test). */
+    public String searchText() {
+        return query;
+    }
+
+    /** The search box's place: x, y, width, height in GUI pixels (for the client test). */
+    public int[] searchBounds() {
+        return new int[]{search.getX(), search.getY(), search.getWidth(), search.getHeight()};
     }
 
     public void setSearch(String text) {
@@ -502,6 +513,13 @@ public class CodexScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // A right-click on the search box clears it
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && search.isMouseOver(event.x(), event.y())) {
+            search.setValue("");
+            setFocused(search);
+            search.setFocused(true);
+            return true;
+        }
         if (super.mouseClicked(event, doubleClick)) return true;
         double x = event.x(), y = event.y();
         if (inSide(x, y)) {
