@@ -357,6 +357,7 @@ public class ModuleGameTest {
         // A 3x3 wall of stone at z = 3, centred on (2, 2, 3)
         for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.setBlock(new BlockPos(x, y, 3), Blocks.STONE);
         ServerPlayer player = miner(h, ModuleType.AREA_MINING);
+        VeinKey.set(player, false); // V held would vein mine the stone instead
         BlockPos center = new BlockPos(2, 2, 3);
         lookAt(h, player, center);
         h.assertTrue(AiotModules.active(player.getMainHandItem(), ModuleType.AREA_MINING), "3x3 starts on");
@@ -448,6 +449,7 @@ public class ModuleGameTest {
         for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) for (int z = 3; z <= 7; z++) h.setBlock(new BlockPos(x, y, z), Blocks.STONE);
         h.setBlock(new BlockPos(1, 1, 3), Blocks.OBSIDIAN);
         ServerPlayer player = miner(h, ModuleType.AREA_MINING);
+        VeinKey.set(player, false); // V held would vein mine the stone instead
         ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 2
         ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 4
         BlockPos center = new BlockPos(2, 2, 3);
@@ -474,25 +476,42 @@ public class ModuleGameTest {
     }
 
     @GameTest
-    public void veinMiningTakesAnythingButStone(GameTestHelper h) {
+    public void veinMiningTakesStoneButNotContainers(GameTestHelper h) {
         // Rows along x: dirt (z = 1), stone and cobblestone (z = 3), two chests (z = 5)
         for (int x = 1; x <= 4; x++) {
             h.setBlock(new BlockPos(x, 1, 1), Blocks.DIRT);
-            h.setBlock(new BlockPos(x, 1, 3), x % 2 == 0 ? Blocks.COBBLESTONE : Blocks.STONE);
+            h.setBlock(new BlockPos(x, 1, 3), x <= 2 ? Blocks.STONE : Blocks.COBBLESTONE);
         }
         h.setBlock(new BlockPos(1, 1, 5), Blocks.CHEST);
         h.setBlock(new BlockPos(2, 1, 5), Blocks.CHEST);
         ServerPlayer player = miner(h);
         mine(h, player, new BlockPos(1, 1, 1));
         for (int x = 1; x <= 4; x++) h.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, 1));
+        // Stone veins too, but only stone: the cobblestone next to it is another kind
         mine(h, player, new BlockPos(1, 1, 3));
-        h.assertBlockPresent(Blocks.AIR, new BlockPos(1, 1, 3));
-        h.assertBlockPresent(Blocks.COBBLESTONE, new BlockPos(2, 1, 3));
-        h.assertBlockPresent(Blocks.STONE, new BlockPos(3, 1, 3));
-        mine(h, player, new BlockPos(2, 1, 3));
-        h.assertBlockPresent(Blocks.STONE, new BlockPos(3, 1, 3));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(2, 1, 3));
+        h.assertBlockPresent(Blocks.COBBLESTONE, new BlockPos(3, 1, 3));
+        mine(h, player, new BlockPos(3, 1, 3));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 3));
         mine(h, player, new BlockPos(1, 1, 5));
         h.assertBlockPresent(Blocks.CHEST, new BlockPos(2, 1, 5));
+        h.succeed();
+    }
+
+    @GameTest
+    public void veinMiningClearsGrassesBushesAndLeafLitterTogether(GameTestHelper h) {
+        // A mixed patch on grass blocks: short and tall grass, ferns, a bush, a dead bush and leaf litter, all touching
+        net.minecraft.world.level.block.Block[] plants = {Blocks.SHORT_GRASS, Blocks.FERN, Blocks.BUSH, Blocks.LEAF_LITTER,
+                Blocks.SHORT_DRY_GRASS, Blocks.FIREFLY_BUSH};
+        for (int x = 0; x <= 6; x++) h.setBlock(new BlockPos(x, 1, 2), Blocks.GRASS_BLOCK);
+        h.setBlock(new BlockPos(6, 1, 2), Blocks.SAND);
+        for (int x = 0; x < plants.length; x++) h.setBlock(new BlockPos(x, 2, 2), plants[x]);
+        h.setBlock(new BlockPos(6, 2, 2), Blocks.DEAD_BUSH);
+        ServerPlayer player = miner(h);
+        int damage = player.getMainHandItem().getDamageValue();
+        mine(h, player, new BlockPos(0, 2, 2));
+        for (int x = 0; x <= 6; x++) h.assertBlockPresent(Blocks.AIR, new BlockPos(x, 2, 2));
+        h.assertValueEqual(player.getMainHandItem().getDamageValue(), damage, "plants that break at once cost no durability");
         h.succeed();
     }
 

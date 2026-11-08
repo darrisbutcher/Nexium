@@ -1,0 +1,18 @@
+{
+  "values": [
+    "minecraft:short_grass",
+    "minecraft:tall_grass",
+    "minecraft:short_dry_grass",
+    "minecraft:tall_dry_grass",
+    "minecraft:fern",
+    "minecraft:large_fern",
+    "minecraft:seagrass",
+    "minecraft:tall_seagrass",
+    "minecraft:bush",
+    "minecraft:firefly_bush",
+    "minecraft:dead_bush",
+    "minecraft:azalea",
+    "minecraft:flowering_azalea",
+    "minecraft:leaf_litter"
+  ]
+}
