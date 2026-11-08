@@ -49,6 +49,7 @@ public final class NexusEssentials {
         MobCapture.init();
         ElytraEnchanting.init();
         AncientDebrisLoot.init();
+        net.storagenexus.essentials.harvest.CropHarvest.init();
     }
 
     private NexusEssentials() {}

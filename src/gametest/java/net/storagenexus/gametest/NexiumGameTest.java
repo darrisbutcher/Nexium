@@ -78,14 +78,14 @@ public class NexiumGameTest {
 
     @GameTest
     public void ingotsBlocksAndTheirRecipes(GameTestHelper h) {
-        ItemStack ingots = craft(h, List.of(new ItemStack(Items.DIAMOND_BLOCK), new ItemStack(Items.EMERALD_BLOCK),
-                new ItemStack(Items.NETHERITE_BLOCK), template()));
+        ItemStack ingots = craft(h, List.of(new ItemStack(Items.DIAMOND), new ItemStack(Items.EMERALD),
+                new ItemStack(Items.NETHERITE_INGOT), template()));
         h.assertTrue(ingots.is(ModItems.NEXIUM_INGOT) && ingots.getCount() == 3,
-                "diamond block + emerald block + netherite block + template = 3 Nexium ingots, got " + ingots);
+                "diamond + emerald + netherite ingot + template = 3 Nexium ingots, got " + ingots);
+        h.assertTrue(craft(h, List.of(new ItemStack(Items.DIAMOND), new ItemStack(Items.EMERALD),
+                new ItemStack(Items.NETHERITE_INGOT))).isEmpty(), "no template, no Nexium");
         h.assertTrue(craft(h, List.of(new ItemStack(Items.DIAMOND_BLOCK), new ItemStack(Items.EMERALD_BLOCK),
-                new ItemStack(Items.NETHERITE_BLOCK))).isEmpty(), "no template, no Nexium");
-        h.assertTrue(craft(h, List.of(new ItemStack(Items.DIAMOND), new ItemStack(Items.EMERALD_BLOCK),
-                new ItemStack(Items.NETHERITE_BLOCK), template())).isEmpty(), "a diamond instead of a block of diamond isn't enough");
+                new ItemStack(Items.NETHERITE_BLOCK), template())).isEmpty(), "the old recipe with blocks no longer works");
 
         List<ItemStack> nine = new ArrayList<>();
         for (int i = 0; i < 9; i++) nine.add(new ItemStack(ModItems.NEXIUM_INGOT));

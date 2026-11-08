@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PLP",
+    "IGI",
+    "I I"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "L": "minecraft:lapis_lazuli",
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "storagenexus:iron_builder"
+  }
+}

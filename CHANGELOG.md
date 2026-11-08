@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.15.0
+
+* **Construction Builder**: right-click a block to build out from it, with the block in your offhand or a copy of the one
+  you click. Iron (9 blocks a click), Diamond (27), Netherite (64) and Nexium (128, unbreakable). Modes Extend, Line and
+  Exchange; a plane lock (any, flat, upright); a size setting; a pale blue outline of where the blocks will go; and Undo
+  for the last 2 builds, all in its tool menu (G). A Nexus Link Module in it takes blocks from a storage network when the
+  inventory runs out.
+* **Right-click harvest**: right-click a grown crop to harvest it and replant it. With V held, the whole connected field.
+  Settings `rightClickHarvest` and `harvestVeinMax`.
+* **Nexium Ingot recipe**: a diamond, an emerald, a netherite ingot and a netherite upgrade smithing template make 3
+  ingots (it used blocks of each before).
+
 ## 1.14.5
 
 * **Cheaper drawers, no chests**: drawers are now made from planks and slabs of one wood, like a barrel. 1x1:

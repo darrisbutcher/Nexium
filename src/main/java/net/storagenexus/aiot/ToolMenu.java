@@ -17,12 +17,13 @@ import net.storagenexus.util.Menus;
 
 /**
  * The tool menu (G by default), on the server: opening it for the tool in the main hand, and what its switches do.
- * It is for any AIOT and any Nexium tool that gives Haste; switches that don't apply to the held tool are greyed out.
+ * It is for any AIOT and any Nexium tool that gives Haste (and opens the Construction Builder's own menu); switches that don't apply to the held tool are greyed out.
  */
 public final class ToolMenu {
     /** Whether the tool menu has anything to show for this stack. */
     public static boolean appliesTo(ItemStack stack) {
-        return stack.getItem() instanceof AiotItem || stack.is(NexiumMaterials.GRANTS_HASTE);
+        return stack.getItem() instanceof AiotItem || stack.getItem() instanceof net.storagenexus.builder.BuilderItem
+                || stack.is(NexiumMaterials.GRANTS_HASTE);
     }
 
     /** Opens the tool menu for the tool in the main hand, if it is one the menu is for. */
@@ -30,6 +31,14 @@ public final class ToolMenu {
         ItemStack tool = player.getMainHandItem();
         if (!appliesTo(tool)) return;
         int slot = player.getInventory().getSelectedSlot();
+        if (tool.getItem() instanceof net.storagenexus.builder.BuilderItem builder) {
+            // The Construction Builder has its own menu
+            // A short title that fits the panel ("Nexium Builder"), unless it was renamed
+            Component title = tool.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME) ? tool.getHoverName()
+                    : Component.translatable("screen.storagenexus.builder.title." + builder.tier().id());
+            Menus.open(player, title, slot, (id, inventory, p) -> new net.storagenexus.builder.BuilderMenu(id, inventory, slot));
+            return;
+        }
         Menus.open(player, tool.getHoverName(), slot, (id, inventory, p) -> new ToolMenuMenu(id, inventory, slot));
     }
 

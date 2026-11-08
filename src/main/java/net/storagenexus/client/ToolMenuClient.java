@@ -47,6 +47,7 @@ public final class ToolMenuClient {
         KeyMappingHelper.registerKeyMapping(STEP_TUNNEL);
         KeyMappingHelper.registerKeyMapping(TOOL_MENU);
         MenuScreens.register(ModMenus.TOOL_MENU, ToolMenuScreen::new);
+        MenuScreens.register(ModMenus.BUILDER, net.storagenexus.client.screen.BuilderScreen::new);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             // Tell the server when the vein key goes down or up
             boolean veinDown = client.player != null && VEIN_MINE.isDown();

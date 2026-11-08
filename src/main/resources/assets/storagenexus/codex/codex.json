@@ -63,7 +63,9 @@
         "nexus_link",
         "area",
         "tunnels",
-        "vein"
+        "vein",
+        "builder",
+        "builder_crafting"
       ]
     },
     {
@@ -103,7 +105,8 @@
         "zpiglin",
         "witherfarm",
         "shulkerfarm",
-        "freezer"
+        "freezer",
+        "harvest"
       ]
     },
     {
@@ -1428,6 +1431,69 @@
       ],
       "see": [
         "freezer"
+      ]
+    },
+    "builder": {
+      "pages": [
+        "builder.builder",
+        "builder.modes",
+        "builder.menu",
+        "builder.link"
+      ],
+      "icon": "storagenexus:diamond_builder",
+      "items": [
+        "storagenexus:iron_builder",
+        "storagenexus:diamond_builder",
+        "storagenexus:netherite_builder",
+        "storagenexus:nexium_builder"
+      ],
+      "aliases": [
+        "Construction Builder",
+        "Construction Builders",
+        "builder",
+        "Builder",
+        "Exchange"
+      ],
+      "see": [
+        "builder_crafting",
+        "tool_menu",
+        "nexus_link"
+      ]
+    },
+    "builder_crafting": {
+      "pages": [
+        "builder.crafting",
+        "builder.upgrade"
+      ],
+      "icon": "storagenexus:iron_builder",
+      "recipes": [
+        "builder_iron",
+        "builder_diamond",
+        "builder_netherite",
+        "builder_nexium"
+      ],
+      "aliases": [
+        "Nexium Builder"
+      ],
+      "see": [
+        "builder",
+        "nexium"
+      ]
+    },
+    "harvest": {
+      "pages": [
+        "essentials.harvest"
+      ],
+      "icon": "minecraft:wheat",
+      "aliases": [
+        "right-click harvest",
+        "Right-click harvest",
+        "harvest",
+        "replant"
+      ],
+      "see": [
+        "vein",
+        "farms"
       ]
     }
   }
