@@ -77,7 +77,7 @@ on). What is inside stays inside.
 * **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting, a network
   fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
   the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
-  The terminal's search and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
+  **Right-click the search box** (here and in the Codex) to clear it. The terminal's search and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
 
 ### Disk Drive and storage disks

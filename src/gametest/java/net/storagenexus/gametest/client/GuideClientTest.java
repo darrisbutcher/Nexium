@@ -74,6 +74,17 @@ public class GuideClientTest implements FabricClientGameTest {
             List<String> found = codex(ctx, CodexScreen::sidebarTopics);
             check(!found.isEmpty() && found.getFirst().equals("freezer"), "searching 'freezer' finds the Freezer first, got " + found);
             System.out.println("[nexus] codex search: " + ctx.takeScreenshot("nexus_codex_search"));
+            // A right-click on the search box clears it
+            double[] box = ctx.computeOnClient(mc -> {
+                int[] b = ((CodexScreen) mc.gui.screen()).searchBounds();
+                double scale = mc.getWindow().getGuiScale();
+                return new double[]{(b[0] + b[2] / 2.0) * scale, (b[1] + b[3] / 2.0) * scale};
+            });
+            ctx.getInput().setCursorPos(box[0], box[1]);
+            ctx.waitTicks(2);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
+            ctx.waitTicks(3);
+            check(codex(ctx, CodexScreen::searchText).isEmpty(), "a right-click on the search box clears it");
             ctx.runOnClient(mc -> ((CodexScreen) mc.gui.screen()).setSearch(""));
             ctx.setScreen(() -> null);
             ctx.waitTicks(3);

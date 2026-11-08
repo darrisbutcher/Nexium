@@ -348,6 +348,21 @@ final class TerminalView {
     }
 
     /**
+     * A right-click on the search box clears it (and puts the cursor back in it, ready to type). Returns the box if it
+     * did, so the screen can focus it, or null for any other click.
+     */
+    @Nullable EditBox clearSearchIfRightClicked(MouseButtonEvent event) {
+        if (event.button() != InputConstants.MOUSE_BUTTON_RIGHT || !search.isMouseOver(event.x(), event.y())) return null;
+        search.setValue("");
+        return search;
+    }
+
+    /** The search box's place on the screen: x, y, width, height in GUI pixels (for the client test). */
+    public int[] searchBounds() {
+        return new int[]{search.getX(), search.getY(), search.getWidth(), search.getHeight()};
+    }
+
+    /**
      * Clicking anywhere but the search box takes the focus off it, so keys like E and Escape
      * work again. Returns true if it did, so the screen can clear its own focus too.
      */

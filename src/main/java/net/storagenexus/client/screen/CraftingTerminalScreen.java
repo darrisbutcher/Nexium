@@ -84,6 +84,11 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         clearButton.setPosition(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()));
     }
 
+    /** The search box's place: x, y, width, height in GUI pixels (for the client test). */
+    public int[] searchBounds() {
+        return view.searchBounds();
+    }
+
     /** The terminal's search text (for the client test). */
     public String searchText() {
         return view.searchText();
@@ -189,6 +194,12 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        var cleared = view.clearSearchIfRightClicked(event);
+        if (cleared != null) {
+            setFocused(cleared);
+            cleared.setFocused(true);
+            return true;
+        }
         if (view.blurSearchIfClickedOutside(event)) setFocused(null);
         boolean bookCoversScreen = recipeBook.isVisible() && width < NARROW_WIDTH;
         if (!bookCoversScreen && view.mouseClicked(event, leftPos, topPos)) return true;

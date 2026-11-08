@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.17.1
+
+* **Right-click clears a search**: a right-click on the search box of a terminal or of the Codex clears it, with the cursor
+  left in the box ready to type. In a terminal, JEI's or REI's search clears with it.
+
 ## 1.17.0
 
 * **Vein mining takes stone and plants**: holding V now vein mines stone, cobblestone, deepslate, netherrack and the rest

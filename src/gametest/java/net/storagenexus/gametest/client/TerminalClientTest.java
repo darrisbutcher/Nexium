@@ -100,6 +100,21 @@ public class TerminalClientTest implements FabricClientGameTest {
             expect(click(ctx, 0, 0, RIGHT, false, "right on gold barrel upgrades (take one)"), "carried=[1 storagenexus:gold_barrel_upgrade]");
             expect(click(ctx, 0, 0, RIGHT, false, "right holding one (deposit one)"), "carried=[0 minecraft:air]");
             click(ctx, 0, 0, LEFT, false, "left with drag on gold barrel upgrades (take stack)");
+            // ---- a right-click on the search box clears it
+            ctx.runOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).setSearchText("gold"));
+            ctx.waitTicks(3);
+            double[] box = ctx.computeOnClient(mc -> {
+                var screen = (net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen();
+                int[] b = screen.searchBounds();
+                double scale = mc.getWindow().getGuiScale();
+                return new double[]{(b[0] + b[2] / 2.0) * scale, (b[1] + b[3] / 2.0) * scale};
+            });
+            ctx.getInput().setCursorPos(box[0], box[1]);
+            ctx.waitTicks(2);
+            ctx.getInput().pressMouse(RIGHT);
+            ctx.waitTicks(3);
+            String cleared = ctx.computeOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).searchText());
+            if (!cleared.isEmpty()) throw new AssertionError("a right-click should clear the terminal's search, it reads: " + cleared);
             // ---- a recipe viewer's "+" button: fill the grid for oak planks -> crafting table from the network
             ctx.runOnClient(mc -> mc.player.containerMenu.setCarried(ItemStack.EMPTY));
             world.getServer().runOnServer(server -> {
