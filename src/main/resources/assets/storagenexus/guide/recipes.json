@@ -1,8 +1,8 @@
 {
   "recipes": {
-    "d11": {"type": "shaped", "pattern": ["PPP", "PCP", "PPP"], "key": {"P": "#minecraft:planks", "C": "minecraft:chest"}, "result": {"id": "storagenexus:oak_drawer_1x1"}, "note": "planks"},
-    "d12": {"type": "shaped", "pattern": ["PCP", "PPP", "PCP"], "key": {"P": "#minecraft:planks", "C": "minecraft:chest"}, "result": {"id": "storagenexus:oak_drawer_1x2", "count": 2}, "note": "planks"},
-    "d22": {"type": "shaped", "pattern": ["CPC", "PPP", "CPC"], "key": {"P": "#minecraft:planks", "C": "minecraft:chest"}, "result": {"id": "storagenexus:oak_drawer_2x2", "count": 4}, "note": "planks"},
+    "d11": {"type": "shaped", "pattern": ["PSP", "S S", "PSP"], "key": {"P": "#minecraft:planks", "S": "#minecraft:wooden_slabs"}, "result": {"id": "storagenexus:oak_drawer_1x1"}, "note": "planks"},
+    "d12": {"type": "shaped", "pattern": ["PSP", "PPP", "PSP"], "key": {"P": "#minecraft:planks", "S": "#minecraft:wooden_slabs"}, "result": {"id": "storagenexus:oak_drawer_1x2", "count": 2}, "note": "planks"},
+    "d22": {"type": "shaped", "pattern": ["SPS", "PPP", "SPS"], "key": {"P": "#minecraft:planks", "S": "#minecraft:wooden_slabs"}, "result": {"id": "storagenexus:oak_drawer_2x2", "count": 4}, "note": "planks"},
     "fluid": {"type": "shaped", "pattern": ["IGI", "GBG", "IGI"], "key": {"I": "minecraft:iron_ingot", "G": "minecraft:glass", "B": "minecraft:bucket"}, "result": {"id": "storagenexus:fluid_drawer_1x1"}},
     "compact": {"type": "shaped", "pattern": ["SSS", "PDP", "SIS"], "key": {"S": "minecraft:stone", "P": "minecraft:piston", "D": "#storagenexus:drawers", "I": "minecraft:iron_ingot"}, "result": {"id": "storagenexus:compacting_drawer"}, "note": "drawer"},
     "ctrl": {"type": "shaped", "pattern": ["SSS", "CDC", "SGS"], "key": {"S": "minecraft:stone", "C": "minecraft:comparator", "D": "#storagenexus:drawers", "G": "minecraft:diamond"}, "result": {"id": "storagenexus:drawer_controller"}, "note": "drawer"},

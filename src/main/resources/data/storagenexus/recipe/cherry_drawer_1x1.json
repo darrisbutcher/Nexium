@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:cherry_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:cherry_slab"
   },
   "result": {
     "id": "storagenexus:cherry_drawer_1x1",

@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CPC",
+    "SPS",
     "PPP",
-    "CPC"
+    "SPS"
   ],
   "key": {
     "P": "minecraft:birch_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:birch_slab"
   },
   "result": {
     "id": "storagenexus:birch_drawer_2x2",

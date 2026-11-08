@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CPC",
+    "SPS",
     "PPP",
-    "CPC"
+    "SPS"
   ],
   "key": {
     "P": "minecraft:poplar_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:poplar_slab"
   },
   "result": {
     "id": "storagenexus:poplar_drawer_2x2",

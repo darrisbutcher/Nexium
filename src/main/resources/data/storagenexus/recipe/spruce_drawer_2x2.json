@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CPC",
+    "SPS",
     "PPP",
-    "CPC"
+    "SPS"
   ],
   "key": {
     "P": "minecraft:spruce_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:spruce_slab"
   },
   "result": {
     "id": "storagenexus:spruce_drawer_2x2",

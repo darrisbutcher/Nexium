@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.14.4.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-1.14.5.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -43,6 +43,8 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
 
 ### Drawers
 * 1x1 holds **54 stacks**, 1x2 holds **27 stacks** per slot, 2x2 holds **13.5 stacks** per slot.
+* **Recipes** (planks P and slabs S of one wood, in all 13 woods): 1x1 `PSP / S S / PSP` makes 1, 1x2 `PSP / PPP / PSP`
+  makes 2, 2x2 `SPS / PPP / SPS` makes 4.
 * Right-click the front to insert, double-click to insert everything matching, left-click to take a stack (sneak for
   one item). Break drawers from the side.
 * A bar under each count shows how full the section is, counting upgrades: green under 75%, yellow to 90%, red above.

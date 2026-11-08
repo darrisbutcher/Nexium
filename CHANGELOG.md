@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.14.5
+
+* **Cheaper drawers, no chests**: drawers are now made from planks and slabs of one wood, like a barrel. 1x1:
+  `PSP / S S / PSP` (makes 1), 1x2: `PSP / PPP / PSP` (makes 2), 2x2: `SPS / PPP / SPS` (makes 4). A 1x1 now costs about
+  6 planks' worth instead of 16. A game test makes sure no other recipe uses the same grids.
+
 ## 1.14.4
 
 * **The anvil is never Too Expensive**: a job that costs 40 levels or more can now be done for its full cost, as long as you

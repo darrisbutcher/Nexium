@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
     "P": "minecraft:crimson_planks",
-    "C": "minecraft:chest"
+    "S": "minecraft:crimson_slab"
   },
   "result": {
     "id": "storagenexus:crimson_drawer_1x1",
