@@ -21,7 +21,9 @@ import java.util.List;
  * A faint pale green glowing outline around the blocks an AIOT would mine along with the one you look at: the rest of a vein
  * (with the Vein Mine key held), a 3x3, or a tunnel. It uses the same rules the server mines by
  * ({@link AiotMining#extraBlocks}), so what is outlined is what goes, and it can be switched off with the client's
- * {@code aiotMiningPreview} setting. Sneaking mines one block, so nothing is outlined.
+ * {@code aiotMiningPreview} setting. Sneaking mines one block, so nothing is outlined. Like the readout by the hotbar
+ * ({@link AiotHud}), it shows for {@code aiotHudSeconds} (20) seconds after you switch to an AIOT or press its 3x3,
+ * tunnel or vein key, and while the vein key is held.
  * <p>
  * With a Construction Builder in hand, it outlines in pale blue where the builder would put blocks (or, in Exchange,
  * the blocks it would swap), by the same {@link BuilderPlan} the server builds by; {@code builderPreview} switches it off.
@@ -69,6 +71,9 @@ public final class AiotPreview {
         }
         if (!NexusConfig.get().aiotMiningPreview) return;
         if (!(tool.getItem() instanceof AiotItem)) return;
+        // Only for a while after switching to the AIOT or pressing its 3x3, tunnel or vein key (with the readout),
+        // and while the vein key is held
+        if (!AiotHud.visible() && !ToolMenuClient.VEIN_MINE.isDown()) return;
         style = STYLE;
         BlockPos pos = hit.getBlockPos();
         List<BlockPos> extra = AiotMining.extraBlocks(client.level, client.player, tool, pos,

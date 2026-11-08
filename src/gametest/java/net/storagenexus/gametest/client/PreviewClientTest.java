@@ -95,6 +95,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(30);
             check(!ctx.computeOnClient(mc -> AiotHud.visible()), "the readout hides after its time");
+            check(ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "and so does the outline");
             ctx.getInput().pressKey(ToolMenuClient.TOGGLE_AREA);
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> AiotHud.visible()), "the 3x3 key shows the readout again");
@@ -105,6 +106,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
             ctx.waitTicks(40);
             check(ctx.computeOnClient(mc -> AiotHud.visible()), "the readout stays up while the vein key is held");
+            check(!ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "the vein is outlined while the key is held");
             ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
             ctx.runOnClient(mc -> net.storagenexus.essentials.config.NexusConfig.get().aiotHudSeconds = 20);
 
