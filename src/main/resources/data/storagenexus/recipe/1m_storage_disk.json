@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:disk_casing",
+    "storagenexus:1m_storage_part"
+  ],
+  "result": {
+    "id": "storagenexus:1m_storage_disk"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "storagenexus:item/256k_fluid_disk"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:64k_storage_part",
+    "storagenexus:64k_storage_part",
+    "storagenexus:64k_storage_part",
+    "minecraft:diamond"
+  ],
+  "result": {
+    "id": "storagenexus:256k_storage_part"
+  }
+}

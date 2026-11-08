@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RCR",
+    "CLC",
+    "RCR"
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "C": "minecraft:copper_ingot",
+    "L": "minecraft:lapis_lazuli"
+  },
+  "result": {
+    "id": "storagenexus:16k_storage_part"
+  }
+}

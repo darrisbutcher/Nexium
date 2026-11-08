@@ -35,6 +35,12 @@ public final class ItemDescriptions {
             key = "tooltip.storagenexus.drawer." + drawer.slots();
         } else if (stack.getItem() instanceof AiotItem) {
             key = "tooltip.storagenexus.aiot"; // the same for every material
+        } else if (stack.getItem() instanceof net.storagenexus.disk.StorageDiskItem disk) {
+            key = disk.isFluid() ? "tooltip.storagenexus.fluid_disk" : "tooltip.storagenexus.storage_disk"; // every size
+        } else if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().endsWith("_storage_part")) {
+            key = "tooltip.storagenexus.storage_part";
+        } else if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().endsWith("_fluid_part")) {
+            key = "tooltip.storagenexus.fluid_part";
         } else if (stack.getItem() instanceof net.storagenexus.builder.BuilderItem) {
             key = "tooltip.storagenexus.builder"; // the same for every tier
         } else {

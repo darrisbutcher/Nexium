@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:1m_fluid_part",
+    "storagenexus:1m_fluid_part",
+    "storagenexus:1m_fluid_part",
+    "storagenexus:nexium_ingot"
+  ],
+  "result": {
+    "id": "storagenexus:nexium_fluid_part"
+  }
+}

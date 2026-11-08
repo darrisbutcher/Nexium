@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:disk_casing",
+    "storagenexus:nexium_storage_part"
+  ],
+  "result": {
+    "id": "storagenexus:nexium_storage_disk"
+  }
+}

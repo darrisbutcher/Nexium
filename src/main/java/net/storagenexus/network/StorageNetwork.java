@@ -41,8 +41,10 @@ public final class StorageNetwork {
     private static final int MAX_NODES = 2048;
     private static final int CACHE_TICKS = 20;
 
-    public record Source<T>(Storage<T> storage, int priority, @Nullable FilterData filter, @Nullable BlockEntity owner) {
-        boolean valid() {
+    /** One storage on the network; {@code pos} is the block it was read from (null if none). */
+    public record Source<T>(Storage<T> storage, int priority, @Nullable FilterData filter, @Nullable BlockEntity owner,
+                            @Nullable BlockPos pos) {
+        public boolean valid() {
             return owner == null || !owner.isRemoved();
         }
     }
@@ -144,9 +146,16 @@ public final class StorageNetwork {
             if (!seen.add(f.pos)) continue; // one inventory, one entry, even if two connectors touch it
             BlockEntity owner = level.getBlockEntity(f.pos);
             Storage<ItemVariant> is = ItemStorage.SIDED.find(level, f.pos, f.side);
-            if (is != null) items.add(new Source<>(is, f.priority, f.filter, owner));
+            if (is != null) items.add(new Source<>(is, f.priority, f.filter, owner, f.pos));
             Storage<FluidVariant> fs = FluidStorage.SIDED.find(level, f.pos, f.side);
-            if (fs != null) fluids.add(new Source<>(fs, f.priority, f.filter, owner));
+            if (fs != null) fluids.add(new Source<>(fs, f.priority, f.filter, owner, f.pos));
+        }
+        // Disk Drives are network blocks themselves: their disks are storage of their own
+        for (BlockPos node : visited) {
+            if (level.getBlockEntity(node) instanceof net.storagenexus.disk.DiskDriveBlockEntity drive) {
+                items.add(new Source<>(drive.itemStorage(), drive.priority(), drive.filterData(), drive, node));
+                fluids.add(new Source<>(drive.fluidStorage(), drive.priority(), drive.filterData(), drive, node));
+            }
         }
         items.sort(Comparator.comparingInt((Source<ItemVariant> s) -> s.priority).reversed());
         fluids.sort(Comparator.comparingInt((Source<FluidVariant> s) -> s.priority).reversed());
@@ -245,6 +254,11 @@ public final class StorageNetwork {
         long stored = 0, capacity = 0;
         for (Source<T> s : sources) {
             if (!s.valid()) continue;
+            if (s.storage instanceof ReportsCapacity r) {
+                stored += r.storedAmount();
+                capacity += r.totalCapacity();
+                continue;
+            }
             for (StorageView<T> view : s.storage) {
                 if (view instanceof net.storagenexus.util.PooledStorageView p && !p.isPrimaryView()) continue;
                 stored += Math.max(0, view.getAmount());
@@ -255,6 +269,36 @@ public final class StorageNetwork {
             }
         }
         return new long[]{stored, capacity};
+    }
+
+    public List<Source<ItemVariant>> itemSources() { return items; }
+
+    public List<Source<FluidVariant>> fluidSources() { return fluids; }
+
+    /** Every Disk Drive's item disks on the network, as one insert-only storage, by priority and filter. */
+    public Storage<ItemVariant> itemDiskTarget() {
+        return diskTarget(items, StorageNetwork::allowsItem);
+    }
+
+    /** Every Disk Drive's fluid disks on the network, as one insert-only storage, by priority and filter. */
+    public Storage<FluidVariant> fluidDiskTarget() {
+        return diskTarget(fluids, StorageNetwork::allowsFluid);
+    }
+
+    private static <T> Storage<T> diskTarget(List<Source<T>> sources, java.util.function.BiPredicate<Source<T>, T> allows) {
+        List<Source<T>> drives = sources.stream().filter(s -> s.storage instanceof net.storagenexus.disk.DriveStorage).toList();
+        return new net.fabricmc.fabric.api.transfer.v1.storage.base.InsertionOnlyStorage<T>() {
+            @Override
+            public long insert(T resource, long maxAmount, TransactionContext tx) {
+                long inserted = 0;
+                for (Source<T> s : drives) {
+                    if (inserted >= maxAmount) break;
+                    if (!s.valid() || !allows.test(s, resource)) continue;
+                    inserted += s.storage.insert(resource, maxAmount - inserted, tx);
+                }
+                return inserted;
+            }
+        };
     }
 
     /** How much of one fluid the network holds, in droplets. */
