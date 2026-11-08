@@ -87,6 +87,9 @@ public final class ModBlocks {
     public static final InventoryCableBlock INVENTORY_CABLE = register("inventory_cable", InventoryCableBlock::new, cable(), true);
     public static final TerminalBlock CRAFTING_TERMINAL = register("crafting_terminal", p -> new TerminalBlock(p, true), metal(), true);
 
+    /** Holds 8 storage disks on a storage network. */
+    public static final net.storagenexus.disk.DiskDriveBlock DISK_DRIVE = register("disk_drive", net.storagenexus.disk.DiskDriveBlock::new, metal(), true);
+
     public static final DimensionalAnchorBlock DIMENSIONAL_ANCHOR = register("dimensional_anchor", DimensionalAnchorBlock::new, heavy(), true);
     public static final DimensionalInputBlock DIMENSIONAL_INPUT = register("dimensional_input", DimensionalInputBlock::new, heavy(), true);
     public static final DimensionalOutputBlock DIMENSIONAL_OUTPUT = register("dimensional_output", DimensionalOutputBlock::new, heavy(), true);

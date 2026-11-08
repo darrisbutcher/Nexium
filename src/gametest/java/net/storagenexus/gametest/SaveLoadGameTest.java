@@ -215,6 +215,12 @@ public class SaveLoadGameTest {
                 part(ConnectorBlockEntity.class, "priority", be -> be.setPriority(-3)),
                 part(ConnectorBlockEntity.class, "filter", be -> be.filterContainer().setItem(0, filter.copy())))));
 
+        cases.add(new Case("Disk Drive", ModBlocks.DISK_DRIVE, List.of(
+                part(net.storagenexus.disk.DiskDriveBlockEntity.class, "priority", be -> be.setPriority(-7)),
+                part(net.storagenexus.disk.DiskDriveBlockEntity.class, "disk", be -> be.disks().setItem(3,
+                        new ItemStack(ModItems.STORAGE_DISKS.get(net.storagenexus.disk.DiskTier.K64)))),
+                part(net.storagenexus.disk.DiskDriveBlockEntity.class, "filter", be -> be.filterContainer().setItem(0, filter.copy())))));
+
         cases.add(new Case("Dimensional Anchor", ModBlocks.DIMENSIONAL_ANCHOR, List.of(
                 part(DimensionalAnchorBlockEntity.class, "active", DimensionalAnchorBlockEntity::activate))));
 

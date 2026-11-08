@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.16.0
+
+* **Digital storage**: the **Disk Drive** holds 8 storage disks on a storage network. Item disks hold 16k, 64k, 256k,
+  1M or 4M (Nexium) items of any kinds, fluid disks 64 to 16,384 buckets. Disks are a Disk Casing plus a Storage Part;
+  three parts and gold, a diamond, an emerald or a Nexium ingot make the next size. Contents are saved with the world,
+  so a disk keeps them wherever it goes. Drives start at priority 10 so new items go to disks first, take a filter,
+  and their **Move to disks** button empties the network's chests and barrels onto the disks (drawers are left alone).
+  Lights on the drive show each disk's fill.
+
 ## 1.15.0
 
 * **Construction Builder**: right-click a block to build out from it, with the block in your offhand or a copy of the one

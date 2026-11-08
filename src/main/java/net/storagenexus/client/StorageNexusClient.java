@@ -51,12 +51,14 @@ public class StorageNexusClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.DIMENSIONAL, DimensionalScreen::new);
         MenuScreens.register(ModMenus.CONDUIT_CONFIG, ConduitConfigScreen::new);
         MenuScreens.register(ModMenus.FILTER, FilterScreen::new);
+        MenuScreens.register(ModMenus.DISK_DRIVE, net.storagenexus.client.screen.DiskDriveScreen::new);
         MenuScreens.register(ModMenus.FREEZER, net.storagenexus.client.screen.FreezerScreen::new);
         FreezerTint.init();
 
         // Front displays and labels. If any of these fail to compile on a newer 26.x build,
         // the mod still works without them: delete the line and the matching renderer class.
         BlockEntityRenderers.register(ModBlockEntities.DRAWER, DrawerRenderer::new);
+        BlockEntityRenderers.register(ModBlockEntities.DISK_DRIVE, net.storagenexus.client.render.DiskDriveRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.COMPACTING_DRAWER, CompactingDrawerRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.FLUID_DRAWER, FluidDrawerRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.DIMENSIONAL_INPUT, LinkLabelRenderer::new);

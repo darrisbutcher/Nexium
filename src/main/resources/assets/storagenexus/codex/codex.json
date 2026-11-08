@@ -34,7 +34,9 @@
         "terminal",
         "bus",
         "emitter",
-        "tablet"
+        "tablet",
+        "disks",
+        "disk_crafting"
       ]
     },
     {
@@ -1494,6 +1496,76 @@
       "see": [
         "vein",
         "farms"
+      ]
+    },
+    "disks": {
+      "pages": [
+        "disks.drive",
+        "disks.disks",
+        "disks.priority",
+        "disks.move"
+      ],
+      "icon": "storagenexus:disk_drive",
+      "items": [
+        "storagenexus:disk_drive",
+        "storagenexus:disk_casing",
+        "storagenexus:16k_storage_disk",
+        "storagenexus:16k_fluid_disk",
+        "storagenexus:64k_storage_disk",
+        "storagenexus:64k_fluid_disk",
+        "storagenexus:256k_storage_disk",
+        "storagenexus:256k_fluid_disk",
+        "storagenexus:1m_storage_disk",
+        "storagenexus:1m_fluid_disk",
+        "storagenexus:nexium_storage_disk",
+        "storagenexus:nexium_fluid_disk"
+      ],
+      "aliases": [
+        "Disk Drive",
+        "disk",
+        "disks",
+        "storage disk",
+        "storage disks",
+        "Storage Disk"
+      ],
+      "see": [
+        "disk_crafting",
+        "network",
+        "terminal"
+      ]
+    },
+    "disk_crafting": {
+      "pages": [
+        "disks.crafting"
+      ],
+      "icon": "storagenexus:16k_storage_part",
+      "recipes": [
+        "disk_drive",
+        "disk_casing",
+        "part_16k",
+        "fluid_part_16k",
+        "part_64k",
+        "disk_16k"
+      ],
+      "items": [
+        "storagenexus:16k_storage_part",
+        "storagenexus:16k_fluid_part",
+        "storagenexus:64k_storage_part",
+        "storagenexus:64k_fluid_part",
+        "storagenexus:256k_storage_part",
+        "storagenexus:256k_fluid_part",
+        "storagenexus:1m_storage_part",
+        "storagenexus:1m_fluid_part",
+        "storagenexus:nexium_storage_part",
+        "storagenexus:nexium_fluid_part"
+      ],
+      "aliases": [
+        "Storage Part",
+        "storage part",
+        "Disk Casing"
+      ],
+      "see": [
+        "disks"
       ]
     }
   }

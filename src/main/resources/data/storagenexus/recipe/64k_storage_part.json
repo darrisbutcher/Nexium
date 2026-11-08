@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "storagenexus:16k_storage_part",
+    "storagenexus:16k_storage_part",
+    "storagenexus:16k_storage_part",
+    "minecraft:gold_ingot"
+  ],
+  "result": {
+    "id": "storagenexus:64k_storage_part"
+  }
+}

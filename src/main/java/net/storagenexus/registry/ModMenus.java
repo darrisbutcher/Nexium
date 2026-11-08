@@ -47,6 +47,9 @@ public final class ModMenus {
     public static final ExtendedMenuType<net.storagenexus.builder.BuilderMenu, Integer> BUILDER = register("builder",
             new ExtendedMenuType<>(net.storagenexus.builder.BuilderMenu::new, ByteBufCodecs.VAR_INT));
 
+    public static final ExtendedMenuType<net.storagenexus.disk.DiskDriveMenu, BlockPos> DISK_DRIVE = register("disk_drive",
+            new ExtendedMenuType<>(net.storagenexus.disk.DiskDriveMenu::new, BlockPos.STREAM_CODEC));
+
     public static final ExtendedMenuType<FreezerMenu, BlockPos> FREEZER = register("freezer",
             new ExtendedMenuType<>(FreezerMenu::new, BlockPos.STREAM_CODEC));
 

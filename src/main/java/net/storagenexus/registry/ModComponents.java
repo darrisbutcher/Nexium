@@ -78,6 +78,14 @@ public final class ModComponents {
     public static final DataComponentType<Integer> BUILDER_SIZE = register("builder_size",
             b -> b.persistent(Codec.intRange(1, 1024)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a storage disk: the id its contents are saved under ({@link net.storagenexus.disk.DiskData}). */
+    public static final DataComponentType<UUID> DISK_ID = register("disk_id",
+            b -> b.persistent(UUIDUtil.CODEC).networkSynchronized(UUIDUtil.STREAM_CODEC));
+
+    /** On a storage disk: how much it holds and of how many kinds, refreshed by the Disk Drive, for the tooltip and lights. */
+    public static final DataComponentType<net.storagenexus.disk.DiskUsage> DISK_USAGE = register("disk_usage",
+            b -> b.persistent(net.storagenexus.disk.DiskUsage.CODEC).networkSynchronized(net.storagenexus.disk.DiskUsage.STREAM_CODEC));
+
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
             b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));

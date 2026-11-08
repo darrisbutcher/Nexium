@@ -54,6 +54,9 @@ public final class ModBlockEntities {
     public static final BlockEntityType<ConduitBundleBlockEntity> CONDUIT_BUNDLE = register("conduit_bundle",
             new BlockEntityType<>(ConduitBundleBlockEntity::new, Set.of(ModBlocks.CONDUIT_BUNDLE)));
 
+    public static final BlockEntityType<net.storagenexus.disk.DiskDriveBlockEntity> DISK_DRIVE = register("disk_drive",
+            new BlockEntityType<>(net.storagenexus.disk.DiskDriveBlockEntity::new, Set.of(ModBlocks.DISK_DRIVE)));
+
     public static final BlockEntityType<FreezerBlockEntity> FREEZER = register("freezer",
             new BlockEntityType<>(FreezerBlockEntity::new, Set.of(ModBlocks.FREEZER)));
 

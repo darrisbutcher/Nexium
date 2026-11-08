@@ -80,6 +80,24 @@ on). What is inside stays inside.
   The terminal's search and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
 
+### Disk Drive and storage disks
+Digital storage for the network, counted like Refined Storage: a disk holds a number of items, of any kinds.
+
+* **Disk Drive** (`IGI / R R / IRI`: iron, glass, redstone): a network block that holds **8 disks**. Place it against a
+  cable, connector or terminal. Right-click it for its screen, or right-click it holding a disk to put the disk in. Each
+  bay's light is green (room), yellow (over 75% full) or red (full).
+* **Item disks**: 16k (16,000 items), 64k, 256k, 1M and Nexium (4,000,000). **Fluid disks**: 64, 256, 1,024, 4,096 and
+  16,384 buckets. What a disk holds is saved with the world under the disk's id, so it stays with the disk when it is
+  moved, dropped or put in another drive; the tooltip shows how full it is.
+* **Making disks**: a **Disk Casing** (`GRG / G G / III`, makes 2) and a **Storage Part**. A 16k part is
+  `RCR / CLC / RCR` (redstone, copper, lapis; a bucket in the middle for a fluid part). Three parts plus a gold ingot,
+  diamond, emerald or Nexium ingot make the next size. Sneak + right-click an empty disk to take it apart again.
+* **Priority**: drives start at **10**, above chests (0), so new items go to disks first. The screen has a priority
+  (shift-click for steps of 10) and a filter slot for a Basic or Advanced Filter.
+* **Move to disks** (in the drive's screen) moves everything the network's chests and barrels hold onto the disks, as
+  far as they have room. Drawers keep their items.
+* No power and no channels, like the rest of the network.
+
 ### Tablets
 Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to link it, with no range limit and in any
 dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** keeps the 3x3 chunks around it loaded;

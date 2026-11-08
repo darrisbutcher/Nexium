@@ -89,6 +89,32 @@ public final class ModItems {
         }
     }
 
+    // Digital storage: disks for the Disk Drive, made from a casing and a storage part
+    public static final Item DISK_CASING = register("disk_casing", Item::new, new Item.Properties());
+    public static final Map<net.storagenexus.disk.DiskTier, Item> STORAGE_PARTS = new EnumMap<>(net.storagenexus.disk.DiskTier.class);
+    public static final Map<net.storagenexus.disk.DiskTier, Item> FLUID_PARTS = new EnumMap<>(net.storagenexus.disk.DiskTier.class);
+    public static final Map<net.storagenexus.disk.DiskTier, net.storagenexus.disk.StorageDiskItem> STORAGE_DISKS =
+            new EnumMap<>(net.storagenexus.disk.DiskTier.class);
+    public static final Map<net.storagenexus.disk.DiskTier, net.storagenexus.disk.StorageDiskItem> FLUID_DISKS =
+            new EnumMap<>(net.storagenexus.disk.DiskTier.class);
+
+    static {
+        for (var tier : net.storagenexus.disk.DiskTier.values()) {
+            Item.Properties props = tier == net.storagenexus.disk.DiskTier.NEXIUM ? new Item.Properties().fireResistant() : new Item.Properties();
+            STORAGE_PARTS.put(tier, register(tier.id() + "_storage_part", Item::new, props));
+            FLUID_PARTS.put(tier, register(tier.id() + "_fluid_part", Item::new,
+                    tier == net.storagenexus.disk.DiskTier.NEXIUM ? new Item.Properties().fireResistant() : new Item.Properties()));
+        }
+        for (var tier : net.storagenexus.disk.DiskTier.values()) {
+            STORAGE_DISKS.put(tier, register(tier.id() + "_storage_disk", p -> new net.storagenexus.disk.StorageDiskItem(p, tier, false),
+                    tier == net.storagenexus.disk.DiskTier.NEXIUM ? new Item.Properties().stacksTo(1).fireResistant() : new Item.Properties().stacksTo(1)));
+        }
+        for (var tier : net.storagenexus.disk.DiskTier.values()) {
+            FLUID_DISKS.put(tier, register(tier.id() + "_fluid_disk", p -> new net.storagenexus.disk.StorageDiskItem(p, tier, true),
+                    tier == net.storagenexus.disk.DiskTier.NEXIUM ? new Item.Properties().stacksTo(1).fireResistant() : new Item.Properties().stacksTo(1)));
+        }
+    }
+
     /** Construction Builders, one per tier: {@code storagenexus:<tier>_builder}. */
     public static final Map<net.storagenexus.builder.BuilderTier, net.storagenexus.builder.BuilderItem> BUILDERS =
             new EnumMap<>(net.storagenexus.builder.BuilderTier.class);
