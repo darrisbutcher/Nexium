@@ -33,6 +33,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> FARM_PROGRESS = register("farm_progress",
             b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** Which mode a Gourd and Cactus Farm or a Generator was on, kept in the dropped item. */
+    public static final DataComponentType<Integer> FARM_MODE = register("farm_mode",
+            b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexusEssentials.id(name),
                 op.apply(DataComponentType.builder()).build());

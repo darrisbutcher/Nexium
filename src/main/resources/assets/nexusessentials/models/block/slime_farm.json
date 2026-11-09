@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexusessentials:block/slime_farm_top",
+    "bottom": "nexusessentials:block/slime_farm_bottom",
+    "side": "nexusessentials:block/slime_farm_side"
+  }
+}

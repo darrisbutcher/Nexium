@@ -132,6 +132,156 @@ public class FarmGameTest {
         h.succeed();
     }
 
+    private static java.util.Set<net.minecraft.world.item.Item> items(FarmBlockEntity farm) {
+        java.util.Set<net.minecraft.world.item.Item> out = new java.util.HashSet<>();
+        for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) if (!farm.getItem(i).isEmpty()) out.add(farm.getItem(i).getItem());
+        return out;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 60)
+    public void mobFarmsMakeTheirMobsLootAsIfAPlayerKilledThem(GameTestHelper h) {
+        // Zombie, skeleton, spider, creeper and the raiders
+        FarmBlockEntity monster = farm(h, FarmKind.MONSTER);
+        cycles(h, monster, 30);
+        java.util.Set<net.minecraft.world.item.Item> got = items(monster);
+        h.assertTrue(got.contains(Items.ROTTEN_FLESH) && got.contains(Items.BONE) && got.contains(Items.STRING) && got.contains(Items.GUNPOWDER),
+                "a monster mix of flesh, bones, string and gunpowder, got " + got);
+        h.assertTrue(got.contains(Items.SPIDER_EYE) || got.contains(Items.EMERALD) || got.contains(Items.IRON_INGOT) || got.contains(Items.OMINOUS_BOTTLE),
+                "player-kill drops among them, got " + got);
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity nether = farm(h, FarmKind.NETHER_MOB);
+        cycles(h, nether, 40);
+        got = items(nether);
+        h.assertTrue(got.contains(Items.BLAZE_ROD) && got.contains(Items.GHAST_TEAR) && got.contains(Items.MAGMA_CREAM),
+                "blaze rods (a player kill), ghast tears and magma cream, got " + got);
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity ocean = farm(h, FarmKind.OCEAN);
+        cycles(h, ocean, 40);
+        got = items(ocean);
+        h.assertTrue(got.contains(Items.PRISMARINE_SHARD) && got.contains(Items.COD) && got.contains(Items.ROTTEN_FLESH), "prismarine, fish and flesh, got " + got);
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity slime = farm(h, FarmKind.SLIME);
+        cycles(h, slime, 20);
+        h.assertTrue(count(slime, Items.SLIME_BALL) > 5, "slime balls: " + count(slime, Items.SLIME_BALL));
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void livestockMakesWhatItsFeedPicks(GameTestHelper h) {
+        FarmBlockEntity farm = farm(h, FarmKind.LIVESTOCK);
+        h.assertTrue(farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT)), "wheat is feed");
+        h.assertTrue(farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.PUMPKIN_SEEDS)), "so are seeds");
+        h.assertTrue(!farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.DIAMOND)), "a diamond is not");
+        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT, 20));
+        cycles(h, farm, 20);
+        h.assertValueEqual(farm.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 0, "one wheat a cycle");
+        h.assertTrue(count(farm, Items.BEEF) > 0 && count(farm, Items.LEATHER) > 0 && count(farm, Items.MUTTON) > 0, "cow and sheep drops from wheat");
+        h.assertTrue(count(farm, Items.PORKCHOP) == 0 && count(farm, Items.CHICKEN) == 0, "and no pig or chicken");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        farm = farm(h, FarmKind.LIVESTOCK);
+        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT_SEEDS, 20));
+        cycles(h, farm, 20);
+        h.assertTrue(count(farm, Items.CHICKEN) > 0 && count(farm, Items.FEATHER) > 0, "chicken drops from seeds");
+        h.assertValueEqual(count(farm, Items.EGG), 20, "and an egg a cycle");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        farm = farm(h, FarmKind.LIVESTOCK);
+        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.CARROT, 30));
+        cycles(h, farm, 30);
+        h.assertTrue(count(farm, Items.PORKCHOP) > 0 && count(farm, Items.RABBIT) > 0, "pig and rabbit drops from carrots");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void cropGourdGeneratorAndMossMakeWhatTheyShould(GameTestHelper h) {
+        FarmBlockEntity crop = farm(h, FarmKind.CROP);
+        cycles(h, crop, 4);
+        h.assertValueEqual(count(crop, Items.WHEAT), 12, "3 wheat a cycle");
+        h.assertValueEqual(count(crop, Items.CARROT), 12, "3 carrots");
+        h.assertValueEqual(count(crop, Items.POTATO), 12, "3 potatoes");
+        h.assertValueEqual(count(crop, Items.BEETROOT), 12, "3 beetroot");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity gourd = farm(h, FarmKind.GOURD);
+        h.assertValueEqual(FarmKind.GOURD.modes().size(), 4, "melon, pumpkin, cactus and kelp");
+        cycles(h, gourd, 1);
+        h.assertValueEqual(count(gourd, Items.MELON_SLICE), 12, "melon mode: 12 slices");
+        gourd.cycleMode();
+        cycles(h, gourd, 1);
+        h.assertValueEqual(count(gourd, Items.PUMPKIN), 3, "pumpkin mode: 3");
+        gourd.cycleMode(); gourd.cycleMode();
+        cycles(h, gourd, 1);
+        h.assertValueEqual(count(gourd, Items.KELP), 6, "kelp mode: 6");
+        gourd.cycleMode();
+        h.assertValueEqual(gourd.mode(), 0, "the modes go round");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity gen = farm(h, FarmKind.GENERATOR);
+        cycles(h, gen, 1);
+        h.assertValueEqual(count(gen, Items.COBBLESTONE), 8, "cobblestone: 8");
+        gen.setMode(FarmKind.GENERATOR.modes().indexOf("obsidian"));
+        h.assertValueEqual(gen.cycleTicks(), 2 * FarmKind.GENERATOR.cycleTicks(), "obsidian takes twice as long");
+        cycles(h, gen, 1);
+        h.assertValueEqual(count(gen, Items.OBSIDIAN), 1, "and gives 1");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity moss = farm(h, FarmKind.MOSS);
+        cycles(h, moss, 10);
+        h.assertValueEqual(count(moss, Items.MOSS_BLOCK), 30, "3 moss blocks a cycle");
+        h.assertValueEqual(count(moss, Items.MOSS_CARPET), 20, "2 carpets");
+        h.assertTrue(count(moss, Items.AZALEA) + count(moss, Items.FLOWERING_AZALEA) <= 10, "the odd azalea");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void boneMealIsNeededByMossAndSpeedsUpCrops(GameTestHelper h) {
+        FarmBlockEntity moss = farm(h, FarmKind.MOSS);
+        tick(h, moss, 1);
+        h.assertTrue(moss.isStarved(), "the Moss Farm waits for bone meal");
+        moss.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BONE_MEAL, 2));
+        tick(h, moss, 1);
+        h.assertTrue(!moss.isStarved(), "and runs with it");
+        h.assertValueEqual(moss.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 1, "one bone meal used");
+        h.assertValueEqual(moss.boostLeft(), 3, "for 3 cycles");
+        tick(h, moss, 3 * FarmKind.MOSS.cycleTicks());
+        h.assertValueEqual(count(moss, Items.MOSS_BLOCK), 9, "3 cycles of moss on one bone meal");
+        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+        FarmBlockEntity crop = farm(h, FarmKind.CROP);
+        tick(h, crop, 1);
+        h.assertTrue(!crop.isStarved(), "the Crop Farm needs no bone meal");
+        tick(h, crop, FarmKind.CROP.cycleTicks() - 1);
+        h.assertValueEqual(count(crop, Items.WHEAT), 3, "one cycle at the normal speed");
+        crop.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BONE_MEAL, 1));
+        tick(h, crop, FarmKind.CROP.cycleTicks() / 2);
+        h.assertValueEqual(count(crop, Items.WHEAT), 6, "a cycle in half the time with bone meal");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void beeFarmMakesCombAndHoneyInATank(GameTestHelper h) {
+        FarmBlockEntity bees = farm(h, FarmKind.BEE);
+        cycles(h, bees, 10);
+        h.assertTrue(count(bees, Items.HONEYCOMB) >= 10 && count(bees, Items.HONEYCOMB) <= 30, "1 to 3 honeycomb a cycle: " + count(bees, Items.HONEYCOMB));
+        h.assertValueEqual(bees.honey().stored(), 20 * net.storagenexus.essentials.farm.HoneyTank.BOTTLE, "2 bottles of honey a cycle in the tank");
+        // Pipes can take it out and not put it in
+        var outside = bees.honey().outside();
+        h.assertTrue(!outside.supportsInsertion(), "nothing goes in from outside");
+        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+            long out = outside.extract(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.storagenexus.essentials.registry.ModFluids.HONEY),
+                    net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, tx);
+            h.assertValueEqual(out, net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, "a bucket of honey through a pipe");
+            tx.commit();
+        }
+        // A glass bottle takes a bottle of honey
+        h.assertTrue(bees.honey().takeBottle(), "a bottle of honey");
+        h.assertValueEqual(bees.honey().stored(), 20 * net.storagenexus.essentials.farm.HoneyTank.BOTTLE - net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET
+                - net.storagenexus.essentials.farm.HoneyTank.BOTTLE, "taken from the tank");
+        // And it survives a save
+        var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess());
+        bees.saveWithFullMetadata(out);
+        FarmBlockEntity loaded = new FarmBlockEntity(bees.getBlockPos(), bees.getBlockState());
+        loaded.setLevel(h.getLevel());
+        loaded.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess(), out.buildResult()));
+        h.assertValueEqual(loaded.honey().stored(), bees.honey().stored(), "the honey is saved with the farm");
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
     public void theNewFarmsAndTheBreederRunOnTheirTimes(GameTestHelper h) {
         // The defaults (the test world's saved config has already been moved on from the old 24000, too)

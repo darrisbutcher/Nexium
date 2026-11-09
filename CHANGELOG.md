@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.19.0
+
+* **Ten more one-block farms** at the Farm Assembler, 768 of a filler block each: **Monster** (zombie, skeleton, spider,
+  creeper and raider loot, mixed), **Nether Mob** (blaze, ghast, magma cube), **Ocean** (guardian, drowned, cod),
+  **Slime**, **Livestock** (the feed picks the animals), **Crop** (bone meal speeds it up), **Gourd and Cactus** and
+  **Generator** (a mode button picks what they make), **Bee** (honeycomb, and honey in an internal tank) and **Moss**
+  (needs bone meal). Mob farms roll the real loot tables as if a player killed the mob, with no Looting.
+* **Honey**: a new fluid that only lives in tanks and pipes. The Bee Farm's 16-bucket tank gives honey bottles to a glass
+  bottle (right-click) or honey to pipes, and takes nothing in.
+* Farm settings: `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`,
+  `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks`.
+
 ## 1.18.1
 
 * **The recipe book's search follows the terminal's**: in a Crafting Terminal, typing in the recipe book's search box

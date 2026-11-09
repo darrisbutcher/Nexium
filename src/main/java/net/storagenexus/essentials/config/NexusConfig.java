@@ -105,6 +105,26 @@ public final class NexusConfig {
     public int bambooFarmTicks = 400;
     /** Ticks between harvests: 4 nether wart. */
     public int netherWartFarmTicks = 600;
+    /** Ticks between kills: the loot of a zombie, skeleton, spider, creeper, pillager, vindicator and evoker, as if a player killed them. */
+    public int monsterFarmTicks = 200;
+    /** Ticks between kills: a blaze, a ghast and a magma cube. */
+    public int netherMobFarmTicks = 200;
+    /** Ticks between kills: a guardian, a drowned and a cod. */
+    public int oceanFarmTicks = 200;
+    /** Ticks between kills: a small slime. */
+    public int slimeFarmTicks = 200;
+    /** Ticks per cycle: the drops of the animals its feed brings (1 feed item a cycle). */
+    public int livestockFarmTicks = 400;
+    /** Ticks per cycle: all four crops. Bone meal halves it. */
+    public int cropFarmTicks = 400;
+    /** Ticks per cycle: melons, pumpkins, cactus or kelp. */
+    public int gourdFarmTicks = 400;
+    /** Ticks per cycle of the Generator (obsidian takes twice as long). */
+    public int generatorFarmTicks = 200;
+    /** Ticks per cycle: honeycomb, and honey into its tank. */
+    public int beeFarmTicks = 400;
+    /** Ticks per cycle: moss blocks, carpet and a little azalea (a bone meal lasts 3 cycles). */
+    public int mossFarmTicks = 400;
 
     // --- Freezer
     /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
@@ -191,6 +211,16 @@ public final class NexusConfig {
         sugarCaneFarmTicks = Math.max(1, Math.min(1_000_000, sugarCaneFarmTicks));
         bambooFarmTicks = Math.max(1, Math.min(1_000_000, bambooFarmTicks));
         netherWartFarmTicks = Math.max(1, Math.min(1_000_000, netherWartFarmTicks));
+        monsterFarmTicks = Math.max(1, Math.min(1_000_000, monsterFarmTicks));
+        netherMobFarmTicks = Math.max(1, Math.min(1_000_000, netherMobFarmTicks));
+        oceanFarmTicks = Math.max(1, Math.min(1_000_000, oceanFarmTicks));
+        slimeFarmTicks = Math.max(1, Math.min(1_000_000, slimeFarmTicks));
+        livestockFarmTicks = Math.max(1, Math.min(1_000_000, livestockFarmTicks));
+        cropFarmTicks = Math.max(1, Math.min(1_000_000, cropFarmTicks));
+        gourdFarmTicks = Math.max(1, Math.min(1_000_000, gourdFarmTicks));
+        generatorFarmTicks = Math.max(1, Math.min(1_000_000, generatorFarmTicks));
+        beeFarmTicks = Math.max(1, Math.min(1_000_000, beeFarmTicks));
+        mossFarmTicks = Math.max(1, Math.min(1_000_000, mossFarmTicks));
         shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
         freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
         freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));

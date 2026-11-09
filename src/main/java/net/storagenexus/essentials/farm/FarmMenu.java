@@ -24,12 +24,13 @@ public class FarmMenu extends AbstractContainerMenu {
     public static final int INVENTORY_TOP = 112;
 
     private static final int FIRST_PLAYER_SLOT = FarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_COUNT = 4;
+    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_HONEY = 5, D_COUNT = 6;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4;
 
     private final Container container;
     private final ContainerData data;
     private final FarmKind kind;
+    private final @Nullable FarmBlockEntity farm;
 
     /** Client side. */
     public FarmMenu(int id, Inventory inventory, BlockPos pos) {
@@ -46,6 +47,7 @@ public class FarmMenu extends AbstractContainerMenu {
         super(ModMenus.FARM, id);
         this.container = container;
         this.kind = kind;
+        this.farm = farm;
         container.startOpen(inventory.player);
         for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) {
             addSlot(new Slot(container, i, 8 + (i % 9) * 18, OUTPUT_TOP + (i / 9) * 18) {
@@ -79,8 +81,10 @@ public class FarmMenu extends AbstractContainerMenu {
                 return switch (index) {
                     case D_PROGRESS -> Math.round(farm.progressFraction() * 1000);
                     case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0) | (farm.isStarved() ? FLAG_STARVED : 0);
-                    case D_CYCLE -> kind.cycleTicks() & 0x7FFF;
-                    case D_CYCLE + 1 -> kind.cycleTicks() >> 15;
+                    case D_CYCLE -> farm.cycleTicks() & 0x7FFF;
+                    case D_CYCLE + 1 -> farm.cycleTicks() >> 15;
+                    case D_MODE -> farm.mode();
+                    case D_HONEY -> (int) (farm.honey().stored() / HoneyTank.BOTTLE);
                     default -> 0;
                 };
             }
@@ -105,6 +109,22 @@ public class FarmMenu extends AbstractContainerMenu {
     public boolean starved() { return (data.get(D_FLAGS) & FLAG_STARVED) != 0; }
     /** The server's cycle length in ticks, which can differ from this client's config. */
     public int cycleTicks() { return Math.max(1, data.get(D_CYCLE) | data.get(D_CYCLE + 1) << 15); }
+
+    /** The farm's mode, as an index into its kind's modes. */
+    public int mode() { return data.get(D_MODE); }
+
+    /** The Bee Farm's honey in bottles (a quarter bucket each). */
+    public int honeyBottles() { return data.get(D_HONEY); }
+
+    /** Button 0 steps the mode of the farms that have modes. */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == 0 && farm != null && !kind.modes().isEmpty()) {
+            farm.cycleMode();
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean stillValid(Player player) {

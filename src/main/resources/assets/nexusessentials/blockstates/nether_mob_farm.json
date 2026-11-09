@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/nether_mob_farm"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/nether_mob_farm"
+    }
+  }
+}

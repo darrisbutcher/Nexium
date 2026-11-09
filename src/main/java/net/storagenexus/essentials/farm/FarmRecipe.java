@@ -51,6 +51,9 @@ public final class FarmRecipe {
         return new Part(key, stacks * 64, matches, icon, false);
     }
 
+    private static final net.minecraft.tags.TagKey<Item> SMALL_FLOWERS = net.minecraft.tags.TagKey.create(
+            net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.Identifier.withDefaultNamespace("small_flowers"));
+
     private static final Map<FarmKind, FarmRecipe> RECIPES = new EnumMap<>(FarmKind.class);
 
     static {
@@ -111,6 +114,79 @@ public final class FarmRecipe {
                 item("soul_sand", 16, Items.SOUL_SAND),
                 item("lava_buckets", 4, Items.LAVA_BUCKET),
                 item("magma_blocks", 8, Items.MAGMA_BLOCK)));
+        // The next ten ask 12 stacks of filler too
+        RECIPES.put(FarmKind.MONSTER, new FarmRecipe(FarmKind.MONSTER,
+                filler("cobblestone", 12, s -> s.is(Items.COBBLESTONE), Items.COBBLESTONE),
+                mob("zombies", 1, EntityTypes.ZOMBIE, Items.ZOMBIE_SPAWN_EGG),
+                mob("pillagers", 1, EntityTypes.PILLAGER, Items.PILLAGER_SPAWN_EGG),
+                item("hoppers", 8, Items.HOPPER),
+                item("iron_bars", 16, Items.IRON_BARS),
+                item("pistons", 8, Items.PISTON),
+                item("emerald_blocks", 4, Items.EMERALD_BLOCK)));
+        RECIPES.put(FarmKind.NETHER_MOB, new FarmRecipe(FarmKind.NETHER_MOB,
+                filler("netherrack", 12, s -> s.is(Items.NETHERRACK), Items.NETHERRACK),
+                mob("blazes", 1, EntityTypes.BLAZE, Items.BLAZE_SPAWN_EGG),
+                mob("ghasts", 1, EntityTypes.GHAST, Items.GHAST_SPAWN_EGG),
+                mob("magma_cubes", 1, EntityTypes.MAGMA_CUBE, Items.MAGMA_CUBE_SPAWN_EGG),
+                item("nether_bricks", 16, Items.NETHER_BRICKS),
+                item("lava_buckets", 4, Items.LAVA_BUCKET),
+                item("magma_blocks", 8, Items.MAGMA_BLOCK)));
+        RECIPES.put(FarmKind.OCEAN, new FarmRecipe(FarmKind.OCEAN,
+                filler("sand", 12, s -> s.is(Items.SAND), Items.SAND),
+                mob("guardians", 1, EntityTypes.GUARDIAN, Items.GUARDIAN_SPAWN_EGG),
+                mob("drowned", 1, EntityTypes.DROWNED, Items.DROWNED_SPAWN_EGG),
+                mob("cods", 1, EntityTypes.COD, Items.COD_SPAWN_EGG),
+                item("prismarine_bricks", 16, Items.PRISMARINE_BRICKS),
+                item("sea_lanterns", 8, Items.SEA_LANTERN),
+                item("water_buckets", 4, Items.WATER_BUCKET)));
+        RECIPES.put(FarmKind.SLIME, new FarmRecipe(FarmKind.SLIME,
+                filler("mud", 12, s -> s.is(Items.MUD), Items.MUD),
+                mob("slimes", 2, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG),
+                item("slime_blocks", 4, Items.SLIME_BLOCK),
+                item("sticky_pistons", 8, Items.STICKY_PISTON),
+                item("hoppers", 8, Items.HOPPER)));
+        RECIPES.put(FarmKind.LIVESTOCK, new FarmRecipe(FarmKind.LIVESTOCK,
+                filler("dirt", 12, s -> s.is(Items.DIRT), Items.DIRT),
+                mob("cows", 1, EntityTypes.COW, Items.COW_SPAWN_EGG),
+                mob("pigs", 1, EntityTypes.PIG, Items.PIG_SPAWN_EGG),
+                mob("sheep", 1, EntityTypes.SHEEP, Items.SHEEP_SPAWN_EGG),
+                mob("chickens", 1, EntityTypes.CHICKEN, Items.CHICKEN_SPAWN_EGG),
+                mob("rabbits", 1, EntityTypes.RABBIT, Items.RABBIT_SPAWN_EGG),
+                item("hay_bales", 16, Items.HAY_BLOCK),
+                item("oak_fences", 16, Items.OAK_FENCE)));
+        RECIPES.put(FarmKind.CROP, new FarmRecipe(FarmKind.CROP,
+                filler("dirt", 12, s -> s.is(Items.DIRT), Items.DIRT),
+                item("wheat", 32, Items.WHEAT),
+                item("carrots", 32, Items.CARROT),
+                item("potatoes", 32, Items.POTATO),
+                item("beetroots", 32, Items.BEETROOT),
+                item("water_buckets", 4, Items.WATER_BUCKET)));
+        RECIPES.put(FarmKind.GOURD, new FarmRecipe(FarmKind.GOURD,
+                filler("sand", 12, s -> s.is(Items.SAND), Items.SAND),
+                item("melons", 16, Items.MELON),
+                item("pumpkins", 16, Items.PUMPKIN),
+                item("cactus", 16, Items.CACTUS),
+                item("kelp", 16, Items.KELP),
+                item("water_buckets", 4, Items.WATER_BUCKET)));
+        RECIPES.put(FarmKind.GENERATOR, new FarmRecipe(FarmKind.GENERATOR,
+                filler("cobblestone", 12, s -> s.is(Items.COBBLESTONE), Items.COBBLESTONE),
+                item("lava_buckets", 4, Items.LAVA_BUCKET),
+                item("water_buckets", 4, Items.WATER_BUCKET),
+                item("hoppers", 8, Items.HOPPER),
+                item("diamond_pickaxes", 2, Items.DIAMOND_PICKAXE)));
+        RECIPES.put(FarmKind.BEE, new FarmRecipe(FarmKind.BEE,
+                filler("oak_planks", 12, s -> s.is(Items.OAK_PLANKS), Items.OAK_PLANKS),
+                mob("bees", 2, EntityTypes.BEE, Items.BEE_SPAWN_EGG),
+                item("beehives", 4, Items.BEEHIVE),
+                item("campfires", 4, Items.CAMPFIRE),
+                new Part("flowers", 16, s -> s.is(SMALL_FLOWERS), Items.POPPY, false),
+                item("glass_bottles", 8, Items.GLASS_BOTTLE)));
+        RECIPES.put(FarmKind.MOSS, new FarmRecipe(FarmKind.MOSS,
+                filler("clay", 12, s -> s.is(Items.CLAY), Items.CLAY),
+                item("moss_blocks", 32, Items.MOSS_BLOCK),
+                item("azaleas", 8, Items.AZALEA),
+                item("water_buckets", 4, Items.WATER_BUCKET),
+                item("bone_blocks", 8, Items.BONE_BLOCK)));
     }
 
     public static FarmRecipe of(FarmKind kind) {

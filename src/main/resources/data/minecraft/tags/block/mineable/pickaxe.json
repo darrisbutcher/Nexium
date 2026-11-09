@@ -35,6 +35,16 @@
     "nexusessentials:sugar_cane_farm",
     "nexusessentials:bamboo_farm",
     "nexusessentials:nether_wart_farm",
+    "nexusessentials:monster_farm",
+    "nexusessentials:nether_mob_farm",
+    "nexusessentials:ocean_farm",
+    "nexusessentials:slime_farm",
+    "nexusessentials:livestock_farm",
+    "nexusessentials:crop_farm",
+    "nexusessentials:gourd_farm",
+    "nexusessentials:generator_farm",
+    "nexusessentials:bee_farm",
+    "nexusessentials:moss_farm",
     "storagenexus:freezer",
     "storagenexus:disk_drive"
   ]

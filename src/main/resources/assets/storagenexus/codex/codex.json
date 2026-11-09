@@ -111,6 +111,16 @@
         "canefarm",
         "bamboofarm",
         "wartfarm",
+        "monsterfarm",
+        "nethermobfarm",
+        "oceanfarm",
+        "slimefarm",
+        "livestockfarm",
+        "cropfarm",
+        "gourdfarm",
+        "generatorfarm",
+        "beefarm",
+        "mossfarm",
         "freezer",
         "harvest"
       ]
@@ -1211,6 +1221,16 @@
         "canefarm",
         "bamboofarm",
         "wartfarm",
+        "monsterfarm",
+        "nethermobfarm",
+        "oceanfarm",
+        "slimefarm",
+        "livestockfarm",
+        "cropfarm",
+        "gourdfarm",
+        "generatorfarm",
+        "beefarm",
+        "mossfarm",
         "iron_farm"
       ]
     },
@@ -1634,6 +1654,166 @@
       ],
       "aliases": [
         "Nether Wart Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "monsterfarm": {
+      "pages": [
+        "mobs.monsterfarm"
+      ],
+      "icon": "nexusessentials:monster_farm",
+      "items": [
+        "nexusessentials:monster_farm"
+      ],
+      "aliases": [
+        "Monster Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "nethermobfarm": {
+      "pages": [
+        "mobs.nethermobfarm"
+      ],
+      "icon": "nexusessentials:nether_mob_farm",
+      "items": [
+        "nexusessentials:nether_mob_farm"
+      ],
+      "aliases": [
+        "Nether Mob Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "oceanfarm": {
+      "pages": [
+        "mobs.oceanfarm"
+      ],
+      "icon": "nexusessentials:ocean_farm",
+      "items": [
+        "nexusessentials:ocean_farm"
+      ],
+      "aliases": [
+        "Ocean Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "slimefarm": {
+      "pages": [
+        "mobs.slimefarm"
+      ],
+      "icon": "nexusessentials:slime_farm",
+      "items": [
+        "nexusessentials:slime_farm"
+      ],
+      "aliases": [
+        "Slime Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "livestockfarm": {
+      "pages": [
+        "mobs.livestockfarm"
+      ],
+      "icon": "nexusessentials:livestock_farm",
+      "items": [
+        "nexusessentials:livestock_farm"
+      ],
+      "aliases": [
+        "Livestock Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "cropfarm": {
+      "pages": [
+        "mobs.cropfarm"
+      ],
+      "icon": "nexusessentials:crop_farm",
+      "items": [
+        "nexusessentials:crop_farm"
+      ],
+      "aliases": [
+        "Crop Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "gourdfarm": {
+      "pages": [
+        "mobs.gourdfarm"
+      ],
+      "icon": "nexusessentials:gourd_farm",
+      "items": [
+        "nexusessentials:gourd_farm"
+      ],
+      "aliases": [
+        "Gourd and Cactus Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "generatorfarm": {
+      "pages": [
+        "mobs.generatorfarm"
+      ],
+      "icon": "nexusessentials:generator_farm",
+      "items": [
+        "nexusessentials:generator_farm"
+      ],
+      "aliases": [
+        "Generator"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "beefarm": {
+      "pages": [
+        "mobs.beefarm"
+      ],
+      "icon": "nexusessentials:bee_farm",
+      "items": [
+        "nexusessentials:bee_farm"
+      ],
+      "aliases": [
+        "Bee Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "mossfarm": {
+      "pages": [
+        "mobs.mossfarm"
+      ],
+      "icon": "nexusessentials:moss_farm",
+      "items": [
+        "nexusessentials:moss_farm"
+      ],
+      "aliases": [
+        "Moss Farm"
       ],
       "see": [
         "farms",

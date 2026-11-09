@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexusessentials:block/monster_farm"
+    },
+    "powered=true": {
+      "model": "nexusessentials:block/monster_farm"
+    }
+  }
+}

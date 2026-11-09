@@ -160,6 +160,88 @@ public class AssemblerGameTest {
                 add(list, Items.MAGMA_BLOCK, 8);
                 add(list, Items.NETHERRACK, 768);
             }
+            case MONSTER -> {
+                mobs(list, capturedMobs, 1, EntityTypes.ZOMBIE, Items.ZOMBIE_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.PILLAGER, Items.PILLAGER_SPAWN_EGG);
+                add(list, Items.HOPPER, 8);
+                add(list, Items.IRON_BARS, 16);
+                add(list, Items.PISTON, 8);
+                add(list, Items.EMERALD_BLOCK, 4);
+                add(list, Items.COBBLESTONE, 768);
+            }
+            case NETHER_MOB -> {
+                mobs(list, capturedMobs, 1, EntityTypes.BLAZE, Items.BLAZE_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.GHAST, Items.GHAST_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.MAGMA_CUBE, Items.MAGMA_CUBE_SPAWN_EGG);
+                add(list, Items.NETHER_BRICKS, 16);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
+                add(list, Items.MAGMA_BLOCK, 8);
+                add(list, Items.NETHERRACK, 768);
+            }
+            case OCEAN -> {
+                mobs(list, capturedMobs, 1, EntityTypes.GUARDIAN, Items.GUARDIAN_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.DROWNED, Items.DROWNED_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.COD, Items.COD_SPAWN_EGG);
+                add(list, Items.PRISMARINE_BRICKS, 16);
+                add(list, Items.SEA_LANTERN, 8);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.SAND, 768);
+            }
+            case SLIME -> {
+                mobs(list, capturedMobs, 2, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG);
+                add(list, Items.SLIME_BLOCK, 4);
+                add(list, Items.STICKY_PISTON, 8);
+                add(list, Items.HOPPER, 8);
+                add(list, Items.MUD, 768);
+            }
+            case LIVESTOCK -> {
+                mobs(list, capturedMobs, 1, EntityTypes.COW, Items.COW_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.PIG, Items.PIG_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.SHEEP, Items.SHEEP_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.CHICKEN, Items.CHICKEN_SPAWN_EGG);
+                mobs(list, capturedMobs, 1, EntityTypes.RABBIT, Items.RABBIT_SPAWN_EGG);
+                add(list, Items.HAY_BLOCK, 16);
+                add(list, Items.OAK_FENCE, 16);
+                add(list, Items.DIRT, 768);
+            }
+            case CROP -> {
+                add(list, Items.WHEAT, 32);
+                add(list, Items.CARROT, 32);
+                add(list, Items.POTATO, 32);
+                add(list, Items.BEETROOT, 32);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.DIRT, 768);
+            }
+            case GOURD -> {
+                add(list, Items.MELON, 16);
+                add(list, Items.PUMPKIN, 16);
+                add(list, Items.CACTUS, 16);
+                add(list, Items.KELP, 16);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.SAND, 768);
+            }
+            case GENERATOR -> {
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.HOPPER, 8);
+                for (int i = 0; i < 2; i++) list.add(new ItemStack(Items.DIAMOND_PICKAXE));
+                add(list, Items.COBBLESTONE, 768);
+            }
+            case BEE -> {
+                mobs(list, capturedMobs, 2, EntityTypes.BEE, Items.BEE_SPAWN_EGG);
+                add(list, Items.BEEHIVE, 4);
+                add(list, Items.CAMPFIRE, 4);
+                add(list, Items.POPPY, 16);
+                add(list, Items.GLASS_BOTTLE, 8);
+                add(list, Items.OAK_PLANKS, 768);
+            }
+            case MOSS -> {
+                add(list, Items.MOSS_BLOCK, 32);
+                add(list, Items.AZALEA, 8);
+                for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
+                add(list, Items.BONE_BLOCK, 8);
+                add(list, Items.CLAY, 768);
+            }
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
         }
         return list;
@@ -204,10 +286,13 @@ public class AssemblerGameTest {
     public void theFarmsCostWhatTheirDoubleChestsDid(GameTestHelper h) {
         // The filler: 54 slots of full stacks, less one slot per Captured Mob or bed and a stack's worth of each other part
         // (The four newer farms ask a quarter of that: 12 stacks.)
-        Map<AssemblyTarget, Integer> filler = Map.of(AssemblyTarget.IRON_FARM, 1408, AssemblyTarget.VILLAGER_BREEDER, 2880,
-                AssemblyTarget.PIGLIN_BARTER, 3136, AssemblyTarget.ZOMBIFIED_PIGLIN, 3008, AssemblyTarget.WITHER_SKELETON, 2944,
-                AssemblyTarget.SHULKER, 3008, AssemblyTarget.WITCH, 768, AssemblyTarget.SUGAR_CANE, 768,
-                AssemblyTarget.BAMBOO, 768, AssemblyTarget.NETHER_WART, 768);
+        Map<AssemblyTarget, Integer> filler = Map.ofEntries(Map.entry(AssemblyTarget.IRON_FARM, 1408), Map.entry(AssemblyTarget.VILLAGER_BREEDER, 2880),
+                Map.entry(AssemblyTarget.PIGLIN_BARTER, 3136), Map.entry(AssemblyTarget.ZOMBIFIED_PIGLIN, 3008), Map.entry(AssemblyTarget.WITHER_SKELETON, 2944),
+                Map.entry(AssemblyTarget.SHULKER, 3008), Map.entry(AssemblyTarget.WITCH, 768), Map.entry(AssemblyTarget.SUGAR_CANE, 768),
+                Map.entry(AssemblyTarget.BAMBOO, 768), Map.entry(AssemblyTarget.NETHER_WART, 768), Map.entry(AssemblyTarget.MONSTER, 768),
+                Map.entry(AssemblyTarget.NETHER_MOB, 768), Map.entry(AssemblyTarget.OCEAN, 768), Map.entry(AssemblyTarget.SLIME, 768),
+                Map.entry(AssemblyTarget.LIVESTOCK, 768), Map.entry(AssemblyTarget.CROP, 768), Map.entry(AssemblyTarget.GOURD, 768),
+                Map.entry(AssemblyTarget.GENERATOR, 768), Map.entry(AssemblyTarget.BEE, 768), Map.entry(AssemblyTarget.MOSS, 768));
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");
