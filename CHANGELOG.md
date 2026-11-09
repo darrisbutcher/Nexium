@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.18.1
+
+* **The recipe book's search follows the terminal's**: in a Crafting Terminal, typing in the recipe book's search box
+  changes the terminal's, and typing in the terminal's changes the recipe book's (and JEI's or REI's, as before). A
+  right-click on the recipe book's search box clears both. The client setting `terminalSearchSync` turns the linking off.
+
 ## 1.18.0
 
 * **Four more one-block farms**, made at the Farm Assembler: the **Witch Farm** (2 captured witches; a witch's own drops

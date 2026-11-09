@@ -115,6 +115,30 @@ public class TerminalClientTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             String cleared = ctx.computeOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).searchText());
             if (!cleared.isEmpty()) throw new AssertionError("a right-click should clear the terminal's search, it reads: " + cleared);
+            // ---- the recipe book's search and the terminal's stay the same (the book is open here)
+            var term = (java.util.function.Function<net.minecraft.client.Minecraft, net.storagenexus.client.screen.CraftingTerminalScreen>)
+                    mc -> (net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen();
+            if (!ctx.computeOnClient(mc -> term.apply(mc).recipeBookVisible())) throw new AssertionError("the recipe book should be open by now");
+            ctx.runOnClient(mc -> term.apply(mc).setSearchText("oak"));
+            ctx.waitTicks(4);
+            String bookText = ctx.computeOnClient(mc -> term.apply(mc).bookSearchText());
+            if (!"oak".equals(bookText)) throw new AssertionError("the terminal's search should reach the recipe book's, it reads: " + bookText);
+            ctx.runOnClient(mc -> term.apply(mc).setBookSearchText("stone"));
+            ctx.waitTicks(4);
+            String termText2 = ctx.computeOnClient(mc -> term.apply(mc).searchText());
+            if (!"stone".equals(termText2)) throw new AssertionError("the recipe book's search should reach the terminal's, it reads: " + termText2);
+            // A right-click on the book's own search box clears both
+            double[] bookBox = ctx.computeOnClient(mc -> {
+                int[] b = term.apply(mc).bookSearchBounds();
+                double scale = mc.getWindow().getGuiScale();
+                return new double[]{(b[0] + b[2] / 2.0) * scale, (b[1] + b[3] / 2.0) * scale};
+            });
+            ctx.getInput().setCursorPos(bookBox[0], bookBox[1]);
+            ctx.waitTicks(2);
+            ctx.getInput().pressMouse(RIGHT);
+            ctx.waitTicks(4);
+            String both = ctx.computeOnClient(mc -> term.apply(mc).bookSearchText() + "|" + term.apply(mc).searchText());
+            if (!"|".equals(both)) throw new AssertionError("a right-click on the recipe book's search should clear both, they read: " + both);
             // ---- a recipe viewer's "+" button: fill the grid for oak planks -> crafting table from the network
             ctx.runOnClient(mc -> mc.player.containerMenu.setCarried(ItemStack.EMPTY));
             world.getServer().runOnServer(server -> {

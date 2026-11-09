@@ -77,7 +77,7 @@ on). What is inside stays inside.
 * **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting, a network
   fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
   the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
-  **Right-click the search box** (here and in the Codex) to clear it. The terminal's search and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
+  **Right-click the search box** (here, on the recipe book's, and in the Codex) to clear it. The terminal's search, the recipe book's and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
 
 ### Disk Drive and storage disks
@@ -432,7 +432,7 @@ server's file is the one that counts.
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
-| `terminalSearchSync` | `true` | Client: the terminals' search and JEI's or REI's stay the same |
+| `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or V; 0 keeps them up |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |

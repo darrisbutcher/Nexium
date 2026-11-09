@@ -6,3 +6,6 @@ mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen
 
 # The Codex lookup key opens the page of the item under the mouse in any inventory.
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
+
+# The Crafting Terminal's search and the recipe book's search stay the same.
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent searchBox Lnet/minecraft/client/gui/components/EditBox;

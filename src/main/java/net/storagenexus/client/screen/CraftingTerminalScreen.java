@@ -3,6 +3,7 @@ package net.storagenexus.client.screen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
@@ -14,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.storagenexus.essentials.config.NexusConfig;
 import net.storagenexus.network.StorageNetwork;
 import net.storagenexus.terminal.TerminalMenu;
 import net.storagenexus.util.Fmt;
@@ -33,6 +36,8 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     private final TerminalView view;
     private final CraftingRecipeBookComponent recipeBook;
     private Button clearButton;
+    /** What the terminal's search and the recipe book's last agreed on. */
+    private String bookSynced = "";
 
     public CraftingTerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         this(menu, new CraftingRecipeBookComponent(menu), inventory, title);
@@ -103,6 +108,45 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     public void containerTick() {
         super.containerTick();
         view.tick();
+        syncWithRecipeBook();
+    }
+
+    /**
+     * Keeps the terminal's search and the recipe book's the same: whichever changed since they last agreed is copied to
+     * the other (typing in the terminal's wins if both changed in the same tick). The recipe viewer (JEI, REI) follows the
+     * terminal's, so the three stay together. The client setting {@code terminalSearchSync} turns it off.
+     */
+    private void syncWithRecipeBook() {
+        EditBox book = recipeBook.searchBox;
+        if (book == null || !NexusConfig.get().terminalSearchSync) return;
+        String mine = view.searchText(), theirs = book.getValue();
+        if (!mine.equals(bookSynced)) {
+            book.setValue(mine);
+            bookSynced = mine;
+        } else if (!theirs.equals(bookSynced)) {
+            view.setSearchText(theirs.length() > 50 ? theirs.substring(0, 50) : theirs);
+            bookSynced = view.searchText();
+        }
+    }
+
+    /** The recipe book's search text (for the client test). */
+    public String bookSearchText() {
+        return recipeBook.searchBox == null ? "" : recipeBook.searchBox.getValue();
+    }
+
+    /** Types into the recipe book's search (for the client test). */
+    public void setBookSearchText(String text) {
+        if (recipeBook.searchBox != null) recipeBook.searchBox.setValue(text);
+    }
+
+    /** The recipe book search box's place: x, y, width, height in GUI pixels (for the client test). */
+    public int[] bookSearchBounds() {
+        EditBox b = recipeBook.searchBox;
+        return b == null ? new int[4] : new int[]{b.getX(), b.getY(), b.getWidth(), b.getHeight()};
+    }
+
+    public boolean recipeBookVisible() {
+        return recipeBook.isVisible();
     }
 
     @Override
@@ -194,6 +238,15 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // A right-click on the open recipe book's search box clears it too (the terminal's follows)
+        EditBox bookBox = recipeBook.searchBox;
+        if (bookBox != null && recipeBook.isVisible() && event.button() == InputConstants.MOUSE_BUTTON_RIGHT
+                && bookBox.isMouseOver(event.x(), event.y())) {
+            bookBox.setValue("");
+            setFocused(bookBox);
+            bookBox.setFocused(true);
+            return true;
+        }
         var cleared = view.clearSearchIfRightClicked(event);
         if (cleared != null) {
             setFocused(cleared);
