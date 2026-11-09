@@ -30,9 +30,33 @@ public enum FarmKind {
     /** Bamboo. */
     BAMBOO("bamboo_farm", Input.NONE, 1),
     /** Nether wart. */
-    NETHER_WART("nether_wart_farm", Input.NONE, 1);
+    NETHER_WART("nether_wart_farm", Input.NONE, 1),
+    /** The loot of a zombie, skeleton, spider and creeper, and of the raiders (pillager, vindicator, evoker), all mixed. */
+    MONSTER("monster_farm", Input.NONE, 12),
+    /** The loot of a blaze, a ghast and a magma cube. */
+    NETHER_MOB("nether_mob_farm", Input.NONE, 8),
+    /** The loot of a guardian, a drowned and a cod. */
+    OCEAN("ocean_farm", Input.NONE, 8),
+    /** Slime balls. */
+    SLIME("slime_farm", Input.NONE, 1),
+    /** The drops of the animals the feed picks: wheat for cows and sheep, seeds for chickens, carrots for pigs and rabbits. */
+    LIVESTOCK("livestock_farm", Input.FEED, 6),
+    /** Wheat, carrots, potatoes and beetroot with their seeds; bone meal speeds it up. */
+    CROP("crop_farm", Input.BONE_MEAL_BOOST, 6),
+    /** Melons, pumpkins, cactus or kelp, by its mode. */
+    GOURD("gourd_farm", Input.NONE, 1),
+    /** Cobblestone, stone, gravel, sand, clay, basalt or obsidian, by its mode. */
+    GENERATOR("generator_farm", Input.NONE, 1),
+    /** Honeycomb into the output, honey into an internal tank. */
+    BEE("bee_farm", Input.NONE, 1),
+    /** Moss blocks, carpet and a little azalea; needs bone meal. */
+    MOSS("moss_farm", Input.BONE_MEAL, 3);
 
-    public enum Input { NONE, FOOD, GOLD }
+    /** What the input slot takes: nothing, villagers' food, gold, livestock feed, or bone meal (needed, or only a speed-up). */
+    public enum Input { NONE, FOOD, GOLD, FEED, BONE_MEAL, BONE_MEAL_BOOST }
+
+    /** Bone meal lasts this many cycles. */
+    public static final int CYCLES_PER_BONE_MEAL = 3;
 
     /** Bread, or this many carrots, potatoes or beetroot, feed one baby villager. */
     public static final int BREAD_PER_VILLAGER = 3, ROOTS_PER_VILLAGER = 12;
@@ -74,6 +98,16 @@ public enum FarmKind {
             case SUGAR_CANE -> c.sugarCaneFarmTicks;
             case BAMBOO -> c.bambooFarmTicks;
             case NETHER_WART -> c.netherWartFarmTicks;
+            case MONSTER -> c.monsterFarmTicks;
+            case NETHER_MOB -> c.netherMobFarmTicks;
+            case OCEAN -> c.oceanFarmTicks;
+            case SLIME -> c.slimeFarmTicks;
+            case LIVESTOCK -> c.livestockFarmTicks;
+            case CROP -> c.cropFarmTicks;
+            case GOURD -> c.gourdFarmTicks;
+            case GENERATOR -> c.generatorFarmTicks;
+            case BEE -> c.beeFarmTicks;
+            case MOSS -> c.mossFarmTicks;
         };
     }
 
@@ -83,12 +117,24 @@ public enum FarmKind {
             case NONE -> false;
             case GOLD -> stack.is(Items.GOLD_INGOT);
             case FOOD -> foodCost(stack) > 0;
+            case FEED -> feed(stack) != null;
+            case BONE_MEAL, BONE_MEAL_BOOST -> stack.is(Items.BONE_MEAL);
         };
     }
 
     /** What the input slot shows faded when it is empty. */
     public Item inputIcon() {
-        return input == Input.GOLD ? Items.GOLD_INGOT : Items.BREAD;
+        return switch (input) {
+            case GOLD -> Items.GOLD_INGOT;
+            case FEED -> Items.WHEAT;
+            case BONE_MEAL, BONE_MEAL_BOOST -> Items.BONE_MEAL;
+            default -> Items.BREAD;
+        };
+    }
+
+    /** Whether a cycle can't run without its input (all but the Crop Farm's bone meal, which only speeds it up). */
+    public boolean inputRequired() {
+        return input != Input.NONE && input != Input.BONE_MEAL_BOOST;
     }
 
     /** How many of this food one baby villager takes, or 0 if it isn't food for villagers. */
@@ -98,13 +144,41 @@ public enum FarmKind {
         return 0;
     }
 
+    /** The animals a feed item brings to the Livestock Farm, or null if it isn't livestock feed. */
+    public static @org.jspecify.annotations.Nullable Feed feed(ItemStack stack) {
+        if (stack.is(Items.WHEAT)) return Feed.WHEAT;
+        if (stack.is(Items.WHEAT_SEEDS) || stack.is(Items.BEETROOT_SEEDS) || stack.is(Items.MELON_SEEDS) || stack.is(Items.PUMPKIN_SEEDS)) return Feed.SEEDS;
+        if (stack.is(Items.CARROT)) return Feed.CARROT;
+        if (stack.is(Items.POTATO) || stack.is(Items.BEETROOT)) return Feed.ROOT;
+        return null;
+    }
+
+    /** What each feed brings: wheat, cows and sheep; seeds, chickens; carrots, pigs and rabbits; potatoes and beetroot, pigs. */
+    public enum Feed { WHEAT, SEEDS, CARROT, ROOT }
+
     /** What one unit of input is worth to this kind: the amount of the item that one cycle uses. */
     public int inputPerCycle(ItemStack stack) {
         return switch (input) {
             case NONE -> 0;
-            case GOLD -> 1;
+            case GOLD, FEED -> 1;
             case FOOD -> foodCost(stack);
+            case BONE_MEAL, BONE_MEAL_BOOST -> 1;
         };
+    }
+
+    /** The modes a mode button steps through (empty for farms with none), as lang key suffixes. */
+    public java.util.List<String> modes() {
+        return switch (this) {
+            case GOURD -> java.util.List.of("melon", "pumpkin", "cactus", "kelp");
+            case GENERATOR -> java.util.List.of("cobblestone", "stone", "gravel", "sand", "clay", "basalt", "obsidian");
+            default -> java.util.List.of();
+        };
+    }
+
+    /** Ticks per cycle in this mode: the Generator's obsidian takes twice as long as the rest. */
+    public int cycleTicks(int mode) {
+        int base = cycleTicks();
+        return this == GENERATOR && modes().get(Math.floorMod(mode, modes().size())).equals("obsidian") ? base * 2 : base;
     }
 
     public static FarmKind byId(String id) {

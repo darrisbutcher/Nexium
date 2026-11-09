@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexusessentials:farm_progress",
+              "nexusessentials:farm_mode"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexusessentials:ocean_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexusessentials:blocks/ocean_farm"
+}

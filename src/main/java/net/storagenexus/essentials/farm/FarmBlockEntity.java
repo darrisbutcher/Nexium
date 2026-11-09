@@ -13,13 +13,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
+import net.fabricmc.fabric.api.entity.FakePlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -35,6 +40,7 @@ import net.storagenexus.essentials.capture.MobCapture;
 import net.storagenexus.essentials.registry.ModBlockEntities;
 import net.storagenexus.essentials.registry.ModComponents;
 
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 /**
@@ -57,6 +63,12 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private int progress;
+    /** Which of the farm's {@link FarmKind#modes()} it is on (the Gourd and Cactus Farm, the Generator). */
+    private int mode;
+    /** Cycles left on the bone meal in use (the Crop Farm runs twice as fast on it, the Moss Farm needs it). */
+    private int boostLeft;
+    /** The Bee Farm's honey. */
+    private final HoneyTank honey = new HoneyTank(this::setChanged);
     /** Not saved; worked out again every tick. */
     private boolean full, starved;
 
@@ -77,12 +89,19 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     private void work(ServerLevel level) {
         FarmKind kind = kind();
         full = !hasRoom(kind);
-        starved = kind.hasInput() && !hasInput(kind);
+        boolean boneMeal = kind.input() == FarmKind.Input.BONE_MEAL || kind.input() == FarmKind.Input.BONE_MEAL_BOOST;
+        // A bone meal is used up when the one before it has run out of cycles
+        if (boneMeal && boostLeft <= 0 && hasInput(kind) && !full && !isPaused()) {
+            items.get(INPUT_SLOT).shrink(1);
+            boostLeft = FarmKind.CYCLES_PER_BONE_MEAL;
+        }
+        starved = kind.inputRequired() && (boneMeal ? boostLeft <= 0 : !hasInput(kind));
         if (!full && !starved && !isPaused()) {
-            progress++;
-            if (progress >= kind.cycleTicks()) {
+            progress += kind == FarmKind.CROP && boostLeft > 0 ? 2 : 1;
+            if (progress >= cycleTicks()) {
                 progress = 0;
                 cycle(level, kind, level.getRandom());
+                if (boostLeft > 0) boostLeft--;
             }
             setChanged();
         }
@@ -117,26 +136,123 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
             case SHULKER -> {
                 if (random.nextFloat() < SHELL_CHANCE) insert(new ItemStack(Items.SHULKER_SHELL));
             }
-            case WITCH -> {
-                // The witch's own loot table, as if a player killed her (Looting 0)
-                var witch = EntityTypes.WITCH.create(level, EntitySpawnReason.SPAWNER);
-                if (witch != null) {
-                    witch.setPos(worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5);
-                    var table = witch.getLootTable();
-                    if (table.isPresent()) {
-                        LootParams params = new LootParams.Builder(level)
-                                .withParameter(LootContextParams.THIS_ENTITY, witch)
-                                .withParameter(LootContextParams.ORIGIN, witch.position())
-                                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
-                                .create(LootContextParamSets.ENTITY);
-                        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) insert(loot);
-                    }
-                }
-            }
+            case WITCH -> roll(level, EntityTypes.WITCH, null);
             case SUGAR_CANE -> insert(new ItemStack(Items.SUGAR_CANE, 3));
             case BAMBOO -> insert(new ItemStack(Items.BAMBOO, 4));
             case NETHER_WART -> insert(new ItemStack(Items.NETHER_WART, 4));
+            case MONSTER -> {
+                // The monsters' loot, and the raiders'
+                roll(level, EntityTypes.ZOMBIE, null);
+                roll(level, EntityTypes.SKELETON, null);
+                roll(level, EntityTypes.SPIDER, null);
+                roll(level, EntityTypes.CREEPER, null);
+                roll(level, EntityTypes.PILLAGER, null);
+                roll(level, EntityTypes.VINDICATOR, null);
+                roll(level, EntityTypes.EVOKER, null);
+            }
+            case NETHER_MOB -> {
+                roll(level, EntityTypes.BLAZE, null);
+                roll(level, EntityTypes.GHAST, null);
+                roll(level, EntityTypes.MAGMA_CUBE, e -> ((net.minecraft.world.entity.monster.cubemob.AbstractCubeMob) e).setSize(2, true));
+            }
+            case OCEAN -> {
+                roll(level, EntityTypes.GUARDIAN, null);
+                roll(level, EntityTypes.DROWNED, null);
+                roll(level, EntityTypes.COD, null);
+            }
+            case SLIME -> roll(level, EntityTypes.SLIME, e -> ((net.minecraft.world.entity.monster.cubemob.AbstractCubeMob) e).setSize(1, true));
+            case LIVESTOCK -> {
+                ItemStack feed = items.get(INPUT_SLOT);
+                FarmKind.Feed kindOfFeed = FarmKind.feed(feed);
+                if (kindOfFeed == null) return;
+                feed.shrink(1);
+                switch (kindOfFeed) {
+                    case WHEAT -> {
+                        roll(level, EntityTypes.COW, null);
+                        roll(level, EntityTypes.SHEEP, e -> ((net.minecraft.world.entity.animal.sheep.Sheep) e).setColor(sheepColour(random)));
+                    }
+                    case SEEDS -> {
+                        roll(level, EntityTypes.CHICKEN, null);
+                        insert(new ItemStack(Items.EGG));
+                    }
+                    case CARROT -> {
+                        roll(level, EntityTypes.PIG, null);
+                        roll(level, EntityTypes.RABBIT, null);
+                    }
+                    case ROOT -> roll(level, EntityTypes.PIG, null);
+                }
+            }
+            case CROP -> {
+                insert(new ItemStack(Items.WHEAT, 3));
+                insert(new ItemStack(Items.WHEAT_SEEDS, 1));
+                insert(new ItemStack(Items.CARROT, 3));
+                insert(new ItemStack(Items.POTATO, 3));
+                insert(new ItemStack(Items.BEETROOT, 3));
+                insert(new ItemStack(Items.BEETROOT_SEEDS, 1));
+            }
+            case GOURD -> {
+                switch (kind.modes().get(mode())) {
+                    case "melon" -> insert(new ItemStack(Items.MELON_SLICE, 12));
+                    case "pumpkin" -> insert(new ItemStack(Items.PUMPKIN, 3));
+                    case "cactus" -> insert(new ItemStack(Items.CACTUS, 4));
+                    default -> insert(new ItemStack(Items.KELP, 6));
+                }
+            }
+            case GENERATOR -> {
+                switch (kind.modes().get(mode())) {
+                    case "cobblestone" -> insert(new ItemStack(Items.COBBLESTONE, 8));
+                    case "stone" -> insert(new ItemStack(Items.STONE, 8));
+                    case "gravel" -> insert(new ItemStack(Items.GRAVEL, 8));
+                    case "sand" -> insert(new ItemStack(Items.SAND, 8));
+                    case "clay" -> insert(new ItemStack(Items.CLAY, 4));
+                    case "basalt" -> insert(new ItemStack(Items.BASALT, 2));
+                    default -> insert(new ItemStack(Items.OBSIDIAN, 1)); // twice as long a cycle
+                }
+            }
+            case BEE -> {
+                insert(new ItemStack(Items.HONEYCOMB, 1 + random.nextInt(3)));
+                honey.fill(2 * HoneyTank.BOTTLE);
+            }
+            case MOSS -> {
+                insert(new ItemStack(Items.MOSS_BLOCK, 3));
+                insert(new ItemStack(Items.MOSS_CARPET, 2));
+                if (random.nextFloat() < 0.1F) insert(new ItemStack(random.nextBoolean() ? Items.AZALEA : Items.FLOWERING_AZALEA));
+            }
         }
+    }
+
+    /**
+     * Rolls the loot table of one mob as if a player killed it (no Looting, and the drops that need a player kill included),
+     * into the output. {@code setup} gives the mob its size or colour first.
+     */
+    private void roll(ServerLevel level, EntityType<?> type, java.util.function.@org.jspecify.annotations.Nullable Consumer<Entity> setup) {
+        Entity mob = type.create(level, EntitySpawnReason.SPAWNER);
+        if (!(mob instanceof LivingEntity)) return;
+        if (setup != null) setup.accept(mob);
+        mob.setPos(worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5);
+        var table = mob.getLootTable();
+        if (table.isEmpty()) return;
+        var killer = FakePlayer.get(level);
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.THIS_ENTITY, mob)
+                .withParameter(LootContextParams.ORIGIN, mob.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(killer))
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, killer)
+                .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, killer)
+                .withOptionalParameter(LootContextParams.LAST_DAMAGE_PLAYER, killer)
+                .create(LootContextParamSets.ENTITY);
+        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) insert(loot);
+    }
+
+    /** A sheep colour at the natural spawn odds. */
+    private static DyeColor sheepColour(RandomSource random) {
+        int n = random.nextInt(10000);
+        if (n < 500) return DyeColor.BLACK;
+        if (n < 1000) return DyeColor.GRAY;
+        if (n < 1500) return DyeColor.LIGHT_GRAY;
+        if (n < 1800) return DyeColor.BROWN;
+        if (n < 1816) return DyeColor.PINK;
+        return DyeColor.WHITE;
     }
 
     /** A baby villager of the local kind (by biome), as a Captured Mob. */
@@ -180,8 +296,37 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
 
     /** Work towards the next cycle, 0 to 1. */
     public float progressFraction() {
-        return Math.min(1.0F, (float) progress / kind().cycleTicks());
+        return Math.min(1.0F, (float) progress / cycleTicks());
     }
+
+    /** Ticks per cycle on the current mode. */
+    public int cycleTicks() { return kind().cycleTicks(mode()); }
+
+    /** The mode, as an index into {@link FarmKind#modes()} (0 for farms without modes). */
+    public int mode() {
+        int n = kind().modes().size();
+        return n == 0 ? 0 : Math.floorMod(mode, n);
+    }
+
+    /** Steps to the next mode. */
+    public void cycleMode() {
+        int n = kind().modes().size();
+        if (n == 0) return;
+        mode = (mode() + 1) % n;
+        progress = Math.min(progress, Math.max(0, cycleTicks() - 1));
+        setChanged();
+    }
+
+    public void setMode(int value) {
+        mode = value;
+        setChanged();
+    }
+
+    /** Cycles left on the bone meal in use. */
+    public int boostLeft() { return boostLeft; }
+
+    /** The Bee Farm's honey tank. */
+    public HoneyTank honey() { return honey; }
 
     public int progress() { return progress; }
     public boolean isFull() { return full; }
@@ -259,6 +404,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.putInt("progress", progress);
+        output.putInt("mode", mode);
+        output.putInt("boost", boostLeft);
+        output.putLong("honey", honey.stored());
     }
 
     @Override
@@ -267,12 +415,16 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         progress = Math.max(0, input.getIntOr("progress", 0));
+        mode = Math.max(0, input.getIntOr("mode", 0));
+        boostLeft = Math.max(0, input.getIntOr("boost", 0));
+        honey.load(input.getLongOr("honey", 0L));
     }
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
         if (progress > 0) components.set(ModComponents.FARM_PROGRESS, progress);
+        if (mode() > 0) components.set(ModComponents.FARM_MODE, mode());
     }
 
     @Override
@@ -280,11 +432,14 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         super.applyImplicitComponents(components);
         Integer saved = components.get(ModComponents.FARM_PROGRESS);
         if (saved != null) progress = Math.max(0, saved);
+        Integer savedMode = components.get(ModComponents.FARM_MODE);
+        if (savedMode != null) mode = Math.max(0, savedMode);
     }
 
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard("progress");
+        output.discard("mode");
     }
 }

@@ -2,6 +2,7 @@ package net.storagenexus.essentials.client;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.farm.FarmBlockEntity;
 import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.farm.FarmMenu;
+import net.storagenexus.essentials.farm.HoneyTank;
 import net.storagenexus.essentials.ironfarm.IronFarmItem;
 
 import java.util.List;
@@ -30,6 +32,35 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         inventoryLabelY = FarmMenu.INVENTORY_TOP - 11;
     }
 
+    private Button modeButton;
+
+    @Override
+    protected void init() {
+        super.init();
+        if (!menu.kind().modes().isEmpty()) {
+            // Right of the status line: click to step through what the farm makes
+            modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
+                if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
+            }).bounds(leftPos + 96, topPos + BAR_Y + BAR_H + 2, 72, 13).build());
+            refreshModeButton();
+        }
+    }
+
+    /** The mode's name on the button. */
+    private void refreshModeButton() {
+        var modes = menu.kind().modes();
+        modeButton.setMessage(Component.translatable("screen.nexusessentials.farm.mode." + menu.kind().id() + "." + modes.get(Math.floorMod(menu.mode(), modes.size()))));
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        if (modeButton != null) refreshModeButton();
+    }
+
+    /** The Bee Farm's honey: bottles held out of what the tank takes. */
+    private static final int HONEY_BOTTLES = (int) (HoneyTank.CAPACITY / HoneyTank.BOTTLE);
+
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
@@ -47,7 +78,11 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
             status = Component.translatable("screen.nexusessentials.farm_next", IronFarmItem.time(left));
             colour = MUTED;
         }
-        g.text(font, status, BAR_X, BAR_Y + BAR_H + 4, colour, false);
+        g.text(font, status, kind0().hasInput() ? BAR_X : FarmMenu.INPUT_X, BAR_Y + BAR_H + 4, colour, false);
+        if (menu.kind() == FarmKind.BEE) {
+            Component honey = Component.translatable("screen.nexusessentials.farm.honey", menu.honeyBottles(), HONEY_BOTTLES);
+            g.text(font, honey, imageWidth - FarmMenu.INPUT_X - font.width(honey), BAR_Y + BAR_H + 4, 0xFFE8A62A, false);
+        }
     }
 
     @Override
@@ -98,6 +133,10 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
                     Component.translatable("tooltip.nexusessentials." + kind.lang("input")).withStyle(ChatFormatting.GOLD)
             ), mouseX, mouseY);
         }
+    }
+
+    private FarmKind kind0() {
+        return menu.kind();
     }
 
     private static void slot(GuiGraphicsExtractor g, int x, int y) {

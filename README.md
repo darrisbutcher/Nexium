@@ -380,8 +380,23 @@ take the output from below, a full output or a redstone signal pauses it, and br
 | **Bamboo Farm** | 32 bamboo, 4 water buckets, 8 pistons, 16 observers, 768 dirt | 4 bamboo every 20 seconds |
 | **Nether Wart Farm** | 32 nether wart, 16 soul sand, 4 lava buckets, 8 magma blocks, 768 netherrack | 4 nether wart every 30 seconds |
 
-The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. The four newer farms ask a
-quarter of the filler block the first five do.
+The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. The newer farms ask a
+quarter of the filler block the first five do (768 of one block).
+
+**Ten more farms** (all need 768 of their filler block; mobs are spawn eggs or Captured Mobs):
+
+| Farm | Recipe | Makes |
+|---|---|---|
+| **Monster Farm** | 1 zombie, 1 pillager, 8 hoppers, 16 iron bars, 8 pistons, 4 emerald blocks, cobblestone | Every 10 s: the real loot of a zombie, skeleton, spider, creeper, pillager, vindicator and evoker, as if a player killed each (no Looting, rare player-kill drops included), all mixed |
+| **Nether Mob Farm** | 1 blaze, 1 ghast, 1 magma cube, 16 nether bricks, 4 lava buckets, 8 magma blocks, netherrack | Every 10 s: blaze rods, ghast tears, gunpowder, magma cream |
+| **Ocean Farm** | 1 guardian, 1 drowned, 1 cod, 16 prismarine bricks, 8 sea lanterns, 4 water buckets, sand | Every 10 s: prismarine shards and crystals, fish, rotten flesh, copper |
+| **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
+| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s, for 1 feed item: wheat gives cow and sheep drops (random wool colours), seeds chicken drops and an egg, carrots pig and rabbit drops, potatoes or beetroot pig drops |
+| **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. Bone meal in its slot doubles the speed (one lasts 3 cycles) |
+| **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, by its mode button: 12 melon slices, 3 pumpkins, 4 cactus or 6 kelp |
+| **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
+| **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey into its 16-bucket tank. Right-click with a glass bottle for a honey bottle, or take the **Honey** fluid with pipes (never put in) |
+| **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, a 10% azalea. Needs bone meal (one lasts 3 cycles) |
 
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
@@ -423,7 +438,7 @@ server's file is the one that counts.
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
-| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
+| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |

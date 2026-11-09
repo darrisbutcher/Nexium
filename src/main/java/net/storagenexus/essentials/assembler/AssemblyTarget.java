@@ -28,6 +28,16 @@ public enum AssemblyTarget {
     SUGAR_CANE(FarmKind.SUGAR_CANE),
     BAMBOO(FarmKind.BAMBOO),
     NETHER_WART(FarmKind.NETHER_WART),
+    MONSTER(FarmKind.MONSTER),
+    NETHER_MOB(FarmKind.NETHER_MOB),
+    OCEAN(FarmKind.OCEAN),
+    SLIME(FarmKind.SLIME),
+    LIVESTOCK(FarmKind.LIVESTOCK),
+    CROP(FarmKind.CROP),
+    GOURD(FarmKind.GOURD),
+    GENERATOR(FarmKind.GENERATOR),
+    BEE(FarmKind.BEE),
+    MOSS(FarmKind.MOSS),
     LIBRARIAN(null);
 
     /** The most lines any target has (the Iron Farm: seven parts and its smooth stone). */

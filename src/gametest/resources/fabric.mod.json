@@ -14,6 +14,7 @@
       "net.storagenexus.gametest.client.BuilderClientTest",
       "net.storagenexus.gametest.client.DiskClientTest",
       "net.storagenexus.gametest.client.NewFarmsClientTest",
+      "net.storagenexus.gametest.client.MoreFarmsClientTest",
       "net.storagenexus.gametest.client.ElevatorClientTest",
       "net.storagenexus.gametest.client.FreezerFarmsClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
