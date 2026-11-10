@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.20.0
+
+* **Inventory sorting**: press **R** over a container or over your main inventory to sort just that area, never the
+  hotbar. Works on chests, barrels, ender chests, shulker boxes, hoppers, dispensers, droppers and Nexium barrels. Stacks
+  merge, and shulker boxes and bundles go to the bottom right. Press again to step through A to Z, creative menu order
+  and biggest stacks first. With a recipe viewer installed, R over an item belongs to the viewer. The key is `Sort
+  Inventory` in Controls.
+
 ## 1.19.0
 
 * **Ten more one-block farms** at the Farm Assembler, 768 of a filler block each: **Monster** (zombie, skeleton, spider,

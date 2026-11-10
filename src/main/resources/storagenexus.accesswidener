@@ -9,3 +9,7 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 
 # The Crafting Terminal's search and the recipe book's search stay the same.
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent searchBox Lnet/minecraft/client/gui/components/EditBox;
+
+# The sort key finds the area under the mouse from the screen's corner.
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
