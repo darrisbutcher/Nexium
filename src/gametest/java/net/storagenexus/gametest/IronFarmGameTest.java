@@ -74,7 +74,7 @@ public class IronFarmGameTest {
         tick(h, farm, 1);
         int iron = count(farm, Items.IRON_INGOT);
         h.assertTrue(iron >= 3 && iron <= 5, "one golem drops 3-5 iron, got " + iron);
-        h.assertTrue(count(farm, Items.POPPY) <= 2, "and 0-2 poppies");
+        h.assertValueEqual(count(farm, Items.POPPY), 0, "and no poppies");
         tick(h, farm, perGolem() * 9);
         int tenGolems = count(farm, Items.IRON_INGOT);
         h.assertTrue(tenGolems >= 30 && tenGolems <= 50, "ten golems drop 30-50 iron, got " + tenGolems);
@@ -156,7 +156,7 @@ public class IronFarmGameTest {
         tick(h, farm, perGolem() * 3);
         h.assertTrue(farm.isFull(), "full");
         h.assertValueEqual(farm.getItem(IronFarmBlockEntity.BREAD_SLOT).getCount(), 3, "no bread eaten while full");
-        // Room for a whole golem: one slot for iron and one for poppies
+        // Room for a whole golem: one slot for the iron
         farm.setItem(0, ItemStack.EMPTY);
         farm.setItem(1, ItemStack.EMPTY);
         tick(h, farm, 1);

@@ -367,7 +367,7 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
   | Smooth Stone | 1,408 | Smooth stone |
 
   Then press Build.
-* **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron and 0-2 poppies, about **1,900 iron an
+* **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron, about **1,900 iron an
   hour**. Hoppers and pipes take the output from below.
 * **Bread**: bread in the bread slot makes the farm **10x faster**, eating one loaf every 30 seconds. When the last
   loaf is eaten the slot locks for 10x as long as the boost lasted, and the farm keeps working at normal speed.
@@ -402,10 +402,10 @@ quarter of the filler block the first five do (768 of one block).
 | **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
 | **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s, for 1 feed item: wheat gives cow and sheep drops (random wool colours), seeds chicken drops and an egg, carrots pig and rabbit drops, potatoes or beetroot pig drops |
 | **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. Bone meal in its slot doubles the speed (one lasts 3 cycles) |
-| **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, by its mode button: 12 melon slices, 3 pumpkins, 4 cactus or 6 kelp |
+| **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
-| **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey into its 16-bucket tank. Right-click with a glass bottle for a honey bottle, or take the **Honey** fluid with pipes (never put in) |
-| **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, a 10% azalea. Needs bone meal (one lasts 3 cycles) |
+| **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
+| **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. Needs bone meal (one lasts 3 cycles) |
 
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
@@ -446,7 +446,6 @@ server's file is the one that counts.
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
-| `ironFarmPoppies` | `true` | Golems drop 0-2 poppies as well as iron |
 | `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |

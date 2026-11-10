@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 
 /**
  * A 1-block iron farm: four 3-villager golem farms in a box. Every {@code ironFarmGolemTicks} it "kills a golem"
- * and keeps the drops (3-5 iron and 0-2 poppies) in 27 output slots, which hoppers can only take from below.
+ * and keeps the drops (3-5 iron) in 27 output slots, which hoppers can only take from below.
  *
  * <p>Bread in the bread slot makes it work {@code ironFarmBreadSpeedUp} times faster, one loaf at a time
  * ({@code ironFarmBreadSeconds} each). When the last loaf is eaten, the bread slot locks for
@@ -41,7 +41,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     public static final int BREAD_SLOT = OUTPUT_SLOTS;
     public static final int SIZE = OUTPUT_SLOTS + 1;
     /** Most a golem can drop, so there is always room for a whole golem before one is made. */
-    public static final int MAX_IRON = 5, MAX_POPPIES = 2;
+    public static final int MAX_IRON = 5;
 
     private static final int[] OUTPUT = IntStream.range(0, OUTPUT_SLOTS).toArray();
     private static final int[] NO_SLOTS = new int[0];
@@ -103,14 +103,10 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     private void killGolem(RandomSource random) {
         insert(new ItemStack(Items.IRON_INGOT, 3 + random.nextInt(3)));
-        if (NexusConfig.get().ironFarmPoppies) {
-            int poppies = random.nextInt(3);
-            if (poppies > 0) insert(new ItemStack(Items.POPPY, poppies));
-        }
     }
 
     private boolean hasRoomForGolem() {
-        return room(Items.IRON_INGOT.getDefaultInstance(), MAX_IRON, NexusConfig.get().ironFarmPoppies ? MAX_POPPIES : 0);
+        return room(Items.IRON_INGOT.getDefaultInstance(), MAX_IRON, 0);
     }
 
     /** Whether the output slots can take {@code count} of {@code stack} and also {@code poppies} poppies. */

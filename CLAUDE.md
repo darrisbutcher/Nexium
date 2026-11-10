@@ -7,6 +7,8 @@ The owner's standing preferences for Claude sessions on this repository.
 - After pushing finished work, open a pull request into `main` and merge it once every CI check passes. Don't ask first.
 - Only stop and tell the owner when something blocks this: a failing check that isn't a quick fix, a merge conflict,
   review comments, or a merge GitHub refuses.
+- Always ask the owner which version a change goes to before bumping `mod_version`; they don't want it climbing fast.
+  Several changes can share one version.
 - Merging a new `mod_version` publishes its GitHub Release automatically (the `release` job in
   `.github/workflows/build.yml`), so raise `mod_version` and add its `## <version>` section to `CHANGELOG.md` with each
   change that should ship. A version that already has a release publishes nothing.

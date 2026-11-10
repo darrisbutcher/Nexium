@@ -83,8 +83,6 @@ public final class NexusConfig {
     public int ironFarmBreadSeconds = 30;
     /** After the bread runs out, the bread slot is locked for this many times as long as the boost lasted. */
     public int ironFarmCooldownMultiplier = 10;
-    /** Golems drop 0-2 poppies as well as 3-5 iron, like real ones. */
-    public boolean ironFarmPoppies = true;
 
     // --- Other one-block farms (made at the Farm Assembler, like the Iron Farm)
     /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 12000 is 10 minutes. */
@@ -121,7 +119,7 @@ public final class NexusConfig {
     public int gourdFarmTicks = 400;
     /** Ticks per cycle of the Generator (obsidian takes twice as long). */
     public int generatorFarmTicks = 200;
-    /** Ticks per cycle: honeycomb, and honey into its tank. */
+    /** Ticks per cycle: honeycomb and 2 bottles of honey. */
     public int beeFarmTicks = 400;
     /** Ticks per cycle: moss blocks, carpet and a little azalea (a bone meal lasts 3 cycles). */
     public int mossFarmTicks = 400;

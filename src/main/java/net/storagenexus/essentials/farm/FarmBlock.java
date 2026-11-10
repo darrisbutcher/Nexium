@@ -68,21 +68,6 @@ public class FarmBlock extends BaseEntityBlock {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.FARM, FarmBlockEntity::serverTick);
     }
 
-    /** A glass bottle in the hand takes a bottle of honey out of a Bee Farm's tank. */
-    @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
-                                          InteractionHand hand, BlockHitResult hit) {
-        if (kind != FarmKind.BEE || !stack.is(Items.GLASS_BOTTLE)) return InteractionResult.TRY_WITH_EMPTY_HAND;
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof FarmBlockEntity farm && farm.honey().takeBottle()) {
-            stack.consume(1, player);
-            ItemStack honey = new ItemStack(Items.HONEY_BOTTLE);
-            player.getInventory().placeItemBackInInventory(honey, true, net.minecraft.util.Prediction.SERVER_ONLY);
-            level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            farm.setChanged();
-        }
-        return InteractionResult.SUCCESS;
-    }
-
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof FarmBlockEntity farm) {
