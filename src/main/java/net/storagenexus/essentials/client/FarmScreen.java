@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.farm.FarmBlockEntity;
 import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.farm.FarmMenu;
-import net.storagenexus.essentials.farm.HoneyTank;
 import net.storagenexus.essentials.ironfarm.IronFarmItem;
 
 import java.util.List;
@@ -58,9 +57,6 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         if (modeButton != null) refreshModeButton();
     }
 
-    /** The Bee Farm's honey: bottles held out of what the tank takes. */
-    private static final int HONEY_BOTTLES = (int) (HoneyTank.CAPACITY / HoneyTank.BOTTLE);
-
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
@@ -79,10 +75,6 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
             colour = MUTED;
         }
         g.text(font, status, kind0().hasInput() ? BAR_X : FarmMenu.INPUT_X, BAR_Y + BAR_H + 4, colour, false);
-        if (menu.kind() == FarmKind.BEE) {
-            Component honey = Component.translatable("screen.nexusessentials.farm.honey", menu.honeyBottles(), HONEY_BOTTLES);
-            g.text(font, honey, imageWidth - FarmMenu.INPUT_X - font.width(honey), BAR_Y + BAR_H + 4, 0xFFE8A62A, false);
-        }
     }
 
     @Override

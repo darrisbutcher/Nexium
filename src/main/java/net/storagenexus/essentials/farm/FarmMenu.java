@@ -24,7 +24,7 @@ public class FarmMenu extends AbstractContainerMenu {
     public static final int INVENTORY_TOP = 112;
 
     private static final int FIRST_PLAYER_SLOT = FarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_HONEY = 5, D_COUNT = 6;
+    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_COUNT = 5;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4;
 
     private final Container container;
@@ -84,7 +84,6 @@ public class FarmMenu extends AbstractContainerMenu {
                     case D_CYCLE -> farm.cycleTicks() & 0x7FFF;
                     case D_CYCLE + 1 -> farm.cycleTicks() >> 15;
                     case D_MODE -> farm.mode();
-                    case D_HONEY -> (int) (farm.honey().stored() / HoneyTank.BOTTLE);
                     default -> 0;
                 };
             }
@@ -113,8 +112,6 @@ public class FarmMenu extends AbstractContainerMenu {
     /** The farm's mode, as an index into its kind's modes. */
     public int mode() { return data.get(D_MODE); }
 
-    /** The Bee Farm's honey in bottles (a quarter bucket each). */
-    public int honeyBottles() { return data.get(D_HONEY); }
 
     /** Button 0 steps the mode of the farms that have modes. */
     @Override

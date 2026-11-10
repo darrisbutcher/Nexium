@@ -63,12 +63,10 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private int progress;
-    /** Which of the farm's {@link FarmKind#modes()} it is on (the Gourd and Cactus Farm, the Generator). */
+    /** Which of the farm's {@link FarmKind#modes()} it is on (the Generator). */
     private int mode;
     /** Cycles left on the bone meal in use (the Crop Farm runs twice as fast on it, the Moss Farm needs it). */
     private int boostLeft;
-    /** The Bee Farm's honey. */
-    private final HoneyTank honey = new HoneyTank(this::setChanged);
     /** Not saved; worked out again every tick. */
     private boolean full, starved;
 
@@ -191,12 +189,10 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
                 insert(new ItemStack(Items.BEETROOT_SEEDS, 1));
             }
             case GOURD -> {
-                switch (kind.modes().get(mode())) {
-                    case "melon" -> insert(new ItemStack(Items.MELON_SLICE, 12));
-                    case "pumpkin" -> insert(new ItemStack(Items.PUMPKIN, 3));
-                    case "cactus" -> insert(new ItemStack(Items.CACTUS, 4));
-                    default -> insert(new ItemStack(Items.KELP, 6));
-                }
+                insert(new ItemStack(Items.MELON_SLICE, 12));
+                insert(new ItemStack(Items.PUMPKIN, 3));
+                insert(new ItemStack(Items.CACTUS, 4));
+                insert(new ItemStack(Items.KELP, 6));
             }
             case GENERATOR -> {
                 switch (kind.modes().get(mode())) {
@@ -211,11 +207,15 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
             }
             case BEE -> {
                 insert(new ItemStack(Items.HONEYCOMB, 1 + random.nextInt(3)));
-                honey.fill(2 * HoneyTank.BOTTLE);
+                insert(new ItemStack(Items.HONEY_BOTTLE, 2));
             }
             case MOSS -> {
                 insert(new ItemStack(Items.MOSS_BLOCK, 3));
                 insert(new ItemStack(Items.MOSS_CARPET, 2));
+                insert(new ItemStack(Items.PALE_MOSS_BLOCK, 3));
+                insert(new ItemStack(Items.PALE_MOSS_CARPET, 2));
+                insert(new ItemStack(Items.PALE_HANGING_MOSS, 2));
+                insert(new ItemStack(Items.RESIN_CLUMP, 6));
                 if (random.nextFloat() < 0.1F) insert(new ItemStack(random.nextBoolean() ? Items.AZALEA : Items.FLOWERING_AZALEA));
             }
         }
@@ -325,9 +325,6 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     /** Cycles left on the bone meal in use. */
     public int boostLeft() { return boostLeft; }
 
-    /** The Bee Farm's honey tank. */
-    public HoneyTank honey() { return honey; }
-
     public int progress() { return progress; }
     public boolean isFull() { return full; }
     public boolean isStarved() { return starved; }
@@ -406,7 +403,6 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         output.putInt("progress", progress);
         output.putInt("mode", mode);
         output.putInt("boost", boostLeft);
-        output.putLong("honey", honey.stored());
     }
 
     @Override
@@ -417,7 +413,13 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         progress = Math.max(0, input.getIntOr("progress", 0));
         mode = Math.max(0, input.getIntOr("mode", 0));
         boostLeft = Math.max(0, input.getIntOr("boost", 0));
-        honey.load(input.getLongOr("honey", 0L));
+        // 1.19 Bee Farms kept honey in a tank: hand it back as bottles (a quarter bucket each)
+        long legacy = input.getLongOr("honey", 0L) / (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 4);
+        while (legacy > 0) {
+            int n = (int) Math.min(legacy, 16);
+            insert(new ItemStack(Items.HONEY_BOTTLE, n));
+            legacy -= n;
+        }
     }
 
     @Override

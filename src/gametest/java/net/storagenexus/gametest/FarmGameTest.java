@@ -201,17 +201,12 @@ public class FarmGameTest {
         h.assertValueEqual(count(crop, Items.BEETROOT), 12, "3 beetroot");
         h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
         FarmBlockEntity gourd = farm(h, FarmKind.GOURD);
-        h.assertValueEqual(FarmKind.GOURD.modes().size(), 4, "melon, pumpkin, cactus and kelp");
+        h.assertTrue(FarmKind.GOURD.modes().isEmpty(), "no mode button");
         cycles(h, gourd, 1);
-        h.assertValueEqual(count(gourd, Items.MELON_SLICE), 12, "melon mode: 12 slices");
-        gourd.cycleMode();
-        cycles(h, gourd, 1);
-        h.assertValueEqual(count(gourd, Items.PUMPKIN), 3, "pumpkin mode: 3");
-        gourd.cycleMode(); gourd.cycleMode();
-        cycles(h, gourd, 1);
-        h.assertValueEqual(count(gourd, Items.KELP), 6, "kelp mode: 6");
-        gourd.cycleMode();
-        h.assertValueEqual(gourd.mode(), 0, "the modes go round");
+        h.assertValueEqual(count(gourd, Items.MELON_SLICE), 12, "12 melon slices");
+        h.assertValueEqual(count(gourd, Items.PUMPKIN), 3, "3 pumpkins");
+        h.assertValueEqual(count(gourd, Items.CACTUS), 4, "4 cactus");
+        h.assertValueEqual(count(gourd, Items.KELP), 6, "6 kelp, all in the same cycle");
         h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
         FarmBlockEntity gen = farm(h, FarmKind.GENERATOR);
         cycles(h, gen, 1);
@@ -225,6 +220,10 @@ public class FarmGameTest {
         cycles(h, moss, 10);
         h.assertValueEqual(count(moss, Items.MOSS_BLOCK), 30, "3 moss blocks a cycle");
         h.assertValueEqual(count(moss, Items.MOSS_CARPET), 20, "2 carpets");
+        h.assertValueEqual(count(moss, Items.PALE_MOSS_BLOCK), 30, "3 pale moss blocks a cycle");
+        h.assertValueEqual(count(moss, Items.PALE_MOSS_CARPET), 20, "2 pale carpets");
+        h.assertValueEqual(count(moss, Items.PALE_HANGING_MOSS), 20, "2 pale hanging moss");
+        h.assertValueEqual(count(moss, Items.RESIN_CLUMP), 60, "6 resin clumps a cycle");
         h.assertTrue(count(moss, Items.AZALEA) + count(moss, Items.FLOWERING_AZALEA) <= 10, "the odd azalea");
         h.succeed();
     }
@@ -254,31 +253,19 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
-    public void beeFarmMakesCombAndHoneyInATank(GameTestHelper h) {
+    public void beeFarmMakesCombAndHoneyBottles(GameTestHelper h) {
         FarmBlockEntity bees = farm(h, FarmKind.BEE);
         cycles(h, bees, 10);
         h.assertTrue(count(bees, Items.HONEYCOMB) >= 10 && count(bees, Items.HONEYCOMB) <= 30, "1 to 3 honeycomb a cycle: " + count(bees, Items.HONEYCOMB));
-        h.assertValueEqual(bees.honey().stored(), 20 * net.storagenexus.essentials.farm.HoneyTank.BOTTLE, "2 bottles of honey a cycle in the tank");
-        // Pipes can take it out and not put it in
-        var outside = bees.honey().outside();
-        h.assertTrue(!outside.supportsInsertion(), "nothing goes in from outside");
-        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
-            long out = outside.extract(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.storagenexus.essentials.registry.ModFluids.HONEY),
-                    net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, tx);
-            h.assertValueEqual(out, net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, "a bucket of honey through a pipe");
-            tx.commit();
-        }
-        // A glass bottle takes a bottle of honey
-        h.assertTrue(bees.honey().takeBottle(), "a bottle of honey");
-        h.assertValueEqual(bees.honey().stored(), 20 * net.storagenexus.essentials.farm.HoneyTank.BOTTLE - net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET
-                - net.storagenexus.essentials.farm.HoneyTank.BOTTLE, "taken from the tank");
-        // And it survives a save
+        h.assertValueEqual(count(bees, Items.HONEY_BOTTLE), 20, "2 bottles of honey a cycle in the output");
+        // A farm saved with 1.19's honey tank (a quarter bucket a bottle) hands it back as bottles
         var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess());
         bees.saveWithFullMetadata(out);
+        out.putLong("honey", 5 * (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 4));
         FarmBlockEntity loaded = new FarmBlockEntity(bees.getBlockPos(), bees.getBlockState());
         loaded.setLevel(h.getLevel());
         loaded.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess(), out.buildResult()));
-        h.assertValueEqual(loaded.honey().stored(), bees.honey().stored(), "the honey is saved with the farm");
+        h.assertValueEqual(count(loaded, Items.HONEY_BOTTLE), 25, "the old tank comes back as 5 bottles");
         h.succeed();
     }
 

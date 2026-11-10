@@ -3,6 +3,19 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.20.1
+
+* **The Bee Farm makes honey bottles**: every cycle it puts 1 to 3 honeycomb and 2 honey bottles in its output slots,
+  where hoppers and pipes take them. The internal tank and the glass bottle right-click are gone; honey a 1.19 farm
+  had stored comes out as bottles when the world loads.
+* **The Gourd and Cactus Farm makes everything at once** (12 melon slices, 3 pumpkins, 4 cactus and 6 kelp a cycle);
+  its mode button is gone.
+* **The Iron Farm no longer makes poppies** (the `ironFarmPoppies` setting is gone).
+* **The Moss Farm also makes resin and the pale variants**: 6 resin clumps, 3 pale moss blocks, 2 pale moss carpet and 2
+  pale hanging moss a cycle, on top of the usual moss.
+* **The Nexium Spear's textures lose two stray corner fragments** (floating pixels at the edges).
+* **The sort key's message is drawn on top of the screen**, at the top centre, so it can be seen over a tall barrel.
+
 ## 1.20.0
 
 * **Inventory sorting**: press **R** over a container or over your main inventory to sort just that area, never the

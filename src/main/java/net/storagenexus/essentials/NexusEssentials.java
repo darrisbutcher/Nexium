@@ -43,10 +43,6 @@ public final class NexusEssentials {
         ModBlocks.init();
         ModItems.init();
         ModBlockEntities.init();
-        // Pipes and tanks can take honey out of a Bee Farm (never put anything in)
-        net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.registerForBlockEntity(
-                (farm, direction) -> farm.kind() == net.storagenexus.essentials.farm.FarmKind.BEE ? farm.honey().outside() : null,
-                ModBlockEntities.FARM);
         ModMenus.init();
         ModPayloads.init();
         ExtraSlotEvents.init();

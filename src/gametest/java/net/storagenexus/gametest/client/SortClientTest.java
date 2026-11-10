@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.storagenexus.client.SortClient;
@@ -98,6 +99,30 @@ public class SortClientTest implements FabricClientGameTest {
             check(hotbarPart(after).equals(hotbar), "the hotbar did not change: " + hotbarPart(after));
             check(!playerPart(after).equals(playerPart(before)), "the inventory was sorted");
             System.out.println("[nexus] sort inventory: " + ctx.takeScreenshot("nexus_sort_inventory"));
+
+            // A Netherite barrel is tall: the message must still be on top of the screen
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                var pos = player.blockPosition().offset(2, 0, 0);
+                player.level().setBlockAndUpdate(pos, net.storagenexus.registry.ModBlocks.BARRELS.get(net.storagenexus.barrel.BarrelTier.NETHERITE).defaultBlockState());
+                var barrel = (net.storagenexus.barrel.TieredBarrelBlockEntity) player.level().getBlockEntity(pos);
+                barrel.setItem(3, new ItemStack(Items.WHEAT, 30));
+                barrel.setItem(40, new ItemStack(Items.APPLE, 2));
+                barrel.setItem(77, new ItemStack(Items.BREAD, 5));
+                net.storagenexus.util.Menus.open(player, barrel.getDisplayName(), 120, (id, inv, p) -> new net.storagenexus.barrel.BarrelMenu(id, inv, barrel, 120));
+            });
+            ctx.waitTicks(10);
+            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+            int[] last = ctx.computeOnClient(mc -> {
+                var screen = (AbstractContainerScreen<?>) mc.gui.screen();
+                Slot slot = null;
+                for (Slot sl : screen.getMenu().slots) if (!(sl.container instanceof net.minecraft.world.entity.player.Inventory)) slot = sl;
+                return new int[]{slot.x + 8, slot.y + 8};
+            });
+            moveTo(ctx, last[0], last[1], false);
+            press(ctx);
+            ctx.waitTicks(4);
+            System.out.println("[nexus] sort barrel: " + ctx.takeScreenshot("nexus_sort_barrel"));
         }
     }
 

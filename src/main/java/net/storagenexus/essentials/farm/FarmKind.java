@@ -43,13 +43,13 @@ public enum FarmKind {
     LIVESTOCK("livestock_farm", Input.FEED, 6),
     /** Wheat, carrots, potatoes and beetroot with their seeds; bone meal speeds it up. */
     CROP("crop_farm", Input.BONE_MEAL_BOOST, 6),
-    /** Melons, pumpkins, cactus or kelp, by its mode. */
+    /** Melon slices, pumpkins, cactus and kelp, all every cycle. */
     GOURD("gourd_farm", Input.NONE, 1),
     /** Cobblestone, stone, gravel, sand, clay, basalt or obsidian, by its mode. */
     GENERATOR("generator_farm", Input.NONE, 1),
-    /** Honeycomb into the output, honey into an internal tank. */
+    /** Honeycomb and bottles of honey into the output. */
     BEE("bee_farm", Input.NONE, 1),
-    /** Moss blocks, carpet and a little azalea; needs bone meal. */
+    /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea; needs bone meal. */
     MOSS("moss_farm", Input.BONE_MEAL, 3);
 
     /** What the input slot takes: nothing, villagers' food, gold, livestock feed, or bone meal (needed, or only a speed-up). */
@@ -169,7 +169,6 @@ public enum FarmKind {
     /** The modes a mode button steps through (empty for farms with none), as lang key suffixes. */
     public java.util.List<String> modes() {
         return switch (this) {
-            case GOURD -> java.util.List.of("melon", "pumpkin", "cactus", "kelp");
             case GENERATOR -> java.util.List.of("cobblestone", "stone", "gravel", "sand", "clay", "basalt", "obsidian");
             default -> java.util.List.of();
         };
