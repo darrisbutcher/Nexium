@@ -20,6 +20,7 @@
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",
+      "net.storagenexus.gametest.client.SortClientTest",
       "net.storagenexus.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
@@ -45,6 +46,7 @@
       "net.storagenexus.gametest.DiskGameTest",
       "net.storagenexus.gametest.IronFarmGameTest",
       "net.storagenexus.gametest.KeepContentsGameTest",
+      "net.storagenexus.gametest.SortGameTest",
       "net.storagenexus.gametest.ModuleGameTest",
       "net.storagenexus.gametest.NexiumGameTest",
       "net.storagenexus.gametest.OutputGameTest",

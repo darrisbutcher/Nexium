@@ -27,6 +27,10 @@ public final class ModPayloads {
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(DrawerClickPayload.TYPE, DrawerClickPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ToolMenuPayload.TYPE, ToolMenuPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.sort.SortPayload.TYPE, net.storagenexus.sort.SortPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(net.storagenexus.sort.SortPayload.TYPE, (payload, context) ->
+                net.storagenexus.sort.InventorySorter.sort(context.player(), payload.containerId(), payload.player(),
+                        net.storagenexus.sort.SortOrder.byIndex(payload.order())));
         PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.VeinKeyPayload.TYPE, net.storagenexus.aiot.module.VeinKeyPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.AreaTogglePayload.TYPE, net.storagenexus.aiot.module.AreaTogglePayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.aiot.module.TunnelStepPayload.TYPE, net.storagenexus.aiot.module.TunnelStepPayload.STREAM_CODEC);

@@ -80,6 +80,15 @@ on). What is inside stays inside.
   **Right-click the search box** (here, on the recipe book's, and in the Codex) to clear it. The terminal's search, the recipe book's and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
 
+### Inventory sorting
+
+Press **R** (`Sort Inventory` under Nexium in Controls) with the mouse over a container's slots to sort that container,
+or over the main inventory to sort that: only the area under the mouse, never both, and never the hotbar. Chests,
+barrels, ender chests, shulker boxes, hoppers, dispensers, droppers and Nexium barrels sort. Stacks are merged first;
+shulker boxes and bundles go to the bottom-right slots. Pressing R again over the same area steps through
+**A to Z**, **creative menu order** and **biggest stacks first**. With JEI, REI or EMI installed, R over an item still
+shows its recipes: sort with the mouse over an empty slot or a gap between slots.
+
 ### Disk Drive and storage disks
 Digital storage for the network, counted like Refined Storage: a disk holds a number of items, of any kinds.
 
