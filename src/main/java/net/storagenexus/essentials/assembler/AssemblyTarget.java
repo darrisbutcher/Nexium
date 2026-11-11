@@ -38,6 +38,7 @@ public enum AssemblyTarget {
     GENERATOR(FarmKind.GENERATOR),
     BEE(FarmKind.BEE),
     MOSS(FarmKind.MOSS),
+    FROGLIGHT(FarmKind.FROGLIGHT),
     LIBRARIAN(null);
 
     /** The most lines any target has (the Iron Farm: seven parts and its smooth stone). */

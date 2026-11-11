@@ -47,12 +47,25 @@ public final class FarmRecipe {
         return new Part(key, needed, s -> IronFarmRecipe.mobOf(s) == type, egg, true);
     }
 
+    /** Captured frogs of one variant (a spawn egg doesn't say which variant it makes, so it doesn't count). */
+    private static Part frog(String key, int needed, String variant) {
+        return new Part(key, needed, s -> {
+            var captured = s.get(net.storagenexus.essentials.registry.ModComponents.CAPTURED_MOB);
+            return captured != null && captured.type() == EntityTypes.FROG
+                    && captured.data().getStringOr("variant", "").endsWith(":" + variant);
+        }, Items.FROG_SPAWN_EGG, true);
+    }
+
     private static Part filler(String key, int stacks, Predicate<ItemStack> matches, Item icon) {
         return new Part(key, stacks * 64, matches, icon, false);
     }
 
     private static final net.minecraft.tags.TagKey<Item> SMALL_FLOWERS = net.minecraft.tags.TagKey.create(
             net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.Identifier.withDefaultNamespace("small_flowers"));
+
+    /** Every glass block, plain, tinted or stained. */
+    private static final net.minecraft.tags.TagKey<Item> GLASS_BLOCKS = net.minecraft.tags.TagKey.create(
+            net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "glass_blocks"));
 
     private static final Map<FarmKind, FarmRecipe> RECIPES = new EnumMap<>(FarmKind.class);
 
@@ -187,6 +200,12 @@ public final class FarmRecipe {
                 item("azaleas", 8, Items.AZALEA),
                 item("water_buckets", 4, Items.WATER_BUCKET),
                 item("bone_blocks", 8, Items.BONE_BLOCK)));
+        RECIPES.put(FarmKind.FROGLIGHT, new FarmRecipe(FarmKind.FROGLIGHT,
+                filler("glass", 4, s -> s.is(GLASS_BLOCKS), Items.GLASS),
+                frog("frogs_temperate", 3, "temperate"),
+                frog("frogs_warm", 3, "warm"),
+                frog("frogs_cold", 3, "cold"),
+                mob("slimes", 9, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG)));
     }
 
     public static FarmRecipe of(FarmKind kind) {

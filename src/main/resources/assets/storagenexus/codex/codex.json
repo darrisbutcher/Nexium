@@ -121,6 +121,7 @@
         "generatorfarm",
         "beefarm",
         "mossfarm",
+        "froglightfarm",
         "freezer",
         "harvest"
       ]
@@ -1231,6 +1232,7 @@
         "generatorfarm",
         "beefarm",
         "mossfarm",
+        "froglightfarm",
         "iron_farm"
       ]
     },
@@ -1814,6 +1816,22 @@
       ],
       "aliases": [
         "Moss Farm"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
+    "froglightfarm": {
+      "pages": [
+        "mobs.froglightfarm"
+      ],
+      "icon": "nexusessentials:froglight_farm",
+      "items": [
+        "nexusessentials:froglight_farm"
+      ],
+      "aliases": [
+        "Froglight Farm"
       ],
       "see": [
         "farms",

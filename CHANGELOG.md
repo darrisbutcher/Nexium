@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.20.2
+
+* **Froglight Farm**: a new one-block farm at the Farm Assembler. It takes 3 temperate, 3 warm and 3 cold frogs and 9
+  slimes (all Captured Mobs) and 256 glass of any colour, and makes 1 ochre, 1 verdant and 1 pearlescent froglight
+  every 20 seconds (`froglightFarmTicks`).
+
 ## 1.20.1
 
 * **The Bee Farm makes honey bottles**: every cycle it puts 1 to 3 honeycomb and 2 honey bottles in its output slots,
