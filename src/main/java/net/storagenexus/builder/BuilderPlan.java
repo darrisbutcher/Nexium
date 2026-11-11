@@ -13,6 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -37,13 +39,30 @@ import java.util.Set;
  *       for the block in your offhand.</li>
  * </ul>
  * The block placed is the one in your offhand if you hold one there, otherwise the clicked block, facing the same way.
+ * Either way it is a freshly placed block: it never copies how far a crop has grown, how many candles stand together or
+ * anything else that is worth more than the one item it uses. A double slab is the exception: it is placed as one, and
+ * uses two slabs.
  *
- * @param targets where blocks go (Exchange: the blocks it replaces)
- * @param state   what goes there
- * @param item    the item each one uses up
+ * @param targets  where blocks go (Exchange: the blocks it replaces)
+ * @param state    what goes there
+ * @param item     the item each one uses up
+ * @param perBlock how many of that item each block uses (2 for a double slab, else 1)
  */
-public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, boolean exchange) {
-    public static final BuilderPlan NONE = new BuilderPlan(List.of(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Items.AIR, false);
+public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, int perBlock, boolean exchange) {
+    public static final BuilderPlan NONE = new BuilderPlan(List.of(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Items.AIR, 1, false);
+
+    /** What a copy of the clicked block keeps: which way it faces and sits, nothing that changes what it is worth. */
+    private static final List<Property<?>> ORIENTATION = List.of(
+            BlockStateProperties.FACING, BlockStateProperties.HORIZONTAL_FACING, BlockStateProperties.FACING_HOPPER,
+            BlockStateProperties.VERTICAL_DIRECTION, BlockStateProperties.AXIS, BlockStateProperties.HORIZONTAL_AXIS,
+            BlockStateProperties.ROTATION_16, BlockStateProperties.HALF, BlockStateProperties.STAIRS_SHAPE,
+            BlockStateProperties.SLAB_TYPE, BlockStateProperties.ATTACH_FACE, BlockStateProperties.ORIENTATION,
+            BlockStateProperties.HANGING, BlockStateProperties.OPEN);
+
+    /** How many of one item stand in the block: always the one a fresh block has. */
+    private static final List<Property<?>> AMOUNTS = List.of(
+            BlockStateProperties.CANDLES, BlockStateProperties.PICKLES, BlockStateProperties.EGGS, BlockStateProperties.LAYERS,
+            BlockStateProperties.FLOWER_AMOUNT, BlockStateProperties.SEGMENT_AMOUNT);
 
     public boolean isEmpty() {
         return targets.isEmpty();
@@ -70,13 +89,14 @@ public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, b
                 return s.getBlock() == clickedBlock && level.getBlockEntity(q) == null && s.getDestroySpeed(level, q) >= 0
                         && level.getBlockState(q.relative(face)).canBeReplaced() && state.canSurvive(level, q);
             });
-            return targets.isEmpty() ? NONE : new BuilderPlan(targets, state, offBlock.asItem(), true);
+            return targets.isEmpty() ? NONE : new BuilderPlan(targets, state, offBlock.asItem(), perBlock(state), true);
         }
 
         Block block = offBlock != null ? offBlock : clickedBlock;
         Item item = block.asItem();
         if (item == Items.AIR) return NONE;
-        BlockState state = offBlock != null ? placementState(level, player, offhand, offBlock, clicked, face) : dry(clickedState);
+        BlockState state = offBlock != null ? placementState(level, player, offhand, offBlock, clicked, face)
+                : oriented(placementState(level, player, new ItemStack(item), clickedBlock, clicked, face), clickedState);
         if (multiBlock(state)) return NONE;
         List<BlockPos> bases = spread(level, clicked, steps, max, q -> {
             if (level.getBlockState(q).getBlock() != clickedBlock) return false;
@@ -85,7 +105,7 @@ public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, b
         });
         List<BlockPos> targets = new ArrayList<>(bases.size());
         for (BlockPos q : bases) targets.add(q.relative(face));
-        return targets.isEmpty() ? NONE : new BuilderPlan(targets, state, item, false);
+        return targets.isEmpty() ? NONE : new BuilderPlan(targets, state, item, perBlock(state), false);
     }
 
     /** Whether {@code state} can go at {@code pos}: the space is free (air, water, grass...), it can stand there, and no one is in the way. */
@@ -149,10 +169,37 @@ public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, b
         return state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state;
     }
 
-    /** How the offhand block would sit if placed by hand against the clicked face. */
+    /**
+     * How the block would sit if placed by hand against the clicked face, as a new block of its own: never joined to the
+     * clicked one (a slab making it a double slab, a candle joining the candles there), never full of water.
+     */
     private static BlockState placementState(Level level, Player player, ItemStack stack, Block block, BlockPos clicked, Direction face) {
         BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(clicked).relative(face, 0.5), face, clicked, false);
-        BlockState state = block.getStateForPlacement(new BlockPlaceContext(player, InteractionHand.OFF_HAND, stack, hit));
-        return dry(state == null ? block.defaultBlockState() : state);
+        BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.OFF_HAND, stack, hit);
+        if (context.replacingClickedOnBlock()) context = BlockPlaceContext.at(context, clicked.relative(face), face);
+        BlockState state = block.getStateForPlacement(context);
+        return single(dry(state == null ? block.defaultBlockState() : state));
+    }
+
+    /** The fresh block, turned the way {@code like} is. */
+    private static BlockState oriented(BlockState fresh, BlockState like) {
+        for (Property<?> property : ORIENTATION) fresh = copy(fresh, like, property);
+        return fresh;
+    }
+
+    private static <T extends Comparable<T>> BlockState copy(BlockState to, BlockState from, Property<T> property) {
+        return to.hasProperty(property) && from.hasProperty(property) ? to.setValue(property, from.getValue(property)) : to;
+    }
+
+    /** One candle, one layer of snow, one sea pickle: what a single item places. */
+    private static BlockState single(BlockState state) {
+        BlockState fresh = state.getBlock().defaultBlockState();
+        for (Property<?> property : AMOUNTS) state = copy(state, fresh, property);
+        return state;
+    }
+
+    /** A double slab is two slabs; everything else is one item. */
+    private static int perBlock(BlockState state) {
+        return state.hasProperty(BlockStateProperties.SLAB_TYPE) && state.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.DOUBLE ? 2 : 1;
     }
 }

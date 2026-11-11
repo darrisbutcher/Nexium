@@ -13,6 +13,8 @@ public final class ModTags {
     public static final TagKey<Item> CALMS_PIGLINS = TagKey.create(Registries.ITEM, NexusEssentials.id("calms_piglins"));
     /** Mobs that can't be picked up (the Ender Dragon and the Wither). */
     public static final TagKey<EntityType<?>> CANNOT_BE_PICKED_UP = TagKey.create(Registries.ENTITY_TYPE, NexusEssentials.id("cannot_be_picked_up"));
+    /** Boss mobs that cost experience levels to pick up (the Warden, the Elder Guardian and other mods' bosses). */
+    public static final TagKey<EntityType<?>> PICK_UP_COSTS_LEVELS = TagKey.create(Registries.ENTITY_TYPE, NexusEssentials.id("pick_up_costs_levels"));
     /** Blocks the Elixir of Bedrock Breaking lets you mine (bedrock). */
     public static final TagKey<Block> BEDROCK_BREAKER_MINEABLE = TagKey.create(Registries.BLOCK, NexusEssentials.id("bedrock_breaker_mineable"));
     /** Damage a dropped Captured Mob item shrugs off, so a pet can't burn up or be blown up. */

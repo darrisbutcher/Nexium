@@ -49,7 +49,8 @@ import java.util.stream.IntStream;
  * what its kind makes. A full output, a missing input or a redstone signal pauses the cycle. The progress is kept in the
  * dropped item.
  */
-public class FarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos> {
+public class FarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos>,
+        net.storagenexus.util.ComparatorReadable {
     public static final int OUTPUT_SLOTS = 27;
     public static final int INPUT_SLOT = OUTPUT_SLOTS;
     public static final int SIZE = OUTPUT_SLOTS + 1;
@@ -60,6 +61,8 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
 
     /** Skull, ingot and shell odds are vanilla's plus Looting V: 2.5% + 5 x 1%, and 50% + 5 x 6.25%. */
     private static final float SKULL_CHANCE = 0.075F, INGOT_CHANCE = 0.075F, SHELL_CHANCE = 0.8125F;
+    /** The Monster Farm's Totem of Undying: this often per cycle, not the evoker's every time. */
+    public static final float TOTEM_CHANCE = 0.02F;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private int progress;
@@ -69,6 +72,8 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     private int boostLeft;
     /** Not saved; worked out again every tick. */
     private boolean full, starved;
+    /** Not saved: items a cycle made that found no room. */
+    private int overflow;
 
     public FarmBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FARM, pos, state);
@@ -86,7 +91,10 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
 
     private void work(ServerLevel level) {
         FarmKind kind = kind();
+        boolean wasFull = full;
         full = !hasRoom(kind);
+        // A comparator reads 15 while the farm is stopped for lack of room
+        if (full != wasFull) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         boolean boneMeal = kind.input() == FarmKind.Input.BONE_MEAL || kind.input() == FarmKind.Input.BONE_MEAL_BOOST;
         // A bone meal is used up when the one before it has run out of cycles
         if (boneMeal && boostLeft <= 0 && hasInput(kind) && !full && !isPaused()) {
@@ -146,7 +154,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
                 roll(level, EntityTypes.CREEPER, null);
                 roll(level, EntityTypes.PILLAGER, null);
                 roll(level, EntityTypes.VINDICATOR, null);
-                roll(level, EntityTypes.EVOKER, null);
+                // An evoker always drops its totem; here it is a rare find instead
+                roll(level, EntityTypes.EVOKER, null, loot -> !loot.is(Items.TOTEM_OF_UNDYING));
+                if (random.nextFloat() < TOTEM_CHANCE) insert(new ItemStack(Items.TOTEM_OF_UNDYING));
             }
             case NETHER_MOB -> {
                 roll(level, EntityTypes.BLAZE, null);
@@ -231,6 +241,12 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
      * into the output. {@code setup} gives the mob its size or colour first.
      */
     private void roll(ServerLevel level, EntityType<?> type, java.util.function.@org.jspecify.annotations.Nullable Consumer<Entity> setup) {
+        roll(level, type, setup, loot -> true);
+    }
+
+    /** The same, keeping only the drops that pass {@code keep}. */
+    private void roll(ServerLevel level, EntityType<?> type, java.util.function.@org.jspecify.annotations.Nullable Consumer<Entity> setup,
+                      java.util.function.Predicate<ItemStack> keep) {
         Entity mob = type.create(level, EntitySpawnReason.SPAWNER);
         if (!(mob instanceof LivingEntity)) return;
         if (setup != null) setup.accept(mob);
@@ -246,7 +262,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
                 .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, killer)
                 .withOptionalParameter(LootContextParams.LAST_DAMAGE_PLAYER, killer)
                 .create(LootContextParamSets.ENTITY);
-        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) insert(loot);
+        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) {
+            if (keep.test(loot)) insert(loot);
+        }
     }
 
     /** A sheep colour at the natural spawn odds. */
@@ -276,6 +294,25 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         return empty >= kind.slotsNeeded();
     }
 
+    /**
+     * What a comparator reads: how full the 27 output slots are, as for a chest, and 15 as soon as there is no room for
+     * another cycle (which is when the farm stops).
+     */
+    @Override
+    public int comparatorSignal() {
+        return full ? 15 : net.storagenexus.util.ComparatorReadable.signal(outputFill(items, OUTPUT_SLOTS));
+    }
+
+    /** How full the first {@code slots} slots are, 0 to 1, each slot by its own stack size. */
+    public static double outputFill(java.util.List<ItemStack> items, int slots) {
+        double sum = 0;
+        for (int i = 0; i < slots; i++) {
+            ItemStack stack = items.get(i);
+            if (!stack.isEmpty()) sum += (double) stack.getCount() / stack.getMaxStackSize();
+        }
+        return sum / slots;
+    }
+
     /** Whether the input slot holds what one cycle takes. */
     private boolean hasInput(FarmKind kind) {
         ItemStack stack = items.get(INPUT_SLOT);
@@ -295,7 +332,12 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         for (int i = 0; i < OUTPUT_SLOTS && !stack.isEmpty(); i++) {
             if (items.get(i).isEmpty()) items.set(i, stack.split(stack.getMaxStackSize()));
         }
+        // Never happens while each kind's slotsNeeded covers what a cycle makes; the tests watch this
+        overflow += stack.getCount();
     }
+
+    /** How many items have not fitted the output since the farm was placed or loaded (always 0; for the tests). */
+    public int overflow() { return overflow; }
 
     // ---------------------------------------------------------------- what the screen and tests read
 

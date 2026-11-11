@@ -3,6 +3,29 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.20.3
+
+Fixes from a review of the whole mod, two balance changes, and comparator output.
+
+* **Construction Builder: no more free items.** A copy of the clicked block is now a freshly placed block facing the
+  same way, so it no longer copies a crop's growth (seeds placed ripe wheat), a stack of candles or snow layers, and the
+  like. A double slab is still placed as one, and now uses two slabs (it used one, doubling them).
+* **Exchange gives what the old blocks drop when broken**, not the blocks themselves: cobblestone for stone, nothing for
+  glass, and no more budding amethyst or reinforced deepslate. Undo takes those drops back.
+* **A Construction Builder that breaks drops its Nexus Link Module**, as an AIOT does.
+* **Farms no longer lose output when nearly full.** The Gourd and Cactus, Bee, Froglight and Moss farms made more kinds
+  of item than they left room for, and the rest vanished; they now wait for enough free slots.
+* **Crafting Terminal**: shift-clicking a craft your inventory has no room for all of no longer loses the rest; it goes
+  into the network, else onto the ground.
+* Fences, panes and walls placed by the builder join their neighbours, and Undo takes all of them back (it used to
+  skip the ones whose neighbours it had just removed).
+* **Monster Farm**: the Totem of Undying is a 2% find each cycle, not one every cycle.
+* **Comparators read drawers and farms.** A drawer (item, fluid or compacting) gives 0 when empty and 15 when full,
+  like a chest; one with 2 or 4 sections gives their average. A farm gives how full its output is, and 15 once it has
+  stopped for lack of room.
+* **Picking up bosses**: the Warden and the Elder Guardian cost 10 experience levels (`bossPickUpLevels`, 0 for free).
+  The Ender Dragon and the Wither still can't be picked up.
+
 ## 1.20.2
 
 * **Froglight Farm**: a new one-block farm at the Farm Assembler. It takes 3 temperate, 3 warm and 3 cold frogs and 9

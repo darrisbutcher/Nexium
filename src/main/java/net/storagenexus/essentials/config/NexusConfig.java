@@ -55,6 +55,8 @@ public final class NexusConfig {
     public boolean mobPickUp = true;
     /** Only the owner of a tamed mob may pick it up. */
     public boolean onlyOwnersPickUpPets = true;
+    /** Experience levels it costs to pick up a boss mob (the Warden, the Elder Guardian). 0 makes them free. */
+    public int bossPickUpLevels = 10;
 
     // --- Ancient debris
     /** Ancient debris drops netherite scrap: 2 per block, multiplied by Fortune like diamond ore. Silk Touch still gives the block. */
@@ -198,6 +200,7 @@ public final class NexusConfig {
     private void clamp() {
         magnetMaxRange = Math.max(4, Math.min(64, magnetMaxRange));
         bedrockBreakerSeconds = Math.max(1, Math.min(24 * 60 * 60, bedrockBreakerSeconds));
+        bossPickUpLevels = Math.max(0, Math.min(1000, bossPickUpLevels));
         librarianVillagers = Math.max(1, Math.min(54, librarianVillagers));
         ironFarmGolemTicks = Math.max(1, Math.min(24000, ironFarmGolemTicks));
         ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));

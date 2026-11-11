@@ -643,6 +643,27 @@ public class EssentialsGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void aBossCostsLevelsToPickUp(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.entity.monster.ElderGuardian boss = h.spawn(EntityTypes.ELDER_GUARDIAN, CENTER.east(2));
+        h.assertValueEqual(net.storagenexus.essentials.capture.MobCapture.levelCost(boss), 10, "a boss costs 10 levels");
+        player.setExperienceLevels(9);
+        h.assertTrue(sneakClick(h, player, boss) == InteractionResult.FAIL && boss.isAlive(), "9 levels are not enough");
+        h.assertValueEqual(player.experienceLevel, 9, "and nothing is taken");
+        player.setExperienceLevels(12);
+        h.assertTrue(sneakClick(h, player, boss).consumesAction() && boss.isRemoved(), "with 12 levels it is picked up");
+        h.assertValueEqual(player.experienceLevel, 2, "for 10 levels");
+        // Any other mob is free
+        player.getInventory().clearContent(); // the boss went into the hand; picking up needs an empty one
+        Cow cow = h.spawn(EntityTypes.COW, CENTER.west(2));
+        h.assertValueEqual(net.storagenexus.essentials.capture.MobCapture.levelCost(cow), 0, "a cow costs nothing");
+        h.assertTrue(sneakClick(h, player, cow).consumesAction() && cow.isRemoved(), "a cow is picked up");
+        h.assertValueEqual(player.experienceLevel, 2, "for no levels");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void cannotPickUpBossesOrOthersPets(GameTestHelper h) {
         ServerPlayer player = player(h);
         WitherBoss wither = h.spawn(EntityTypes.WITHER, CENTER.east(3));

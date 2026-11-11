@@ -22,6 +22,7 @@ import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.Upgradeable;
+import net.storagenexus.util.ComparatorReadable;
 import net.storagenexus.util.SyncedBlockEntity;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.List;
  * Fluid storage with upgrade slots. Fluid drawers hold 32 buckets per block (a 2x2 splits it
  * into 8 buckets per slot); the Fluid Tank is the same thing with one slot and no front.
  */
-public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable {
+public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ComparatorReadable {
     public static final long BASE_CAPACITY = 32 * FluidConstants.BUCKET;
 
     private final int slotCount;
@@ -74,6 +75,20 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
 
     long capacityFor(int mult) {
         return baseCapacity() * mult / slotCount;
+    }
+
+    /** How full the drawer is, 0 to 1: its tanks' fill levels, averaged. */
+    public double fillFraction() {
+        long capacity = capacityFor(multiplier);
+        if (capacity <= 0) return 0;
+        double sum = 0;
+        for (FluidSlot slot : slots) sum += Math.min(1.0, (double) slot.amount / capacity);
+        return sum / slotCount;
+    }
+
+    @Override
+    public int comparatorSignal() {
+        return ComparatorReadable.signal(fillFraction());
     }
 
     public class FluidSlot extends SingleVariantStorage<FluidVariant> {

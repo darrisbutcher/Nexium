@@ -24,6 +24,7 @@ import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.Upgradeable;
+import net.storagenexus.util.ComparatorReadable;
 import net.storagenexus.util.SyncedBlockEntity;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.List;
  * Stores everything as a count of the smallest form ("units"). Each tier shows
  * units / ratio. Holds 54 stacks of the largest form, times capacity upgrades.
  */
-public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer {
+public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer, ComparatorReadable {
     public static final int TIERS = 3;
 
     private final ItemVariant[] tiers = {ItemVariant.blank(), ItemVariant.blank(), ItemVariant.blank()};
@@ -77,6 +78,11 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     public double fillFraction() {
         long cap = capacityUnits(multiplier);
         return cap <= 0 ? 0 : Math.min(1.0, (double) units / cap);
+    }
+
+    @Override
+    public int comparatorSignal() {
+        return ComparatorReadable.signal(fillFraction());
     }
 
     /** 54 stacks of the largest form (e.g. 54 stacks of iron blocks), times upgrades, in units. */

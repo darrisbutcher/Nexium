@@ -23,6 +23,7 @@ import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModComponents;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.Upgradeable;
+import net.storagenexus.util.ComparatorReadable;
 import net.storagenexus.util.SyncedBlockEntity;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.List;
  * Item drawer. A 1x1 holds 54 stacks; 1x2 and 2x2 split the same total across their slots
  * (27 and 13.5 stacks each). Capacity upgrades multiply that.
  */
-public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer {
+public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer, ComparatorReadable {
     public static final int BASE_STACKS = 54;
 
     private final int slotCount;
@@ -91,6 +92,21 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
     private void contentsChanged() {
         dirty = true;
         setChanged();
+    }
+
+    /** How full the drawer is, 0 to 1: its sections' fill levels, averaged (an empty section counts as 0). */
+    public double fillFraction() {
+        double sum = 0;
+        for (DrawerSlot slot : slots) {
+            long capacity = slot.capacity();
+            if (capacity > 0) sum += Math.min(1.0, (double) slot.amount / capacity);
+        }
+        return sum / slotCount;
+    }
+
+    @Override
+    public int comparatorSignal() {
+        return ComparatorReadable.signal(fillFraction());
     }
 
     public class DrawerSlot extends SingleVariantStorage<ItemVariant> {
