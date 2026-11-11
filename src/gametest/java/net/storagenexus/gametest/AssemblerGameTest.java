@@ -56,6 +56,12 @@ public class AssemblerGameTest {
         return MobCapture.toItem(new CapturedMob(type, new CompoundTag(), Optional.empty(), 20.0F, 20.0F, false));
     }
 
+    private static ItemStack capturedFrog(String variant) {
+        CompoundTag data = new CompoundTag();
+        data.putString("variant", "minecraft:" + variant);
+        return MobCapture.toItem(new CapturedMob(EntityTypes.FROG, data, Optional.empty(), 10.0F, 10.0F, false));
+    }
+
     private static void add(List<ItemStack> list, Item item, int count) {
         while (count > 0) {
             int n = Math.min(count, item.getDefaultMaxStackSize());
@@ -242,6 +248,14 @@ public class AssemblerGameTest {
                 add(list, Items.BONE_BLOCK, 8);
                 add(list, Items.CLAY, 768);
             }
+            case FROGLIGHT -> {
+                // Frogs only count as Captured Mobs: a spawn egg doesn't say which variant it makes
+                for (String variant : new String[]{"temperate", "warm", "cold"}) {
+                    for (int i = 0; i < 3; i++) list.add(capturedFrog(variant));
+                }
+                mobs(list, capturedMobs, 9, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG);
+                for (int i = 0; i < 4; i++) { add(list, Items.GLASS, 32); add(list, i % 2 == 0 ? Items.STAINED_GLASS.red() : Items.TINTED_GLASS, 32); }
+            }
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
         }
         return list;
@@ -292,7 +306,8 @@ public class AssemblerGameTest {
                 Map.entry(AssemblyTarget.BAMBOO, 768), Map.entry(AssemblyTarget.NETHER_WART, 768), Map.entry(AssemblyTarget.MONSTER, 768),
                 Map.entry(AssemblyTarget.NETHER_MOB, 768), Map.entry(AssemblyTarget.OCEAN, 768), Map.entry(AssemblyTarget.SLIME, 768),
                 Map.entry(AssemblyTarget.LIVESTOCK, 768), Map.entry(AssemblyTarget.CROP, 768), Map.entry(AssemblyTarget.GOURD, 768),
-                Map.entry(AssemblyTarget.GENERATOR, 768), Map.entry(AssemblyTarget.BEE, 768), Map.entry(AssemblyTarget.MOSS, 768));
+                Map.entry(AssemblyTarget.GENERATOR, 768), Map.entry(AssemblyTarget.BEE, 768), Map.entry(AssemblyTarget.MOSS, 768),
+                Map.entry(AssemblyTarget.FROGLIGHT, 256));
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");

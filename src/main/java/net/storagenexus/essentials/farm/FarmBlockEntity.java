@@ -209,6 +209,11 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
                 insert(new ItemStack(Items.HONEYCOMB, 1 + random.nextInt(3)));
                 insert(new ItemStack(Items.HONEY_BOTTLE, 2));
             }
+            case FROGLIGHT -> {
+                insert(new ItemStack(Items.OCHRE_FROGLIGHT, 1));
+                insert(new ItemStack(Items.VERDANT_FROGLIGHT, 1));
+                insert(new ItemStack(Items.PEARLESCENT_FROGLIGHT, 1));
+            }
             case MOSS -> {
                 insert(new ItemStack(Items.MOSS_BLOCK, 3));
                 insert(new ItemStack(Items.MOSS_CARPET, 2));

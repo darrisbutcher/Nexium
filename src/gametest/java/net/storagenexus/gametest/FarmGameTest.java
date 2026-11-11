@@ -269,6 +269,17 @@ public class FarmGameTest {
         h.succeed();
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void froglightFarmMakesOneOfEachColour(GameTestHelper h) {
+        FarmBlockEntity lights = farm(h, FarmKind.FROGLIGHT);
+        cycles(h, lights, 4);
+        h.assertValueEqual(count(lights, Items.OCHRE_FROGLIGHT), 4, "an ochre froglight a cycle");
+        h.assertValueEqual(count(lights, Items.VERDANT_FROGLIGHT), 4, "a verdant froglight a cycle");
+        h.assertValueEqual(count(lights, Items.PEARLESCENT_FROGLIGHT), 4, "a pearlescent froglight a cycle");
+        h.assertValueEqual(FarmKind.FROGLIGHT.cycleTicks(), 400, "every 20 seconds");
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
     public void theNewFarmsAndTheBreederRunOnTheirTimes(GameTestHelper h) {
         // The defaults (the test world's saved config has already been moved on from the old 24000, too)

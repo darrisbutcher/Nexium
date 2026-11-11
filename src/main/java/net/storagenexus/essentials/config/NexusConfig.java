@@ -123,6 +123,8 @@ public final class NexusConfig {
     public int beeFarmTicks = 400;
     /** Ticks per cycle: moss blocks, carpet and a little azalea (a bone meal lasts 3 cycles). */
     public int mossFarmTicks = 400;
+    /** Ticks per cycle: one ochre, one verdant and one pearlescent froglight. */
+    public int froglightFarmTicks = 400;
 
     // --- Freezer
     /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
@@ -219,6 +221,7 @@ public final class NexusConfig {
         generatorFarmTicks = Math.max(1, Math.min(1_000_000, generatorFarmTicks));
         beeFarmTicks = Math.max(1, Math.min(1_000_000, beeFarmTicks));
         mossFarmTicks = Math.max(1, Math.min(1_000_000, mossFarmTicks));
+        froglightFarmTicks = Math.max(1, Math.min(1_000_000, froglightFarmTicks));
         shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
         freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
         freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));
