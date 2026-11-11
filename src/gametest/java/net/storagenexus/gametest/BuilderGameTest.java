@@ -16,6 +16,15 @@ import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CandleBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.CrossCollisionBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -168,6 +177,124 @@ public class BuilderGameTest {
         floor(h, Blocks.BEDROCK);
         player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.STONE, 9));
         h.assertValueEqual(build(h, player, CENTER, Direction.UP), 0, "bedrock stays");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aDoubleSlabUsesTwoSlabs(GameTestHelper h) {
+        BlockState doubleSlab = Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 3; z++) h.setBlock(new BlockPos(x, 1, z), doubleSlab);
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        player.getInventory().add(new ItemStack(Items.OAK_SLAB, 9));
+        // 9 slabs make 4 double slabs; the odd slab stays in the inventory
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 4, "4 double slabs from 9 slabs");
+        int doubles = 0;
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 3; z++) {
+            BlockState s = h.getBlockState(new BlockPos(x, 2, z));
+            if (s.is(Blocks.OAK_SLAB) && s.getValue(SlabBlock.TYPE) == SlabType.DOUBLE) doubles++;
+        }
+        h.assertValueEqual(doubles, 4, "placed as double slabs");
+        h.assertValueEqual(held(player, Items.OAK_SLAB), 1, "two slabs each, and the odd one given back");
+        // Undo returns both slabs of each
+        h.assertValueEqual(BuilderService.undo(player), 4, "undone");
+        h.assertValueEqual(held(player, Items.OAK_SLAB), 9, "all 9 slabs back");
+        // A single slab clicked on top with the same slab in the offhand is not joined into a double slab
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 3; z++) h.setBlock(new BlockPos(x, 1, z), Blocks.OAK_SLAB);
+        player.getInventory().clearContent();
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(BuilderItem.of(BuilderTier.IRON)));
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.OAK_SLAB, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "a slab on each");
+        h.assertTrue(h.getBlockState(CENTER.above()).getValue(SlabBlock.TYPE) != SlabType.DOUBLE, "single slabs, one item each");
+        h.succeed();
+    }
+
+    @GameTest
+    public void copiesAreFreshBlocksFacingTheSameWay(GameTestHelper h) {
+        // Ripe wheat extended sideways is planted, not grown
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 2; z++) h.setBlock(new BlockPos(x, 1, z), Blocks.FARMLAND);
+        for (int x = 1; x <= 3; x++) h.setBlock(new BlockPos(x, 2, 1), Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7));
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        player.getInventory().add(new ItemStack(Items.WHEAT_SEEDS, 9));
+        h.assertValueEqual(build(h, player, new BlockPos(2, 2, 1), Direction.SOUTH), 3, "a row of wheat");
+        for (int x = 1; x <= 3; x++) {
+            BlockState s = h.getBlockState(new BlockPos(x, 2, 2));
+            h.assertTrue(s.is(Blocks.WHEAT) && s.getValue(CropBlock.AGE) == 0, "just planted, not ripe: " + s);
+        }
+        // Four candles standing together are copied as one candle each
+        for (int x = 1; x <= 3; x++) for (int z = 4; z <= 5; z++) h.setBlock(new BlockPos(x, 1, z), Blocks.STONE);
+        h.setBlock(new BlockPos(2, 2, 4), Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.CANDLES, 4));
+        player.getInventory().add(new ItemStack(Items.CANDLE, 4));
+        h.assertValueEqual(build(h, player, new BlockPos(2, 2, 4), Direction.SOUTH), 1, "a candle beside it");
+        h.assertValueEqual(h.getBlockState(new BlockPos(2, 2, 5)).getValue(CandleBlock.CANDLES), 1, "one candle for one item");
+        // A log on its side is copied on its side
+        h.setBlock(new BlockPos(5, 1, 1), Blocks.OAK_LOG.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.X));
+        player.getInventory().add(new ItemStack(Items.OAK_LOG, 1));
+        h.assertValueEqual(build(h, player, new BlockPos(5, 1, 1), Direction.UP), 1, "a log on top");
+        h.assertValueEqual(h.getBlockState(new BlockPos(5, 2, 1)).getValue(RotatedPillarBlock.AXIS), Direction.Axis.X, "lying the same way");
+        h.succeed();
+    }
+
+    @GameTest
+    public void fencesJoinTheirNeighbours(GameTestHelper h) {
+        floor(h, Blocks.STONE);
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.OAK_FENCE, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "a fence on every block");
+        BlockState middle = h.getBlockState(CENTER.above());
+        h.assertTrue(middle.is(Blocks.OAK_FENCE) && middle.getValue(CrossCollisionBlock.NORTH) && middle.getValue(CrossCollisionBlock.SOUTH)
+                && middle.getValue(CrossCollisionBlock.EAST) && middle.getValue(CrossCollisionBlock.WEST), "the middle fence joins all four ways: " + middle);
+        // Undo still knows them, joined up as they are
+        h.assertValueEqual(BuilderService.undo(player), 9, "all nine undone");
+        h.assertValueEqual(held(player, Items.OAK_FENCE), 9, "and returned");
+        h.succeed();
+    }
+
+    @GameTest
+    public void exchangeGivesWhatBreakingDrops(GameTestHelper h) {
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        ItemStack tool = player.getMainHandItem();
+        BuilderSettings.cycleMode(tool);
+        BuilderSettings.cycleMode(tool);
+        // Stone comes back as cobblestone
+        floor(h, Blocks.STONE);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.DIRT, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "the stone floor");
+        h.assertValueEqual(held(player, Items.COBBLESTONE), 9, "cobblestone, as if mined");
+        h.assertValueEqual(held(player, Items.STONE), 0, "not the stone itself");
+        // Undo takes the cobblestone back and puts the stone back
+        h.assertValueEqual(BuilderService.undo(player), 9, "undone");
+        h.assertValueEqual(count(h, Blocks.STONE, 1), 9, "the stone is back");
+        h.assertValueEqual(held(player, Items.COBBLESTONE), 0, "the cobblestone is taken back");
+        h.assertValueEqual(held(player, Items.DIRT), 9, "the dirt is returned");
+        // Blocks that drop nothing give nothing: glass, and blocks you can't get, like budding amethyst
+        floor(h, Blocks.GLASS);
+        player.getInventory().clearContent();
+        player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.DIRT, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "the glass floor");
+        h.assertValueEqual(held(player, Items.GLASS), 0, "glass breaks");
+        floor(h, Blocks.BUDDING_AMETHYST);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.DIRT, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "the budding amethyst floor");
+        h.assertValueEqual(held(player, Items.BUDDING_AMETHYST), 0, "budding amethyst can't be taken");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aBuilderThatBreaksDropsItsModule(GameTestHelper h) {
+        floor(h, Blocks.STONE);
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        ItemStack tool = player.getMainHandItem();
+        BuilderSettings.setModule(tool, new ItemStack(ModItems.MODULES.get(ModuleType.NEXUS_LINK)));
+        tool.setDamageValue(tool.getMaxDamage() - 1);
+        player.getInventory().add(new ItemStack(Items.STONE, 9));
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 1, "one block, then it breaks");
+        h.assertTrue(player.getMainHandItem().isEmpty(), "the builder broke");
+        int modules = 0;
+        for (ItemEntity e : h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(player.blockPosition()).inflate(4))) {
+            if (e.getItem().is(ModItems.MODULES.get(ModuleType.NEXUS_LINK))) modules++;
+        }
+        h.assertValueEqual(modules, 1, "its Nexus Link Module dropped at the player's feet");
         h.succeed();
     }
 

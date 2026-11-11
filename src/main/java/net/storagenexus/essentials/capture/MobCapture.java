@@ -42,7 +42,8 @@ import java.util.List;
 /**
  * Sneak + right-click a mob with an empty main hand to pick it up as an item that keeps everything about it
  * (health, name, equipment, villager trades, owner, horse stats...). The Ender Dragon and the Wither can't be
- * picked up (entity type tag {@code nexusessentials:cannot_be_picked_up}).
+ * picked up (entity type tag {@code nexusessentials:cannot_be_picked_up}); the other bosses, the Warden and the Elder
+ * Guardian, cost experience levels ({@code nexusessentials:pick_up_costs_levels}, {@code bossPickUpLevels}).
  */
 public final class MobCapture {
     private static final List<MemoryModuleType<net.minecraft.core.GlobalPos>> VILLAGER_POIS = List.of(
@@ -69,6 +70,11 @@ public final class MobCapture {
                 && ownerAllows(player, mob);
     }
 
+    /** The experience levels picking this mob up costs: the config's amount for a boss, nothing for any other mob. */
+    public static int levelCost(Mob mob) {
+        return mob.getType().builtInRegistryHolder().is(ModTags.PICK_UP_COSTS_LEVELS) ? NexusConfig.get().bossPickUpLevels : 0;
+    }
+
     private static boolean ownerAllows(Player player, Mob mob) {
         if (!NexusConfig.get().onlyOwnersPickUpPets || !(mob instanceof OwnableEntity pet)) return true;
         EntityReference<LivingEntity> owner = pet.getOwnerReference();
@@ -82,6 +88,16 @@ public final class MobCapture {
         if (!player.mayBuild() || level.getServer().isUnderSpawnProtection(level, mob.blockPosition(), player)) {
             player.sendOverlayMessage(Component.translatable("message.nexusessentials.capture_not_here"));
             return InteractionResult.FAIL;
+        }
+
+        // A boss takes experience levels to pick up
+        int cost = levelCost(mob);
+        if (cost > 0 && !player.hasInfiniteMaterials()) {
+            if (player.experienceLevel < cost) {
+                player.sendOverlayMessage(Component.translatable("message.nexusessentials.capture_needs_levels", cost).withStyle(net.minecraft.ChatFormatting.RED));
+                return InteractionResult.FAIL;
+            }
+            player.giveExperienceLevels(-cost);
         }
 
         ItemStack stack = capture(mob);

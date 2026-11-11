@@ -44,15 +44,15 @@ public enum FarmKind {
     /** Wheat, carrots, potatoes and beetroot with their seeds; bone meal speeds it up. */
     CROP("crop_farm", Input.BONE_MEAL_BOOST, 6),
     /** Melon slices, pumpkins, cactus and kelp, all every cycle. */
-    GOURD("gourd_farm", Input.NONE, 1),
+    GOURD("gourd_farm", Input.NONE, 4),
     /** Cobblestone, stone, gravel, sand, clay, basalt or obsidian, by its mode. */
     GENERATOR("generator_farm", Input.NONE, 1),
     /** Honeycomb and bottles of honey into the output. */
-    BEE("bee_farm", Input.NONE, 1),
+    BEE("bee_farm", Input.NONE, 2),
     /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea; needs bone meal. */
-    MOSS("moss_farm", Input.BONE_MEAL, 3),
+    MOSS("moss_farm", Input.BONE_MEAL, 7),
     /** One ochre, one verdant and one pearlescent froglight. */
-    FROGLIGHT("froglight_farm", Input.NONE, 1);
+    FROGLIGHT("froglight_farm", Input.NONE, 3);
 
     /** What the input slot takes: nothing, villagers' food, gold, livestock feed, or bone meal (needed, or only a speed-up). */
     public enum Input { NONE, FOOD, GOLD, FEED, BONE_MEAL, BONE_MEAL_BOOST }

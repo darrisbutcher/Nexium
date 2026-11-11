@@ -372,8 +372,16 @@ public class TerminalMenu extends AbstractCraftingMenu {
             ItemStack original = stack.copy();
             if (!moveItemStackTo(stack, playerSlotStart, slots.size(), true)) return ItemStack.EMPTY;
             slot.onQuickCraft(stack, original);
-            if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
+            // What the inventory had no room for: taking the craft makes the next result, which would replace it
+            ItemStack rest = stack.copy();
+            slot.setByPlayer(ItemStack.EMPTY);
             slot.onTake(p, original);
+            if (!rest.isEmpty() && !p.level().isClientSide()) {
+                StorageNetwork net = network();
+                if (net != null) insert(net, rest);
+                if (!rest.isEmpty()) p.drop(rest, false, Prediction.SERVER_ONLY);
+                forceResync();
+            }
             return original;
         }
         if (index < playerSlotStart) {

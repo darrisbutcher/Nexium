@@ -36,7 +36,8 @@ import java.util.stream.IntStream;
  * meanwhile. A full output or a redstone signal pauses the farm, and a paused farm doesn't eat bread
  * (the cooldown still runs).
  */
-public class IronFarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos> {
+public class IronFarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos>,
+        net.storagenexus.util.ComparatorReadable {
     public static final int OUTPUT_SLOTS = 27;
     public static final int BREAD_SLOT = OUTPUT_SLOTS;
     public static final int SIZE = OUTPUT_SLOTS + 1;
@@ -67,7 +68,10 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     private void work(RandomSource random) {
         NexusConfig config = NexusConfig.get();
         if (cooldown > 0) cooldown--;
+        boolean wasFull = full;
         full = !hasRoomForGolem();
+        // A comparator reads 15 while the farm is stopped for lack of room
+        if (full != wasFull && level != null) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         if (!full && !isPaused()) {
             if (boostLeft == 0 && cooldown == 0) eatBread();
             boolean boosted = boostLeft > 0;
@@ -103,6 +107,13 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     private void killGolem(RandomSource random) {
         insert(new ItemStack(Items.IRON_INGOT, 3 + random.nextInt(3)));
+    }
+
+    /** What a comparator reads: how full the output is, as for a chest, and 15 once there is no room for another golem. */
+    @Override
+    public int comparatorSignal() {
+        return full ? 15 : net.storagenexus.util.ComparatorReadable.signal(
+                net.storagenexus.essentials.farm.FarmBlockEntity.outputFill(items, OUTPUT_SLOTS));
     }
 
     private boolean hasRoomForGolem() {

@@ -25,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.storagenexus.upgrade.UpgradeItem;
 import net.storagenexus.upgrade.UpgradeMenu;
 import net.storagenexus.upgrade.Upgradeable;
+import net.storagenexus.util.ComparatorReadable;
 import net.storagenexus.util.KeepContents;
 import net.storagenexus.util.Menus;
 import net.storagenexus.util.StorageEvents;
@@ -65,6 +66,17 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    /** A comparator reads how full the drawer is. */
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof ComparatorReadable readable ? readable.comparatorSignal() : 0;
     }
 
     @Override

@@ -34,7 +34,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/nexium-1.14.5.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
+The jar ends up in `build/libs/nexium-<version>.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
 `config/nexusessentials.json`.
@@ -48,6 +48,8 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
 * Right-click the front to insert, double-click to insert everything matching, left-click to take a stack (sneak for
   one item). Break drawers from the side.
 * A bar under each count shows how full the section is, counting upgrades: green under 75%, yellow to 90%, red above.
+* A **comparator** reads how full a drawer is, like a chest: 0 when empty, 15 when full. A drawer with 2 or 4 sections
+  reads their average. Fluid and Compacting Drawers do the same.
 * Right-click with an upgrade to install it; right-click the side or top with an empty hand to see or remove
   upgrades. Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32. A higher
   capacity upgrade swaps out the weakest one. The Lock Upgrade locks the contents (padlock on the front) and the
@@ -199,14 +201,17 @@ place it or right-click it to outline those chunks for a minute.
 
 ### Construction Builder
 Builds out from the block you right-click: every connected block of that kind gets a new block on the face you clicked.
-It places the block in your **offhand**, or else a copy of the one you clicked (facing the same way).
+It places the block in your **offhand**, or else a copy of the one you clicked (facing the same way). Each one is a
+freshly placed block: a crop is planted, not grown, and candles or snow layers are placed one at a time. A double slab
+is placed as one and uses two slabs.
 
 * **Tiers**: Iron places up to **9** blocks a click, Diamond **27**, Netherite **64**, Nexium **128** (and never breaks).
   Each block costs 1 durability. Iron: `PLP / IGI / I I` (paper, lapis lazuli, iron ingots, a gold nugget). Add a
   **diamond** in a crafting grid for Diamond; at a smithing table with a netherite upgrade template, a **netherite ingot**
   makes Netherite and a **Nexium ingot** makes Nexium. Upgrades keep its settings and module.
 * **Modes**: **Extend** (the whole connected face), **Line** (one row, along the way you look) and **Exchange** (swaps
-  the clicked surface for your offhand block and gives you the old blocks; never containers or unbreakable blocks).
+  the clicked surface for your offhand block and gives you what the old blocks drop when broken, so stone comes back
+  as cobblestone and glass as nothing; never containers or unbreakable blocks).
 * A **pale blue outline** shows where the blocks will go before you click; `builderPreview` (client) turns it off. The
   readout by the hotbar shows its mode, plane and size.
 * **Tool menu (G)**: Mode; **Plane** (any, flat or upright: which way it may spread); **Size** (steps down from the tier's
@@ -215,6 +220,7 @@ It places the block in your **offhand**, or else a copy of the one you clicked (
 * Blocks come from your inventory first, then from the storage network of its Nexus Link: sneak + right-click a
   Crafting Terminal with the builder to link it. Creative players need no blocks. Doors, beds and other two-part blocks
   are left alone.
+* If a builder breaks, the module in it drops at your feet.
 
 ### Nexium
 * **Nexium Ingot**: a diamond, an emerald, a netherite ingot and a netherite upgrade template in a crafting table make
@@ -327,7 +333,9 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
 ### Picking up mobs
 * **Sneak + right-click a mob with an empty hand** to pick it up. You get a Captured Mob item (a glinting spawn egg)
   that keeps everything about the mob. **Right-click a block** with it to let the mob out.
-* The Ender Dragon and the Wither can't be picked up, and only a pet's owner can pick it up.
+* The Ender Dragon and the Wither can't be picked up, and only a pet's owner can pick it up. The **Warden** and the
+  **Elder Guardian** cost **10 experience levels** (`bossPickUpLevels`; other mods' bosses in `#c:bosses` too, and a
+  data pack can add mobs to `#nexusessentials:pick_up_costs_levels`).
 
 ### Right-click harvest
 **Right-click a fully grown crop** (wheat, carrots, potatoes, beetroot, nether wart, cocoa) to harvest it: it drops as if
@@ -372,10 +380,12 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
 * **Bread**: bread in the bread slot makes the farm **10x faster**, eating one loaf every 30 seconds. When the last
   loaf is eaten the slot locks for 10x as long as the boost lasted, and the farm keeps working at normal speed.
 * A full output or a **redstone signal** pauses the farm. Breaking it keeps its boost and cooldown in the item.
+* A **comparator** reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 ### More one-block farms
 Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Place it anywhere; hoppers and pipes
 take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its progress in the item.
+A comparator reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 | Farm | Recipe | Makes |
 |---|---|---|
@@ -392,11 +402,11 @@ take the output from below, a full output or a redstone signal pauses it, and br
 The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. The newer farms ask a
 quarter of the filler block the first five do (768 of one block).
 
-**Ten more farms** (all need 768 of their filler block; mobs are spawn eggs or Captured Mobs):
+**More farms** (768 of their filler block unless the recipe says otherwise; mobs are spawn eggs or Captured Mobs):
 
 | Farm | Recipe | Makes |
 |---|---|---|
-| **Monster Farm** | 1 zombie, 1 pillager, 8 hoppers, 16 iron bars, 8 pistons, 4 emerald blocks, cobblestone | Every 10 s: the real loot of a zombie, skeleton, spider, creeper, pillager, vindicator and evoker, as if a player killed each (no Looting, rare player-kill drops included), all mixed |
+| **Monster Farm** | 1 zombie, 1 pillager, 8 hoppers, 16 iron bars, 8 pistons, 4 emerald blocks, cobblestone | Every 10 s: the real loot of a zombie, skeleton, spider, creeper, pillager, vindicator and evoker, as if a player killed each (no Looting, rare player-kill drops included), all mixed. The evoker's Totem of Undying is a 2% find each cycle instead of every time |
 | **Nether Mob Farm** | 1 blaze, 1 ghast, 1 magma cube, 16 nether bricks, 4 lava buckets, 8 magma blocks, netherrack | Every 10 s: blaze rods, ghast tears, gunpowder, magma cream |
 | **Ocean Farm** | 1 guardian, 1 drowned, 1 cod, 16 prismarine bricks, 8 sea lanterns, 4 water buckets, sand | Every 10 s: prismarine shards and crystals, fish, rotten flesh, copper |
 | **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
@@ -439,6 +449,7 @@ server's file is the one that counts.
 | `bedrockBreakerSeconds` | `300` | How long the elixir lasts |
 | `mobPickUp` | `true` | Sneak + right-click picks up mobs |
 | `onlyOwnersPickUpPets` | `true` | Only a pet's owner can pick it up |
+| `bossPickUpLevels` | `10` | Experience levels it costs to pick up a boss (the Warden, the Elder Guardian); 0 makes them free |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
 | `rightClickHarvest` | `true` | Right-click a grown crop to harvest and replant it |
 | `harvestVeinMax` | `128` | Most crops one harvest takes with V held, 1 to 1024 |
@@ -447,7 +458,7 @@ server's file is the one that counts.
 | `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
 | `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
 | `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
-| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks`, `froglightFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
+| `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks`, `froglightFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |

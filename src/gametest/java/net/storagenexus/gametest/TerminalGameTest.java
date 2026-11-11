@@ -98,6 +98,23 @@ public class TerminalGameTest {
     }
 
     @GameTest
+    public void shiftCraftingKeepsWhatTheInventoryHasNoRoomFor(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        TerminalMenu menu = craftingTerminal(h, player, 0);
+        // Room for exactly 2 more planks: every slot full of dirt but one, which holds 62 planks
+        for (int i = 0; i < 36; i++) player.getInventory().setItem(i, new ItemStack(Items.DIRT, 64));
+        player.getInventory().setItem(10, new ItemStack(Items.OAK_PLANKS, 62));
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_LOG, 1));
+        menu.slotsChanged(menu.getInputGridSlots().get(0).container);
+        h.assertValueEqual(menu.getResultSlot().getItem().getCount(), 4, "a log makes 4 planks");
+        menu.quickMoveStack(player, 0);
+        h.assertValueEqual(player.getInventory().getItem(10).getCount(), 64, "2 planks fit in the inventory");
+        h.assertValueEqual(count(h.getBlockEntity(CHEST, ChestBlockEntity.class)), 2, "the other 2 go into the network, not nowhere");
+        h.assertTrue(menu.getInputGridSlots().get(0).getItem().isEmpty(), "the log is used");
+        h.succeed();
+    }
+
+    @GameTest
     public void rightClickTakesOneItem(GameTestHelper h) {
         ServerPlayer player = player(h);
         TerminalMenu menu = craftingTerminal(h, player, 10);

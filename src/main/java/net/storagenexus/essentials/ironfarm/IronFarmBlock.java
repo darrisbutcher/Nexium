@@ -59,6 +59,17 @@ public class IronFarmBlock extends BaseEntityBlock {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.IRON_FARM, IronFarmBlockEntity::serverTick);
     }
 
+    /** A comparator reads how full the output is, and 15 once the farm has stopped for lack of room. */
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, net.minecraft.core.Direction direction) {
+        return level.getBlockEntity(pos) instanceof net.storagenexus.util.ComparatorReadable readable ? readable.comparatorSignal() : 0;
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof IronFarmBlockEntity farm) {

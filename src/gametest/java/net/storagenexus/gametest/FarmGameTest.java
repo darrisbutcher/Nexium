@@ -280,6 +280,55 @@ public class FarmGameTest {
         h.succeed();
     }
 
+    /**
+     * Every farm says how many empty output slots a cycle needs. With exactly that many free and every other slot full
+     * of something else, nothing a cycle makes may be left without room: 60 cycles of each kind, on each of its inputs.
+     */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
+    public void noCycleMakesMoreThanItsFreeSlotsHold(GameTestHelper h) {
+        for (FarmKind kind : FarmKind.values()) {
+            List<ItemStack> inputs = switch (kind.input()) {
+                case NONE -> List.of(ItemStack.EMPTY);
+                case FOOD -> List.of(new ItemStack(Items.BREAD, 64));
+                case GOLD -> List.of(new ItemStack(Items.GOLD_INGOT, 64));
+                case FEED -> List.of(new ItemStack(Items.WHEAT, 64), new ItemStack(Items.WHEAT_SEEDS, 64), new ItemStack(Items.CARROT, 64), new ItemStack(Items.POTATO, 64));
+                case BONE_MEAL, BONE_MEAL_BOOST -> List.of(new ItemStack(Items.BONE_MEAL, 64));
+            };
+            int modes = Math.max(1, kind.modes().size());
+            for (ItemStack input : inputs) {
+                for (int mode = 0; mode < modes; mode++) {
+                    FarmBlockEntity farm = farm(h, kind);
+                    farm.setMode(mode);
+                    for (int cycle = 0; cycle < 60; cycle++) {
+                        for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) {
+                            farm.setItem(i, i < kind.slotsNeeded() ? ItemStack.EMPTY : new ItemStack(Items.BEDROCK, 64));
+                        }
+                        if (!input.isEmpty()) farm.setItem(FarmBlockEntity.INPUT_SLOT, input.copy());
+                        farm.cycle(h.getLevel(), kind, h.getLevel().getRandom());
+                    }
+                    h.assertValueEqual(farm.overflow(), 0, kind + " (mode " + mode + ", input " + input.getItem() + "): items that found no room");
+                    h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
+                }
+            }
+        }
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
+    public void theMonsterFarmsTotemIsRare(GameTestHelper h) {
+        h.assertValueEqual(FarmBlockEntity.TOTEM_CHANCE, 0.02F, "a 2% chance each cycle");
+        FarmBlockEntity monster = farm(h, FarmKind.MONSTER);
+        int totems = 0, cycles = 2000;
+        for (int i = 0; i < cycles; i++) {
+            for (int slot = 0; slot < FarmBlockEntity.OUTPUT_SLOTS; slot++) monster.setItem(slot, ItemStack.EMPTY);
+            monster.cycle(h.getLevel(), FarmKind.MONSTER, h.getLevel().getRandom());
+            totems += count(monster, Items.TOTEM_OF_UNDYING);
+        }
+        // 2% of 2000 is 40: far from the evoker's one every cycle, and never more than one a cycle
+        h.assertTrue(totems >= 10 && totems <= 90, "about 40 totems in 2000 cycles, got " + totems);
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
     public void theNewFarmsAndTheBreederRunOnTheirTimes(GameTestHelper h) {
         // The defaults (the test world's saved config has already been moved on from the old 24000, too)

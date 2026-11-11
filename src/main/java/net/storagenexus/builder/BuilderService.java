@@ -16,7 +16,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -37,14 +36,17 @@ import java.util.UUID;
 /**
  * Builds a Construction Builder click on the server, and undoes the last builds. Blocks come from the player's inventory
  * first, then from the storage network the builder's Nexus Link points at; creative players need none. Each block placed
- * costs one point of durability. The last {@value #UNDO_STEPS} builds of each player are remembered (until they log out),
+ * costs one point of durability. Exchange gives back what breaking the old block would drop. The last {@value #UNDO_STEPS} builds of each player are remembered (until they log out),
  * so the tool menu's Undo can take them back one at a time, returning the blocks.
  */
 public final class BuilderService {
     public static final int UNDO_STEPS = 2;
 
-    /** One block built: where, what went there, what was there, the item it used and (Exchange) the item it gave back. */
-    record Entry(BlockPos pos, BlockState placed, BlockState previous, Item used, @Nullable Item returned) {}
+    /**
+     * One block built: where, what went there, what was there, the item it used and how many, and (Exchange) what the
+     * old block dropped into the player's inventory.
+     */
+    record Entry(BlockPos pos, BlockState placed, BlockState previous, Item used, int count, List<ItemStack> returned) {}
 
     record Batch(ResourceKey<Level> dimension, List<Entry> entries) {}
 
@@ -68,31 +70,37 @@ public final class BuilderService {
             BlockState previous = level.getBlockState(pos);
             if (!plan.exchange() && !BuilderPlan.canPlace(level, player, pos, plan.state())) continue;
             if (!creative) {
-                boolean took = takeFromInventory(player.getInventory(), plan.item());
-                if (!took && link != null) {
+                // All the items this block uses (two slabs for a double slab), or none
+                int taken = 0;
+                while (taken < plan.perBlock() && takeFromInventory(player.getInventory(), plan.item())) taken++;
+                if (taken < plan.perBlock() && link != null) {
                     if (!networkLooked) {
                         network = NexusLink.network(player, link);
                         networkLooked = true;
                     }
-                    took = network != null && takeFromNetwork(network, plan.item());
+                    while (taken < plan.perBlock() && network != null && takeFromNetwork(network, plan.item())) taken++;
                 }
-                if (!took) {
+                if (taken < plan.perBlock()) {
+                    if (taken > 0) player.getInventory().placeItemBackInInventory(new ItemStack(plan.item(), taken), false, Prediction.SERVER_ONLY);
                     player.sendOverlayMessage(Component.translatable("message.storagenexus.builder.out_of", new ItemStack(plan.item()).getHoverName()));
                     break;
                 }
             }
-            Item returned = null;
+            List<ItemStack> returned = List.of();
             if (plan.exchange()) {
-                Item old = previous.getBlock().asItem();
-                if (old != Items.AIR) {
-                    returned = old;
-                    if (!creative) player.getInventory().placeItemBackInInventory(new ItemStack(old), false, Prediction.SERVER_ONLY);
+                // The old block comes back as what breaking it drops: cobblestone for stone, nothing for glass
+                if (!creative) {
+                    returned = List.copyOf(Block.getDrops(previous, level, pos, null, player, ItemStack.EMPTY));
+                    for (ItemStack drop : returned) player.getInventory().placeItemBackInInventory(drop.copy(), false, Prediction.SERVER_ONLY);
                 }
                 level.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(previous));
             }
-            level.setBlock(pos, plan.state(), Block.UPDATE_ALL);
+            // Fences, panes and walls join what is next to them here, as a block placed by hand would
+            BlockState placed = Block.updateFromNeighbourShapes(plan.state(), level, pos);
+            if (!placed.is(plan.state().getBlock())) placed = plan.state();
+            level.setBlock(pos, placed, Block.UPDATE_ALL);
             level.gameEvent(player, GameEvent.BLOCK_PLACE, pos);
-            done.add(new Entry(pos.immutable(), plan.state(), previous, plan.item(), returned));
+            done.add(new Entry(pos.immutable(), placed, previous, plan.item(), plan.perBlock(), returned));
             if (!creative && builder.isDamageableItem()) {
                 builder.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
                 if (builder.isEmpty()) break;
@@ -102,8 +110,11 @@ public final class BuilderService {
             SoundType sound = plan.state().getSoundType();
             BlockPos at = done.getFirst().pos();
             level.playSound(null, at, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+            // Remember each block as it stands now: the ones placed after it may have joined on to it
+            List<Entry> asBuilt = new ArrayList<>(done.size());
+            for (Entry e : done) asBuilt.add(new Entry(e.pos(), level.getBlockState(e.pos()), e.previous(), e.used(), e.count(), e.returned()));
             Deque<Batch> history = HISTORY.computeIfAbsent(player.getUUID(), k -> new ArrayDeque<>());
-            history.addLast(new Batch(level.dimension(), List.copyOf(done)));
+            history.addLast(new Batch(level.dimension(), List.copyOf(asBuilt)));
             while (history.size() > UNDO_STEPS) history.removeFirst();
         }
         return done.size();
@@ -117,8 +128,8 @@ public final class BuilderService {
 
     /**
      * Takes back the player's last build: each block still as it was built goes back to what was there, and its item is
-     * returned (Exchange takes back the block it gave you, so nothing is doubled; a spot whose block you no longer have is
-     * left as it is). Returns how many blocks were undone, or -1 if there was nothing to undo.
+     * returned (Exchange takes back what the old block dropped for you, so nothing is doubled; a spot whose drops you no
+     * longer have is left as it is). Returns how many blocks were undone, or -1 if there was nothing to undo.
      */
     public static int undo(ServerPlayer player) {
         Deque<Batch> history = HISTORY.get(player.getUUID());
@@ -130,12 +141,14 @@ public final class BuilderService {
         int undone = 0;
         List<Entry> entries = new ArrayList<>(batch.entries());
         java.util.Collections.reverse(entries);
+        // Which blocks still stand as built is decided before any is taken back: taking one back changes how the
+        // fences and panes beside it join up
+        entries.removeIf(e -> !level.isLoaded(e.pos()) || level.getBlockState(e.pos()) != e.placed());
         for (Entry e : entries) {
-            if (!level.isLoaded(e.pos()) || level.getBlockState(e.pos()) != e.placed()) continue;
-            if (!creative && e.returned() != null && !takeFromInventory(player.getInventory(), e.returned())) continue;
+            if (!creative && !takeAll(player.getInventory(), e.returned())) continue;
             level.setBlock(e.pos(), e.previous(), Block.UPDATE_ALL);
             level.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK, e.pos(), Block.getId(e.placed()));
-            if (!creative) player.getInventory().placeItemBackInInventory(new ItemStack(e.used()), false, Prediction.SERVER_ONLY);
+            if (!creative) player.getInventory().placeItemBackInInventory(new ItemStack(e.used(), e.count()), false, Prediction.SERVER_ONLY);
             undone++;
         }
         return undone;
@@ -153,6 +166,42 @@ public final class BuilderService {
             }
         }
         return false;
+    }
+
+    /** Takes every one of these stacks from the player's main inventory or offhand, or none of them if any is missing. */
+    private static boolean takeAll(Inventory inventory, List<ItemStack> wanted) {
+        if (wanted.isEmpty()) return true;
+        // Kinds and how many of each, then a look before anything is taken
+        List<ItemStack> kinds = new ArrayList<>();
+        for (ItemStack w : wanted) {
+            if (w.isEmpty()) continue;
+            ItemStack same = null;
+            for (ItemStack k : kinds) if (ItemStack.isSameItemSameComponents(k, w)) same = k;
+            if (same != null) same.grow(w.getCount());
+            else kinds.add(w.copy());
+        }
+        for (ItemStack kind : kinds) {
+            int have = 0;
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                if (i >= Inventory.INVENTORY_SIZE && i != Inventory.SLOT_OFFHAND) continue;
+                ItemStack stack = inventory.getItem(i);
+                if (ItemStack.isSameItemSameComponents(stack, kind)) have += stack.getCount();
+            }
+            if (have < kind.getCount()) return false;
+        }
+        for (ItemStack kind : kinds) {
+            int left = kind.getCount();
+            for (int i = 0; i < inventory.getContainerSize() && left > 0; i++) {
+                if (i >= Inventory.INVENTORY_SIZE && i != Inventory.SLOT_OFFHAND) continue;
+                ItemStack stack = inventory.getItem(i);
+                if (!ItemStack.isSameItemSameComponents(stack, kind)) continue;
+                int n = Math.min(left, stack.getCount());
+                stack.shrink(n);
+                left -= n;
+            }
+        }
+        inventory.setChanged();
+        return true;
     }
 
     private static boolean takeFromNetwork(StorageNetwork network, Item item) {

@@ -23,6 +23,7 @@
   "message.nexusessentials.magnet_on": "Magnet on (%s blocks)",
   "message.nexusessentials.magnet_off": "Magnet off",
   "message.nexusessentials.capture_not_here": "You can't pick up mobs here",
+  "message.nexusessentials.capture_needs_levels": "Picking up a boss takes %s experience levels",
   "message.nexusessentials.release_peaceful": "Monsters can't be let out on Peaceful",
   "message.nexusessentials.release_failed": "That mob couldn't be let out here",
   "block.nexusessentials.iron_farm": "Iron Farm",
