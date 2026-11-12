@@ -92,8 +92,10 @@ public class EnergyGameTest {
         h.assertValueEqual(g.energy().stored(), CombustionGeneratorBlockEntity.CAPACITY - 500, "taken from the generator");
         // Tier 2 moves 4,000 a tick (the farm holds 2,000)
         one.addConduit(ConduitType.ENERGY, 2);
+        two.addConduit(ConduitType.ENERGY, 2);
         ConduitBundleBlockEntity.serverTick(h.getLevel(), one.getBlockPos(), one.getBlockState(), one);
-        h.assertValueEqual(farm.energy().stored(), 2000L, "filled in one tick on Tier 2");
+        ConduitBundleBlockEntity.serverTick(h.getLevel(), one.getBlockPos(), one.getBlockState(), one);
+        h.assertValueEqual(farm.energy().stored(), 2000L, "filled in a tick on Tier 2");
         h.succeedWhen(() -> h.assertTrue(farm.progress() >= 20, "the farm runs: progress " + farm.progress()));
     }
 
@@ -317,6 +319,108 @@ public class EnergyGameTest {
         int start = deep.getItem(0).getDamageValue();
         run(h, deep, 100);
         h.assertValueEqual(deep.getItem(0).getDamageValue() - start, 150, "Inserted 2 wears 1.5x");
+        h.succeed();
+    }
+
+    /** One tick of the network the conduit at this spot belongs to, advanced a tick so it runs again. */
+    private static void netTick(GameTestHelper h, ConduitBundleBlockEntity c) {
+        ConduitBundleBlockEntity.serverTick(h.getLevel(), c.getBlockPos(), c.getBlockState(), c);
+    }
+
+    private static void nextTick(GameTestHelper h) {
+        // The network runs once per game tick: the helper's level time doesn't move in a test, so ask it for a fresh network
+        net.storagenexus.util.StorageEvents.conduitsChanged();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void conduitsShareOnePoolThatHoldsEnergy(GameTestHelper h) {
+        BlockPos a = new BlockPos(1, 2, 1);
+        for (int i = 0; i < 3; i++) h.setBlock(a.east(i), ModBlocks.CONDUIT_BUNDLE);
+        ConduitBundleBlockEntity[] c = new ConduitBundleBlockEntity[3];
+        for (int i = 0; i < 3; i++) {
+            c[i] = h.getBlockEntity(a.east(i), ConduitBundleBlockEntity.class);
+            c[i].addConduit(ConduitType.ENERGY, i == 2 ? 2 : 1);
+        }
+        var network = net.storagenexus.conduit.EnergyNetwork.of(c[0]);
+        h.assertValueEqual(network.size(), 3, "three conduits in one network");
+        h.assertValueEqual(network.capacity(), 2_000L + 2_000L + 16_000L, "their capacities add up");
+        h.assertValueEqual(network.insert(5_000), 5_000L, "the pool takes energy");
+        h.assertValueEqual(network.stored(), 5_000L, "and holds it");
+        h.assertValueEqual(c[0].energyStored() + c[1].energyStored() + c[2].energyStored(), 5_000L, "spread over the conduits");
+        h.assertValueEqual(network.extract(1_500), 1_500L, "and gives it out again");
+        h.assertValueEqual(network.stored(), 3_500L, "what is left");
+        // Cutting the run keeps each part's energy
+        h.setBlock(a.east(1), net.minecraft.world.level.block.Blocks.AIR);
+        long left = c[0].energyStored() + c[2].energyStored();
+        h.assertTrue(left > 0 && left <= 3_500L, "the pieces keep their share: " + left);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void machinesComeBeforeBatteriesAndShareEvenly(GameTestHelper h) {
+        // generator - conduit - farm, and a battery and a second farm on the same conduit
+        BlockPos conduit = new BlockPos(3, 2, 3);
+        h.setBlock(conduit, ModBlocks.CONDUIT_BUNDLE);
+        ConduitBundleBlockEntity c = h.getBlockEntity(conduit, ConduitBundleBlockEntity.class);
+        c.addConduit(ConduitType.ENERGY, 2);
+        // The Battery is nearest, a farm each side of it further round
+        h.setBlock(conduit.west(), ModBlocks.IRON_BATTERY);
+        var battery = h.getBlockEntity(conduit.west(), net.storagenexus.energy.BatteryBlockEntity.class);
+        FarmBlockEntity farmA = farm(h, conduit.east());
+        FarmBlockEntity farmB = farm(h, conduit.north());
+        // The battery is the only source, with plenty
+        battery.energy().set(200_000);
+        // Make the battery a source only, and the farms sinks only
+        c.config(ConduitType.ENERGY, Direction.WEST).mode = SideConfig.Mode.EXTRACT;
+        c.config(ConduitType.ENERGY, Direction.EAST).mode = SideConfig.Mode.INSERT;
+        c.config(ConduitType.ENERGY, Direction.NORTH).mode = SideConfig.Mode.INSERT;
+        c.changed();
+        farmA.energy().set(0);
+        farmB.energy().set(0);
+        // Run until the farms have what they can hold
+        for (int i = 0; i < 6; i++) {
+            net.storagenexus.util.StorageEvents.conduitsChanged();
+            netTick(h, c);
+        }
+        h.assertTrue(farmA.energy().stored() > 0 && farmB.energy().stored() > 0, "both farms are filled");
+        long diff = Math.abs(farmA.energy().stored() - farmB.energy().stored());
+        h.assertTrue(diff <= 1, "evenly: " + farmA.energy().stored() + " and " + farmB.energy().stored());
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void aBatteryOnlyTakesWhatIsLeftOverAndAFarmIsServedFirst(GameTestHelper h) {
+        BlockPos conduit = new BlockPos(3, 2, 3);
+        h.setBlock(conduit, ModBlocks.CONDUIT_BUNDLE);
+        ConduitBundleBlockEntity c = h.getBlockEntity(conduit, ConduitBundleBlockEntity.class);
+        c.addConduit(ConduitType.ENERGY, 1);
+        CombustionGeneratorBlockEntity g = generator(h);
+        h.setBlock(conduit.north(), ModBlocks.IRON_BATTERY);
+        var battery = h.getBlockEntity(conduit.north(), net.storagenexus.energy.BatteryBlockEntity.class);
+        FarmBlockEntity farm = farm(h, conduit.south());
+        farm.energy().set(0);
+        battery.energy().set(0);
+        // A source with a little energy: the generator is two blocks away, so use a second battery as the source
+        h.setBlock(conduit.east(), ModBlocks.GOLD_BATTERY);
+        var source = h.getBlockEntity(conduit.east(), net.storagenexus.energy.BatteryBlockEntity.class);
+        source.energy().set(1_000_000);
+        c.config(ConduitType.ENERGY, Direction.EAST).mode = SideConfig.Mode.EXTRACT;
+        c.config(ConduitType.ENERGY, Direction.NORTH).mode = SideConfig.Mode.INSERT;
+        c.config(ConduitType.ENERGY, Direction.SOUTH).mode = SideConfig.Mode.INSERT;
+        c.changed();
+        net.storagenexus.util.StorageEvents.conduitsChanged();
+        netTick(h, c);
+        // The source gives 500 a tick: the farm takes all of it first, the battery nothing
+        h.assertValueEqual(farm.energy().stored(), 500L, "the farm is served first");
+        h.assertValueEqual(battery.energy().stored(), 0L, "the battery gets nothing while a machine wants it all");
+        // With the farm full, the pool builds up, and the battery takes only what is above half of the pool
+        farm.energy().set(farm.energy().capacity());
+        for (int i = 0; i < 6; i++) {
+            net.storagenexus.util.StorageEvents.conduitsChanged();
+            netTick(h, c);
+        }
+        h.assertTrue(battery.energy().stored() > 0, "the surplus goes to the battery: " + battery.energy().stored());
+        h.assertTrue(net.storagenexus.conduit.EnergyNetwork.of(c).stored() >= 999L, "while half the pool stays in reserve: " + net.storagenexus.conduit.EnergyNetwork.of(c).stored());
         h.succeed();
     }
 }

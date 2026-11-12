@@ -377,9 +377,8 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
   Then press Build.
 * **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron, about **1,900 iron an
   hour**. Hoppers and pipes take the output from below.
-* **Bread**: bread in the bread slot makes the farm **10x faster**, eating one loaf every 30 seconds. When the last
-  loaf is eaten the slot locks for 10x as long as the boost lasted, and the farm keeps working at normal speed.
-* A full output or a **redstone signal** pauses the farm. Breaking it keeps its boost and cooldown in the item.
+* **Power only**: the farm needs Nexus Energy and nothing else (no bread or other boost).
+* A full output or a **redstone signal** pauses the farm. Breaking it keeps its progress in the item.
 * A **comparator** reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 ### More one-block farms
@@ -389,8 +388,8 @@ A comparator reads how full the output is, and 15 once the farm has stopped for 
 
 | Farm | Recipe | Makes |
 |---|---|---|
-| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 576 planks | A baby villager (a Captured Mob) every 10 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
-| **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 576 netherrack | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
+| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 576 planks | A baby villager (a Captured Mob) every 10 minutes. |
+| **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 576 netherrack | Every 6 seconds: the vanilla piglin barter loot |
 | **Zombified Piglin Farm** | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots, 576 netherrack | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
 | **Wither Skeleton Farm** | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks, 576 netherrack | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
 | **Shulker Farm** | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls, 576 end stone bricks | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
@@ -409,15 +408,15 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Nether Mob Farm** | 1 blaze, 1 ghast, 1 magma cube, 16 nether bricks, 4 lava buckets, 8 magma blocks, netherrack | Every 10 s: blaze rods, ghast tears, gunpowder, magma cream |
 | **Ocean Farm** | 1 guardian, 1 drowned, 1 cod, 16 prismarine bricks, 8 sea lanterns, 4 water buckets, sand | Every 10 s: prismarine shards and crystals, fish, rotten flesh, copper |
 | **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
-| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s, for 1 feed item: wheat gives cow and sheep drops (random wool colours), seeds chicken drops and an egg, carrots pig and rabbit drops, potatoes or beetroot pig drops |
-| **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. Bone meal in its slot doubles the speed (one lasts 3 cycles) |
+| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s: the drops of a cow, a sheep (random wool colour), a chicken (and an egg), a pig and a rabbit |
+| **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. |
 | **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
 | **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 1 ochre, 1 verdant and 1 pearlescent froglight |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
-| **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. Needs bone meal (one lasts 3 cycles) |
+| **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. |
 
 ### Power (Nexus Energy)
 Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Drive and the rest of the network need none.
@@ -433,8 +432,14 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 | **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
 | **Redstone Reactor** | up to 1,350 NE/t | See below |
 
-* **Energy Conduit**: Tier 1 carries 500 NE/t, the Ender Energy Conduit (Tier 2) 4,000 NE/t. Like the other conduits, each
-  side can be set to extract or insert and given a colour channel. Generators and Batteries are pulled from; machines are filled.
+* **Energy Conduit**: Tier 1 moves 500 NE/t a side, the Ender Energy Conduit (Tier 2) 4,000 NE/t. Touching Energy Conduits
+  form one network with a **shared pool**: each segment holds 2,000 NE (Tier 1) or 16,000 (Tier 2), added together, so a
+  long run keeps a reserve. Generators and Batteries on its sides fill the pool and machines draw from it, highest
+  priority first and equal priorities evenly. **Batteries come last** and only take what is above half of the pool, so a
+  Battery never starves a farm. Sides can be set to extract or insert as with the other conduits; energy ignores colour
+  channels. A broken conduit loses its share of the pool.
+* **Jade** (optional): with Jade installed, looking at any of these blocks, or an Energy Conduit (its whole network), shows
+  the energy it holds.
 * **Batteries** (iron, gold, diamond) hold 250,000, 1,000,000 and 10,000,000 NE. Six cells on the side show the charge and a
   comparator reads it. A broken Battery keeps its charge in the item.
 * **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 100 NE/t at
@@ -485,9 +490,6 @@ server's file is the one that counts.
 | `harvestVeinMax` | `128` | Most crops one harvest takes with V held, 1 to 1024 |
 | `anvilNoCostLimit` | `true` | An anvil is never Too Expensive: any job, for its full cost in levels; false keeps vanilla's limit |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
-| `ironFarmBreadSpeedUp` | `10` | How many times faster bread makes the farm |
-| `ironFarmBreadSeconds` | `30` | Seconds of boost per loaf |
-| `ironFarmCooldownMultiplier` | `10` | Bread cooldown, as a multiple of how long the boost lasted |
 | `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks`, `froglightFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works |

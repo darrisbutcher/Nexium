@@ -255,7 +255,6 @@ public class SaveLoadGameTest {
 
         cases.add(new Case("Iron Farm", net.storagenexus.essentials.registry.ModBlocks.IRON_FARM, List.of(
                 part(IronFarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.IRON_INGOT, 5))),
-                part(IronFarmBlockEntity.class, "bread", be -> be.setItem(IronFarmBlockEntity.BREAD_SLOT, new ItemStack(Items.BREAD, 3))),
                 part(IronFarmBlockEntity.class, "timers", be -> be.setTimers(new IronFarmTimers(10, 20, 30, 40))))));
         cases.add(new Case("Farm Assembler", net.storagenexus.essentials.registry.ModBlocks.FARM_ASSEMBLER, List.of(
                 part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "target", be -> be.select(net.storagenexus.essentials.assembler.AssemblyTarget.SHULKER, null)),
@@ -291,7 +290,6 @@ public class SaveLoadGameTest {
                 part(net.storagenexus.freezer.FreezerBlockEntity.class, "mode", be -> be.setMode(net.storagenexus.freezer.FreezerMode.BLUE_ICE)))));
         cases.add(new Case("Barter farm", net.storagenexus.essentials.registry.ModBlocks.FARMS.get(net.storagenexus.essentials.farm.FarmKind.PIGLIN_BARTER), List.of(
                 part(net.storagenexus.essentials.farm.FarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.ENDER_PEARL, 3))),
-                part(net.storagenexus.essentials.farm.FarmBlockEntity.class, "input", be -> be.setItem(net.storagenexus.essentials.farm.FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT, 9))),
                 part(net.storagenexus.essentials.farm.FarmBlockEntity.class, "progress", be -> be.setProgress(33)))));
         return cases;
     }

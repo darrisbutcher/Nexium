@@ -185,14 +185,8 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 be.transferItems(d, cfg, batch);
             }
         }
-        if (be.has(ConduitType.ENERGY)) {
-            long perTick = be.tier(ConduitType.ENERGY) >= 2 ? ENERGY_TIER_2 : ENERGY_TIER_1;
-            for (Direction d : Direction.values()) {
-                SideConfig cfg = be.config(ConduitType.ENERGY, d);
-                if (!cfg.mode.extracts() || !cfg.redstone.allows(powered) || be.isBundle(pos.relative(d))) continue;
-                be.transferEnergy(d, cfg, perTick);
-            }
-        }
+        // Energy moves through the network's shared pool, once a tick for the whole run of conduits
+        if (be.has(ConduitType.ENERGY)) EnergyNetwork.of(be).tick(level);
         if (be.has(ConduitType.FLUID) && (time + phase) % FLUID_INTERVAL == 0) {
             for (Direction d : Direction.values()) {
                 SideConfig cfg = be.config(ConduitType.FLUID, d);
@@ -307,30 +301,41 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         return moved;
     }
 
-    /**
-     * Nexus Energy from the block on this side (a generator or Battery) to the Insert sides on the same colour channel,
-     * by priority and distance, up to the conduit's rate each tick. Machines only take energy, so nothing is pulled
-     * out of them.
-     */
-    private void transferEnergy(Direction dir, SideConfig cfg, long budget) {
-        BlockPos sourcePos = worldPosition.relative(dir);
-        net.storagenexus.energy.NexusEnergy source = net.storagenexus.energy.NexusEnergy.SIDED.find(level, sourcePos, dir.getOpposite());
-        if (source == null) return;
-        long left = source.extract(budget, true);
-        if (left <= 0) return;
-        for (Target t : ordered(targets(ConduitType.ENERGY, cfg.extractChannel), sourcePos, cfg)) {
-            if (left <= 0) break;
-            net.storagenexus.energy.NexusEnergy dest = net.storagenexus.energy.NexusEnergy.SIDED.find(level, t.invPos, t.side);
-            if (dest == null) continue;
-            long room = dest.insert(left, true);
-            if (room <= 0) continue;
-            long moved = dest.insert(source.extract(room, false), false);
-            left -= moved;
-            if (moved > 0 && cfg.roundRobin) {
-                cfg.rrIndex++;
-                break;
-            }
+    // ---- Energy: this conduit's share of its network's pool ---------------------------------------
+
+    private long energy;
+
+    /** NE this conduit holds (its share of the network's pool). */
+    public long energyStored() { return energy; }
+
+    /** NE this conduit holds when full: 2,000 at Tier 1, 16,000 at Tier 2, nothing without an Energy Conduit. */
+    public long energyCapacity() {
+        int tier = tier(ConduitType.ENERGY);
+        return tier <= 0 ? 0 : tier >= 2 ? EnergyNetwork.CAPACITY_TIER_2 : EnergyNetwork.CAPACITY_TIER_1;
+    }
+
+    long addEnergy(long max) {
+        long fits = Math.max(0, Math.min(max, energyCapacity() - energy));
+        if (fits > 0) {
+            energy += fits;
+            setChanged();
         }
+        return fits;
+    }
+
+    long removeEnergy(long max) {
+        long took = Math.max(0, Math.min(max, energy));
+        if (took > 0) {
+            energy -= took;
+            setChanged();
+        }
+        return took;
+    }
+
+    /** Test helper: sets this conduit's share. */
+    public void setEnergy(long value) {
+        energy = Math.max(0, Math.min(value, energyCapacity()));
+        setChanged();
     }
 
     private void transferFluids(Direction dir, SideConfig cfg, long budget) {
@@ -365,6 +370,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         }
         if (facade != null) output.store("facade", BlockState.CODEC, facade);
         output.putInt("tier_format", 2);
+        output.putLong("energy", energy);
     }
 
     @Override
@@ -377,6 +383,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
             });
         }
         facade = input.read("facade", BlockState.CODEC).orElse(null);
+        energy = Math.max(0, Math.min(input.getLongOr("energy", 0L), energyCapacity()));
         // Before 1.0.14 fluid conduits had three tiers; the old Tier 2 and 3 are now Tier 2.
         if (input.getIntOr("tier_format", 1) < 2) {
             tiers[ConduitType.FLUID.ordinal()] = Math.min(tiers[ConduitType.FLUID.ordinal()], 2);

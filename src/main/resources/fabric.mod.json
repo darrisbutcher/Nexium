@@ -20,6 +20,9 @@
     "client": [
       "net.storagenexus.client.StorageNexusClient"
     ],
+    "jade": [
+      "net.storagenexus.compat.jade.NexusJadePlugin"
+    ],
     "jei_mod_plugin": [
       "net.storagenexus.compat.jei.StorageNexusJeiPlugin"
     ],

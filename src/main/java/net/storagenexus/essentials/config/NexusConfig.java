@@ -79,12 +79,6 @@ public final class NexusConfig {
     // --- Iron farm
     /** Ticks between golems at normal speed. 150 (7.5 seconds) is about 1,900 iron an hour, like four 3-villager farms. */
     public int ironFarmGolemTicks = 150;
-    /** How many times faster the farm works while it has bread. */
-    public int ironFarmBreadSpeedUp = 10;
-    /** Seconds of boost one bread gives. */
-    public int ironFarmBreadSeconds = 30;
-    /** After the bread runs out, the bread slot is locked for this many times as long as the boost lasted. */
-    public int ironFarmCooldownMultiplier = 10;
 
     // --- Other one-block farms (made at the Farm Assembler, like the Iron Farm)
     /** Ticks between baby villagers (needs 3 bread, or 12 carrots, potatoes or beetroot, each). 12000 is 10 minutes. */
@@ -206,9 +200,6 @@ public final class NexusConfig {
         bossPickUpLevels = Math.max(0, Math.min(1000, bossPickUpLevels));
         librarianVillagers = Math.max(1, Math.min(54, librarianVillagers));
         ironFarmGolemTicks = Math.max(1, Math.min(24000, ironFarmGolemTicks));
-        ironFarmBreadSpeedUp = Math.max(1, Math.min(100, ironFarmBreadSpeedUp));
-        ironFarmBreadSeconds = Math.max(1, Math.min(60 * 60, ironFarmBreadSeconds));
-        ironFarmCooldownMultiplier = Math.max(0, Math.min(100, ironFarmCooldownMultiplier));
         villagerBreederTicks = Math.max(1, Math.min(1_000_000, villagerBreederTicks));
         piglinBarterTicks = Math.max(1, Math.min(1_000_000, piglinBarterTicks));
         zombifiedPiglinTicks = Math.max(1, Math.min(1_000_000, zombifiedPiglinTicks));

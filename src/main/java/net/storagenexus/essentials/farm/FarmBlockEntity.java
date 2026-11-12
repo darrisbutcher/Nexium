@@ -109,21 +109,22 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         full = !hasRoom(kind);
         // A comparator reads 15 while the farm is stopped for lack of room
         if (full != wasFull) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
-        boolean boneMeal = kind.input() == FarmKind.Input.BONE_MEAL || kind.input() == FarmKind.Input.BONE_MEAL_BOOST;
-        // A bone meal is used up when the one before it has run out of cycles
         unpowered = energy.stored() < kind.energyPerTick();
-        if (boneMeal && boostLeft <= 0 && hasInput(kind) && !full && !isPaused() && !unpowered) {
-            items.get(INPUT_SLOT).shrink(1);
-            boostLeft = FarmKind.CYCLES_PER_BONE_MEAL;
+        // A farm saved by an older version may still hold an input item: it is dropped
+        if (!items.get(INPUT_SLOT).isEmpty()) {
+            ItemStack old = items.get(INPUT_SLOT);
+            items.set(INPUT_SLOT, ItemStack.EMPTY);
+            net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, old);
+            setChanged();
         }
-        starved = kind.inputRequired() && (boneMeal ? boostLeft <= 0 : !hasInput(kind));
-        if (!full && !starved && !isPaused() && !unpowered) {
+        starved = false;
+        boostLeft = 0;
+        if (!full && !isPaused() && !unpowered) {
             energy.use(kind.energyPerTick());
-            progress += kind == FarmKind.CROP && boostLeft > 0 ? 2 : 1;
+            progress += 1;
             if (progress >= cycleTicks()) {
                 progress = 0;
                 cycle(level, kind, level.getRandom());
-                if (boostLeft > 0) boostLeft--;
             }
             setChanged();
         }
@@ -133,11 +134,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     public void cycle(ServerLevel level, FarmKind kind, RandomSource random) {
         switch (kind) {
             case VILLAGER_BREEDER -> {
-                items.get(INPUT_SLOT).shrink(FarmKind.foodCost(items.get(INPUT_SLOT)));
                 insert(baby(level));
             }
             case PIGLIN_BARTER -> {
-                items.get(INPUT_SLOT).shrink(1);
                 LootParams params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
                 for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.PIGLIN_BARTERING).getRandomItems(params)) {
                     insert(loot);
@@ -186,25 +185,12 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
             }
             case SLIME -> roll(level, EntityTypes.SLIME, e -> ((net.minecraft.world.entity.monster.cubemob.AbstractCubeMob) e).setSize(1, true));
             case LIVESTOCK -> {
-                ItemStack feed = items.get(INPUT_SLOT);
-                FarmKind.Feed kindOfFeed = FarmKind.feed(feed);
-                if (kindOfFeed == null) return;
-                feed.shrink(1);
-                switch (kindOfFeed) {
-                    case WHEAT -> {
-                        roll(level, EntityTypes.COW, null);
-                        roll(level, EntityTypes.SHEEP, e -> ((net.minecraft.world.entity.animal.sheep.Sheep) e).setColor(sheepColour(random)));
-                    }
-                    case SEEDS -> {
-                        roll(level, EntityTypes.CHICKEN, null);
-                        insert(new ItemStack(Items.EGG));
-                    }
-                    case CARROT -> {
-                        roll(level, EntityTypes.PIG, null);
-                        roll(level, EntityTypes.RABBIT, null);
-                    }
-                    case ROOT -> roll(level, EntityTypes.PIG, null);
-                }
+                roll(level, EntityTypes.COW, null);
+                roll(level, EntityTypes.SHEEP, e -> ((net.minecraft.world.entity.animal.sheep.Sheep) e).setColor(sheepColour(random)));
+                roll(level, EntityTypes.CHICKEN, null);
+                insert(new ItemStack(Items.EGG));
+                roll(level, EntityTypes.PIG, null);
+                roll(level, EntityTypes.RABBIT, null);
             }
             case CROP -> {
                 insert(new ItemStack(Items.WHEAT, 3));
