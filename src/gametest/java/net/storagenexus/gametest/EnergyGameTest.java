@@ -215,12 +215,12 @@ public class EnergyGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void theReactorMakes100PerRodAtTheDefaultDepthOnAnyNumberOfRods(GameTestHelper h) {
+    public void theReactorMakes200PerRodAtTheDefaultDepthOnAnyNumberOfRods(GameTestHelper h) {
         reactorSlot = 0;
         for (int rods : new int[] {1, 4, 9}) {
             var r = reactor(h, rods);
             run(h, r, 1);
-            h.assertValueEqual(r.output(), 100 * rods, rods + " rods at the default depth");
+            h.assertValueEqual(r.output(), 200 * rods, rods + " rods at the default depth");
         }
         var none = reactor(h, 0);
         run(h, none, 3);
@@ -231,7 +231,7 @@ public class EnergyGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void theReactorDepthTradesPowerForHeatAndWear(GameTestHelper h) {
         reactorSlot = 0;
-        int[] power = {450, 675, 900, 1125, 1350};
+        int[] power = {900, 1350, 1800, 2250, 2700};
         double[] heat = new double[5];
         for (int d = 0; d < 5; d++) {
             var r = reactor(h, 9);
@@ -263,7 +263,7 @@ public class EnergyGameTest {
         r.setHeat(0.75);
         r.energy().set(0);
         run(h, r, 1);
-        h.assertTrue(r.output() > 400 && r.output() < 600, "about 55% of 900 at 75% heat: " + r.output());
+        h.assertTrue(r.output() > 900 && r.output() < 1200, "about 55% of 1,800 at 75% heat: " + r.output());
         r.setHeat(0.9005);
         run(h, r, 1);
         h.assertTrue(r.isShutDown() || r.heat() >= 0.9, "the redline shuts it off");

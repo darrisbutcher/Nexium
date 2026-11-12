@@ -413,8 +413,8 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
-| **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 1 ochre, 1 verdant and 1 pearlescent froglight |
-| **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
+| **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 5 ochre, 5 verdant and 5 pearlescent froglights |
+| **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, poplar, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
 | **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. |
 
@@ -430,7 +430,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 | **Combustion Generator** | 20 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
 | **Solar Panel** | 20 NE/t | Daylight with open sky above; 5 NE/t in rain; nothing at night or under a roof |
 | **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
-| **Redstone Reactor** | up to 1,350 NE/t | See below |
+| **Redstone Reactor** | up to 2,700 NE/t | Stores 1,000,000 NE; see below |
 
 * **Energy Conduit**: Tier 1 moves 500 NE/t a side, the Ender Energy Conduit (Tier 2) 4,000 NE/t. Touching Energy Conduits
   form one network with a **shared pool**: each segment holds 2,000 NE (Tier 1) or 16,000 (Tier 2), added together, so a
@@ -442,9 +442,9 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   the energy it holds.
 * **Batteries** (iron, gold, diamond) hold 250,000, 1,000,000 and 10,000,000 NE. Six cells on the side show the charge and a
   comparator reads it. A broken Battery keeps its charge in the item.
-* **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 100 NE/t at
-  the default depth (900 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
-  the rods: -2, -1, 0 (the default), +1 and +2 make 50, 75, 100, 125 and 150 NE/t a rod, with
+* **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 200 NE/t at
+  the default depth (1,800 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
+  the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with
   0.25x, 0.5x, 1x, 1.6x and 2.25x the heat and 0.5x to 1.5x the rod wear. Ice takes the heat away once it passes 25% (blue
   ice best; three slots of blue ice hold nine default rods). Output is full to 60% heat, falls steadily to 10% at 90%, and
   at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 8 hours at the default depth and

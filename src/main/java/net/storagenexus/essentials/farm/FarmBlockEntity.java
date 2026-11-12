@@ -232,9 +232,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
                 }
             }
             case FROGLIGHT -> {
-                insert(new ItemStack(Items.OCHRE_FROGLIGHT, 1));
-                insert(new ItemStack(Items.VERDANT_FROGLIGHT, 1));
-                insert(new ItemStack(Items.PEARLESCENT_FROGLIGHT, 1));
+                insert(new ItemStack(Items.OCHRE_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
+                insert(new ItemStack(Items.VERDANT_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
+                insert(new ItemStack(Items.PEARLESCENT_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
             }
             case MOSS -> {
                 insert(new ItemStack(Items.MOSS_BLOCK, 3));

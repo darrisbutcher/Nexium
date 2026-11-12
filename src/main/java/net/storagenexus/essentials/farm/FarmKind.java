@@ -51,7 +51,7 @@ public enum FarmKind {
     BEE("bee_farm", Input.NONE, 2),
     /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea. */
     MOSS("moss_farm", Input.NONE, 7),
-    /** One ochre, one verdant and one pearlescent froglight. */
+    /** Five each of ochre, verdant and pearlescent froglights. */
     FROGLIGHT("froglight_farm", Input.NONE, 3),
     /** The logs of the tree its mode picks, or chorus fruit and the odd chorus flower. */
     TREE("tree_farm", Input.NONE, 2);
@@ -195,9 +195,12 @@ public enum FarmKind {
         return this == GENERATOR && modes().get(Math.floorMod(mode, modes().size())).equals("obsidian") ? base * 2 : base;
     }
 
+    /** Froglights of each colour (ochre, verdant, pearlescent) the Froglight Farm makes each cycle. */
+    public static final int FROGLIGHTS_PER_COLOUR = 5;
+
     /** What the Tree Farm's mode button steps through. */
     public static final java.util.List<String> TREES = java.util.List.of("oak", "spruce", "birch", "jungle", "acacia", "dark_oak",
-            "mangrove", "cherry", "pale_oak", "crimson", "warped", "chorus");
+            "mangrove", "cherry", "pale_oak", "poplar", "crimson", "warped", "chorus");
 
     /** The log a Tree Farm tree makes (the stem for the nether trees); chorus makes none. */
     public static @org.jspecify.annotations.Nullable Item treeLog(String tree) {
@@ -211,6 +214,7 @@ public enum FarmKind {
             case "mangrove" -> Items.MANGROVE_LOG;
             case "cherry" -> Items.CHERRY_LOG;
             case "pale_oak" -> Items.PALE_OAK_LOG;
+            case "poplar" -> Items.POPLAR_LOG;
             case "crimson" -> Items.CRIMSON_STEM;
             case "warped" -> Items.WARPED_STEM;
             default -> null;
