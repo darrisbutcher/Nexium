@@ -45,7 +45,8 @@ public class SideConfig {
     public int rrIndex;
 
     public SideConfig(ConduitType type) {
-        this.mode = Mode.INSERT;
+        // An energy side works both ways from the start: it takes from a generator and gives to a machine without a wrench
+        this.mode = type == ConduitType.ENERGY ? Mode.BOTH : Mode.INSERT;
     }
 
     /** The channel things taken in through this side travel on: the insert channel for an Insert side. */

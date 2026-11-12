@@ -57,6 +57,17 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     private int color = -1;
     /** Not saved; worked out every tick. */
     private boolean full, dry;
+    /** No energy for this tick's work (not saved; worked out again every tick). */
+    private boolean unpowered;
+    /** Nexus Energy the Freezer uses each tick it works. */
+    public static final int ENERGY_PER_TICK = 20;
+    /** The Nexus Energy it runs on: ten seconds' worth. */
+    private final net.storagenexus.energy.EnergyBuffer energy = net.storagenexus.energy.EnergyBuffer.machine(ENERGY_PER_TICK * 200L, this::setChanged);
+
+    public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
+
+    /** Whether the Freezer is waiting for Nexus Energy. */
+    public boolean isUnpowered() { return unpowered; }
 
     private final SingleVariantStorage<FluidVariant> tank = new SingleVariantStorage<>() {
         @Override protected FluidVariant getBlankVariant() { return FluidVariant.blank(); }
@@ -87,7 +98,9 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         // The water this tick takes: the share of the cost between this tick's progress and the next
         long take = cost * (progress + 1) / ticks - cost * progress / ticks;
         dry = tank.amount < take;
-        if (!full && !dry && !isPaused()) {
+        unpowered = energy.stored() < ENERGY_PER_TICK;
+        if (!full && !dry && !isPaused() && !unpowered) {
+            energy.use(ENERGY_PER_TICK);
             tank.amount -= take;
             if (tank.amount == 0) tank.variant = FluidVariant.blank();
             progress++;
@@ -233,6 +246,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         output.putInt("mode", mode.ordinal());
         output.putInt("progress", progress);
         output.putInt("color", color);
+        output.putLong("energy", energy.stored());
     }
 
     @Override
@@ -244,6 +258,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         tank.amount = Math.max(0, Math.min(CAPACITY, input.getLongOr("amount", 0L)));
         mode = FreezerMode.byOrdinal(input.getIntOr("mode", 0));
         progress = Math.max(0, input.getIntOr("progress", 0));
+        energy.set(input.getLongOr("energy", 0L));
         int before = color;
         color = input.getIntOr("color", -1);
         // The client draws the body in this colour, so it redraws the block when the colour arrives

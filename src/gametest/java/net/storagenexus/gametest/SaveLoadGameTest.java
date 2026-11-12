@@ -262,6 +262,29 @@ public class SaveLoadGameTest {
                 part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "materials", be -> be.accept(new ItemStack(Items.TORCH, 5))),
                 part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "finished farm", be -> be.output().setItem(0,
                         new ItemStack(net.storagenexus.essentials.registry.ModItems.IRON_FARM))))));
+        cases.add(new Case("Combustion Generator", ModBlocks.COMBUSTION_GENERATOR, List.of(
+                part(net.storagenexus.energy.CombustionGeneratorBlockEntity.class, "fuel", be -> be.setItem(0, new ItemStack(Items.COAL, 7))),
+                part(net.storagenexus.energy.CombustionGeneratorBlockEntity.class, "energy", be -> be.energy().set(1234)))));
+        cases.add(new Case("Solar Panel", ModBlocks.SOLAR_PANEL, List.of(
+                part(net.storagenexus.energy.SolarPanelBlockEntity.class, "energy", be -> be.energy().set(321)))));
+        cases.add(new Case("Thermal Generator", ModBlocks.THERMAL_GENERATOR, List.of(
+                part(net.storagenexus.energy.ThermalGeneratorBlockEntity.class, "energy", be -> be.energy().set(4321)),
+                part(net.storagenexus.energy.ThermalGeneratorBlockEntity.class, "lava", be -> {
+                    be.tank().variant = net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.LAVA);
+                    be.tank().amount = 2 * FluidConstants.BUCKET;
+                }))));
+        cases.add(new Case("Redstone Reactor", ModBlocks.REDSTONE_REACTOR, List.of(
+                part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "rods", be -> be.setItem(3, new ItemStack(net.storagenexus.registry.ModItems.REDSTONE_FUEL_ROD))),
+                part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "coolant", be -> be.setItem(10, new ItemStack(Items.BLUE_ICE, 9))),
+                part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "depth", be -> be.setDepth(4)),
+                part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "heat", be -> be.setHeat(0.42)),
+                part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "energy", be -> be.energy().set(7777)))));
+        cases.add(new Case("Iron Battery", ModBlocks.IRON_BATTERY, List.of(
+                part(net.storagenexus.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(123_456)))));
+        cases.add(new Case("Gold Battery", ModBlocks.GOLD_BATTERY, List.of(
+                part(net.storagenexus.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(654_321)))));
+        cases.add(new Case("Diamond Battery", ModBlocks.DIAMOND_BATTERY, List.of(
+                part(net.storagenexus.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(9_999_999)))));
         cases.add(new Case("Freezer", ModBlocks.FREEZER, List.of(
                 part(net.storagenexus.freezer.FreezerBlockEntity.class, "water", be -> be.setWater(3 * FluidConstants.BUCKET)),
                 part(net.storagenexus.freezer.FreezerBlockEntity.class, "ice", be -> be.setItem(0, new ItemStack(Items.ICE, 5))),

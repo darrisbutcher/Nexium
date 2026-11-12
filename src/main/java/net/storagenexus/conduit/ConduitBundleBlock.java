@@ -41,11 +41,12 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     /** Tier of each conduit type (0 = none), so the model can show it. */
     public static final IntegerProperty ITEM_TIER = IntegerProperty.create("item_tier", 0, 2);
     public static final IntegerProperty FLUID_TIER = IntegerProperty.create("fluid_tier", 0, 2);
+    public static final IntegerProperty ENERGY_TIER = IntegerProperty.create("energy_tier", 0, 2);
     public static final PipeShapes SHAPES = new PipeShapes(6.5, 9.5); // half-size conduits
 
     public ConduitBundleBlock(Properties properties) {
         super(properties);
-        BlockState s = stateDefinition.any().setValue(ITEM_TIER, 0).setValue(FLUID_TIER, 0);
+        BlockState s = stateDefinition.any().setValue(ITEM_TIER, 0).setValue(FLUID_TIER, 0).setValue(ENERGY_TIER, 0);
         for (BooleanProperty p : CONNECTIONS.values()) s = s.setValue(p, false);
         registerDefaultState(s);
     }
@@ -54,7 +55,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         CONNECTIONS.values().forEach(builder::add);
-        builder.add(ITEM_TIER, FLUID_TIER);
+        builder.add(ITEM_TIER, FLUID_TIER, ENERGY_TIER);
     }
 
     @Override
@@ -75,7 +76,8 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     public static BlockState computeState(BlockState state, Level level, BlockPos pos, ConduitBundleBlockEntity be) {
         int mask = be.connectionMask();
         BlockState s = state.setValue(ITEM_TIER, be.tier(ConduitType.ITEM))
-                .setValue(FLUID_TIER, be.tier(ConduitType.FLUID));
+                .setValue(FLUID_TIER, be.tier(ConduitType.FLUID))
+                .setValue(ENERGY_TIER, be.tier(ConduitType.ENERGY));
         for (Direction d : Direction.values()) s = s.setValue(CONNECTIONS.get(d), (mask & (1 << d.get3DDataValue())) != 0);
         return s;
     }

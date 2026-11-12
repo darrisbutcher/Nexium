@@ -25,7 +25,7 @@ public class FarmMenu extends AbstractContainerMenu {
 
     private static final int FIRST_PLAYER_SLOT = FarmBlockEntity.SIZE;
     private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_COUNT = 5;
-    private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4;
+    private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
     private final ContainerData data;
@@ -80,7 +80,8 @@ public class FarmMenu extends AbstractContainerMenu {
             public int get(int index) {
                 return switch (index) {
                     case D_PROGRESS -> Math.round(farm.progressFraction() * 1000);
-                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0) | (farm.isStarved() ? FLAG_STARVED : 0);
+                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0) | (farm.isStarved() ? FLAG_STARVED : 0)
+                            | (farm.isUnpowered() ? FLAG_UNPOWERED : 0);
                     case D_CYCLE -> farm.cycleTicks() & 0x7FFF;
                     case D_CYCLE + 1 -> farm.cycleTicks() >> 15;
                     case D_MODE -> farm.mode();
@@ -106,6 +107,8 @@ public class FarmMenu extends AbstractContainerMenu {
     public boolean full() { return (data.get(D_FLAGS) & FLAG_FULL) != 0; }
     public boolean paused() { return (data.get(D_FLAGS) & FLAG_PAUSED) != 0; }
     public boolean starved() { return (data.get(D_FLAGS) & FLAG_STARVED) != 0; }
+    /** Waiting for Nexus Energy. */
+    public boolean unpowered() { return (data.get(D_FLAGS) & FLAG_UNPOWERED) != 0; }
     /** The server's cycle length in ticks, which can differ from this client's config. */
     public int cycleTicks() { return Math.max(1, data.get(D_CYCLE) | data.get(D_CYCLE + 1) << 15); }
 
@@ -118,6 +121,10 @@ public class FarmMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         if (id == 0 && farm != null && !kind.modes().isEmpty()) {
             farm.cycleMode();
+            return true;
+        }
+        if (id == 1 && farm != null && !kind.modes().isEmpty()) {
+            farm.previousMode();
             return true;
         }
         return false;

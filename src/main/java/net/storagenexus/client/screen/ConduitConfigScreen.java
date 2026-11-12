@@ -20,7 +20,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     private static final String[] COLOR_KEYS = {"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
             "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"};
 
-    private static final String[] TYPE_KEYS = {"item", "fluid"};
+    private static final String[] TYPE_KEYS = {"item", "fluid", "energy"};
 
     private final Button[] sideButtons = new Button[6];
     private final Button[] typeButtons = new Button[TYPE_KEYS.length];

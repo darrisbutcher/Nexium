@@ -21,7 +21,7 @@ public final class IronFarmRecipe {
      * The smooth stone it takes: what the double chest it used to be built from held besides the parts, 22 full stacks
      * (54 slots, less the 32 that Captured Mobs, beds and one stack of each other part fill).
      */
-    public static final int FILLER_AMOUNT = 22 * 64;
+    public static final int FILLER_AMOUNT = 9 * 64;
 
     public enum Part {
         ZOMBIES("zombies", 4, Items.ZOMBIE_SPAWN_EGG),

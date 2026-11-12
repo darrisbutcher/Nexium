@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "storagenexus:block/redstone_reactor_top",
+    "bottom": "storagenexus:block/redstone_reactor_bottom",
+    "side": "storagenexus:block/redstone_reactor_side"
+  }
+}

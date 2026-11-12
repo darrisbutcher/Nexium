@@ -89,6 +89,22 @@
       "apply": {
         "model": "storagenexus:block/conduit_trim_fluid_top"
       }
+    },
+    {
+      "when": {
+        "energy_tier": "1|2"
+      },
+      "apply": {
+        "model": "storagenexus:block/conduit_band_energy"
+      }
+    },
+    {
+      "when": {
+        "energy_tier": "2"
+      },
+      "apply": {
+        "model": "storagenexus:block/conduit_trim_energy_top"
+      }
     }
   ]
 }

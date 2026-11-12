@@ -3,6 +3,24 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.0
+
+Power. Every one-block farm and the Freezer now run on Nexus Energy.
+
+* **Nexus Energy (NE)**: farms use 10 to 40 NE a tick, the Freezer 20; the Disk Drive needs none. A farm without power waits
+  and says so.
+* **Generators**: Combustion Generator (20 NE/t, anything a furnace burns), Solar Panel (20 NE/t in daylight, 5 in rain),
+  Thermal Generator (80 NE/t on lava) and the **Redstone Reactor**.
+* **Redstone Reactor**: nine Redstone Fuel Rod slots (100 NE/t each at the default depth, any one to nine work) and three ice
+  coolant slots. One depth for all rods trades power (50 to 150 NE/t a rod) for heat and wear; output falls above 60% heat
+  and the reactor shuts off at 90% until it is under 50%. Rods last 8 hours at the default depth. No explosions. New items: Redstone Fuel Rod and Spent Fuel Rod.
+* **Energy Conduit** (500 NE/t) and **Ender Energy Conduit** (4,000 NE/t), a third conduit kind with its own colours.
+* **Tree Farm**: 18 stacks of logs at the Farm Assembler. A mode button picks the tree (every wood, the nether stems and
+  chorus); every 20 s it makes 8 logs of that tree, or 4 chorus fruit and a 5% chorus flower. 10 NE/t.
+* **Batteries** in iron, gold and diamond: 250,000, 1,000,000 and 10,000,000 NE. A broken Battery keeps its charge.
+* **Every farm's filler is now 576** (nine stacks), the Iron Farm's smooth stone included (the Tree Farm takes 18 stacks of logs).
+* Fix: a Solar Panel with a block directly on top of it no longer works.
+
 ## 1.20.3
 
 Fixes from a review of the whole mod, two balance changes, and comparator output.

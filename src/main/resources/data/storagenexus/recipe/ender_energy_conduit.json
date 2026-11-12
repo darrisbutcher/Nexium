@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CPC",
+    "CCC"
+  ],
+  "key": {
+    "C": "storagenexus:energy_conduit",
+    "P": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "storagenexus:ender_energy_conduit",
+    "count": 8
+  }
+}

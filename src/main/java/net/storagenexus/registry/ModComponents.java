@@ -124,6 +124,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> FREEZER_MODE = register("freezer_mode",
             b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** Nexus Energy a Battery held when it was broken. */
+    public static final DataComponentType<Long> BATTERY_CHARGE = register("battery_charge",
+            b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, StorageNexus.id(name),
                 op.apply(DataComponentType.builder()).build());

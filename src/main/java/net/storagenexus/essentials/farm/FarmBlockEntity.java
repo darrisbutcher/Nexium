@@ -72,12 +72,26 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     private int boostLeft;
     /** Not saved; worked out again every tick. */
     private boolean full, starved;
+    /** No energy for this tick's work (not saved; worked out again every tick). */
+    private boolean unpowered;
+    /** The Nexus Energy it runs on: ten seconds' worth, filled by Energy Conduits and generators beside it. */
+    private final net.storagenexus.energy.EnergyBuffer energy;
     /** Not saved: items a cycle made that found no room. */
     private int overflow;
 
     public FarmBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FARM, pos, state);
+        FarmKind kind = state.getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.ZOMBIFIED_PIGLIN;
+        energy = net.storagenexus.energy.EnergyBuffer.machine(kind.energyPerTick() * ENERGY_TICKS, this::setChanged);
     }
+
+    /** How many ticks of work a full energy buffer lasts. */
+    public static final long ENERGY_TICKS = 200;
+
+    public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
+
+    /** Whether the farm is waiting for Nexus Energy. */
+    public boolean isUnpowered() { return unpowered; }
 
     public FarmKind kind() {
         return getBlockState().getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.ZOMBIFIED_PIGLIN;
@@ -97,12 +111,14 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         if (full != wasFull) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         boolean boneMeal = kind.input() == FarmKind.Input.BONE_MEAL || kind.input() == FarmKind.Input.BONE_MEAL_BOOST;
         // A bone meal is used up when the one before it has run out of cycles
-        if (boneMeal && boostLeft <= 0 && hasInput(kind) && !full && !isPaused()) {
+        unpowered = energy.stored() < kind.energyPerTick();
+        if (boneMeal && boostLeft <= 0 && hasInput(kind) && !full && !isPaused() && !unpowered) {
             items.get(INPUT_SLOT).shrink(1);
             boostLeft = FarmKind.CYCLES_PER_BONE_MEAL;
         }
         starved = kind.inputRequired() && (boneMeal ? boostLeft <= 0 : !hasInput(kind));
-        if (!full && !starved && !isPaused()) {
+        if (!full && !starved && !isPaused() && !unpowered) {
+            energy.use(kind.energyPerTick());
             progress += kind == FarmKind.CROP && boostLeft > 0 ? 2 : 1;
             if (progress >= cycleTicks()) {
                 progress = 0;
@@ -218,6 +234,16 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
             case BEE -> {
                 insert(new ItemStack(Items.HONEYCOMB, 1 + random.nextInt(3)));
                 insert(new ItemStack(Items.HONEY_BOTTLE, 2));
+            }
+            case TREE -> {
+                String tree = kind.modes().get(mode());
+                net.minecraft.world.item.Item log = FarmKind.treeLog(tree);
+                if (log != null) {
+                    insert(new ItemStack(log, FarmKind.LOGS_PER_CYCLE));
+                } else {
+                    insert(new ItemStack(Items.CHORUS_FRUIT, FarmKind.CHORUS_FRUIT));
+                    if (random.nextFloat() < FarmKind.CHORUS_FLOWER_CHANCE) insert(new ItemStack(Items.CHORUS_FLOWER));
+                }
             }
             case FROGLIGHT -> {
                 insert(new ItemStack(Items.OCHRE_FROGLIGHT, 1));
@@ -364,6 +390,15 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         setChanged();
     }
 
+    /** Steps back to the previous mode. */
+    public void previousMode() {
+        int n = kind().modes().size();
+        if (n == 0) return;
+        mode = Math.floorMod(mode() - 1, n);
+        progress = Math.min(progress, Math.max(0, cycleTicks() - 1));
+        setChanged();
+    }
+
     public void setMode(int value) {
         mode = value;
         setChanged();
@@ -450,6 +485,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         output.putInt("progress", progress);
         output.putInt("mode", mode);
         output.putInt("boost", boostLeft);
+        output.putLong("energy", energy.stored());
     }
 
     @Override
@@ -460,6 +496,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         progress = Math.max(0, input.getIntOr("progress", 0));
         mode = Math.max(0, input.getIntOr("mode", 0));
         boostLeft = Math.max(0, input.getIntOr("boost", 0));
+        energy.set(input.getLongOr("energy", 0L));
         // 1.19 Bee Farms kept honey in a tank: hand it back as bottles (a quarter bucket each)
         long legacy = input.getLongOr("honey", 0L) / (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 4);
         while (legacy > 0) {

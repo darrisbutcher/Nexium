@@ -46,7 +46,15 @@
     "nexusessentials:bee_farm",
     "nexusessentials:moss_farm",
     "nexusessentials:froglight_farm",
+    "nexusessentials:tree_farm",
     "storagenexus:freezer",
-    "storagenexus:disk_drive"
+    "storagenexus:combustion_generator",
+    "storagenexus:solar_panel",
+    "storagenexus:thermal_generator",
+    "storagenexus:iron_battery",
+    "storagenexus:gold_battery",
+    "storagenexus:diamond_battery",
+    "storagenexus:disk_drive",
+    "storagenexus:redstone_reactor"
   ]
 }

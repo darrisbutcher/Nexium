@@ -52,7 +52,9 @@ public enum FarmKind {
     /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea; needs bone meal. */
     MOSS("moss_farm", Input.BONE_MEAL, 7),
     /** One ochre, one verdant and one pearlescent froglight. */
-    FROGLIGHT("froglight_farm", Input.NONE, 3);
+    FROGLIGHT("froglight_farm", Input.NONE, 3),
+    /** The logs of the tree its mode picks, or chorus fruit and the odd chorus flower. */
+    TREE("tree_farm", Input.NONE, 2);
 
     /** What the input slot takes: nothing, villagers' food, gold, livestock feed, or bone meal (needed, or only a speed-up). */
     public enum Input { NONE, FOOD, GOLD, FEED, BONE_MEAL, BONE_MEAL_BOOST }
@@ -79,6 +81,14 @@ public enum FarmKind {
     public Input input() { return input; }
 
     public boolean hasInput() { return input != Input.NONE; }
+
+    /** Nexus Energy the farm uses each tick it works: 20 for the farms that keep mobs, 10 for those that grow or make blocks. */
+    public int energyPerTick() {
+        return switch (this) {
+            case SUGAR_CANE, BAMBOO, NETHER_WART, CROP, GOURD, GENERATOR, MOSS, TREE -> 10;
+            default -> 20;
+        };
+    }
 
     /** Empty output slots a cycle needs, so its drops always fit. */
     public int slotsNeeded() { return slotsNeeded; }
@@ -111,6 +121,7 @@ public enum FarmKind {
             case BEE -> c.beeFarmTicks;
             case MOSS -> c.mossFarmTicks;
             case FROGLIGHT -> c.froglightFarmTicks;
+            case TREE -> c.treeFarmTicks;
         };
     }
 
@@ -173,6 +184,7 @@ public enum FarmKind {
     public java.util.List<String> modes() {
         return switch (this) {
             case GENERATOR -> java.util.List.of("cobblestone", "stone", "gravel", "sand", "clay", "basalt", "obsidian");
+            case TREE -> TREES;
             default -> java.util.List.of();
         };
     }
@@ -182,6 +194,32 @@ public enum FarmKind {
         int base = cycleTicks();
         return this == GENERATOR && modes().get(Math.floorMod(mode, modes().size())).equals("obsidian") ? base * 2 : base;
     }
+
+    /** What the Tree Farm's mode button steps through. */
+    public static final java.util.List<String> TREES = java.util.List.of("oak", "spruce", "birch", "jungle", "acacia", "dark_oak",
+            "mangrove", "cherry", "pale_oak", "crimson", "warped", "chorus");
+
+    /** The log a Tree Farm tree makes (the stem for the nether trees); chorus makes none. */
+    public static @org.jspecify.annotations.Nullable Item treeLog(String tree) {
+        return switch (tree) {
+            case "oak" -> Items.OAK_LOG;
+            case "spruce" -> Items.SPRUCE_LOG;
+            case "birch" -> Items.BIRCH_LOG;
+            case "jungle" -> Items.JUNGLE_LOG;
+            case "acacia" -> Items.ACACIA_LOG;
+            case "dark_oak" -> Items.DARK_OAK_LOG;
+            case "mangrove" -> Items.MANGROVE_LOG;
+            case "cherry" -> Items.CHERRY_LOG;
+            case "pale_oak" -> Items.PALE_OAK_LOG;
+            case "crimson" -> Items.CRIMSON_STEM;
+            case "warped" -> Items.WARPED_STEM;
+            default -> null;
+        };
+    }
+
+    /** Logs a Tree Farm makes each cycle; chorus makes {@value #CHORUS_FRUIT} chorus fruit and, 5% of the time, a chorus flower. */
+    public static final int LOGS_PER_CYCLE = 8, CHORUS_FRUIT = 4;
+    public static final float CHORUS_FLOWER_CHANCE = 0.05F;
 
     public static FarmKind byId(String id) {
         for (FarmKind kind : values()) if (kind.id.equals(id.toLowerCase(Locale.ROOT))) return kind;

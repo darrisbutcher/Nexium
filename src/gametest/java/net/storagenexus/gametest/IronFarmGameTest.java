@@ -51,7 +51,10 @@ public class IronFarmGameTest {
     }
 
     private static void tick(GameTestHelper h, IronFarmBlockEntity farm, int ticks) {
-        for (int i = 0; i < ticks; i++) IronFarmBlockEntity.serverTick(h.getLevel(), farm.getBlockPos(), farm.getBlockState(), farm);
+        for (int i = 0; i < ticks; i++) {
+            farm.energy().set(Long.MAX_VALUE); // always powered
+            IronFarmBlockEntity.serverTick(h.getLevel(), farm.getBlockPos(), farm.getBlockState(), farm);
+        }
     }
 
     private static int count(IronFarmBlockEntity farm, net.minecraft.world.item.Item item) {
@@ -100,10 +103,11 @@ public class IronFarmGameTest {
         h.setBlock(FARM.below(), Blocks.HOPPER.defaultBlockState().setValue(HopperBlock.FACING, Direction.DOWN));
         // A hopper above pointing down can't push anything in
         h.setBlock(FARM.above(), Blocks.HOPPER.defaultBlockState().setValue(HopperBlock.FACING, Direction.DOWN));
-        farm(h);
+        IronFarmBlockEntity powered = farm(h);
         HopperBlockEntity above = h.getBlockEntity(FARM.above(), HopperBlockEntity.class);
         above.setItem(0, new ItemStack(Items.BREAD, 4));
         h.succeedWhen(() -> {
+            powered.energy().set(Long.MAX_VALUE); // kept powered while the world ticks it
             HopperBlockEntity below = h.getBlockEntity(FARM.below(), HopperBlockEntity.class);
             boolean gotIron = false;
             for (int i = 0; i < below.getContainerSize(); i++) gotIron |= below.getItem(i).is(Items.IRON_INGOT);

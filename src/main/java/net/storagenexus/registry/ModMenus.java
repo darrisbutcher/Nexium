@@ -50,6 +50,15 @@ public final class ModMenus {
     public static final ExtendedMenuType<net.storagenexus.disk.DiskDriveMenu, BlockPos> DISK_DRIVE = register("disk_drive",
             new ExtendedMenuType<>(net.storagenexus.disk.DiskDriveMenu::new, BlockPos.STREAM_CODEC));
 
+    public static final ExtendedMenuType<net.storagenexus.energy.ThermalGeneratorMenu, BlockPos> THERMAL_GENERATOR = register("thermal_generator",
+            new ExtendedMenuType<>(net.storagenexus.energy.ThermalGeneratorMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.storagenexus.energy.RedstoneReactorMenu, BlockPos> REDSTONE_REACTOR = register("redstone_reactor",
+            new ExtendedMenuType<>(net.storagenexus.energy.RedstoneReactorMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.storagenexus.energy.BatteryMenu, BlockPos> BATTERY = register("battery",
+            new ExtendedMenuType<>(net.storagenexus.energy.BatteryMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.storagenexus.energy.CombustionGeneratorMenu, BlockPos> COMBUSTION_GENERATOR = register("combustion_generator",
+            new ExtendedMenuType<>(net.storagenexus.energy.CombustionGeneratorMenu::new, BlockPos.STREAM_CODEC));
+
     public static final ExtendedMenuType<FreezerMenu, BlockPos> FREEZER = register("freezer",
             new ExtendedMenuType<>(FreezerMenu::new, BlockPos.STREAM_CODEC));
 

@@ -372,7 +372,7 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
   | Signs | 16 | Any sign or hanging sign |
   | Trapdoors | 12 | Any trapdoor |
   | Beds | 12 | Any colour |
-  | Smooth Stone | 1,408 | Smooth stone |
+  | Smooth Stone | 576 | Smooth stone |
 
   Then press Build.
 * **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron, about **1,900 iron an
@@ -383,26 +383,25 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
 * A **comparator** reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 ### More one-block farms
-Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Place it anywhere; hoppers and pipes
+Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Every farm needs **power** (see Power below). Place it anywhere; hoppers and pipes
 take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its progress in the item.
 A comparator reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 | Farm | Recipe | Makes |
 |---|---|---|
-| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 2,880 planks | A baby villager (a Captured Mob) every 10 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
-| **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 3,136 netherrack | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
-| **Zombified Piglin Farm** | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots, 3,008 netherrack | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
-| **Wither Skeleton Farm** | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks, 2,944 netherrack | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
-| **Shulker Farm** | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls, 3,008 end stone bricks | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
-| **Witch Farm** | 2 witches, 8 cauldrons, 16 spruce planks, 8 lily pads, 768 mossy cobblestone | Every 10 seconds: a witch's own drops, as if a player killed her (no Looting): glowstone dust, redstone, gunpowder, sugar, spider eyes, sticks and glass bottles |
-| **Sugar Cane Farm** | 32 sugar cane, 4 water buckets, 8 pistons, 16 observers, 768 sand | 3 sugar cane every 20 seconds |
-| **Bamboo Farm** | 32 bamboo, 4 water buckets, 8 pistons, 16 observers, 768 dirt | 4 bamboo every 20 seconds |
-| **Nether Wart Farm** | 32 nether wart, 16 soul sand, 4 lava buckets, 8 magma blocks, 768 netherrack | 4 nether wart every 30 seconds |
+| **Villager Breeder** | 2 villagers, 4 beds, 2 composters, 8 hay bales, 2 emerald blocks, 576 planks | A baby villager (a Captured Mob) every 10 minutes. Feed it 3 bread, or 12 carrots, potatoes or beetroot, each |
+| **Piglin Barter Farm** | 2 piglins, 9 gold blocks, 16 soul sand, 16 planks, 576 netherrack | Trades 1 gold ingot every 6 seconds for the vanilla piglin barter loot; hoppers feed the gold from the top or sides |
+| **Zombified Piglin Farm** | 4 zombified piglins, 8 magma blocks, 20 nether bricks, 16 gold ingots, 576 netherrack | Every 4 seconds: gold nuggets (0-6, about 3) and a 7.5% gold ingot, like Looting V with no player needed. No rotten flesh |
+| **Wither Skeleton Farm** | 4 wither skeletons, 16 nether brick fences, 8 soul sand, 4 coal blocks, 4 magma blocks, 576 netherrack | Every 6 seconds: 0-1 coal, 0-2 bones and a 7.5% wither skeleton skull |
+| **Shulker Farm** | 4 shulkers, 32 purpur blocks, 8 end rods, 8 ender pearls, 576 end stone bricks | Every 30 seconds: a shulker shell about 4 times in 5 (81%) |
+| **Witch Farm** | 2 witches, 8 cauldrons, 16 spruce planks, 8 lily pads, 576 mossy cobblestone | Every 10 seconds: a witch's own drops, as if a player killed her (no Looting): glowstone dust, redstone, gunpowder, sugar, spider eyes, sticks and glass bottles |
+| **Sugar Cane Farm** | 32 sugar cane, 4 water buckets, 8 pistons, 16 observers, 576 sand | 3 sugar cane every 20 seconds |
+| **Bamboo Farm** | 32 bamboo, 4 water buckets, 8 pistons, 16 observers, 576 dirt | 4 bamboo every 20 seconds |
+| **Nether Wart Farm** | 32 nether wart, 16 soul sand, 4 lava buckets, 8 magma blocks, 576 netherrack | 4 nether wart every 30 seconds |
 
-The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. The newer farms ask a
-quarter of the filler block the first five do (768 of one block).
+The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. Every farm asks for the same filler: 576 (nine stacks) of one block, except the Tree Farm (18 stacks of logs).
 
-**More farms** (768 of their filler block unless the recipe says otherwise; mobs are spawn eggs or Captured Mobs):
+**More farms** (576 of their filler block; mobs are spawn eggs or Captured Mobs):
 
 | Farm | Recipe | Makes |
 |---|---|---|
@@ -415,8 +414,39 @@ quarter of the filler block the first five do (768 of one block).
 | **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
-| **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 256 glass of any colour | Every 20 s: 1 ochre, 1 verdant and 1 pearlescent froglight |
+| **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 1 ochre, 1 verdant and 1 pearlescent froglight |
+| **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
+| **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
 | **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. Needs bone meal (one lasts 3 cycles) |
+
+### Power (Nexus Energy)
+Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Drive and the rest of the network need none.
+A farm uses 10 NE a tick (Sugar Cane, Bamboo, Nether Wart, Crop, Gourd and Cactus, Generator, Moss, Tree), 20 (every other
+farm and the Freezer) or 40 (Iron Farm), and keeps 10 seconds' worth in a buffer. Without power it waits and its screen says so.
+
+Generators give energy to the machines touching them; **Energy Conduits** carry it further.
+
+| Block | Makes | Notes |
+|---|---|---|
+| **Combustion Generator** | 20 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
+| **Solar Panel** | 20 NE/t | Daylight with open sky above; 5 NE/t in rain; nothing at night or under a roof |
+| **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
+| **Redstone Reactor** | up to 1,350 NE/t | See below |
+
+* **Energy Conduit**: Tier 1 carries 500 NE/t, the Ender Energy Conduit (Tier 2) 4,000 NE/t. Like the other conduits, each
+  side can be set to extract or insert and given a colour channel. Generators and Batteries are pulled from; machines are filled.
+* **Batteries** (iron, gold, diamond) hold 250,000, 1,000,000 and 10,000,000 NE. Six cells on the side show the charge and a
+  comparator reads it. A broken Battery keeps its charge in the item.
+* **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 100 NE/t at
+  the default depth (900 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
+  the rods: -2, -1, 0 (the default), +1 and +2 make 50, 75, 100, 125 and 150 NE/t a rod, with
+  0.25x, 0.5x, 1x, 1.6x and 2.25x the heat and 0.5x to 1.5x the rod wear. Ice takes the heat away once it passes 25% (blue
+  ice best; three slots of blue ice hold nine default rods). Output is full to 60% heat, falls steadily to 10% at 90%, and
+  at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 8 hours at the default depth and
+  leaves a **Spent Fuel Rod**.
+* **Recipes**: Redstone Fuel Rod: 8 redstone blocks around a Nexium ingot; a Spent Fuel Rod with 8 redstone blocks around it
+  gives a fresh one. Reactor: nexium ingots in the corners, iron blocks above and below the middle, redstone blocks
+  beside it and a diamond block in the centre.
 
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).

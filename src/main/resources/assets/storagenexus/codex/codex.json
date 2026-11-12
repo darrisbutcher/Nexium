@@ -122,6 +122,8 @@
         "beefarm",
         "mossfarm",
         "froglightfarm",
+        "treefarm",
+        "power",
         "freezer",
         "harvest"
       ]
@@ -1233,6 +1235,7 @@
         "beefarm",
         "mossfarm",
         "froglightfarm",
+        "treefarm",
         "iron_farm"
       ]
     },
@@ -1822,6 +1825,23 @@
         "iron_farm"
       ]
     },
+    "treefarm": {
+      "pages": [
+        "mobs.treefarm"
+      ],
+      "icon": "nexusessentials:tree_farm",
+      "items": [
+        "nexusessentials:tree_farm"
+      ],
+      "aliases": [
+        "Tree Farm",
+        "Chorus"
+      ],
+      "see": [
+        "farms",
+        "iron_farm"
+      ]
+    },
     "froglightfarm": {
       "pages": [
         "mobs.froglightfarm"
@@ -1836,6 +1856,61 @@
       "see": [
         "farms",
         "iron_farm"
+      ]
+    },
+    "power": {
+      "pages": [
+        "power.power",
+        "power.generator",
+        "power.solar",
+        "power.thermal",
+        "power.reactor",
+        "power.battery",
+        "power.conduit"
+      ],
+      "icon": "storagenexus:combustion_generator",
+      "recipes": [
+        "combustion_generator",
+        "solar_panel",
+        "thermal_generator",
+        "redstone_reactor",
+        "redstone_fuel_rod",
+        "iron_battery",
+        "gold_battery",
+        "diamond_battery",
+        "energy_conduit",
+        "ender_energy_conduit"
+      ],
+      "items": [
+        "storagenexus:combustion_generator",
+        "storagenexus:energy_conduit",
+        "storagenexus:ender_energy_conduit",
+        "storagenexus:solar_panel",
+        "storagenexus:thermal_generator",
+        "storagenexus:redstone_reactor",
+        "storagenexus:redstone_fuel_rod",
+        "storagenexus:spent_fuel_rod",
+        "storagenexus:iron_battery",
+        "storagenexus:gold_battery",
+        "storagenexus:diamond_battery"
+      ],
+      "aliases": [
+        "Nexus Energy",
+        "Combustion Generator",
+        "Energy Conduit",
+        "Energy Conduits",
+        "power",
+        "Solar Panel",
+        "Thermal Generator",
+        "Redstone Reactor",
+        "Fuel Rod",
+        "Battery",
+        "Batteries"
+      ],
+      "see": [
+        "farms",
+        "freezer",
+        "conduits"
       ]
     }
   }

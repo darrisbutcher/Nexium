@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "storagenexus:block/battery_top",
+    "bottom": "storagenexus:block/diamond_battery_bottom",
+    "side": "storagenexus:block/diamond_battery_side_5"
+  }
+}

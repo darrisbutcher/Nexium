@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DRD",
+    "RBR",
+    "DRD"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "R": "minecraft:redstone_block",
+    "B": "storagenexus:gold_battery"
+  },
+  "result": {
+    "id": "storagenexus:diamond_battery"
+  }
+}

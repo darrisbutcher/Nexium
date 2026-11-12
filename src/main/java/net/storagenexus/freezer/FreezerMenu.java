@@ -26,7 +26,7 @@ public class FreezerMenu extends AbstractContainerMenu {
 
     private static final int FIRST_PLAYER_SLOT = FreezerBlockEntity.SLOTS;
     private static final int D_PROGRESS = 0, D_FLAGS = 1, D_MODE = 2, D_WATER = 3, D_COUNT = 4;
-    private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_DRY = 4;
+    private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_DRY = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
     private final ContainerData data;
@@ -67,7 +67,8 @@ public class FreezerMenu extends AbstractContainerMenu {
             public int get(int index) {
                 return switch (index) {
                     case D_PROGRESS -> Math.round(freezer.progressFraction() * 1000);
-                    case D_FLAGS -> (freezer.isFull() ? FLAG_FULL : 0) | (freezer.isPaused() ? FLAG_PAUSED : 0) | (freezer.isDry() ? FLAG_DRY : 0);
+                    case D_FLAGS -> (freezer.isFull() ? FLAG_FULL : 0) | (freezer.isPaused() ? FLAG_PAUSED : 0) | (freezer.isDry() ? FLAG_DRY : 0)
+                            | (freezer.isUnpowered() ? FLAG_UNPOWERED : 0);
                     case D_MODE -> freezer.mode().ordinal();
                     // Millibuckets: at most 8000
                     case D_WATER -> (int) (freezer.water() * 1000 / FluidConstants.BUCKET);
@@ -90,6 +91,8 @@ public class FreezerMenu extends AbstractContainerMenu {
     public boolean full() { return (data.get(D_FLAGS) & FLAG_FULL) != 0; }
     public boolean paused() { return (data.get(D_FLAGS) & FLAG_PAUSED) != 0; }
     public boolean dry() { return (data.get(D_FLAGS) & FLAG_DRY) != 0; }
+    /** Waiting for Nexus Energy. */
+    public boolean unpowered() { return (data.get(D_FLAGS) & FLAG_UNPOWERED) != 0; }
     public FreezerMode mode() { return FreezerMode.byOrdinal(data.get(D_MODE)); }
     /** Water in the tank, in millibuckets. */
     public int waterMilli() { return data.get(D_WATER); }

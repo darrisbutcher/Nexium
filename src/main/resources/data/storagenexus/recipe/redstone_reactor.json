@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NIN",
+    "RDR",
+    "NIN"
+  ],
+  "key": {
+    "N": "storagenexus:nexium_ingot",
+    "I": "minecraft:iron_block",
+    "R": "minecraft:redstone_block",
+    "D": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "storagenexus:redstone_reactor"
+  }
+}
