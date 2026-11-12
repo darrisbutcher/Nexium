@@ -1186,8 +1186,6 @@
         "mobs.recipe",
         "mobs.notes",
         "mobs.notes2",
-        "mobs.bread",
-        "mobs.bread2",
         "mobs.running"
       ],
       "icon": "nexusessentials:iron_farm",

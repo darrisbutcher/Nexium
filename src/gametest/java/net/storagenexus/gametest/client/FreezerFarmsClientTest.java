@@ -99,7 +99,6 @@ public class FreezerFarmsClientTest implements FabricClientGameTest {
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 FarmBlockEntity farm = (FarmBlockEntity) player.level().getBlockEntity(base.offset(2, 0, 2));
-                farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT, 12));
                 farm.setItem(0, new ItemStack(Items.ENDER_PEARL, 6));
                 farm.setItem(1, new ItemStack(Items.OBSIDIAN, 3));
                 farm.setProgress(40);

@@ -13,10 +13,10 @@ import java.util.Locale;
  * output slots that hoppers can only take from below. A farm with an {@link Input} also has an input slot.
  */
 public enum FarmKind {
-    /** One baby villager (a Captured Mob) per cycle, fed 3 bread or 12 carrots, potatoes or beetroot. */
-    VILLAGER_BREEDER("villager_breeder", Input.FOOD, 1),
-    /** Trades 1 gold ingot per cycle for the vanilla piglin barter loot. */
-    PIGLIN_BARTER("piglin_barter", Input.GOLD, 2),
+    /** One baby villager (a Captured Mob) per cycle. */
+    VILLAGER_BREEDER("villager_breeder", Input.NONE, 1),
+    /** The vanilla piglin barter loot, once a cycle. */
+    PIGLIN_BARTER("piglin_barter", Input.NONE, 2),
     /** Gold nuggets and the rare gold ingot, as if killed with Looting V. */
     ZOMBIFIED_PIGLIN("zombified_piglin_farm", Input.NONE, 2),
     /** Coal, bones and the rare skull. */
@@ -39,18 +39,18 @@ public enum FarmKind {
     OCEAN("ocean_farm", Input.NONE, 8),
     /** Slime balls. */
     SLIME("slime_farm", Input.NONE, 1),
-    /** The drops of the animals the feed picks: wheat for cows and sheep, seeds for chickens, carrots for pigs and rabbits. */
-    LIVESTOCK("livestock_farm", Input.FEED, 6),
-    /** Wheat, carrots, potatoes and beetroot with their seeds; bone meal speeds it up. */
-    CROP("crop_farm", Input.BONE_MEAL_BOOST, 6),
+    /** The drops of a cow, a sheep, a chicken (and its egg), a pig and a rabbit. */
+    LIVESTOCK("livestock_farm", Input.NONE, 11),
+    /** Wheat, carrots, potatoes and beetroot with their seeds. */
+    CROP("crop_farm", Input.NONE, 6),
     /** Melon slices, pumpkins, cactus and kelp, all every cycle. */
     GOURD("gourd_farm", Input.NONE, 4),
     /** Cobblestone, stone, gravel, sand, clay, basalt or obsidian, by its mode. */
     GENERATOR("generator_farm", Input.NONE, 1),
     /** Honeycomb and bottles of honey into the output. */
     BEE("bee_farm", Input.NONE, 2),
-    /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea; needs bone meal. */
-    MOSS("moss_farm", Input.BONE_MEAL, 7),
+    /** Moss and pale moss (blocks, carpet), pale hanging moss, resin clumps and a little azalea. */
+    MOSS("moss_farm", Input.NONE, 7),
     /** One ochre, one verdant and one pearlescent froglight. */
     FROGLIGHT("froglight_farm", Input.NONE, 3),
     /** The logs of the tree its mode picks, or chorus fruit and the odd chorus flower. */

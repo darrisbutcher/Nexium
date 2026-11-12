@@ -19,6 +19,11 @@ repositories {
         forRepository { maven { url = "https://maven.blamejared.com/" } }
         filter { includeGroup "mezz.jei"; includeGroup "net.mezzdev.config" }
     }
+    // Jade: its API is compiled against for the optional energy tooltip; it is not needed to run the mod.
+    exclusiveContent {
+        forRepository { maven { url = "https://api.modrinth.com/maven" } }
+        filter { includeGroup "maven.modrinth" }
+    }
     exclusiveContent {
         forRepository { maven { url = "https://maven.shedaniel.me/" } }
         filter { includeGroup "me.shedaniel"; includeGroup "me.shedaniel.cloth"; includeGroup "dev.architectury" }
@@ -51,6 +56,10 @@ dependencies {
     // `./gradlew runClientGameTest -PwithJei` runs the client test with JEI installed.
     gametestCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
     if (project.hasProperty("withJei")) localRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
+
+    compileOnly "maven.modrinth:jade:${project.jade_version}"
+    // `./gradlew runClientGameTest -PwithJade` runs the client test with Jade installed.
+    if (project.hasProperty("withJade")) localRuntime "maven.modrinth:jade:${project.jade_version}"
 
     testImplementation platform("org.junit:junit-bom:${project.junit_version}")
     testImplementation "org.junit.jupiter:junit-jupiter"

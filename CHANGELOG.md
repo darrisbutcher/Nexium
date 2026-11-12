@@ -3,6 +3,33 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.2
+
+Energy Conduits share a pool.
+
+* **Shared energy pool, like Mekanism's cables**: touching Energy Conduits form one network that holds energy, 2,000 NE per
+  Tier 1 segment and 16,000 per Tier 2 segment, added together. Generators and Batteries fill the pool, machines draw from
+  it, so a long run of conduit keeps a reserve and evens out the supply. The energy is kept in the conduits and saved with
+  them; a broken conduit loses its share. Energy ignores colour channels.
+* **Machines before Batteries.** A conduit used to hand its energy to the nearest block first, so a Battery beside it
+  could soak up everything and starve a farm. Now machines are served in priority order, equal priorities share evenly,
+  and Batteries take only what is above half of the pool.
+* **Jade support**: with Jade installed, looking at a farm, the Freezer, a generator, a Reactor, a Battery or an Energy
+  Conduit shows its Nexus Energy (a conduit shows its whole network's pool). Jade is optional.
+
+## 1.21.1
+
+Farms run on power alone.
+
+* **No more inputs or boosts.** Every one-block farm, and the Iron Farm, now needs only Nexus Energy: the Villager Breeder's
+  bread, the Piglin Barter Farm's gold, the Livestock Farm's feed, the Moss and Crop Farms' bone meal and the Iron Farm's
+  bread are gone, with their slots, boosts and cooldowns.
+* The farms that needed an input now just work: the Breeder makes a baby villager every 10 minutes, the Barter Farm
+  trades every 6 seconds, the Moss Farm and Crop Farm run at their normal rate, and the **Livestock Farm** makes the drops
+  of a cow, sheep, chicken (and an egg), pig and rabbit every 20 seconds.
+* Items an older farm still holds in its input slot are dropped; the Iron Farm's bread too.
+* The `ironFarmBreadSpeedUp`, `ironFarmBreadSeconds` and `ironFarmCooldownMultiplier` settings are gone.
+
 ## 1.21.0
 
 Power. Every one-block farm and the Freezer now run on Nexus Energy.

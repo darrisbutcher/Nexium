@@ -170,27 +170,14 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
-    public void livestockMakesWhatItsFeedPicks(GameTestHelper h) {
+    public void livestockMakesEveryAnimalsDropsWithNothingFed(GameTestHelper h) {
         FarmBlockEntity farm = farm(h, FarmKind.LIVESTOCK);
-        h.assertTrue(farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT)), "wheat is feed");
-        h.assertTrue(farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.PUMPKIN_SEEDS)), "so are seeds");
-        h.assertTrue(!farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.DIAMOND)), "a diamond is not");
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT, 20));
+        h.assertTrue(!farm.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT)), "no feed goes in");
         cycles(h, farm, 20);
-        h.assertValueEqual(farm.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 0, "one wheat a cycle");
-        h.assertTrue(count(farm, Items.BEEF) > 0 && count(farm, Items.LEATHER) > 0 && count(farm, Items.MUTTON) > 0, "cow and sheep drops from wheat");
-        h.assertTrue(count(farm, Items.PORKCHOP) == 0 && count(farm, Items.CHICKEN) == 0, "and no pig or chicken");
-        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
-        farm = farm(h, FarmKind.LIVESTOCK);
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.WHEAT_SEEDS, 20));
-        cycles(h, farm, 20);
-        h.assertTrue(count(farm, Items.CHICKEN) > 0 && count(farm, Items.FEATHER) > 0, "chicken drops from seeds");
-        h.assertValueEqual(count(farm, Items.EGG), 20, "and an egg a cycle");
-        h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
-        farm = farm(h, FarmKind.LIVESTOCK);
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.CARROT, 30));
-        cycles(h, farm, 30);
-        h.assertTrue(count(farm, Items.PORKCHOP) > 0 && count(farm, Items.RABBIT) > 0, "pig and rabbit drops from carrots");
+        h.assertTrue(count(farm, Items.BEEF) > 0 && count(farm, Items.LEATHER) > 0 && count(farm, Items.MUTTON) > 0, "cow and sheep drops");
+        h.assertTrue(count(farm, Items.CHICKEN) > 0 && count(farm, Items.FEATHER) > 0, "chicken drops");
+        h.assertValueEqual(count(farm, Items.EGG), 20, "an egg a cycle");
+        h.assertTrue(count(farm, Items.PORKCHOP) > 0 && count(farm, Items.RABBIT) > 0, "pig and rabbit drops");
         h.succeed();
     }
 
@@ -232,26 +219,17 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
-    public void boneMealIsNeededByMossAndSpeedsUpCrops(GameTestHelper h) {
+    public void mossAndCropFarmsRunOnPowerAlone(GameTestHelper h) {
         FarmBlockEntity moss = farm(h, FarmKind.MOSS);
         tick(h, moss, 1);
-        h.assertTrue(moss.isStarved(), "the Moss Farm waits for bone meal");
-        moss.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BONE_MEAL, 2));
-        tick(h, moss, 1);
-        h.assertTrue(!moss.isStarved(), "and runs with it");
-        h.assertValueEqual(moss.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 1, "one bone meal used");
-        h.assertValueEqual(moss.boostLeft(), 3, "for 3 cycles");
+        h.assertTrue(!moss.isStarved(), "the Moss Farm needs no bone meal");
         tick(h, moss, 3 * FarmKind.MOSS.cycleTicks());
-        h.assertValueEqual(count(moss, Items.MOSS_BLOCK), 9, "3 cycles of moss on one bone meal");
+        h.assertTrue(count(moss, Items.MOSS_BLOCK) >= 9, "it makes moss");
         h.setBlock(FARM, net.minecraft.world.level.block.Blocks.AIR);
         FarmBlockEntity crop = farm(h, FarmKind.CROP);
-        tick(h, crop, 1);
-        h.assertTrue(!crop.isStarved(), "the Crop Farm needs no bone meal");
-        tick(h, crop, FarmKind.CROP.cycleTicks() - 1);
+        tick(h, crop, FarmKind.CROP.cycleTicks());
         h.assertValueEqual(count(crop, Items.WHEAT), 3, "one cycle at the normal speed");
-        crop.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BONE_MEAL, 1));
-        tick(h, crop, FarmKind.CROP.cycleTicks() / 2);
-        h.assertValueEqual(count(crop, Items.WHEAT), 6, "a cycle in half the time with bone meal");
+        for (FarmKind kind : FarmKind.values()) h.assertTrue(!kind.hasInput(), kind + " has no input");
         h.succeed();
     }
 
@@ -316,13 +294,7 @@ public class FarmGameTest {
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
     public void noCycleMakesMoreThanItsFreeSlotsHold(GameTestHelper h) {
         for (FarmKind kind : FarmKind.values()) {
-            List<ItemStack> inputs = switch (kind.input()) {
-                case NONE -> List.of(ItemStack.EMPTY);
-                case FOOD -> List.of(new ItemStack(Items.BREAD, 64));
-                case GOLD -> List.of(new ItemStack(Items.GOLD_INGOT, 64));
-                case FEED -> List.of(new ItemStack(Items.WHEAT, 64), new ItemStack(Items.WHEAT_SEEDS, 64), new ItemStack(Items.CARROT, 64), new ItemStack(Items.POTATO, 64));
-                case BONE_MEAL, BONE_MEAL_BOOST -> List.of(new ItemStack(Items.BONE_MEAL, 64));
-            };
+            List<ItemStack> inputs = List.of(ItemStack.EMPTY);
             int modes = Math.max(1, kind.modes().size());
             for (ItemStack input : inputs) {
                 for (int mode = 0; mode < modes; mode++) {
@@ -404,11 +376,9 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void piglinBarterTradesGoldForBarterLoot(GameTestHelper h) {
+    public void piglinBarterMakesBarterLootWithoutGold(GameTestHelper h) {
         FarmBlockEntity farm = farm(h, FarmKind.PIGLIN_BARTER);
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT, 40));
         cycles(h, farm, 25);
-        h.assertValueEqual(farm.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 15, "one gold ingot per barter");
         int stacks = 0;
         for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) if (!farm.getItem(i).isEmpty()) stacks++;
         h.assertTrue(stacks > 0, "bartering gave loot");
@@ -416,21 +386,14 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void villagerBreederMakesABabyVillagerFromFood(GameTestHelper h) {
+    public void villagerBreederMakesABabyVillagerWithoutFood(GameTestHelper h) {
         FarmBlockEntity farm = farm(h, FarmKind.VILLAGER_BREEDER);
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BREAD, 7));
         cycles(h, farm, 1);
-        h.assertValueEqual(farm.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 4, "3 bread per villager");
         ItemStack baby = farm.getItem(0);
         h.assertTrue(baby.is(ModItems.CAPTURED_MOB), "the baby is a Captured Mob");
         CapturedMob mob = baby.get(ModComponents.CAPTURED_MOB);
         h.assertTrue(mob != null && mob.type() == EntityTypes.VILLAGER, "a villager");
-        h.assertTrue(mob.data().toString().contains("Age"), "its data has an age");
         h.assertTrue(mob.data().getIntOr("Age", 0) < 0, "a baby: age " + mob.data().getIntOr("Age", 0));
-        // 12 carrots do the same
-        farm.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.CARROT, 13));
-        cycles(h, farm, 1);
-        h.assertValueEqual(farm.getItem(FarmBlockEntity.INPUT_SLOT).getCount(), 1, "12 carrots per villager");
         h.succeed();
     }
 
@@ -450,19 +413,15 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void farmsWithInputWaitForIt(GameTestHelper h) {
+    public void everyFarmWorksOnPowerAlone(GameTestHelper h) {
         FarmBlockEntity breeder = farm(h, FarmKind.VILLAGER_BREEDER);
-        tick(h, breeder, 50);
-        h.assertValueEqual(breeder.progress(), 0, "no food, no progress");
-        h.assertTrue(breeder.isStarved(), "starved");
-        breeder.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BREAD, 2));
         tick(h, breeder, 5);
-        h.assertValueEqual(breeder.progress(), 0, "2 bread is not enough for one villager");
+        h.assertValueEqual(breeder.progress(), 5, "no food needed: it works");
+        h.assertTrue(!breeder.isStarved(), "never starved");
+        // An older farm's input item is dropped, not kept
         breeder.setItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BREAD, 3));
-        tick(h, breeder, 5);
-        h.assertValueEqual(breeder.progress(), 5, "3 bread: it works");
-        h.assertTrue(!breeder.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.DIAMOND)), "only food goes in");
-        h.assertTrue(breeder.canPlaceItem(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.BEETROOT)), "beetroot does");
+        tick(h, breeder, 1);
+        h.assertTrue(breeder.getItem(FarmBlockEntity.INPUT_SLOT).isEmpty(), "leftover input is cleared out");
         h.succeed();
     }
 
@@ -486,12 +445,11 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
-    public void hoppersTakeFromBelowAndFeedFromAbove(GameTestHelper h) {
+    public void hoppersTakeFromBelowAndNothingGoesIn(GameTestHelper h) {
         FarmBlockEntity piglin = farm(h, FarmKind.PIGLIN_BARTER);
         h.assertTrue(piglin.getSlotsForFace(Direction.DOWN).length == FarmBlockEntity.OUTPUT_SLOTS, "the output from below");
-        h.assertTrue(piglin.getSlotsForFace(Direction.UP).length == 1 && piglin.getSlotsForFace(Direction.UP)[0] == FarmBlockEntity.INPUT_SLOT, "the input from above");
-        h.assertTrue(piglin.canPlaceItemThroughFace(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT), Direction.NORTH), "gold goes in from the side");
-        h.assertTrue(!piglin.canPlaceItemThroughFace(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT), Direction.DOWN), "not from below");
+        h.assertTrue(piglin.getSlotsForFace(Direction.UP).length == 0, "nothing goes in from above");
+        h.assertTrue(!piglin.canPlaceItemThroughFace(FarmBlockEntity.INPUT_SLOT, new ItemStack(Items.GOLD_INGOT), Direction.NORTH), "gold doesn't go in");
         h.assertTrue(!piglin.canTakeItemThroughFace(0, ItemStack.EMPTY, Direction.UP), "no taking from above");
         FarmBlockEntity shulker = farm(h, FarmKind.SHULKER);
         h.assertTrue(shulker.getSlotsForFace(Direction.UP).length == 0, "a farm with no input has no input side");

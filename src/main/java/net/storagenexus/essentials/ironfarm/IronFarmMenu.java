@@ -16,7 +16,7 @@ import net.storagenexus.essentials.registry.ModMenus;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Iron Farm screen: the 27 output slots (take only), the bread slot, and the player inventory.
+ * The Iron Farm screen: the 27 output slots (take only) and the player inventory.
  * Timers travel in 15-bit halves because a menu data slot is 16 bits.
  */
 public class IronFarmMenu extends AbstractContainerMenu {
@@ -57,7 +57,12 @@ public class IronFarmMenu extends AbstractContainerMenu {
         addSlot(new Slot(container, IronFarmBlockEntity.BREAD_SLOT, BREAD_X, BREAD_Y) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(Items.BREAD) && !coolingDown();
+                return false;
+            }
+
+            @Override
+            public boolean isActive() {
+                return false;
             }
         });
         for (int row = 0; row < 3; row++) {
@@ -70,17 +75,10 @@ public class IronFarmMenu extends AbstractContainerMenu {
         data = farm == null ? new SimpleContainerData(D_COUNT) : new ContainerData() {
             @Override
             public int get(int index) {
-                long boostSeconds = (farm.boostTicksAhead() + 19) / 20;
-                long cooldownSeconds = (farm.cooldown() + 19) / 20;
                 return switch (index) {
                     case D_PROGRESS -> Math.round(farm.progressFraction() * 1000);
-                    case D_BOOST -> low(boostSeconds);
-                    case D_BOOST + 1 -> high(boostSeconds);
-                    case D_COOLDOWN -> low(cooldownSeconds);
-                    case D_COOLDOWN + 1 -> high(cooldownSeconds);
-                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.boostLeft() > 0 ? FLAG_BOOSTING : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
+                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
                             | (farm.isUnpowered() ? FLAG_UNPOWERED : 0);
-                    case D_SPEED_UP -> NexusConfig.get().ironFarmBreadSpeedUp;
                     case D_GOLEM_TICKS -> NexusConfig.get().ironFarmGolemTicks;
                     default -> 0;
                 };
@@ -135,7 +133,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
         container.stopOpen(player);
     }
 
-    /** Shift-click: output and bread go to the inventory; bread from the inventory goes to the bread slot. */
+    /** Shift-click moves output to the inventory. */
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = slots.get(index);
@@ -144,8 +142,6 @@ public class IronFarmMenu extends AbstractContainerMenu {
         ItemStack original = stack.copy();
         if (index < FIRST_PLAYER_SLOT) {
             if (!moveItemStackTo(stack, FIRST_PLAYER_SLOT, slots.size(), true)) return ItemStack.EMPTY;
-        } else if (stack.is(Items.BREAD) && !coolingDown()) {
-            if (!moveItemStackTo(stack, IronFarmBlockEntity.BREAD_SLOT, IronFarmBlockEntity.BREAD_SLOT + 1, false)) return ItemStack.EMPTY;
         } else {
             return ItemStack.EMPTY;
         }

@@ -30,11 +30,7 @@ import java.util.stream.IntStream;
  * A 1-block iron farm: four 3-villager golem farms in a box. Every {@code ironFarmGolemTicks} it "kills a golem"
  * and keeps the drops (3-5 iron) in 27 output slots, which hoppers can only take from below.
  *
- * <p>Bread in the bread slot makes it work {@code ironFarmBreadSpeedUp} times faster, one loaf at a time
- * ({@code ironFarmBreadSeconds} each). When the last loaf is eaten, the bread slot locks for
- * {@code ironFarmCooldownMultiplier} times as long as the boost lasted; the farm keeps working at normal speed
- * meanwhile. A full output or a redstone signal pauses the farm, and a paused farm doesn't eat bread
- * (the cooldown still runs).
+ * <p>It needs only Nexus Energy: no bread or other boost. A full output or a redstone signal pauses the farm.
  */
 public class IronFarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos>,
         net.storagenexus.util.ComparatorReadable {
@@ -79,7 +75,15 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     private void work(RandomSource random) {
         NexusConfig config = NexusConfig.get();
-        if (cooldown > 0) cooldown--;
+        // An older version's bread, and boost and cooldown, are gone: the bread is dropped
+        if (!items.get(BREAD_SLOT).isEmpty() && level != null) {
+            ItemStack old = items.get(BREAD_SLOT);
+            items.set(BREAD_SLOT, ItemStack.EMPTY);
+            net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, old);
+        }
+        boostLeft = 0;
+        boostUsed = 0;
+        cooldown = 0;
         boolean wasFull = full;
         full = !hasRoomForGolem();
         // A comparator reads 15 while the farm is stopped for lack of room
@@ -87,18 +91,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         unpowered = energy.stored() < ENERGY_PER_TICK;
         if (!full && !isPaused() && !unpowered) {
             energy.use(ENERGY_PER_TICK);
-            if (boostLeft == 0 && cooldown == 0) eatBread();
-            boolean boosted = boostLeft > 0;
-            progress += boosted ? config.ironFarmBreadSpeedUp : 1;
-            if (boosted) {
-                boostLeft--;
-                boostUsed++;
-                // The next loaf starts straight away; when there is none, the bread slot cools down
-                if (boostLeft == 0 && !eatBread()) {
-                    cooldown = boostUsed * config.ironFarmCooldownMultiplier;
-                    boostUsed = 0;
-                }
-            }
+            progress += 1;
             int perGolem = config.ironFarmGolemTicks;
             while (progress >= perGolem && hasRoomForGolem()) {
                 progress -= perGolem;
@@ -109,14 +102,6 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
             full = !hasRoomForGolem();
         }
         setChanged();
-    }
-
-    private boolean eatBread() {
-        ItemStack bread = items.get(BREAD_SLOT);
-        if (!bread.is(Items.BREAD)) return false;
-        bread.shrink(1);
-        boostLeft = NexusConfig.get().ironFarmBreadSeconds * 20;
-        return true;
     }
 
     private void killGolem(RandomSource random) {
@@ -186,28 +171,18 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         return state.hasProperty(IronFarmBlock.POWERED) && state.getValue(IronFarmBlock.POWERED);
     }
 
-    /** Boost ticks still to come: the loaf being eaten plus every loaf in the slot. */
-    public long boostTicksAhead() {
-        ItemStack bread = items.get(BREAD_SLOT);
-        int loaves = bread.is(Items.BREAD) ? bread.getCount() : 0;
-        return boostLeft + (long) loaves * NexusConfig.get().ironFarmBreadSeconds * 20;
-    }
-
     public IronFarmTimers timers() {
         return new IronFarmTimers(progress, boostLeft, boostUsed, cooldown);
     }
 
     public void setTimers(IronFarmTimers timers) {
         progress = Math.max(0, timers.progress());
-        boostLeft = Math.max(0, timers.boostLeft());
-        boostUsed = Math.max(0, timers.boostUsed());
-        cooldown = Math.max(0, timers.cooldown());
         setChanged();
     }
 
-    /** Bread can go in unless the bread slot is cooling down. */
+    /** The farm takes no bread (or anything else) any more: it only needs power. */
     public boolean acceptsBread() {
-        return cooldown == 0;
+        return false;
     }
 
     // ---------------------------------------------------------------- container
@@ -234,7 +209,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == BREAD_SLOT && stack.is(Items.BREAD) && acceptsBread();
+        return false;
     }
 
     /** Hoppers and pipes reach the output from below only, and can't put anything in. */
@@ -284,9 +259,6 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     private void setTimersQuietly(IronFarmTimers timers) {
         progress = Math.max(0, timers.progress());
-        boostLeft = Math.max(0, timers.boostLeft());
-        boostUsed = Math.max(0, timers.boostUsed());
-        cooldown = Math.max(0, timers.cooldown());
     }
 
     @Override

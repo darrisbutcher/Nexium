@@ -79,6 +79,22 @@ public class EnergyClientTest implements FabricClientGameTest {
             long farmProgress = world.getServer().computeOnServer(server ->
                     (long) ((FarmBlockEntity) server.overworld().getBlockEntity(at[0].east(3))).progress());
             check(farmProgress > 0, "the farm runs on the generator through the conduits, progress " + farmProgress);
+            if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("jade")) {
+                // With Jade installed (-PwithJade): its tooltip shows the energy of what the crosshair is on
+                ctx.waitTicks(60);
+                System.out.println("[nexus] jade on a conduit: " + ctx.takeScreenshot("nexus_jade_conduit"));
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    player.teleportTo(player.level(), at[0].getX() + 3.5, at[0].getY(), at[0].getZ() - 2.5, java.util.Set.of(), 0.0F, 20.0F, false);
+                });
+                ctx.waitTicks(60);
+                System.out.println("[nexus] jade on a farm: " + ctx.takeScreenshot("nexus_jade_farm"));
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    player.teleportTo(player.level(), at[0].getX() + 2.0, at[0].getY(), at[0].getZ() - 2.5, java.util.Set.of(), 0.0F, 20.0F, false);
+                });
+                ctx.waitTicks(10);
+            }
             ctx.getInput().pressKey(options -> options.keyToggleGui);
             ctx.waitTicks(10);
             System.out.println("[nexus] energy line: " + ctx.takeScreenshot("nexus_energy_line"));
