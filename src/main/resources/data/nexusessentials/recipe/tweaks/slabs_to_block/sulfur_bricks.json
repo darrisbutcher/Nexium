@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:sulfur_brick_slab"
+  },
+  "result": {
+    "id": "minecraft:sulfur_bricks"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

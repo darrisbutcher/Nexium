@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "nexusessentials:tweaks/coral_blocks/fire_coral_block"
+      }
+    },
+    "has_ingredient_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:fire_coral",
+              "minecraft:fire_coral_fan"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient_0"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:tweaks/coral_blocks/fire_coral_block"
+    ]
+  }
+}

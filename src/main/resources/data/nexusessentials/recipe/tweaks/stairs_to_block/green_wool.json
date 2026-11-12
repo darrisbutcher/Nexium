@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:green_wool_stairs",
+    "minecraft:green_wool_stairs",
+    "minecraft:green_wool_stairs",
+    "minecraft:green_wool_stairs"
+  ],
+  "result": {
+    "id": "minecraft:green_wool",
+    "count": 3
+  },
+  "group": "stairs_to_block",
+  "category": "building"
+}

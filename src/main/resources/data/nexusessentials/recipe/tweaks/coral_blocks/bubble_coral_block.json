@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": [
+      "minecraft:bubble_coral",
+      "minecraft:bubble_coral_fan"
+    ]
+  },
+  "result": {
+    "id": "minecraft:bubble_coral_block",
+    "count": 1
+  },
+  "group": "coral_blocks",
+  "category": "building"
+}

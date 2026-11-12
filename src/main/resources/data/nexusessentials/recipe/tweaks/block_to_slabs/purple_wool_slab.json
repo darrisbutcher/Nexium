@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:purple_wool"
+  ],
+  "result": {
+    "id": "minecraft:purple_wool_slab",
+    "count": 2
+  },
+  "group": "block_to_2_slabs",
+  "category": "building"
+}

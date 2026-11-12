@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "nexusessentials:tweaks/dyeing/blue_candle"
+      }
+    },
+    "has_ingredient_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:white_candle",
+              "minecraft:orange_candle",
+              "minecraft:magenta_candle",
+              "minecraft:light_blue_candle",
+              "minecraft:yellow_candle",
+              "minecraft:lime_candle",
+              "minecraft:pink_candle",
+              "minecraft:gray_candle",
+              "minecraft:light_gray_candle",
+              "minecraft:cyan_candle",
+              "minecraft:purple_candle",
+              "minecraft:brown_candle",
+              "minecraft:green_candle",
+              "minecraft:red_candle",
+              "minecraft:black_candle"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ingredient_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:lapis_lazuli",
+              "minecraft:blue_dye"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient_0"
+    ],
+    [
+      "has_the_recipe",
+      "has_ingredient_1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:tweaks/dyeing/blue_candle"
+    ]
+  }
+}

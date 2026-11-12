@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:light_blue_wool_slab"
+  },
+  "result": {
+    "id": "minecraft:light_blue_wool"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

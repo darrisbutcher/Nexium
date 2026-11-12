@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "nexusessentials:tweaks/dyeing/red_concrete_powder"
+      }
+    },
+    "has_ingredient_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:white_concrete_powder",
+              "minecraft:orange_concrete_powder",
+              "minecraft:magenta_concrete_powder",
+              "minecraft:light_blue_concrete_powder",
+              "minecraft:yellow_concrete_powder",
+              "minecraft:lime_concrete_powder",
+              "minecraft:pink_concrete_powder",
+              "minecraft:gray_concrete_powder",
+              "minecraft:light_gray_concrete_powder",
+              "minecraft:cyan_concrete_powder",
+              "minecraft:purple_concrete_powder",
+              "minecraft:blue_concrete_powder",
+              "minecraft:brown_concrete_powder",
+              "minecraft:green_concrete_powder",
+              "minecraft:black_concrete_powder"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ingredient_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:red_dye"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient_0"
+    ],
+    [
+      "has_the_recipe",
+      "has_ingredient_1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:tweaks/dyeing/red_concrete_powder"
+    ]
+  }
+}

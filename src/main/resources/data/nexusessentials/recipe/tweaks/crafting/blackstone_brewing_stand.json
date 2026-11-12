@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " / ",
+    "BBB"
+  ],
+  "key": {
+    "/": "minecraft:blaze_rod",
+    "B": "minecraft:blackstone"
+  },
+  "result": {
+    "id": "minecraft:brewing_stand",
+    "count": 1
+  },
+  "category": "redstone"
+}

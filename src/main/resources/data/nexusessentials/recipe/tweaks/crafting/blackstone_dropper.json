@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "# #",
+    "#R#"
+  ],
+  "key": {
+    "#": "minecraft:blackstone",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:dropper",
+    "count": 1
+  },
+  "category": "redstone"
+}

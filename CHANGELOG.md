@@ -3,6 +3,21 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.4
+
+Recipe and loot tweaks, written from the end results of a combined datapack. Anything the mod already does (elevators, the
+creeper, ghast and enderman grief rules, elytra protection, netherite calming piglins) was left out.
+
+* **Bigger batches**: stairs make 8 instead of 4, trapdoors 12 instead of 2, wood and hyphae 4 instead of 3, and bricks make 4
+  brick blocks from 4 bricks. Chiseled and cracked stone bricks make stone brick stairs too.
+* **Slabs and stairs back to blocks**: 2 slabs make their block, 4 stairs make 3 blocks, and in the crafting grid 1 block makes
+  2 slabs.
+* **Universal dyeing** of candles, concrete powder, glazed terracotta, stained glass, panes and terracotta (ice washes the
+  colour out), plus craftable coral blocks, blackstone and blackstone redstone parts, notch apples, horse armor, copper
+  powered rails, gravel from flint, red sand and sandstone from dye, ice and nether wart from their blocks, black dye from
+  coal, shapeless bread, paper and shulker box, rotten flesh to leather and wool to string in a furnace, and the Armadillo Crate.
+* **Loot**: shulkers drop 2 shells instead of 1 (same chance), and budding amethyst drops itself with Silk Touch.
+
 ## 1.21.3
 
 * **Tree Farm: Poplar.** The new Poplar tree is now one of the Tree Farm's modes (13 in all: ten woods, the two nether

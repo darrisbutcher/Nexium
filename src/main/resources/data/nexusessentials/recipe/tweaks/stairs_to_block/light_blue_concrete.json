@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:light_blue_concrete_stairs",
+    "minecraft:light_blue_concrete_stairs",
+    "minecraft:light_blue_concrete_stairs",
+    "minecraft:light_blue_concrete_stairs"
+  ],
+  "result": {
+    "id": "minecraft:light_blue_concrete",
+    "count": 3
+  },
+  "group": "stairs_to_block",
+  "category": "building"
+}

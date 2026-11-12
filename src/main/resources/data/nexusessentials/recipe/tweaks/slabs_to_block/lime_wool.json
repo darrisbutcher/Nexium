@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:lime_wool_slab"
+  },
+  "result": {
+    "id": "minecraft:lime_wool"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

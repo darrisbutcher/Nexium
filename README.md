@@ -347,6 +347,30 @@ turns it off.
 Ancient debris drops **netherite scrap** instead of itself: 2 per block, multiplied by Fortune like diamond ore. Silk
 Touch still drops the block.
 
+### Recipe tweaks
+Crafting and loot changes that need no setup. They add recipes (to the vanilla ones, never taking one away) under the
+`nexusessentials:tweaks/` ids, and a few vanilla ids make more; each new recipe unlocks in the recipe book when you hold what it uses.
+
+* **Bigger batches**: stairs make 8 (not 4), trapdoors 12 (not 2), wood and hyphae 4 (not 3), and 4 bricks make 4 brick blocks.
+  Chiseled and cracked stone bricks count for stone brick stairs.
+* **Slabs and stairs back to blocks**: 2 slabs make their block, 4 stairs make 3 blocks (4 smooth stone slabs make 2 smooth stone);
+  and in the crafting grid 1 block makes 2 slabs. No recipe makes a profit.
+* **Universal dyeing**: 8 of any colour of candle, concrete powder, glazed terracotta, stained glass, stained glass pane or
+  terracotta around one dye (ink sac, lapis, cocoa beans and bone meal count as dyes) make 8 of that colour. Ice in the middle
+  washes them back to plain candle, terracotta, glass or glass panes.
+* **Small ones**: 9 coral or coral fans of one kind make that coral block; basalt and coal or charcoal make blackstone (polished
+  basalt makes polished blackstone); a dropper and a bow make a dispenser, and a dropper, 3 sticks and 3 string do too; blackstone
+  versions of the brewing stand, dispenser, dropper, lever, observer and piston; iron, gold and diamond horse armor from a saddle
+  and 6 of the metal; 8 gold blocks and an apple make an enchanted golden apple; 6 powered rails from copper ingots; 4 flint
+  make gravel; sand and a red dye make red sand, and sandstone and red dye make red sandstone and smooth red sandstone; packed
+  ice makes 9 ice and blue ice 9 packed ice; a nether wart block makes 9 nether wart; coal or charcoal makes black dye; 3 wheat
+  make bread and 3 sugar cane make paper without a row; 2 shulker shells and a chest make a shulker box; a furnace turns rotten
+  flesh into leather and wool into 4 string.
+* **Armadillo Crate**: 8 armadillo scutes around a chest make a shulker box named Armadillo Crate (shulker boxes already keep
+  their contents).
+* **Loot**: a shulker drops 2 shells (not 1) when it drops one, at the same chance, and budding amethyst drops itself with
+  Silk Touch (the AIOT's Silk Touch too).
+
 ### Farm Assembler
 Makes the one-block farms below and the Master Librarian. **Recipe**: a crafting table in the middle, 4 iron ingots on the
 sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:prismarine_slab"
+  },
+  "result": {
+    "id": "minecraft:prismarine"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

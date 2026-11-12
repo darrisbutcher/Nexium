@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:lime_concrete"
+  ],
+  "result": {
+    "id": "minecraft:lime_concrete_slab",
+    "count": 2
+  },
+  "group": "block_to_2_slabs",
+  "category": "building"
+}

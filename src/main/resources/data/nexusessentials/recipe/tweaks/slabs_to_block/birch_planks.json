@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:birch_slab"
+  },
+  "result": {
+    "id": "minecraft:birch_planks"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

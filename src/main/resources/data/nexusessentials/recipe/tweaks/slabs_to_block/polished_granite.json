@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:polished_granite_slab"
+  },
+  "result": {
+    "id": "minecraft:polished_granite"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}
