@@ -21,8 +21,8 @@ import net.storagenexus.registry.ModBlockEntities;
 import net.storagenexus.registry.ModItems;
 
 /**
- * The Redstone Reactor, the top generator: nine Redstone Fuel Rods, each making 100 NE a tick at the default depth
- * (900 with all nine; it runs on any one to nine). One depth for all the rods, from Retracted 2 to Inserted 2, trades
+ * The Redstone Reactor, the top generator: nine Redstone Fuel Rods, each making 200 NE a tick at the default depth
+ * (1,800 with all nine; it runs on any one to nine). One depth for all the rods, from Retracted 2 to Inserted 2, trades
  * power against heat and rod wear. Heat is carried off by ice in three coolant slots. Output holds to 60% heat, falls
  * steadily from there to 10% at 90%, and at 90% the reactor shuts off until it is back under 50%. It never explodes.
  */
@@ -30,10 +30,10 @@ public class RedstoneReactorBlockEntity extends BaseContainerBlockEntity impleme
     public static final int RODS = 9, COOLANT = 3, SIZE = RODS + COOLANT;
     public static final int DEPTHS = 5, DEFAULT_DEPTH = 2;
     /** NE a tick for each rod, heat made and rod wear (times the default), by depth. */
-    public static final int[] POWER = {50, 75, 100, 125, 150};
+    public static final int[] POWER = {100, 150, 200, 250, 300};
     public static final double[] HEAT = {0.25, 0.5, 1.0, 1.6, 2.25};
     public static final double[] WEAR = {0.5, 0.75, 1.0, 1.25, 1.5};
-    public static final long CAPACITY = 100_000;
+    public static final long CAPACITY = 1_000_000;
     /** How long a Redstone Fuel Rod lasts at the default depth, in ticks (eight hours). */
     public static final int ROD_LIFE = 576_000;
 

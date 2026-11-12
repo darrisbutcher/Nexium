@@ -252,7 +252,7 @@ public class FarmGameTest {
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
     public void treeFarmMakesTheLogsOfItsTreeOrChorus(GameTestHelper h) {
-        h.assertValueEqual(FarmKind.TREE.modes().size(), 12, "eleven woods and chorus");
+        h.assertValueEqual(FarmKind.TREE.modes().size(), 13, "ten woods, two nether stems and chorus");
         h.assertValueEqual(FarmKind.TREE.cycleTicks(), 400, "every 20 seconds");
         FarmBlockEntity trees = farm(h, FarmKind.TREE);
         for (String tree : FarmKind.TREE.modes()) {
@@ -277,12 +277,12 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
-    public void froglightFarmMakesOneOfEachColour(GameTestHelper h) {
+    public void froglightFarmMakesFiveOfEachColour(GameTestHelper h) {
         FarmBlockEntity lights = farm(h, FarmKind.FROGLIGHT);
         cycles(h, lights, 4);
-        h.assertValueEqual(count(lights, Items.OCHRE_FROGLIGHT), 4, "an ochre froglight a cycle");
-        h.assertValueEqual(count(lights, Items.VERDANT_FROGLIGHT), 4, "a verdant froglight a cycle");
-        h.assertValueEqual(count(lights, Items.PEARLESCENT_FROGLIGHT), 4, "a pearlescent froglight a cycle");
+        h.assertValueEqual(count(lights, Items.OCHRE_FROGLIGHT), 20, "5 ochre froglights a cycle");
+        h.assertValueEqual(count(lights, Items.VERDANT_FROGLIGHT), 20, "5 verdant froglights a cycle");
+        h.assertValueEqual(count(lights, Items.PEARLESCENT_FROGLIGHT), 20, "5 pearlescent froglights a cycle");
         h.assertValueEqual(FarmKind.FROGLIGHT.cycleTicks(), 400, "every 20 seconds");
         h.succeed();
     }

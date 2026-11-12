@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.3
+
+* **Tree Farm: Poplar.** The new Poplar tree is now one of the Tree Farm's modes (13 in all: ten woods, the two nether
+  stems and chorus).
+* **Froglight Farm makes 5 of each colour** (ochre, verdant and pearlescent) every 20 seconds, up from 1.
+* **Redstone Reactor stores 1,000,000 NE** (it was 100,000).
+* **Redstone Reactor makes twice the power.** A rod makes 200 NE/t at the default depth (1,800 with nine), and 100 to 300
+  NE/t a rod from the shallowest depth to the deepest, up to 2,700 NE/t. Heat and rod wear are unchanged.
+
 ## 1.21.2
 
 Energy Conduits share a pool.
