@@ -8,6 +8,7 @@
   "entrypoints": {
     "fabric-client-gametest": [
       "net.storagenexus.gametest.client.AdvancementTabClientTest",
+      "net.storagenexus.gametest.client.CreativeTabsClientTest",
       "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
       "net.storagenexus.gametest.client.PreviewClientTest",

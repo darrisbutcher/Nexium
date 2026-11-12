@@ -5,7 +5,7 @@ conduits, all-in-one tools (AIOTs), **Nexium** (a tier above netherite) and a se
 (no creeper or ghast block damage, an item and XP magnet, wings, arrow and totem slots, Fortune on ancient debris,
 a 1-block iron farm and more).
 
-Every item is in the **Nexium** creative tab, and every tooltip says what its item does.
+Every item is in one of three **Nexium** creative tabs (Storage; Tools; Farms & Power), and every tooltip says what its item does.
 
 The **Nexium Codex** is the in-game manual, a small built-in wiki. Right-click the **Nexium Guide** (given once when you join
 a world, or crafted from a book and any drawer) to open it, or press **H** outside a screen. The sidebar lists 11 categories

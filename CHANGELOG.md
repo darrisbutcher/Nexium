@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.5
+
+* **Three creative tabs** instead of one:
+  * **Nexium Storage**: the guide, drawers, barrels, the network blocks, terminals, disks and the Disk Drive, tablets,
+    upgrades, filters, and the item and fluid conduits.
+  * **Nexium Tools**: AIOTs, modules, Construction Builders, Nexium ingot, block, tools and armor, the magnet, the elixir,
+    the Elevator and the Dimensional Anchor.
+  * **Nexium Farms & Power**: every farm, the Farm Assembler, the Freezer, generators, Batteries, the Redstone Reactor and its
+    rods, and Energy Conduits.
+
 ## 1.21.4
 
 Recipe and loot tweaks, written from the end results of a combined datapack. Anything the mod already does (elevators, the

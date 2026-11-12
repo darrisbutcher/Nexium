@@ -714,7 +714,7 @@ public class EssentialsGameTest {
 
     // ---------------------------------------------------------------- creative tab
 
-    /** Since the merge, the Essentials items are in the Nexium creative tab, after its own items, and not in vanilla's. */
+    /** The Essentials items are in the Nexium creative tabs (the magnet and elixir in Tools, the farms in Farms & Power), and not in vanilla's. */
     @GameTest(environment = EssentialsEnvironment.ID)
     public void essentialsItemsAreInTheStorageNexusTab(GameTestHelper h) {
         CreativeModeTabs.tryRebuildTabContents(h.getLevel().enabledFeatures(), true, h.getLevel().registryAccess());
@@ -722,13 +722,38 @@ public class EssentialsGameTest {
                 CreativeModeTabs.FOOD_AND_DRINKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);
         for (Item item : List.of(ModItems.MAGNET, ModItems.BEDROCK_BREAKER_ELIXIR, ModItems.IRON_FARM)) {
             ItemStack stack = new ItemStack(item);
-            h.assertTrue(ModTab.TAB.contains(stack), item + " is in the Nexium tab");
+            CreativeModeTab home = item == ModItems.IRON_FARM ? ModTab.FARMS_TAB : ModTab.TOOLS_TAB;
+            h.assertTrue(home.contains(stack), item + " is in its Nexium tab");
             for (ResourceKey<CreativeModeTab> tab : vanillaTabs) {
                 h.assertFalse(BuiltInRegistries.CREATIVE_MODE_TAB.getValueOrThrow(tab).contains(stack), item + " is not in " + tab.identifier());
             }
         }
-        h.assertFalse(ModTab.TAB.contains(new ItemStack(ModItems.CAPTURED_MOB)), "an empty Captured Mob isn't offered");
+        for (CreativeModeTab tab : List.of(ModTab.TAB, ModTab.TOOLS_TAB, ModTab.FARMS_TAB)) {
+            h.assertFalse(tab.contains(new ItemStack(ModItems.CAPTURED_MOB)), "an empty Captured Mob isn't offered");
+        }
         h.assertTrue(ModTab.TAB.getDisplayItems().iterator().next().is(net.storagenexus.registry.ModItems.GUIDE), "the guide still comes first");
+        h.succeed();
+    }
+
+    /** Every item the mod lists is in exactly one of the three tabs, and each tab has what it should. */
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void everyItemIsInExactlyOneOfTheThreeTabs(GameTestHelper h) {
+        CreativeModeTabs.tryRebuildTabContents(h.getLevel().enabledFeatures(), true, h.getLevel().registryAccess());
+        List<CreativeModeTab> tabs = List.of(ModTab.TAB, ModTab.TOOLS_TAB, ModTab.FARMS_TAB);
+        java.util.List<Item> all = new java.util.ArrayList<>(net.storagenexus.registry.ModItems.TAB_ORDER);
+        all.addAll(ModItems.TAB_ORDER);
+        int[] counts = new int[3];
+        for (Item item : all) {
+            ItemStack stack = new ItemStack(item);
+            int homes = 0;
+            for (int i = 0; i < 3; i++) if (tabs.get(i).contains(stack)) { homes++; counts[i]++; }
+            h.assertValueEqual(homes, 1, item + " is in exactly one tab");
+        }
+        h.assertValueEqual(counts[0] + counts[1] + counts[2], all.size(), "all items are placed");
+        h.assertTrue(counts[0] > 0 && counts[1] > 0 && counts[2] > 0, "no tab is empty: " + counts[0] + ", " + counts[1] + ", " + counts[2]);
+        h.assertTrue(ModTab.groupOf(net.storagenexus.registry.ModItems.NEXIUM_PICKAXE) == ModTab.Group.TOOLS, "Nexium gear is in Tools");
+        h.assertTrue(ModTab.groupOf(net.storagenexus.registry.ModItems.AIOTS.get(net.storagenexus.aiot.AiotTier.IRON)) == ModTab.Group.TOOLS, "AIOTs are in Tools");
+        h.assertTrue(ModTab.groupOf(net.storagenexus.registry.ModItems.DISK_CASING) == ModTab.Group.STORAGE, "disk parts are in Storage");
         h.succeed();
     }
 }
