@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:cobblestone_slab"
+  },
+  "result": {
+    "id": "minecraft:cobblestone"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:blue_concrete"
+  ],
+  "result": {
+    "id": "minecraft:blue_concrete_slab",
+    "count": 2
+  },
+  "group": "block_to_2_slabs",
+  "category": "building"
+}

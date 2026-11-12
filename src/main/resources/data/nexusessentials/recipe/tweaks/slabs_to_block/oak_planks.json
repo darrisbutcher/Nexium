@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:oak_slab"
+  },
+  "result": {
+    "id": "minecraft:oak_planks"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

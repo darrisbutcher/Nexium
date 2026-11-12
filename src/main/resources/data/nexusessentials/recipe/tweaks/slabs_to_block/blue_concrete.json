@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:blue_concrete_slab"
+  },
+  "result": {
+    "id": "minecraft:blue_concrete"
+  },
+  "group": "slabs_to_block",
+  "category": "building"
+}

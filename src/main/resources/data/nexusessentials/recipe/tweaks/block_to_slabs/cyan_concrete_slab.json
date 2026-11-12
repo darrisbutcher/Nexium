@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:cyan_concrete"
+  ],
+  "result": {
+    "id": "minecraft:cyan_concrete_slab",
+    "count": 2
+  },
+  "group": "block_to_2_slabs",
+  "category": "building"
+}

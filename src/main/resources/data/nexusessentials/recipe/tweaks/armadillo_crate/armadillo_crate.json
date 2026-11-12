@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SCS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:armadillo_scute",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "minecraft:shulker_box",
+    "count": 1,
+    "components": {
+      "minecraft:custom_name": {
+        "text": "Armadillo Crate",
+        "italic": false
+      },
+      "minecraft:lore": [
+        {
+          "text": "Crafted from armadillo scutes",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "Portable 27-slot storage",
+          "color": "dark_gray",
+          "italic": false
+        },
+        {
+          "text": "Place to open \u2014 keeps contents when broken",
+          "color": "dark_gray",
+          "italic": false
+        }
+      ]
+    }
+  },
+  "category": "misc"
+}

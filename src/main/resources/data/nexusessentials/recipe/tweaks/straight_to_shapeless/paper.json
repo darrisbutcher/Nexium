@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:sugar_cane",
+    "minecraft:sugar_cane",
+    "minecraft:sugar_cane"
+  ],
+  "result": {
+    "id": "minecraft:paper",
+    "count": 3
+  },
+  "group": "straight_to_shapeless",
+  "category": "misc"
+}

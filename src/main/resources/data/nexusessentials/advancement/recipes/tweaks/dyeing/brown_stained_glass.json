@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "nexusessentials:tweaks/dyeing/brown_stained_glass"
+      }
+    },
+    "has_ingredient_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:white_stained_glass",
+              "minecraft:orange_stained_glass",
+              "minecraft:magenta_stained_glass",
+              "minecraft:light_blue_stained_glass",
+              "minecraft:yellow_stained_glass",
+              "minecraft:lime_stained_glass",
+              "minecraft:pink_stained_glass",
+              "minecraft:gray_stained_glass",
+              "minecraft:light_gray_stained_glass",
+              "minecraft:cyan_stained_glass",
+              "minecraft:purple_stained_glass",
+              "minecraft:blue_stained_glass",
+              "minecraft:green_stained_glass",
+              "minecraft:red_stained_glass",
+              "minecraft:black_stained_glass"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ingredient_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:cocoa_beans",
+              "minecraft:brown_dye"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient_0"
+    ],
+    [
+      "has_the_recipe",
+      "has_ingredient_1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:tweaks/dyeing/brown_stained_glass"
+    ]
+  }
+}

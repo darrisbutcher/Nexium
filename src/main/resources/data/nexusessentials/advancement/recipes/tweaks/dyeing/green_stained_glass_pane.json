@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "nexusessentials:tweaks/dyeing/green_stained_glass_pane"
+      }
+    },
+    "has_ingredient_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:white_stained_glass_pane",
+              "minecraft:orange_stained_glass_pane",
+              "minecraft:magenta_stained_glass_pane",
+              "minecraft:light_blue_stained_glass_pane",
+              "minecraft:yellow_stained_glass_pane",
+              "minecraft:lime_stained_glass_pane",
+              "minecraft:pink_stained_glass_pane",
+              "minecraft:gray_stained_glass_pane",
+              "minecraft:light_gray_stained_glass_pane",
+              "minecraft:cyan_stained_glass_pane",
+              "minecraft:purple_stained_glass_pane",
+              "minecraft:blue_stained_glass_pane",
+              "minecraft:brown_stained_glass_pane",
+              "minecraft:red_stained_glass_pane",
+              "minecraft:black_stained_glass_pane"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ingredient_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:green_dye"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient_0"
+    ],
+    [
+      "has_the_recipe",
+      "has_ingredient_1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:tweaks/dyeing/green_stained_glass_pane"
+    ]
+  }
+}
