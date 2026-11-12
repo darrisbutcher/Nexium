@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "storagenexus:block/combustion_generator_top",
+    "bottom": "storagenexus:block/combustion_generator_bottom",
+    "side": "storagenexus:block/combustion_generator_side"
+  }
+}

@@ -126,10 +126,10 @@ public class FreezerFarmsClientTest implements FabricClientGameTest {
                 assembler.accept(new ItemStack(Items.PURPUR_BLOCK, 32));
                 assembler.accept(new ItemStack(Items.END_ROD, 5));
                 assembler.accept(new ItemStack(Items.ENDER_PEARL, 8));
-                for (int i = 0; i < 30; i++) assembler.accept(new ItemStack(Items.END_STONE_BRICKS, 64));
+                for (int i = 0; i < 5; i++) assembler.accept(new ItemStack(Items.END_STONE_BRICKS, 64));
                 player.getInventory().clearContent();
                 player.getInventory().setItem(0, new ItemStack(Items.END_ROD, 3));
-                for (int i = 0; i < 17; i++) player.getInventory().setItem(9 + i, new ItemStack(Items.END_STONE_BRICKS, 64));
+                for (int i = 0; i < 4; i++) player.getInventory().setItem(9 + i, new ItemStack(Items.END_STONE_BRICKS, 64));
                 player.getInventory().setItem(27, new ItemStack(Items.DIRT, 12));
                 Menus.open(player, net.minecraft.network.chat.Component.translatable("block.nexusessentials.farm_assembler"), pos,
                         (id, inventory, p) -> new FarmAssemblerMenu(id, inventory, assembler));

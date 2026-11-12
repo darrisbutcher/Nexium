@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "storagenexus:block/thermal_generator"
+    },
+    "lit=true": {
+      "model": "storagenexus:block/thermal_generator"
+    }
+  }
+}

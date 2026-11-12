@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "storagenexus:block/combustion_generator"
+    },
+    "lit=true": {
+      "model": "storagenexus:block/combustion_generator"
+    }
+  }
+}

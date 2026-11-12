@@ -27,7 +27,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
 
     private static final int FIRST_PLAYER_SLOT = IronFarmBlockEntity.SIZE;
     private static final int D_PROGRESS = 0, D_BOOST = 1, D_COOLDOWN = 3, D_FLAGS = 5, D_SPEED_UP = 6, D_GOLEM_TICKS = 7, D_COUNT = 8;
-    private static final int FLAG_FULL = 1, FLAG_BOOSTING = 2, FLAG_PAUSED = 4;
+    private static final int FLAG_FULL = 1, FLAG_BOOSTING = 2, FLAG_PAUSED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
     private final ContainerData data;
@@ -78,7 +78,8 @@ public class IronFarmMenu extends AbstractContainerMenu {
                     case D_BOOST + 1 -> high(boostSeconds);
                     case D_COOLDOWN -> low(cooldownSeconds);
                     case D_COOLDOWN + 1 -> high(cooldownSeconds);
-                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.boostLeft() > 0 ? FLAG_BOOSTING : 0) | (farm.isPaused() ? FLAG_PAUSED : 0);
+                    case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.boostLeft() > 0 ? FLAG_BOOSTING : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
+                            | (farm.isUnpowered() ? FLAG_UNPOWERED : 0);
                     case D_SPEED_UP -> NexusConfig.get().ironFarmBreadSpeedUp;
                     case D_GOLEM_TICKS -> NexusConfig.get().ironFarmGolemTicks;
                     default -> 0;
@@ -118,6 +119,8 @@ public class IronFarmMenu extends AbstractContainerMenu {
     public boolean boosting() { return (data.get(D_FLAGS) & FLAG_BOOSTING) != 0; }
     public boolean full() { return (data.get(D_FLAGS) & FLAG_FULL) != 0; }
     public boolean paused() { return (data.get(D_FLAGS) & FLAG_PAUSED) != 0; }
+    /** Waiting for Nexus Energy. */
+    public boolean unpowered() { return (data.get(D_FLAGS) & FLAG_UNPOWERED) != 0; }
     public int speedUp() { return Math.max(1, data.get(D_SPEED_UP)); }
     public int golemTicks() { return Math.max(1, data.get(D_GOLEM_TICKS)); }
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "RFR",
+    "ICI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "F": "minecraft:furnace",
+    "C": "minecraft:copper_block"
+  },
+  "result": {
+    "id": "storagenexus:combustion_generator"
+  }
+}

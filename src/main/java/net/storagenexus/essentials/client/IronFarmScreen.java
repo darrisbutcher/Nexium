@@ -43,6 +43,9 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
         } else if (menu.full()) {
             status = Component.translatable("screen.nexusessentials.iron_farm_full");
             colour = FULL;
+        } else if (menu.unpowered()) {
+            status = Component.translatable("screen.nexusessentials.no_power", net.storagenexus.essentials.ironfarm.IronFarmBlockEntity.ENERGY_PER_TICK);
+            colour = FULL;
         } else if (menu.boosting()) {
             status = Component.translatable("screen.nexusessentials.iron_farm_boosting", menu.speedUp(), seconds(menu.boostSeconds()));
             colour = BOOSTED;
@@ -80,7 +83,7 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
         g.fill(barX - 1, barY - 1, barX + BAR_W + 1, barY + BAR_H + 1, SLOT_DARK);
         g.fill(barX, barY, barX + BAR_W, barY + BAR_H, SLOT_FILL);
         int filled = Math.round(menu.progress() * BAR_W);
-        if (filled > 0) g.fill(barX, barY, barX + filled, barY + BAR_H, menu.full() || menu.paused() ? FULL : menu.boosting() ? BOOSTED : IRON);
+        if (filled > 0) g.fill(barX, barY, barX + filled, barY + BAR_H, menu.full() || menu.paused() || menu.unpowered() ? FULL : menu.boosting() ? BOOSTED : IRON);
     }
 
     @Override

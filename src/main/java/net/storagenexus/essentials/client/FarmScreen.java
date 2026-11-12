@@ -39,7 +39,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         if (!menu.kind().modes().isEmpty()) {
             // Right of the status line: click to step through what the farm makes
             modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
-                if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
+                if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, minecraft.hasShiftDown() ? 1 : 0);
             }).bounds(leftPos + 96, topPos + BAR_Y + BAR_H + 2, 72, 13).build());
             refreshModeButton();
         }
@@ -67,6 +67,8 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
             status = Component.translatable("screen.nexusessentials.farm_paused");
         } else if (menu.full()) {
             status = Component.translatable("screen.nexusessentials.farm_full");
+        } else if (menu.unpowered()) {
+            status = Component.translatable("screen.nexusessentials.no_power", menu.kind().energyPerTick());
         } else if (menu.starved()) {
             status = Component.translatable("screen.nexusessentials." + menu.kind().lang("needs"));
         } else {
@@ -105,7 +107,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         g.fill(barX - 1, barY - 1, barX + barW + 1, barY + BAR_H + 1, SLOT_DARK);
         g.fill(barX, barY, barX + barW, barY + BAR_H, SLOT_FILL);
         int filled = Math.round(menu.progress() * barW);
-        if (filled > 0) g.fill(barX, barY, barX + filled, barY + BAR_H, menu.full() || menu.paused() || menu.starved() ? BLOCKED : WORKING);
+        if (filled > 0) g.fill(barX, barY, barX + filled, barY + BAR_H, menu.full() || menu.paused() || menu.starved() || menu.unpowered() ? BLOCKED : WORKING);
     }
 
     @Override

@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * One block space holding item and/or fluid conduits (Ender IO style).
+ * One block space holding item, fluid and/or energy conduits (Ender IO style).
  * Every side has its own settings per conduit type: mode, colour channel, redstone control,
  * priority, round-robin, filter and speed upgrades.
  */
@@ -44,6 +44,8 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     private static final int MAX_NETWORK = 1024;
     private static final int FLUID_INTERVAL = 5;
     private static final long DROPLETS_PER_MB = 81;
+    /** Nexus Energy an Energy Conduit moves each tick, per extracting side. */
+    public static final long ENERGY_TIER_1 = 500, ENERGY_TIER_2 = 4000;
 
     private final int[] tiers = new int[ConduitType.VALUES.length];
     private final SideConfig[][] configs = new SideConfig[ConduitType.VALUES.length][6];
@@ -70,7 +72,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     public int tier(ConduitType t) { return tiers[t.ordinal()]; }
     public SideConfig config(ConduitType t, Direction d) { return configs[t.ordinal()][d.get3DDataValue()]; }
     public @Nullable BlockState facade() { return facade; }
-    public int typeMask() { return (has(ConduitType.ITEM) ? 1 : 0) | (has(ConduitType.FLUID) ? 2 : 0); }
+    public int typeMask() { return (has(ConduitType.ITEM) ? 1 : 0) | (has(ConduitType.FLUID) ? 2 : 0) | (has(ConduitType.ENERGY) ? 4 : 0); }
 
     /** Adds or upgrades a conduit. Returns the tier that was there before (0 = none). */
     public int addConduit(ConduitType t, int tier) {
@@ -115,6 +117,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
             case ITEM -> ItemStorage.SIDED.find(level, pos, side) != null
                     || level.getBlockState(pos).getBlock() instanceof DimensionalOutputBlock;
             case FLUID -> FluidStorage.SIDED.find(level, pos, side) != null;
+            case ENERGY -> net.storagenexus.energy.NexusEnergy.SIDED.find(level, pos, side) != null;
         };
     }
 
@@ -164,7 +167,8 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         long time = level.getGameTime();
         // Bundles saved before tiers were part of the block state show up untiered; fix once.
         if (time % 20 == 0 && (state.getValue(ConduitBundleBlock.ITEM_TIER) != be.tier(ConduitType.ITEM)
-                || state.getValue(ConduitBundleBlock.FLUID_TIER) != be.tier(ConduitType.FLUID))) {
+                || state.getValue(ConduitBundleBlock.FLUID_TIER) != be.tier(ConduitType.FLUID)
+                || state.getValue(ConduitBundleBlock.ENERGY_TIER) != be.tier(ConduitType.ENERGY))) {
             be.changed();
         }
         int phase = (int) Math.floorMod(pos.asLong(), 20L);
@@ -179,6 +183,14 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 int batch = new int[]{4, 16, 32, 64, 64}[speed];
                 if ((time + phase) % interval != 0) continue;
                 be.transferItems(d, cfg, batch);
+            }
+        }
+        if (be.has(ConduitType.ENERGY)) {
+            long perTick = be.tier(ConduitType.ENERGY) >= 2 ? ENERGY_TIER_2 : ENERGY_TIER_1;
+            for (Direction d : Direction.values()) {
+                SideConfig cfg = be.config(ConduitType.ENERGY, d);
+                if (!cfg.mode.extracts() || !cfg.redstone.allows(powered) || be.isBundle(pos.relative(d))) continue;
+                be.transferEnergy(d, cfg, perTick);
             }
         }
         if (be.has(ConduitType.FLUID) && (time + phase) % FLUID_INTERVAL == 0) {
@@ -293,6 +305,32 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
             }
         }
         return moved;
+    }
+
+    /**
+     * Nexus Energy from the block on this side (a generator or Battery) to the Insert sides on the same colour channel,
+     * by priority and distance, up to the conduit's rate each tick. Machines only take energy, so nothing is pulled
+     * out of them.
+     */
+    private void transferEnergy(Direction dir, SideConfig cfg, long budget) {
+        BlockPos sourcePos = worldPosition.relative(dir);
+        net.storagenexus.energy.NexusEnergy source = net.storagenexus.energy.NexusEnergy.SIDED.find(level, sourcePos, dir.getOpposite());
+        if (source == null) return;
+        long left = source.extract(budget, true);
+        if (left <= 0) return;
+        for (Target t : ordered(targets(ConduitType.ENERGY, cfg.extractChannel), sourcePos, cfg)) {
+            if (left <= 0) break;
+            net.storagenexus.energy.NexusEnergy dest = net.storagenexus.energy.NexusEnergy.SIDED.find(level, t.invPos, t.side);
+            if (dest == null) continue;
+            long room = dest.insert(left, true);
+            if (room <= 0) continue;
+            long moved = dest.insert(source.extract(room, false), false);
+            left -= moved;
+            if (moved > 0 && cfg.roundRobin) {
+                cfg.rrIndex++;
+                break;
+            }
+        }
     }
 
     private void transferFluids(Direction dir, SideConfig cfg, long budget) {

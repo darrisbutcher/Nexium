@@ -37,7 +37,7 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** Distance from the block centre along the arm, per conduit type (px). */
     /** How much further out the extract ring sits than the insert ring. */
     private static final float EXTRACT_OFFSET = 2.6f / 16;
-    private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}};
+    private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}, {4.0f / 16, 4.6f / 16}};
 
     public static class FacadeState extends BlockEntityRenderState {
         public final BlockModelRenderState facade = new BlockModelRenderState();

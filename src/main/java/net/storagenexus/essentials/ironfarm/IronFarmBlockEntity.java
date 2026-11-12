@@ -54,6 +54,18 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     private long cooldown;
     /** The output had no room for another golem last tick (not saved; worked out again every tick). */
     private boolean full;
+    /** No energy for this tick's work (not saved; worked out again every tick). */
+    private boolean unpowered;
+    /** Nexus Energy the Iron Farm uses each tick it works. */
+    public static final int ENERGY_PER_TICK = 40;
+    /** The Nexus Energy it runs on: ten seconds' worth. */
+    private final net.storagenexus.energy.EnergyBuffer energy =
+            net.storagenexus.energy.EnergyBuffer.machine(ENERGY_PER_TICK * net.storagenexus.essentials.farm.FarmBlockEntity.ENERGY_TICKS, this::setChanged);
+
+    public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
+
+    /** Whether the farm is waiting for Nexus Energy. */
+    public boolean isUnpowered() { return unpowered; }
 
     public IronFarmBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.IRON_FARM, pos, state);
@@ -72,7 +84,9 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         full = !hasRoomForGolem();
         // A comparator reads 15 while the farm is stopped for lack of room
         if (full != wasFull && level != null) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
-        if (!full && !isPaused()) {
+        unpowered = energy.stored() < ENERGY_PER_TICK;
+        if (!full && !isPaused() && !unpowered) {
+            energy.use(ENERGY_PER_TICK);
             if (boostLeft == 0 && cooldown == 0) eatBread();
             boolean boosted = boostLeft > 0;
             progress += boosted ? config.ironFarmBreadSpeedUp : 1;
@@ -256,6 +270,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.store("timers", IronFarmTimers.CODEC, timers());
+        output.putLong("energy", energy.stored());
     }
 
     @Override
@@ -264,6 +279,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         setTimersQuietly(input.read("timers", IronFarmTimers.CODEC).orElse(IronFarmTimers.NONE));
+        energy.set(input.getLongOr("energy", 0L));
     }
 
     private void setTimersQuietly(IronFarmTimers timers) {

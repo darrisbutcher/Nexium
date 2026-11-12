@@ -57,6 +57,17 @@ public final class ModBlockEntities {
     public static final BlockEntityType<net.storagenexus.disk.DiskDriveBlockEntity> DISK_DRIVE = register("disk_drive",
             new BlockEntityType<>(net.storagenexus.disk.DiskDriveBlockEntity::new, Set.of(ModBlocks.DISK_DRIVE)));
 
+    public static final BlockEntityType<net.storagenexus.energy.SolarPanelBlockEntity> SOLAR_PANEL = register("solar_panel",
+            new BlockEntityType<>(net.storagenexus.energy.SolarPanelBlockEntity::new, Set.of(ModBlocks.SOLAR_PANEL)));
+    public static final BlockEntityType<net.storagenexus.energy.ThermalGeneratorBlockEntity> THERMAL_GENERATOR = register("thermal_generator",
+            new BlockEntityType<>(net.storagenexus.energy.ThermalGeneratorBlockEntity::new, Set.of(ModBlocks.THERMAL_GENERATOR)));
+    public static final BlockEntityType<net.storagenexus.energy.BatteryBlockEntity> BATTERY = register("battery",
+            new BlockEntityType<>(net.storagenexus.energy.BatteryBlockEntity::new, Set.of(ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY)));
+    public static final BlockEntityType<net.storagenexus.energy.RedstoneReactorBlockEntity> REDSTONE_REACTOR = register("redstone_reactor",
+            new BlockEntityType<>(net.storagenexus.energy.RedstoneReactorBlockEntity::new, Set.of(ModBlocks.REDSTONE_REACTOR)));
+    public static final BlockEntityType<net.storagenexus.energy.CombustionGeneratorBlockEntity> COMBUSTION_GENERATOR = register("combustion_generator",
+            new BlockEntityType<>(net.storagenexus.energy.CombustionGeneratorBlockEntity::new, Set.of(ModBlocks.COMBUSTION_GENERATOR)));
+
     public static final BlockEntityType<FreezerBlockEntity> FREEZER = register("freezer",
             new BlockEntityType<>(FreezerBlockEntity::new, Set.of(ModBlocks.FREEZER)));
 

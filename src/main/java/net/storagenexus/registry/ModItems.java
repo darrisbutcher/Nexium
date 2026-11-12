@@ -67,6 +67,8 @@ public final class ModItems {
     public static final ConduitItem ENDER_ITEM_CONDUIT = register("ender_item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 2), new Item.Properties());
     public static final ConduitItem FLUID_CONDUIT = register("fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 1), new Item.Properties());
     public static final ConduitItem ENDER_FLUID_CONDUIT = register("ender_fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 2), new Item.Properties());
+    public static final ConduitItem ENERGY_CONDUIT = register("energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 1), new Item.Properties());
+    public static final ConduitItem ENDER_ENERGY_CONDUIT = register("ender_energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 2), new Item.Properties());
     public static final ConduitWrenchItem CONDUIT_WRENCH = register("conduit_wrench", ConduitWrenchItem::new, new Item.Properties().stacksTo(1));
     public static final FilterItem BASIC_FILTER = register("basic_filter", p -> new FilterItem(p, false), new Item.Properties().stacksTo(1));
     public static final FilterItem ADVANCED_FILTER = register("advanced_filter", p -> new FilterItem(p, true), new Item.Properties().stacksTo(1));
@@ -138,6 +140,10 @@ public final class ModItems {
     }
 
     // Nexium: the tier above netherite (see NexiumMaterials). Everything Nexium survives fire and lava.
+    /** Fuel for the Redstone Reactor; it wears down as the reactor runs and leaves a Spent Fuel Rod. */
+    public static final Item REDSTONE_FUEL_ROD = register("redstone_fuel_rod", Item::new,
+            new Item.Properties().durability(net.storagenexus.energy.RedstoneReactorBlockEntity.ROD_LIFE));
+    public static final Item SPENT_FUEL_ROD = register("spent_fuel_rod", Item::new, new Item.Properties());
     public static final Item NEXIUM_INGOT = register("nexium_ingot", Item::new, new Item.Properties().fireResistant());
     public static final BlockItem NEXIUM_BLOCK = register("nexium_block", p -> new BlockItem(ModBlocks.NEXIUM_BLOCK, p),
             new Item.Properties().useBlockDescriptionPrefix().fireResistant());
@@ -182,6 +188,7 @@ public final class ModItems {
         return switch (type) {
             case ITEM -> tier >= 2 ? ENDER_ITEM_CONDUIT : ITEM_CONDUIT;
             case FLUID -> tier >= 2 ? ENDER_FLUID_CONDUIT : FLUID_CONDUIT;
+            case ENERGY -> tier >= 2 ? ENDER_ENERGY_CONDUIT : ENERGY_CONDUIT;
         };
     }
 

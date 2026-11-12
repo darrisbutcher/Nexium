@@ -128,6 +128,9 @@ public final class NexusConfig {
     /** Ticks per cycle: one ochre, one verdant and one pearlescent froglight. */
     public int froglightFarmTicks = 400;
 
+    /** Ticks per cycle: 8 logs of the chosen tree, or chorus fruit. */
+    public int treeFarmTicks = 400;
+
     // --- Freezer
     /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
     public int freezerIceTicks = 100;
@@ -225,6 +228,7 @@ public final class NexusConfig {
         beeFarmTicks = Math.max(1, Math.min(1_000_000, beeFarmTicks));
         mossFarmTicks = Math.max(1, Math.min(1_000_000, mossFarmTicks));
         froglightFarmTicks = Math.max(1, Math.min(1_000_000, froglightFarmTicks));
+        treeFarmTicks = Math.max(1, Math.min(1_000_000, treeFarmTicks));
         shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
         freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
         freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));

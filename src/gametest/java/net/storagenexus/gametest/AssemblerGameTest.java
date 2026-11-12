@@ -97,7 +97,7 @@ public class AssemblerGameTest {
                 add(list, Items.OAK_SIGN, 16);
                 add(list, Items.SPRUCE_TRAPDOOR, 12);
                 for (int i = 0; i < 12; i++) list.add(new ItemStack(i % 2 == 0 ? Items.BED.red() : Items.BED.white()));
-                add(list, Items.SMOOTH_STONE, 1408);
+                add(list, Items.SMOOTH_STONE, 576);
             }
             case VILLAGER_BREEDER -> {
                 mobs(list, capturedMobs, 2, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
@@ -105,8 +105,8 @@ public class AssemblerGameTest {
                 add(list, Items.COMPOSTER, 2);
                 add(list, Items.HAY_BLOCK, 8);
                 add(list, Items.EMERALD_BLOCK, 2);
-                add(list, Items.OAK_PLANKS, 1440);
-                add(list, Items.BIRCH_PLANKS, 1440);
+                add(list, Items.OAK_PLANKS, 288);
+                add(list, Items.BIRCH_PLANKS, 288);
             }
             case PIGLIN_BARTER -> {
                 mobs(list, capturedMobs, 2, EntityTypes.PIGLIN, Items.PIGLIN_SPAWN_EGG);
@@ -114,14 +114,14 @@ public class AssemblerGameTest {
                 add(list, Items.SOUL_SAND, 16);
                 add(list, Items.CRIMSON_PLANKS, 8);
                 add(list, Items.BIRCH_PLANKS, 8);
-                add(list, Items.NETHERRACK, 3136);
+                add(list, Items.NETHERRACK, 576);
             }
             case ZOMBIFIED_PIGLIN -> {
                 mobs(list, capturedMobs, 4, EntityTypes.ZOMBIFIED_PIGLIN, Items.ZOMBIFIED_PIGLIN_SPAWN_EGG);
                 add(list, Items.MAGMA_BLOCK, 8);
                 add(list, Items.NETHER_BRICKS, 20);
                 add(list, Items.GOLD_INGOT, 16);
-                add(list, Items.NETHERRACK, 3008);
+                add(list, Items.NETHERRACK, 576);
             }
             case WITHER_SKELETON -> {
                 mobs(list, capturedMobs, 4, EntityTypes.WITHER_SKELETON, Items.WITHER_SKELETON_SPAWN_EGG);
@@ -129,42 +129,42 @@ public class AssemblerGameTest {
                 add(list, Items.SOUL_SAND, 8);
                 add(list, Items.COAL_BLOCK, 4);
                 add(list, Items.MAGMA_BLOCK, 4);
-                add(list, Items.NETHERRACK, 2944);
+                add(list, Items.NETHERRACK, 576);
             }
             case SHULKER -> {
                 mobs(list, capturedMobs, 4, EntityTypes.SHULKER, Items.SHULKER_SPAWN_EGG);
                 add(list, Items.PURPUR_BLOCK, 32);
                 add(list, Items.END_ROD, 8);
                 add(list, Items.ENDER_PEARL, 8);
-                add(list, Items.END_STONE_BRICKS, 3008);
+                add(list, Items.END_STONE_BRICKS, 576);
             }
             case WITCH -> {
                 mobs(list, capturedMobs, 2, EntityTypes.WITCH, Items.WITCH_SPAWN_EGG);
                 add(list, Items.CAULDRON, 8);
                 add(list, Items.SPRUCE_PLANKS, 16);
                 add(list, Items.LILY_PAD, 8);
-                add(list, Items.MOSSY_COBBLESTONE, 768);
+                add(list, Items.MOSSY_COBBLESTONE, 576);
             }
             case SUGAR_CANE -> {
                 add(list, Items.SUGAR_CANE, 32);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
                 add(list, Items.PISTON, 8);
                 add(list, Items.OBSERVER, 16);
-                add(list, Items.SAND, 768);
+                add(list, Items.SAND, 576);
             }
             case BAMBOO -> {
                 add(list, Items.BAMBOO, 32);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
                 add(list, Items.PISTON, 8);
                 add(list, Items.OBSERVER, 16);
-                add(list, Items.DIRT, 768);
+                add(list, Items.DIRT, 576);
             }
             case NETHER_WART -> {
                 add(list, Items.NETHER_WART, 32);
                 add(list, Items.SOUL_SAND, 16);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
                 add(list, Items.MAGMA_BLOCK, 8);
-                add(list, Items.NETHERRACK, 768);
+                add(list, Items.NETHERRACK, 576);
             }
             case MONSTER -> {
                 mobs(list, capturedMobs, 1, EntityTypes.ZOMBIE, Items.ZOMBIE_SPAWN_EGG);
@@ -173,7 +173,7 @@ public class AssemblerGameTest {
                 add(list, Items.IRON_BARS, 16);
                 add(list, Items.PISTON, 8);
                 add(list, Items.EMERALD_BLOCK, 4);
-                add(list, Items.COBBLESTONE, 768);
+                add(list, Items.COBBLESTONE, 576);
             }
             case NETHER_MOB -> {
                 mobs(list, capturedMobs, 1, EntityTypes.BLAZE, Items.BLAZE_SPAWN_EGG);
@@ -182,7 +182,7 @@ public class AssemblerGameTest {
                 add(list, Items.NETHER_BRICKS, 16);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
                 add(list, Items.MAGMA_BLOCK, 8);
-                add(list, Items.NETHERRACK, 768);
+                add(list, Items.NETHERRACK, 576);
             }
             case OCEAN -> {
                 mobs(list, capturedMobs, 1, EntityTypes.GUARDIAN, Items.GUARDIAN_SPAWN_EGG);
@@ -191,14 +191,14 @@ public class AssemblerGameTest {
                 add(list, Items.PRISMARINE_BRICKS, 16);
                 add(list, Items.SEA_LANTERN, 8);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
-                add(list, Items.SAND, 768);
+                add(list, Items.SAND, 576);
             }
             case SLIME -> {
                 mobs(list, capturedMobs, 2, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG);
                 add(list, Items.SLIME_BLOCK, 4);
                 add(list, Items.STICKY_PISTON, 8);
                 add(list, Items.HOPPER, 8);
-                add(list, Items.MUD, 768);
+                add(list, Items.MUD, 576);
             }
             case LIVESTOCK -> {
                 mobs(list, capturedMobs, 1, EntityTypes.COW, Items.COW_SPAWN_EGG);
@@ -208,7 +208,7 @@ public class AssemblerGameTest {
                 mobs(list, capturedMobs, 1, EntityTypes.RABBIT, Items.RABBIT_SPAWN_EGG);
                 add(list, Items.HAY_BLOCK, 16);
                 add(list, Items.OAK_FENCE, 16);
-                add(list, Items.DIRT, 768);
+                add(list, Items.DIRT, 576);
             }
             case CROP -> {
                 add(list, Items.WHEAT, 32);
@@ -216,7 +216,7 @@ public class AssemblerGameTest {
                 add(list, Items.POTATO, 32);
                 add(list, Items.BEETROOT, 32);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
-                add(list, Items.DIRT, 768);
+                add(list, Items.DIRT, 576);
             }
             case GOURD -> {
                 add(list, Items.MELON, 16);
@@ -224,14 +224,14 @@ public class AssemblerGameTest {
                 add(list, Items.CACTUS, 16);
                 add(list, Items.KELP, 16);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
-                add(list, Items.SAND, 768);
+                add(list, Items.SAND, 576);
             }
             case GENERATOR -> {
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.LAVA_BUCKET));
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
                 add(list, Items.HOPPER, 8);
                 for (int i = 0; i < 2; i++) list.add(new ItemStack(Items.DIAMOND_PICKAXE));
-                add(list, Items.COBBLESTONE, 768);
+                add(list, Items.COBBLESTONE, 576);
             }
             case BEE -> {
                 mobs(list, capturedMobs, 2, EntityTypes.BEE, Items.BEE_SPAWN_EGG);
@@ -239,22 +239,23 @@ public class AssemblerGameTest {
                 add(list, Items.CAMPFIRE, 4);
                 add(list, Items.POPPY, 16);
                 add(list, Items.GLASS_BOTTLE, 8);
-                add(list, Items.OAK_PLANKS, 768);
+                add(list, Items.OAK_PLANKS, 576);
             }
             case MOSS -> {
                 add(list, Items.MOSS_BLOCK, 32);
                 add(list, Items.AZALEA, 8);
                 for (int i = 0; i < 4; i++) list.add(new ItemStack(Items.WATER_BUCKET));
                 add(list, Items.BONE_BLOCK, 8);
-                add(list, Items.CLAY, 768);
+                add(list, Items.CLAY, 576);
             }
+            case TREE -> add(list, Items.OAK_LOG, 576 * 2);
             case FROGLIGHT -> {
                 // Frogs only count as Captured Mobs: a spawn egg doesn't say which variant it makes
                 for (String variant : new String[]{"temperate", "warm", "cold"}) {
                     for (int i = 0; i < 3; i++) list.add(capturedFrog(variant));
                 }
                 mobs(list, capturedMobs, 9, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG);
-                for (int i = 0; i < 4; i++) { add(list, Items.GLASS, 32); add(list, i % 2 == 0 ? Items.STAINED_GLASS.red() : Items.TINTED_GLASS, 32); }
+                for (int i = 0; i < 9; i++) { add(list, Items.GLASS, 32); add(list, i % 2 == 0 ? Items.STAINED_GLASS.red() : Items.TINTED_GLASS, 32); }
             }
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
         }
@@ -300,14 +301,9 @@ public class AssemblerGameTest {
     public void theFarmsCostWhatTheirDoubleChestsDid(GameTestHelper h) {
         // The filler: 54 slots of full stacks, less one slot per Captured Mob or bed and a stack's worth of each other part
         // (The four newer farms ask a quarter of that: 12 stacks.)
-        Map<AssemblyTarget, Integer> filler = Map.ofEntries(Map.entry(AssemblyTarget.IRON_FARM, 1408), Map.entry(AssemblyTarget.VILLAGER_BREEDER, 2880),
-                Map.entry(AssemblyTarget.PIGLIN_BARTER, 3136), Map.entry(AssemblyTarget.ZOMBIFIED_PIGLIN, 3008), Map.entry(AssemblyTarget.WITHER_SKELETON, 2944),
-                Map.entry(AssemblyTarget.SHULKER, 3008), Map.entry(AssemblyTarget.WITCH, 768), Map.entry(AssemblyTarget.SUGAR_CANE, 768),
-                Map.entry(AssemblyTarget.BAMBOO, 768), Map.entry(AssemblyTarget.NETHER_WART, 768), Map.entry(AssemblyTarget.MONSTER, 768),
-                Map.entry(AssemblyTarget.NETHER_MOB, 768), Map.entry(AssemblyTarget.OCEAN, 768), Map.entry(AssemblyTarget.SLIME, 768),
-                Map.entry(AssemblyTarget.LIVESTOCK, 768), Map.entry(AssemblyTarget.CROP, 768), Map.entry(AssemblyTarget.GOURD, 768),
-                Map.entry(AssemblyTarget.GENERATOR, 768), Map.entry(AssemblyTarget.BEE, 768), Map.entry(AssemblyTarget.MOSS, 768),
-                Map.entry(AssemblyTarget.FROGLIGHT, 256));
+        // Every farm asks 9 stacks of its filler block (the Tree Farm 18 of logs)
+        Map<AssemblyTarget, Integer> filler = new java.util.EnumMap<>(AssemblyTarget.class);
+        for (AssemblyTarget target : AssemblyTarget.values()) if (target != AssemblyTarget.LIBRARIAN) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");
@@ -333,7 +329,7 @@ public class AssemblerGameTest {
         h.assertValueEqual(a.accept(new ItemStack(Items.TORCH, 64)), 33, "33 torches");
         int stone = 0;
         for (int i = 0; i < 30; i++) stone += a.accept(new ItemStack(Items.SMOOTH_STONE, 64));
-        h.assertValueEqual(stone, 1408, "smooth stone up to 1,408");
+        h.assertValueEqual(stone, 576, "smooth stone up to 576");
         h.assertValueEqual(count(a, Items.VILLAGER_SPAWN_EGG), 12, "villagers counted");
         h.assertValueEqual(count(a, Items.TORCH), 33, "torches counted");
         h.assertTrue(!a.isComplete(), "not complete without the rest");

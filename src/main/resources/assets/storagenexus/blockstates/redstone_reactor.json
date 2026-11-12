@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "storagenexus:block/redstone_reactor"
+    }
+  }
+}

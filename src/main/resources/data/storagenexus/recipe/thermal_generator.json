@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "NLN",
+    "ICI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:nether_bricks",
+    "L": "minecraft:lava_bucket",
+    "C": "minecraft:copper_block"
+  },
+  "result": {
+    "id": "storagenexus:thermal_generator"
+  }
+}

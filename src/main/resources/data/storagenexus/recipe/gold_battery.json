@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GRG",
+    "RBR",
+    "GRG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "R": "minecraft:redstone_block",
+    "B": "storagenexus:iron_battery"
+  },
+  "result": {
+    "id": "storagenexus:gold_battery"
+  }
+}

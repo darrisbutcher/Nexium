@@ -50,7 +50,10 @@ public class FarmGameTest {
     }
 
     private static void tick(GameTestHelper h, FarmBlockEntity farm, int ticks) {
-        for (int i = 0; i < ticks; i++) FarmBlockEntity.serverTick(h.getLevel(), farm.getBlockPos(), farm.getBlockState(), farm);
+        for (int i = 0; i < ticks; i++) {
+            farm.energy().set(Long.MAX_VALUE); // always powered; the power tests tick the farm themselves
+            FarmBlockEntity.serverTick(h.getLevel(), farm.getBlockPos(), farm.getBlockState(), farm);
+        }
     }
 
     private static int count(FarmBlockEntity farm, Item item) {
@@ -270,6 +273,32 @@ public class FarmGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void treeFarmMakesTheLogsOfItsTreeOrChorus(GameTestHelper h) {
+        h.assertValueEqual(FarmKind.TREE.modes().size(), 12, "eleven woods and chorus");
+        h.assertValueEqual(FarmKind.TREE.cycleTicks(), 400, "every 20 seconds");
+        FarmBlockEntity trees = farm(h, FarmKind.TREE);
+        for (String tree : FarmKind.TREE.modes()) {
+            if (tree.equals("chorus")) continue;
+            trees.setMode(FarmKind.TREE.modes().indexOf(tree));
+            for (int i = 0; i < trees.getContainerSize(); i++) trees.setItem(i, ItemStack.EMPTY);
+            cycles(h, trees, 2);
+            h.assertValueEqual(count(trees, FarmKind.treeLog(tree)), 16, tree + ": 8 logs a cycle");
+            int others = 0;
+            for (int i = 0; i < trees.getContainerSize(); i++) if (!trees.getItem(i).isEmpty() && !trees.getItem(i).is(FarmKind.treeLog(tree))) others++;
+            h.assertValueEqual(others, 0, tree + " makes only its own log");
+        }
+        trees.setMode(FarmKind.TREE.modes().indexOf("chorus"));
+        for (int i = 0; i < trees.getContainerSize(); i++) trees.setItem(i, ItemStack.EMPTY);
+        cycles(h, trees, 200);
+        h.assertValueEqual(count(trees, Items.CHORUS_FRUIT), 800, "4 chorus fruit a cycle");
+        int flowers = count(trees, Items.CHORUS_FLOWER);
+        h.assertTrue(flowers > 0 && flowers < 40, "a chorus flower now and then: " + flowers + " in 200 cycles");
+        trees.previousMode();
+        h.assertTrue(trees.mode() == FarmKind.TREE.modes().indexOf("warped"), "shift-click steps back");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
     public void froglightFarmMakesOneOfEachColour(GameTestHelper h) {
         FarmBlockEntity lights = farm(h, FarmKind.FROGLIGHT);
         cycles(h, lights, 4);
@@ -326,6 +355,39 @@ public class FarmGameTest {
         }
         // 2% of 2000 is 40: far from the evoker's one every cycle, and never more than one a cycle
         h.assertTrue(totems >= 10 && totems <= 90, "about 40 totems in 2000 cycles, got " + totems);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 20)
+    public void farmsNeedPower(GameTestHelper h) {
+        FarmBlockEntity cane = farm(h, FarmKind.SUGAR_CANE);
+        h.assertValueEqual(FarmKind.SUGAR_CANE.energyPerTick(), 10, "a plant farm uses 10 NE a tick");
+        h.assertValueEqual(FarmKind.MONSTER.energyPerTick(), 20, "a mob farm uses 20");
+        // With no energy it waits
+        for (int i = 0; i < 50; i++) FarmBlockEntity.serverTick(h.getLevel(), cane.getBlockPos(), cane.getBlockState(), cane);
+        h.assertValueEqual(cane.progress(), 0, "no work without power");
+        h.assertTrue(cane.isUnpowered(), "and it says so");
+        // 100 NE is 10 ticks of work, then it waits again
+        h.assertValueEqual(cane.energy().insert(100, false), 100L, "energy goes in from outside");
+        for (int i = 0; i < 50; i++) FarmBlockEntity.serverTick(h.getLevel(), cane.getBlockPos(), cane.getBlockState(), cane);
+        h.assertValueEqual(cane.progress(), 10, "10 ticks of work on 100 NE");
+        h.assertValueEqual(cane.energy().stored(), 0L, "all used");
+        // The buffer holds ten seconds of work and gives nothing back out
+        h.assertValueEqual(cane.energy().capacity(), 2000L, "200 ticks' worth");
+        h.assertValueEqual(cane.energy().insert(5000, false), 2000L, "it fills up");
+        h.assertValueEqual(cane.energy().extract(100, false), 0L, "a machine's energy can't be taken out");
+        // A full output uses no energy
+        for (int i = 0; i < FarmBlockEntity.OUTPUT_SLOTS; i++) cane.setItem(i, new ItemStack(Items.DIRT, 64));
+        FarmBlockEntity.serverTick(h.getLevel(), cane.getBlockPos(), cane.getBlockState(), cane);
+        h.assertValueEqual(cane.energy().stored(), 2000L, "nothing used while stopped");
+        // It is found by the energy lookup, and kept when saved
+        h.assertTrue(net.storagenexus.energy.NexusEnergy.SIDED.find(h.getLevel(), cane.getBlockPos(), net.minecraft.core.Direction.UP) == cane.energy(), "conduits can find it");
+        var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess());
+        cane.saveWithFullMetadata(out);
+        FarmBlockEntity loaded = new FarmBlockEntity(cane.getBlockPos(), cane.getBlockState());
+        loaded.setLevel(h.getLevel());
+        loaded.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess(), out.buildResult()));
+        h.assertValueEqual(loaded.energy().stored(), 2000L, "the energy is saved");
         h.succeed();
     }
 

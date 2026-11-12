@@ -53,6 +53,11 @@ public final class ContentsTooltip {
             }
         }
 
+        Long charge = stack.get(ModComponents.BATTERY_CHARGE);
+        if (charge != null) {
+            lines.add(Component.translatable("tooltip.storagenexus.battery.charge", String.format("%,d", charge)).withStyle(ChatFormatting.GRAY));
+        }
+
         ItemContainerContents upgrades = stack.get(ModComponents.UPGRADES);
         if (upgrades != null) {
             upgrades.nonEmptyItemCopyStream().forEach(up ->

@@ -28,7 +28,7 @@ public class ConduitConfigMenu extends BaseMenu {
     public static final int INVENTORY_TOP = 130;
 
     public static final int BTN_SIDE = 0;      // 0..5
-    public static final int BTN_TYPE = 10;     // 10..11
+    public static final int BTN_TYPE = 10;     // 10..12
     public static final int BTN_MODE = 20;
     public static final int BTN_CHANNEL_NEXT = 21;
     public static final int BTN_CHANNEL_PREV = 22;

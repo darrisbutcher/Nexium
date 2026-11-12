@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    "RSR",
+    "RRR"
+  ],
+  "key": {
+    "R": "minecraft:redstone_block",
+    "S": "storagenexus:spent_fuel_rod"
+  },
+  "result": {
+    "id": "storagenexus:redstone_fuel_rod"
+  }
+}

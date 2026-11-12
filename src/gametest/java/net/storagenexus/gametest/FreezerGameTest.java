@@ -38,7 +38,10 @@ public class FreezerGameTest {
     }
 
     private static void tick(GameTestHelper h, FreezerBlockEntity f, int ticks) {
-        for (int i = 0; i < ticks; i++) FreezerBlockEntity.serverTick(h.getLevel(), f.getBlockPos(), f.getBlockState(), f);
+        for (int i = 0; i < ticks; i++) {
+            f.energy().set(Long.MAX_VALUE); // always powered
+            FreezerBlockEntity.serverTick(h.getLevel(), f.getBlockPos(), f.getBlockState(), f);
+        }
     }
 
     private static int count(FreezerBlockEntity f, Item item) {

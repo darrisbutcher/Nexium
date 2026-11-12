@@ -99,6 +99,33 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)
                     .lightLevel(s -> 6).requiresCorrectToolForDrops(), true);
 
+    /** Makes Nexus Energy from daylight. */
+    public static final net.storagenexus.energy.SolarPanelBlock SOLAR_PANEL = register("solar_panel", net.storagenexus.energy.SolarPanelBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+    /** Burns lava into Nexus Energy. */
+    public static final net.storagenexus.energy.ThermalGeneratorBlock THERMAL_GENERATOR = register("thermal_generator", net.storagenexus.energy.ThermalGeneratorBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> s.getValue(net.storagenexus.energy.ThermalGeneratorBlock.LIT) ? 15 : 4).requiresCorrectToolForDrops(), true);
+    /** Batteries: 250,000, 1,000,000 and 10,000,000 NE. */
+    public static final net.storagenexus.energy.BatteryBlock IRON_BATTERY = register("iron_battery", p -> new net.storagenexus.energy.BatteryBlock(p, 250_000),
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+    public static final net.storagenexus.energy.BatteryBlock GOLD_BATTERY = register("gold_battery", p -> new net.storagenexus.energy.BatteryBlock(p, 1_000_000),
+            BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+    public static final net.storagenexus.energy.BatteryBlock DIAMOND_BATTERY = register("diamond_battery", p -> new net.storagenexus.energy.BatteryBlock(p, 10_000_000),
+            BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+
+    /** Burns furnace fuel into Nexus Energy. */
+    public static final net.storagenexus.energy.CombustionGeneratorBlock COMBUSTION_GENERATOR = register("combustion_generator",
+            net.storagenexus.energy.CombustionGeneratorBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> s.getValue(net.storagenexus.energy.CombustionGeneratorBlock.LIT) ? 13 : 0).requiresCorrectToolForDrops(), true);
+
+    /** The top generator: nine Redstone Fuel Rods, ice for coolant. */
+    public static final net.storagenexus.energy.RedstoneReactorBlock REDSTONE_REACTOR = register("redstone_reactor",
+            net.storagenexus.energy.RedstoneReactorBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(4.0f, 8.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> 8).requiresCorrectToolForDrops(), true);
+
     /** Freezes water into ice, packed ice and blue ice; dyeable. */
     public static final FreezerBlock FREEZER = register("freezer", FreezerBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(3.0f, 6.0f).sound(SoundType.METAL)

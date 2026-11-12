@@ -63,6 +63,8 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
             status = Component.translatable("screen.storagenexus.freezer.paused");
         } else if (menu.full()) {
             status = Component.translatable("screen.storagenexus.freezer.full");
+        } else if (menu.unpowered()) {
+            status = Component.translatable("screen.nexusessentials.no_power", net.storagenexus.freezer.FreezerBlockEntity.ENERGY_PER_TICK);
         } else if (menu.dry()) {
             status = Component.translatable("screen.storagenexus.freezer.dry");
         } else {
@@ -99,7 +101,7 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         g.fill(bx - 1, by - 1, bx + BAR_W + 1, by + BAR_H + 1, SLOT_DARK);
         g.fill(bx, by, bx + BAR_W, by + BAR_H, SLOT_FILL);
         int done = Math.round(menu.progress() * BAR_W);
-        if (done > 0) g.fill(bx, by, bx + done, by + BAR_H, menu.full() || menu.paused() || menu.dry() ? BLOCKED : ICE);
+        if (done > 0) g.fill(bx, by, bx + done, by + BAR_H, menu.full() || menu.paused() || menu.dry() || menu.unpowered() ? BLOCKED : ICE);
     }
 
     @Override
