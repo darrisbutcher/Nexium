@@ -2,10 +2,8 @@ package net.storagenexus.sort;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,9 +14,6 @@ import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraft.world.inventory.HopperMenu;
 import net.minecraft.world.inventory.ShulkerBoxMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -26,7 +21,7 @@ import net.storagenexus.barrel.BarrelMenu;
 
 /**
  * Sorts one region of an open menu: either the container's own slots or the player's main inventory (never the hotbar,
- * armor or offhand). Stacks are merged first, then ordered; shulker boxes and bundles go to the bottom-right slots
+ * armor or offhand). Stacks are merged first, then put A to Z; shulker boxes and bundles go to the bottom-right slots
  * when there is room, so the rest of the items stay at the top.
  */
 public final class InventorySorter {
@@ -35,8 +30,6 @@ public final class InventorySorter {
     public static final int MAIN_LAST = 35;
 
     public enum Region { CONTAINER, PLAYER }
-
-    private static Map<Item, Integer> creativeIndex;
 
     private InventorySorter() {}
 
@@ -84,18 +77,18 @@ public final class InventorySorter {
     }
 
     /** Server side: sort what the player's open menu shows. Returns whether anything was sorted. */
-    public static boolean sort(ServerPlayer player, int containerId, boolean playerRegion, SortOrder order) {
+    public static boolean sort(ServerPlayer player, int containerId, boolean playerRegion) {
         AbstractContainerMenu menu = player.containerMenu;
         if (menu.containerId != containerId) return false;
         List<Slot> slots = slotsOf(menu, playerRegion ? Region.PLAYER : Region.CONTAINER);
         if (slots.isEmpty()) return false;
-        boolean changed = sort(slots, order, player);
+        boolean changed = sort(slots);
         if (changed) menu.broadcastChanges();
         return changed;
     }
 
-    /** Sorts the given slots in place. */
-    public static boolean sort(List<Slot> slots, SortOrder order, ServerPlayer player) {
+    /** Sorts the given slots in place, A to Z. */
+    public static boolean sort(List<Slot> slots) {
         int n = slots.size();
         List<ItemStack> merged = new ArrayList<>();
         for (Slot slot : slots) {
@@ -113,7 +106,7 @@ public final class InventorySorter {
             }
             if (!rest.isEmpty()) merged.add(rest);
         }
-        Comparator<ItemStack> comparator = comparator(order, player);
+        Comparator<ItemStack> comparator = BY_NAME;
         List<ItemStack> normal = new ArrayList<>();
         List<ItemStack> special = new ArrayList<>();
         for (ItemStack s : merged) (isBottomRight(s) ? special : normal).add(s);
@@ -145,37 +138,9 @@ public final class InventorySorter {
                 || Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock;
     }
 
-    private static Comparator<ItemStack> comparator(SortOrder order, ServerPlayer player) {
-        Comparator<ItemStack> byName = Comparator
-                .comparing((ItemStack s) -> s.getHoverName().getString().toLowerCase(Locale.ROOT))
-                .thenComparing(s -> BuiltInRegistries.ITEM.getKey(s.getItem()).toString())
-                .thenComparing(Comparator.comparingInt(ItemStack::getCount).reversed());
-        return switch (order) {
-            case ALPHABETICAL -> byName;
-            case AMOUNT -> Comparator.comparingInt(ItemStack::getCount).reversed().thenComparing(byName);
-            case CREATIVE -> {
-                Map<Item, Integer> index = creativeIndex(player);
-                yield Comparator.comparingInt((ItemStack s) -> index.getOrDefault(s.getItem(), Integer.MAX_VALUE))
-                        .thenComparing(byName);
-            }
-        };
-    }
-
-    /** Position of each item in the creative inventory, tab by tab; items the tabs leave out sort last. */
-    private static Map<Item, Integer> creativeIndex(ServerPlayer player) {
-        if (creativeIndex != null) return creativeIndex;
-        Map<Item, Integer> map = new HashMap<>();
-        try {
-            CreativeModeTabs.tryRebuildTabContents(player.level().enabledFeatures(), false, player.level().registryAccess());
-            int i = 0;
-            for (CreativeModeTab tab : CreativeModeTabs.allTabs()) {
-                if (tab.getType() != CreativeModeTab.Type.CATEGORY) continue;
-                for (ItemStack s : tab.getDisplayItems()) map.putIfAbsent(s.getItem(), i++);
-            }
-        } catch (RuntimeException ignored) {
-            // Fall back to name order if the tabs cannot be built here
-        }
-        if (!map.isEmpty()) creativeIndex = map;
-        return map;
-    }
+    /** A to Z by name, then by id, biggest stack first. */
+    private static final Comparator<ItemStack> BY_NAME = Comparator
+            .comparing((ItemStack s) -> s.getHoverName().getString().toLowerCase(Locale.ROOT))
+            .thenComparing(s -> BuiltInRegistries.ITEM.getKey(s.getItem()).toString())
+            .thenComparing(Comparator.comparingInt(ItemStack::getCount).reversed());
 }

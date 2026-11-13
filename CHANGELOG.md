@@ -3,6 +3,19 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.6
+
+* **Inventory sorting has its own key, O**, separate from JEI, REI and EMI (whose R shows recipes), and **it works with the
+  mouse over an item** as well as over an empty slot. The key is a new `Sort Inventory` entry under Nexium in Controls, so
+  it starts at O even if you had bound the old one; rebind it as you like.
+* **Shift-click tweaks**: with an empty cursor, shift + left click on an item sends **every stack of that item** from that
+  inventory to the other, and shift + left click and drag moves **every item the cursor passes over**. Not in the survival
+  inventory screen, the creative menu or on crafting results.
+* **Sorting is just A to Z.** The creative menu order and biggest-stacks-first modes are gone, and pressing the key again
+  does nothing new.
+* **The Honey fluid is gone.** Nothing has made it since the Bee Farm's tank was removed in 1.20.1, and it still showed up
+  in recipe viewers under the mod. A fluid drawer or disk that still holds some now loads that slot empty instead of failing.
+
 ## 1.21.5
 
 * **Three creative tabs** instead of one:

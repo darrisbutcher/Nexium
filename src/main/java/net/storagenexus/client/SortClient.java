@@ -5,32 +5,25 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.Slot;
 import net.storagenexus.essentials.client.NexusEssentialsClient;
 import net.storagenexus.sort.InventorySorter;
 import net.storagenexus.sort.InventorySorter.Region;
-import net.storagenexus.sort.SortOrder;
 import net.storagenexus.sort.SortPayload;
 
 /**
- * The sort key (R by default): over a container's slots it sorts the container, over the main inventory it sorts
- * that, and never both and never the hotbar. Pressing it again over the same area steps through alphabetical,
- * creative-menu and by-amount order. With a recipe viewer installed, R over an item belongs to the viewer.
+ * The sort key (O by default, so it never fights JEI's, REI's or EMI's R): over a container's slots it sorts the
+ * container, over the main inventory it sorts that, and never both and never the hotbar. It works with the mouse over
+ * an item as well as over an empty slot, and sorts A to Z.
  */
 public final class SortClient {
-    public static final KeyMapping SORT = new KeyMapping("key.storagenexus.sort",
-            InputConstants.KEY_R, NexusEssentialsClient.CATEGORY);
-
-    private static AbstractContainerScreen<?> lastScreen;
-    private static Region lastRegion;
-    private static SortOrder lastOrder;
+    public static final KeyMapping SORT = new KeyMapping("key.storagenexus.sort_inventory",
+            InputConstants.KEY_O, NexusEssentialsClient.CATEGORY);
 
     private SortClient() {}
 
@@ -62,11 +55,6 @@ public final class SortClient {
         g.text(font, message, x, y, 0xFFFFFFFF, true);
     }
 
-    private static boolean recipeViewerLoaded() {
-        FabricLoader loader = FabricLoader.getInstance();
-        return loader.isModLoaded("jei") || loader.isModLoaded("roughlyenoughitems") || loader.isModLoaded("emi");
-    }
-
     /** Handles one press with the mouse where it is now. Returns whether a sort was requested. */
     public static boolean press(AbstractContainerScreen<?> screen) {
         Minecraft mc = Minecraft.getInstance();
@@ -78,17 +66,10 @@ public final class SortClient {
 
     /** Same, with the mouse at a given GUI position. */
     public static boolean pressAt(AbstractContainerScreen<?> screen, double x, double y) {
-        Slot hovered = screen.hoveredSlot;
-        if (hovered != null && hovered.hasItem() && recipeViewerLoaded()) return false;
         Region region = InventorySorter.regionAt(screen.getMenu(), x - screen.leftPos, y - screen.topPos);
         if (region == null) return false;
-        SortOrder order = screen == lastScreen && region == lastRegion && lastOrder != null
-                ? lastOrder.next() : SortOrder.ALPHABETICAL;
-        lastScreen = screen;
-        lastRegion = region;
-        lastOrder = order;
-        ClientPlayNetworking.send(new SortPayload(screen.getMenu().containerId, region == Region.PLAYER, order.ordinal()));
-        message = Component.translatable("message.storagenexus.sort", Component.translatable("message.storagenexus.sort." + order.key));
+        ClientPlayNetworking.send(new SortPayload(screen.getMenu().containerId, region == Region.PLAYER));
+        message = Component.translatable("message.storagenexus.sort");
         messageUntil = System.currentTimeMillis() + MESSAGE_MS;
         return true;
     }

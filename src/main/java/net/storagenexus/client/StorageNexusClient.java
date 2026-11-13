@@ -86,6 +86,7 @@ public class StorageNexusClient implements ClientModInitializer {
         GuideBookItem.openScreen = GuideScreens::open;
         CodexClient.init();
         SortClient.init();
+        ShiftTransferClient.init();
         NexusEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();

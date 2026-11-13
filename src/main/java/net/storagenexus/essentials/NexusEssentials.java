@@ -39,7 +39,6 @@ public final class NexusEssentials {
         NexusConfig.load();
         ModComponents.init();
         ModEffects.init();
-        net.storagenexus.essentials.registry.ModFluids.init();
         ModBlocks.init();
         ModItems.init();
         ModBlockEntities.init();

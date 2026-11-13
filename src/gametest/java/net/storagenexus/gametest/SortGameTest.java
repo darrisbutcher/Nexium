@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.storagenexus.sort.InventorySorter;
 import net.storagenexus.sort.InventorySorter.Region;
-import net.storagenexus.sort.SortOrder;
 
 /** Sorting: the hotbar is never touched, regions follow the cursor, shulker boxes and bundles go bottom right. */
 public class SortGameTest {
@@ -31,7 +30,7 @@ public class SortGameTest {
         ChestMenu menu = ChestMenu.threeRows(1, player.getInventory(), chest);
         List<Slot> slots = InventorySorter.slotsOf(menu, Region.CONTAINER);
         h.assertValueEqual(slots.size(), 27, "container slots");
-        InventorySorter.sort(slots, SortOrder.ALPHABETICAL, player);
+        InventorySorter.sort(slots);
         h.assertValueEqual(name(chest.getItem(0)), "applex3", "slot 0");
         h.assertValueEqual(name(chest.getItem(1)), "breadx2", "slot 1");
         h.assertValueEqual(name(chest.getItem(2)), "stonex64", "stone merged to a full stack");
@@ -49,41 +48,11 @@ public class SortGameTest {
         chest.setItem(2, new ItemStack(Items.ACACIA_LOG, 5));
         chest.setItem(3, new ItemStack(Items.ZOMBIE_HEAD));
         ChestMenu menu = ChestMenu.threeRows(1, player.getInventory(), chest);
-        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER), SortOrder.ALPHABETICAL, player);
+        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER));
         h.assertValueEqual(name(chest.getItem(0)), "acacia_logx5", "normal items stay at the top");
         h.assertValueEqual(name(chest.getItem(1)), "zombie_headx1", "normal items stay at the top, even Z");
         h.assertValueEqual(name(chest.getItem(25)), "bundlex1", "bundle among the last slots");
         h.assertValueEqual(name(chest.getItem(26)), "shulker_boxx1", "shulker box in the very last slot");
-        h.succeed();
-    }
-
-    @GameTest
-    public void amountPutsBiggestFirst(GameTestHelper h) {
-        ServerPlayer player = h.makeMockServerPlayerInLevel();
-        SimpleContainer chest = new SimpleContainer(27);
-        chest.setItem(0, new ItemStack(Items.APPLE, 2));
-        chest.setItem(1, new ItemStack(Items.DIRT, 30));
-        chest.setItem(2, new ItemStack(Items.BREAD, 9));
-        ChestMenu menu = ChestMenu.threeRows(1, player.getInventory(), chest);
-        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER), SortOrder.AMOUNT, player);
-        h.assertValueEqual(name(chest.getItem(0)), "dirtx30", "biggest first");
-        h.assertValueEqual(name(chest.getItem(1)), "breadx9", "then bread");
-        h.assertValueEqual(name(chest.getItem(2)), "applex2", "then apple");
-        h.succeed();
-    }
-
-    @GameTest
-    public void creativeOrderFollowsTheTabs(GameTestHelper h) {
-        ServerPlayer player = h.makeMockServerPlayerInLevel();
-        SimpleContainer chest = new SimpleContainer(27);
-        chest.setItem(0, new ItemStack(Items.DIAMOND));
-        chest.setItem(1, new ItemStack(Items.STONE));
-        chest.setItem(2, new ItemStack(Items.APPLE));
-        ChestMenu menu = ChestMenu.threeRows(1, player.getInventory(), chest);
-        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER), SortOrder.CREATIVE, player);
-        h.assertValueEqual(name(chest.getItem(0)), "stonex1", "building blocks come first");
-        h.assertValueEqual(name(chest.getItem(1)), "applex1", "then food");
-        h.assertValueEqual(name(chest.getItem(2)), "diamondx1", "then ingredients");
         h.succeed();
     }
 
@@ -100,7 +69,7 @@ public class SortGameTest {
         InventoryMenu menu = player.inventoryMenu;
         List<Slot> slots = InventorySorter.slotsOf(menu, Region.PLAYER);
         h.assertValueEqual(slots.size(), 27, "only the 27 storage slots");
-        InventorySorter.sort(slots, SortOrder.ALPHABETICAL, player);
+        InventorySorter.sort(slots);
         h.assertValueEqual(name(player.getInventory().getItem(0)), "stonex5", "hotbar slot 1 untouched");
         h.assertValueEqual(name(player.getInventory().getItem(8)), "applex5", "hotbar slot 9 untouched");
         h.assertValueEqual(name(player.getInventory().getItem(9)), "applex1", "storage sorted");
@@ -121,7 +90,7 @@ public class SortGameTest {
         chest.setItem(4, new ItemStack(Items.BREAD));
         chest.setItem(7, new ItemStack(Items.APPLE));
         ChestMenu menu = ChestMenu.threeRows(1, player.getInventory(), chest);
-        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER), SortOrder.ALPHABETICAL, player);
+        InventorySorter.sort(InventorySorter.slotsOf(menu, Region.CONTAINER));
         h.assertValueEqual(name(chest.getItem(0)), "applex1", "container sorted");
         h.assertValueEqual(name(player.getInventory().getItem(9)), "stonex1", "player inventory unchanged");
         h.assertValueEqual(name(player.getInventory().getItem(10)), "applex1", "player inventory unchanged");
