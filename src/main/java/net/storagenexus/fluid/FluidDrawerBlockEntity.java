@@ -156,9 +156,10 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
 
     public record SlotData(FluidVariant variant, long amount, FluidVariant locked) {
         public static final Codec<SlotData> CODEC = RecordCodecBuilder.create(i -> i.group(
-                FluidVariant.CODEC.fieldOf("variant").forGetter(SlotData::variant),
+                // A fluid that no longer exists (a removed mod's, or the retired Honey) loads as an empty slot, not an error
+                FluidVariant.CODEC.orElse(FluidVariant.blank()).fieldOf("variant").forGetter(SlotData::variant),
                 Codec.LONG.fieldOf("amount").forGetter(SlotData::amount),
-                FluidVariant.CODEC.optionalFieldOf("locked", FluidVariant.blank()).forGetter(SlotData::locked)
+                FluidVariant.CODEC.orElse(FluidVariant.blank()).optionalFieldOf("locked", FluidVariant.blank()).forGetter(SlotData::locked)
         ).apply(i, SlotData::new));
     }
 
@@ -189,7 +190,7 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     private void loadSlots(List<SlotData> list) {
         for (int i = 0; i < slotCount && i < list.size(); i++) {
             slots[i].variant = list.get(i).variant();
-            slots[i].amount = list.get(i).amount();
+            slots[i].amount = list.get(i).variant().isBlank() ? 0 : list.get(i).amount();
             slots[i].locked = list.get(i).locked();
         }
     }

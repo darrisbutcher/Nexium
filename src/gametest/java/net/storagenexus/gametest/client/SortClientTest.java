@@ -64,12 +64,12 @@ public class SortClientTest implements FabricClientGameTest {
             String before = snapshot(world);
             moveTo(ctx, 8 + 18, 142 + 0 - 0, true);
             press(ctx);
-            check(snapshot(world).equals(before), "R over the hotbar changes nothing");
+            check(snapshot(world).equals(before), "the sort key over the hotbar changes nothing");
 
             // Over an empty gap outside every area: nothing
             moveTo(ctx, 170, 30, false);
             press(ctx);
-            check(snapshot(world).equals(before), "R outside the areas changes nothing");
+            check(snapshot(world).equals(before), "the sort key outside the areas changes nothing");
 
             // Over an empty chest slot: only the chest is sorted
             moveTo(ctx, 8 + 18 * 8, 18 + 18 * 2, false);
@@ -83,10 +83,10 @@ public class SortClientTest implements FabricClientGameTest {
             ctx.takeScreenshot("nexus_sort_chest");
             System.out.println("[nexus] sort chest: " + ctx.takeScreenshot("nexus_sort_chest_az"));
 
-            // Pressing again steps to creative order
+            // Pressing again changes nothing: there is only A to Z
             press(ctx);
             ctx.waitTicks(4);
-            check(chest.getItem(0).is(Items.DIRT) || !chest.getItem(0).is(Items.APPLE), "the second press changes the order, first slot " + chest.getItem(0));
+            check(chest.getItem(0).is(Items.APPLE) && chest.getItem(26).is(Items.SHULKER_BOX), "a second press leaves it A to Z");
 
             // Over the main inventory: only the inventory (never the hotbar)
             String chestNow = chestPart(snapshot(world));
@@ -123,6 +123,37 @@ public class SortClientTest implements FabricClientGameTest {
             press(ctx);
             ctx.waitTicks(4);
             System.out.println("[nexus] sort barrel: " + ctx.takeScreenshot("nexus_sort_barrel"));
+
+            // With the mouse right over an item (first slot of the barrel) it sorts too: mix the barrel up, press, and it is A to Z
+            world.getServer().runOnServer(server -> {
+                var barrel = (net.storagenexus.barrel.TieredBarrelBlockEntity) server.getPlayerList().getPlayers().get(0).level()
+                        .getBlockEntity(server.getPlayerList().getPlayers().get(0).blockPosition().offset(2, 0, 0));
+                ItemStack a = barrel.getItem(0), b = barrel.getItem(1), c = barrel.getItem(2);
+                barrel.setItem(0, c.copy());
+                barrel.setItem(2, a.copy());
+                barrel.setItem(1, b.copy());
+            });
+            ctx.waitTicks(5);
+            int[] first = ctx.computeOnClient(mc -> {
+                var screen = (AbstractContainerScreen<?>) mc.gui.screen();
+                for (Slot sl : screen.getMenu().slots) if (!(sl.container instanceof net.minecraft.world.entity.player.Inventory)) return new int[]{sl.x + 8, sl.y + 8};
+                return new int[]{0, 0};
+            });
+            moveTo(ctx, first[0], first[1], false);
+            boolean overItem = ctx.computeOnClient(mc -> ((AbstractContainerScreen<?>) mc.gui.screen()).hoveredSlot != null
+                    && ((AbstractContainerScreen<?>) mc.gui.screen()).hoveredSlot.hasItem());
+            check(overItem, "the mouse is over an item");
+            String mixed = ctx.computeOnClient(mc -> {
+                var menu = ((AbstractContainerScreen<?>) mc.gui.screen()).getMenu();
+                return menu.slots.get(0).getItem().getHoverName().getString();
+            });
+            press(ctx);
+            ctx.waitTicks(4);
+            String sorted = ctx.computeOnClient(mc -> {
+                var menu = ((AbstractContainerScreen<?>) mc.gui.screen()).getMenu();
+                return menu.slots.get(0).getItem().getHoverName().getString();
+            });
+            check(sorted.equals("Apple") && !mixed.equals(sorted), "sorting works with the mouse over an item: first slot was " + mixed + ", is " + sorted);
         }
     }
 

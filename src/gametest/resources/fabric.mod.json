@@ -9,6 +9,7 @@
     "fabric-client-gametest": [
       "net.storagenexus.gametest.client.AdvancementTabClientTest",
       "net.storagenexus.gametest.client.CreativeTabsClientTest",
+      "net.storagenexus.gametest.client.ShiftTransferClientTest",
       "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
       "net.storagenexus.gametest.client.PreviewClientTest",
@@ -36,6 +37,7 @@
       "net.storagenexus.gametest.ConduitGameTest",
       "net.storagenexus.gametest.ControllerGameTest",
       "net.storagenexus.gametest.DrawerRecipeGameTest",
+      "net.storagenexus.gametest.RetiredFluidGameTest",
       "net.storagenexus.gametest.RecipeTweaksGameTest",
       "net.storagenexus.gametest.ElevatorGameTest",
       "net.storagenexus.gametest.EnchantLibrarianGameTest",

@@ -84,12 +84,24 @@ on). What is inside stays inside.
 
 ### Inventory sorting
 
-Press **R** (`Sort Inventory` under Nexium in Controls) with the mouse over a container's slots to sort that container,
+Press **O** (`Sort Inventory` under Nexium in Controls) with the mouse over a container's slots to sort that container,
 or over the main inventory to sort that: only the area under the mouse, never both, and never the hotbar. Chests,
 barrels, ender chests, shulker boxes, hoppers, dispensers, droppers and Nexium barrels sort. Stacks are merged first;
-shulker boxes and bundles go to the bottom-right slots. Pressing R again over the same area steps through
-**A to Z**, **creative menu order** and **biggest stacks first**. With JEI, REI or EMI installed, R over an item still
-shows its recipes: sort with the mouse over an empty slot or a gap between slots.
+shulker boxes and bundles go to the bottom-right slots. Everything sorts **A to Z** (there are no other orders). It works with
+the mouse over an item or an empty slot, and its key is separate from JEI's, REI's and EMI's (R shows recipes there as usual);
+rebind it in Controls if you like.
+
+### Shift-click tweaks
+With an empty cursor, in any chest-like screen (chests, barrels, hoppers, shulker boxes, Nexium barrels and drawers, farms, and
+so on):
+
+* **Shift + left click** an item and **every stack of that same item** in that inventory goes to the other one (the player's
+  main inventory and hotbar count as one inventory), not just the stack you clicked.
+* **Shift + left click and drag** across slots and **every item the cursor passes over** goes to the other inventory. The first
+  slot you press counts like a click.
+
+Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. The survival inventory screen, the
+creative menu and crafting results keep vanilla's shift-click.
 
 ### Disk Drive and storage disks
 Digital storage for the network, counted like Refined Storage: a disk holds a number of items, of any kinds.

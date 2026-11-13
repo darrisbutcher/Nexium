@@ -38,7 +38,7 @@ public final class DiskData extends SavedData {
 
     private static final Codec<DiskData> CODEC = RecordCodecBuilder.create(i -> i.group(
             diskCodec(ItemVariant.CODEC).listOf().optionalFieldOf("items", List.of()).forGetter(d -> d.save(d.items)),
-            diskCodec(FluidVariant.CODEC).listOf().optionalFieldOf("fluids", List.of()).forGetter(d -> d.save(d.fluids))
+            diskCodec(FluidVariant.CODEC.orElse(FluidVariant.blank())).listOf().optionalFieldOf("fluids", List.of()).forGetter(d -> d.save(d.fluids))
     ).apply(i, DiskData::new));
 
     public static final SavedDataType<DiskData> TYPE = new SavedDataType<>(StorageNexus.id("storage_disks"), DiskData::new, CODEC, null);
