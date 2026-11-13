@@ -18,11 +18,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Two shift-click tweaks for any chest-like screen, with an empty cursor:
+ * Two transfer tweaks for any chest-like screen, with an empty cursor:
  * <ul>
- * <li>Shift + left click on an item sends every stack of that same item in that inventory to the other one, not just
+ * <li>Space + left click on an item sends every stack of that same item in that inventory to the other one, not just
  * the stack clicked.</li>
- * <li>Shift + left click and drag moves every item the cursor passes over into the other inventory.</li>
+ * <li>Shift + left click and drag moves every item the cursor passes over into the other inventory (the first press is
+ * the ordinary shift-click).</li>
  * </ul>
  * Each stack is moved with the ordinary shift-click, so where it lands is the screen's own rule. The survival
  * inventory, the creative menu and crafting results are left alone.
@@ -71,28 +72,38 @@ public final class ShiftTransferClient {
         mc.gameMode.handleContainerInput(screen.getMenu().containerId, slot.index, 0, ContainerInput.QUICK_MOVE, mc.player);
     }
 
-    /** Shift + left press: moves every stack of the clicked item, and starts a drag. Returns whether it took the click. */
+    /** Whether the Space bar is held. */
+    private static boolean spaceDown() {
+        return InputConstants.isKeyDown(InputConstants.KEY_SPACE);
+    }
+
+    /**
+     * Space + left press: sends every stack of the clicked item to the other inventory. Shift + left press: the ordinary
+     * shift-click of that one stack, and a drag may follow. Returns whether it took the click.
+     */
     private static boolean click(AbstractContainerScreen<?> screen, MouseButtonEvent event) {
-        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT || !Minecraft.getInstance().hasShiftDown() || !applies(screen)) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT || !applies(screen)) return false;
+        boolean space = spaceDown();
+        if (!space && !Minecraft.getInstance().hasShiftDown()) return false;
         Slot slot = slotAt(screen, event.x(), event.y());
         if (slot == null) return false;
         if (slot.hasItem() && !movable(slot)) return false; // a result slot and the like keep their own shift-click
+        if (space) {
+            if (!slot.hasItem()) return true;
+            ItemStack wanted = slot.getItem().copy();
+            quickMove(screen, slot);
+            for (Slot other : screen.getMenu().slots) {
+                if (other == slot || other.container != slot.container || !movable(other)) continue;
+                if (ItemStack.isSameItemSameComponents(other.getItem(), wanted)) quickMove(screen, other);
+            }
+            return true;
+        }
         dragging = true;
         lastX = event.x();
         lastY = event.y();
         visited.clear();
         visited.add(slot.index);
-        if (slot.hasItem()) {
-            ItemStack wanted = slot.getItem().copy();
-            quickMove(screen, slot);
-            for (Slot other : screen.getMenu().slots) {
-                if (other == slot || other.container != slot.container || !movable(other)) continue;
-                if (ItemStack.isSameItemSameComponents(other.getItem(), wanted)) {
-                    visited.add(other.index);
-                    quickMove(screen, other);
-                }
-            }
-        }
+        if (slot.hasItem()) quickMove(screen, slot);
         return true;
     }
 

@@ -15,8 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Shift + left click on an item sends every stack of that item to the other inventory, and shift + left click and
- * drag moves every item the cursor passes over.
+ * Space + left click on an item sends every stack of that item to the other inventory (shift + click stays vanilla's
+ * single stack), and shift + left click and drag moves every item the cursor passes over.
  */
 public class ShiftTransferClientTest implements FabricClientGameTest {
     private SimpleContainer chest;
@@ -29,16 +29,25 @@ public class ShiftTransferClientTest implements FabricClientGameTest {
             ctx.waitTicks(20);
             open(ctx, world);
 
-            // Shift + click on one stack of apples: all three stacks go, the bread and torches stay
+            // Shift + click is vanilla's: only the stack clicked moves
             moveTo(ctx, 8 + 18 * 1, 18);
             ctx.getInput().holdShift();
             ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
             ctx.getInput().releaseShift();
             ctx.waitTicks(6);
+            check(inChest(Items.APPLE) == 64 + 10, "shift + click moved just the one stack, " + inChest(Items.APPLE) + " apples left");
+            check(inInventory(world, Items.APPLE) == 64, "one stack of apples arrived, " + inInventory(world, Items.APPLE));
+
+            // Space + click on one stack of apples: all the rest go, the bread and torches stay
+            moveTo(ctx, 8 + 18 * 5, 18);
+            ctx.getInput().holdKey(InputConstants.KEY_SPACE);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.getInput().releaseKey(InputConstants.KEY_SPACE);
+            ctx.waitTicks(6);
             check(inChest(Items.APPLE) == 0, "every stack of apples left the chest, " + inChest(Items.APPLE) + " left");
             check(inInventory(world, Items.APPLE) == 64 + 64 + 10, "and all of them are in the inventory, " + inInventory(world, Items.APPLE));
             check(inChest(Items.BREAD) == 5 + 7 && inChest(Items.TORCH) == 22, "the bread and torches stayed");
-            System.out.println("[nexus] shift click all: " + ctx.takeScreenshot("nexus_shift_click_all"));
+            System.out.println("[nexus] space click all: " + ctx.takeScreenshot("nexus_space_click_all"));
 
             // Shift + click and drag along the top row (bread, torches, an empty slot): everything the cursor crosses moves
             open(ctx, world);
