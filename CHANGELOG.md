@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.8
+
+* **Moving every stack of an item is now Space + left click** (it was shift + left click in 1.21.6). Plain shift + click is
+  vanilla's again: just the stack you clicked. Shift + left click and drag still moves everything the cursor passes over.
+
 ## 1.21.7
 
 * **Stonecutter: a block of quartz cuts back into 4 quartz.**

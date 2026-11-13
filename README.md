@@ -91,17 +91,17 @@ shulker boxes and bundles go to the bottom-right slots. Everything sorts **A to 
 the mouse over an item or an empty slot, and its key is separate from JEI's, REI's and EMI's (R shows recipes there as usual);
 rebind it in Controls if you like.
 
-### Shift-click tweaks
+### Transfer tweaks
 With an empty cursor, in any chest-like screen (chests, barrels, hoppers, shulker boxes, Nexium barrels and drawers, farms, and
 so on):
 
-* **Shift + left click** an item and **every stack of that same item** in that inventory goes to the other one (the player's
-  main inventory and hotbar count as one inventory), not just the stack you clicked.
-* **Shift + left click and drag** across slots and **every item the cursor passes over** goes to the other inventory. The first
-  slot you press counts like a click.
+* **Hold Space and left click** an item and **every stack of that same item** in that inventory goes to the other one (the
+  player's main inventory and hotbar count as one inventory), not just the stack you clicked.
+* **Hold Shift, left click and drag** across slots and **every item the cursor passes over** goes to the other inventory. The
+  first slot you press is the ordinary shift-click.
 
-Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. The survival inventory screen, the
-creative menu and crafting results keep vanilla's shift-click.
+Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. Plain shift + click keeps vanilla's
+single stack. The survival inventory screen, the creative menu and crafting results keep vanilla's clicks.
 
 ### Disk Drive and storage disks
 Digital storage for the network, counted like Refined Storage: a disk holds a number of items, of any kinds.
