@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "storagenexus:block/nexus_furnace"
+    },
+    "lit=true": {
+      "model": "storagenexus:block/nexus_furnace"
+    }
+  }
+}

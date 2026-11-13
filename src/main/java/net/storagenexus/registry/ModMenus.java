@@ -54,6 +54,8 @@ public final class ModMenus {
             new ExtendedMenuType<>(net.storagenexus.energy.ThermalGeneratorMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.storagenexus.energy.RedstoneReactorMenu, BlockPos> REDSTONE_REACTOR = register("redstone_reactor",
             new ExtendedMenuType<>(net.storagenexus.energy.RedstoneReactorMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.storagenexus.energy.NexusFurnaceMenu, BlockPos> NEXUS_FURNACE = register("nexus_furnace",
+            new ExtendedMenuType<>(net.storagenexus.energy.NexusFurnaceMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.storagenexus.energy.BatteryMenu, BlockPos> BATTERY = register("battery",
             new ExtendedMenuType<>(net.storagenexus.energy.BatteryMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.storagenexus.energy.CombustionGeneratorMenu, BlockPos> COMBUSTION_GENERATOR = register("combustion_generator",

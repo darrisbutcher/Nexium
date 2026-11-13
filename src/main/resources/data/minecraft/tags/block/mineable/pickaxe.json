@@ -55,6 +55,7 @@
     "storagenexus:gold_battery",
     "storagenexus:diamond_battery",
     "storagenexus:disk_drive",
-    "storagenexus:redstone_reactor"
+    "storagenexus:redstone_reactor",
+    "storagenexus:nexus_furnace"
   ]
 }

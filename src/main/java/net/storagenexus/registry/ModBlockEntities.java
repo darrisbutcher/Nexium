@@ -65,6 +65,8 @@ public final class ModBlockEntities {
             new BlockEntityType<>(net.storagenexus.energy.BatteryBlockEntity::new, Set.of(ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY)));
     public static final BlockEntityType<net.storagenexus.energy.RedstoneReactorBlockEntity> REDSTONE_REACTOR = register("redstone_reactor",
             new BlockEntityType<>(net.storagenexus.energy.RedstoneReactorBlockEntity::new, Set.of(ModBlocks.REDSTONE_REACTOR)));
+    public static final BlockEntityType<net.storagenexus.energy.NexusFurnaceBlockEntity> NEXUS_FURNACE = register("nexus_furnace",
+            new BlockEntityType<>(net.storagenexus.energy.NexusFurnaceBlockEntity::new, Set.of(ModBlocks.NEXUS_FURNACE)));
     public static final BlockEntityType<net.storagenexus.energy.CombustionGeneratorBlockEntity> COMBUSTION_GENERATOR = register("combustion_generator",
             new BlockEntityType<>(net.storagenexus.energy.CombustionGeneratorBlockEntity::new, Set.of(ModBlocks.COMBUSTION_GENERATOR)));
 

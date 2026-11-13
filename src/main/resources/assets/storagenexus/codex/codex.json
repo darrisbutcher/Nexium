@@ -1860,6 +1860,7 @@
       "pages": [
         "power.power",
         "power.generator",
+        "power.furnace",
         "power.solar",
         "power.thermal",
         "power.reactor",
@@ -1869,6 +1870,7 @@
       "icon": "storagenexus:combustion_generator",
       "recipes": [
         "combustion_generator",
+        "nexus_furnace",
         "solar_panel",
         "thermal_generator",
         "redstone_reactor",
@@ -1881,6 +1883,7 @@
       ],
       "items": [
         "storagenexus:combustion_generator",
+        "storagenexus:nexus_furnace",
         "storagenexus:energy_conduit",
         "storagenexus:ender_energy_conduit",
         "storagenexus:solar_panel",
@@ -1895,6 +1898,8 @@
       "aliases": [
         "Nexus Energy",
         "Combustion Generator",
+        "Nexus Furnace",
+        "Furnace",
         "Energy Conduit",
         "Energy Conduits",
         "power",
