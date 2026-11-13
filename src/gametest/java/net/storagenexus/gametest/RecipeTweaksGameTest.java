@@ -68,7 +68,7 @@ public class RecipeTweaksGameTest {
     public void tweakRecipesLoad(GameTestHelper h) {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
                 .filter(r -> r.id().identifier().getNamespace().equals("nexusessentials") && r.id().identifier().getPath().startsWith("tweaks/")).count();
-        h.assertValueEqual(ours, 409L, "recipe tweaks loaded");
+        h.assertValueEqual(ours, 410L, "recipe tweaks loaded");
         h.succeed();
     }
 
@@ -117,6 +117,23 @@ public class RecipeTweaksGameTest {
         ItemStack scute = stack("armadillo_scute", 1), chest = stack("chest", 1);
         List<ItemStack> crate = craft(h, 3, 3, List.of(scute, scute, scute, scute, chest, scute, scute, scute, scute));
         h.assertTrue(crate.stream().anyMatch(s -> s.is(Items.SHULKER_BOX) && s.getHoverName().getString().equals("Armadillo Crate")), "the Armadillo Crate");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aQuartzBlockCutsBackToFourQuartz(GameTestHelper h) {
+        var input = new SingleRecipeInput(stack("quartz_block", 1));
+        var recipe = h.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.STONECUTTING, input, h.getLevel());
+        h.assertTrue(recipe.isPresent(), "the stonecutter takes a quartz block");
+        // The stonecutter offers every recipe for the block: look for the one that gives quartz
+        boolean found = false;
+        for (RecipeHolder<?> holder : h.getLevel().getServer().getRecipeManager().getRecipes()) {
+            if (holder.value() instanceof net.minecraft.world.item.crafting.StonecutterRecipe cut && cut.matches(input, h.getLevel())) {
+                ItemStack made = cut.assemble(input);
+                if (made.is(Items.QUARTZ) && made.getCount() == 4) found = true;
+            }
+        }
+        h.assertTrue(found, "a quartz block makes 4 quartz in the stonecutter");
         h.succeed();
     }
 
