@@ -490,6 +490,21 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   gives a fresh one. Reactor: nexium ingots in the corners, iron blocks above and below the middle, redstone blocks
   beside it and a diamond block in the centre.
 
+### Nexus Furnace
+A furnace for Nexus Energy with **eight smelting slots that run at once**. **Recipe**: 3 iron ingots on top, then a furnace,
+a blast furnace and a smoker, then a redstone block, an iron ingot and a copper block (`III / FBS / RIC`).
+
+* **Eight inputs, eight outputs**: each input slot has an output slot of its own. It cooks anything a furnace, a blast
+  furnace or a smoker does, each item in **2.5 seconds**.
+* **30 NE/t for every working slot** (240 NE/t for all eight), with a buffer of ten seconds' worth. With less energy than the
+  working slots need, it runs as many slots as it can pay for and they take turns, so all of them cook the same amount over
+  time. Its screen shows how many are cooking.
+* **A stack you put in is shared out evenly** over the input slots, by hand, shift-click, hopper or pipe: 64 iron ore become
+  8 in each slot, topping up the slots that already hold iron ore.
+* **Hoppers and pipes go in from the top and sides and out from the bottom.** A full output only stops its own slot.
+* **Experience** from the recipes is kept in the furnace; the **Collect XP** button on its screen gives it to you.
+* No redstone control and no comparator output. It shows up in Jade with its energy.
+
 ### Freezer
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
 * **Fill it with water** with a water bucket or a pipe (fluid conduit, Dimensional Output). The tank holds 8 buckets and

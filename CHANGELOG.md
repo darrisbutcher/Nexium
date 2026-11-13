@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.9
+
+* **Nexus Furnace**: a furnace on Nexus Energy with **eight smelting slots running at once**, each with an output slot of its
+  own. It smelts, blasts and smokes in one (anything a furnace, blast furnace or smoker cooks), 2.5 seconds an item, 30 NE/t
+  for every working slot. With less energy it runs as many slots as it can pay for, taking turns. A stack put in is shared
+  out evenly over the input slots; hoppers and pipes go in from the top and sides and out from below. The experience is kept
+  until you press Collect XP. Recipe: `III / FBS / RIC` with iron ingots, a furnace, a blast furnace, a smoker, a redstone
+  block and a copper block.
+
 ## 1.21.8
 
 * **Moving every stack of an item is now Space + left click** (it was shift + left click in 1.21.6). Plain shift + click is

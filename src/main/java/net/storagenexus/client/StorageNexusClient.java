@@ -54,6 +54,7 @@ public class StorageNexusClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.DISK_DRIVE, net.storagenexus.client.screen.DiskDriveScreen::new);
         MenuScreens.register(ModMenus.FREEZER, net.storagenexus.client.screen.FreezerScreen::new);
         MenuScreens.register(ModMenus.REDSTONE_REACTOR, net.storagenexus.client.screen.RedstoneReactorScreen::new);
+        MenuScreens.register(ModMenus.NEXUS_FURNACE, net.storagenexus.client.screen.NexusFurnaceScreen::new);
         MenuScreens.register(ModMenus.THERMAL_GENERATOR, net.storagenexus.client.screen.ThermalGeneratorScreen::new);
         MenuScreens.register(ModMenus.BATTERY, net.storagenexus.client.screen.BatteryScreen::new);
         MenuScreens.register(ModMenus.COMBUSTION_GENERATOR, net.storagenexus.client.screen.CombustionGeneratorScreen::new);

@@ -278,6 +278,10 @@ public class SaveLoadGameTest {
                 part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "depth", be -> be.setDepth(4)),
                 part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "heat", be -> be.setHeat(0.42)),
                 part(net.storagenexus.energy.RedstoneReactorBlockEntity.class, "energy", be -> be.energy().set(7777)))));
+        cases.add(new Case("Nexus Furnace", ModBlocks.NEXUS_FURNACE, List.of(
+                part(net.storagenexus.energy.NexusFurnaceBlockEntity.class, "inputs", be -> { be.setItem(2, new ItemStack(Items.IRON_ORE, 12)); be.setItem(5, new ItemStack(Items.SAND, 3)); }),
+                part(net.storagenexus.energy.NexusFurnaceBlockEntity.class, "outputs", be -> be.setItem(9, new ItemStack(Items.IRON_INGOT, 7))),
+                part(net.storagenexus.energy.NexusFurnaceBlockEntity.class, "energy", be -> be.energy().set(4321)))));
         cases.add(new Case("Iron Battery", ModBlocks.IRON_BATTERY, List.of(
                 part(net.storagenexus.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(123_456)))));
         cases.add(new Case("Gold Battery", ModBlocks.GOLD_BATTERY, List.of(

@@ -24,6 +24,10 @@ public final class ModStorageLookups {
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.REDSTONE_REACTOR);
         ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, dir), ModBlockEntities.REDSTONE_REACTOR);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank(), ModBlockEntities.THERMAL_GENERATOR);
+        net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.NEXUS_FURNACE);
+        // Items go in from the top and sides (a stack shared out evenly over the eight slots) and out from the bottom
+        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> dir == net.minecraft.core.Direction.DOWN
+                ? net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, dir) : be.inputs(), ModBlockEntities.NEXUS_FURNACE);
         // Nexus Energy: the machines that run on it (the farms register theirs with the Essentials)
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.FREEZER);
 

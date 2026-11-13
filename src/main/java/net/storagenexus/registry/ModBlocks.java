@@ -114,6 +114,11 @@ public final class ModBlocks {
     public static final net.storagenexus.energy.BatteryBlock DIAMOND_BATTERY = register("diamond_battery", p -> new net.storagenexus.energy.BatteryBlock(p, 10_000_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
 
+    /** Eight smelting slots at once on Nexus Energy. */
+    public static final net.storagenexus.energy.NexusFurnaceBlock NEXUS_FURNACE = register("nexus_furnace", net.storagenexus.energy.NexusFurnaceBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5f, 6.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> s.getValue(net.storagenexus.energy.NexusFurnaceBlock.LIT) ? 13 : 0).requiresCorrectToolForDrops(), true);
+
     /** Burns furnace fuel into Nexus Energy. */
     public static final net.storagenexus.energy.CombustionGeneratorBlock COMBUSTION_GENERATOR = register("combustion_generator",
             net.storagenexus.energy.CombustionGeneratorBlock::new,
