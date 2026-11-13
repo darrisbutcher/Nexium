@@ -3,6 +3,10 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.7
+
+* **Stonecutter: a block of quartz cuts back into 4 quartz.**
+
 ## 1.21.6
 
 * **Inventory sorting has its own key, O**, separate from JEI, REI and EMI (whose R shows recipes), and **it works with the

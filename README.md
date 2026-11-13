@@ -378,6 +378,7 @@ Crafting and loot changes that need no setup. They add recipes (to the vanilla o
   ice makes 9 ice and blue ice 9 packed ice; a nether wart block makes 9 nether wart; coal or charcoal makes black dye; 3 wheat
   make bread and 3 sugar cane make paper without a row; 2 shulker shells and a chest make a shulker box; a furnace turns rotten
   flesh into leather and wool into 4 string.
+* **Stonecutter**: a block of quartz cuts back into 4 quartz.
 * **Armadillo Crate**: 8 armadillo scutes around a chest make a shulker box named Armadillo Crate (shulker boxes already keep
   their contents).
 * **Loot**: a shulker drops 2 shells (not 1) when it drops one, at the same chance, and budding amethyst drops itself with
