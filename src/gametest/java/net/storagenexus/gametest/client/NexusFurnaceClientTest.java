@@ -65,9 +65,25 @@ public class NexusFurnaceClientTest implements FabricClientGameTest {
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, NexusFurnaceMenu.BTN_COLLECT));
             ctx.waitTicks(5);
             double left = world.getServer().computeOnServer(server -> ((NexusFurnaceBlockEntity) server.overworld().getBlockEntity(at[0])).experience());
-            check(left < 1.0, "the button collected the experience, " + left + " left");
+            check(left < 57.0, "the button collected the experience, only what cooked since is left (at most one round of eight items): " + left);
             int xp = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).totalExperience);
             check(xp >= 4, "the player has it: " + xp);
+
+            // A bank far past the 16-bit limit of a screen value shows in full, and Collect hands over exactly what it shows
+            world.getServer().runOnServer(server -> {
+                var furnace = (NexusFurnaceBlockEntity) server.overworld().getBlockEntity(at[0]);
+                furnace.energy().set(0); // idle, so the bank holds still
+                furnace.takeExperience(server.getPlayerList().getPlayers().get(0));
+                furnace.addExperience(40_000.5);
+            });
+            ctx.waitTicks(10);
+            int shown = ctx.computeOnClient(mc -> ((NexusFurnaceMenu) mc.player.containerMenu).experience());
+            check(shown == 40_000, "the screen shows all 40,000 points of the bank, not a capped number: " + shown);
+            int before = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).totalExperience);
+            ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, NexusFurnaceMenu.BTN_COLLECT));
+            ctx.waitTicks(5);
+            int after = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).totalExperience);
+            check(after - before == shown, "Collect handed over exactly the " + shown + " shown: " + (after - before));
         }
     }
 

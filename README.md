@@ -74,9 +74,11 @@ on). What is inside stays inside.
   Controller behind a connector only fills drawers that already hold the item or are locked to it. **Inventory Cable**
   links connectors and terminals. No power.
 * **Import/Export Bus**: placed on an inventory or tank, **Import** pulls items and fluids into the network and
-  **Export** pushes them out (32 items or a bucket every half second). An optional filter limits what moves.
+  **Export** pushes them out (32 items or a bucket every half second). An optional filter limits what moves. It faces the
+  block it was placed against; to change that, open its screen and press one of the six side buttons (D, U, N, S, W, E).
+  Only sides with an inventory or tank can be chosen, the others are greyed out, and the side it faces now is framed.
 * **Level Emitter**: a redstone signal while the network holds at least (or fewer than) an amount of one item or fluid.
-* **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting, a network
+* **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting (A to Z to start with; the button cycles name, count and mod), a network
   fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
   the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
   **Right-click the search box** (here, on the recipe book's, and in the Codex) to clear it. The terminal's search, the recipe book's and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
@@ -103,7 +105,8 @@ so on):
 * **Scroll the wheel over a stack** to move **one item** at a time: **scroll down** sends one item of that stack to the
   other inventory, **scroll up** pulls one matching item in from it (the player's main inventory and hotbar are one
   side, the chest or machine the other). It works in chests, barrels and machines, not in your own inventory screen, the
-  creative menu or the terminals, and each slot's own rules decide what fits.
+  creative menu or the terminals, and each slot's own rules decide what fits. A **bundle** is never touched: over one the
+  wheel keeps its vanilla job (choosing which item in it is shown).
 
 Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. Plain shift + click keeps vanilla's
 single stack. In the survival inventory screen only the shift + click and drag is added (Space + click is not); the creative
@@ -507,7 +510,8 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 * **A stack you put in is shared out evenly** over the input slots, by hand, shift-click, hopper or pipe: 64 iron ore become
   8 in each slot, topping up the slots that already hold iron ore.
 * **Hoppers and pipes go in from the top and sides and out from the bottom.** A full output only stops its own slot.
-* **Experience** from the recipes is kept in the furnace; the **Collect XP** button on its screen gives it to you.
+* **Experience** is **ten times** what the recipes give (raw iron 7, a steak 3.5) and is kept in the furnace; the **Collect XP** button
+  on its screen shows the whole points banked and gives you exactly that many (the fraction stays).
 * No redstone control and no comparator output. It shows up in Jade with its energy.
 
 ### Freezer

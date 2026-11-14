@@ -59,8 +59,9 @@ final class TerminalView {
     private final Font font;
     private EditBox search;
     private Button sortButton, directionButton;
-    // Remembered for the rest of the session, so reopening a terminal keeps your sort
-    private static Sort sort = Sort.COUNT;
+    // Remembered for the rest of the session, so reopening a terminal keeps your sort. It starts on A to Z (names read
+    // A-Z when descending).
+    private static Sort sort = Sort.NAME;
     private static boolean descending = true;
     private int scroll;
     /** True from a handled press on the grid until its release. */
@@ -202,6 +203,15 @@ final class TerminalView {
     /** Types into the terminal's search (for the client test). */
     public void setSearchText(String text) {
         if (search != null) search.setValue(text);
+    }
+
+    /** The names in the grid, in the order shown (for the client test). */
+    public List<String> gridNames() {
+        List<String> names = new ArrayList<>();
+        for (Entry e : visible) {
+            names.add(e.item() != null ? e.item().stack().getHoverName().getString() : fluidName(e.fluid().fluid()).getString());
+        }
+        return names;
     }
 
     // ---- Rendering ------------------------------------------------------------------------------
