@@ -64,6 +64,9 @@ public class CapturedMobItem extends Item {
         if (mob.baby()) tooltip.accept(Component.translatable("tooltip.nexusessentials.captured_mob_baby").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltip.nexusessentials.captured_mob_health",
                 String.format(Locale.ROOT, "%.1f", mob.health()), String.format(Locale.ROOT, "%.0f", mob.maxHealth())).withStyle(ChatFormatting.RED));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.captured_mob_release").withStyle(ChatFormatting.DARK_GRAY));
+        // What it looks like (a variant, a colour, a villager's job): always shown, the farms ask for variants
+        CapturedMobDetails.looks(mob).forEach(tooltip);
+        // The details (with Shift) and the "right-click to let it out" hint follow, from the client's tooltip hook, so that
+        // the hints come last
     }
 }

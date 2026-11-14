@@ -354,6 +354,11 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
 ### Picking up mobs
 * **Sneak + right-click a mob with an empty hand** to pick it up. You get a Captured Mob item (a glinting spawn egg)
   that keeps everything about the mob. **Right-click a block** with it to let the mob out.
+* Its tooltip tells you what is in it. Always: the name, health, and what it looks like (a frog, cat, wolf, cow, pig or
+  chicken variant, a horse's coat, a sheep's wool colour, a villager's job, level and village type, and so on). **Hold
+  Shift** for the rest: how long a baby has to grow up or an adult to wait before breeding, whether it is in love, who
+  tamed it and its collar, what it wears and holds, its potion effects, and traits such as a slime's size, a charged
+  creeper or a sheared sheep.
 * The Ender Dragon and the Wither can't be picked up, and only a pet's owner can pick it up. The **Warden** and the
   **Elder Guardian** cost **10 experience levels** (`bossPickUpLevels`; other mods' bosses in `#c:bosses` too, and a
   data pack can add mobs to `#nexusessentials:pick_up_costs_levels`).

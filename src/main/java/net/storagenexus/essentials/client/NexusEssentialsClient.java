@@ -2,6 +2,7 @@ package net.storagenexus.essentials.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
@@ -21,6 +22,13 @@ public final class NexusEssentialsClient {
     public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexusessentials.toggle_magnet",
             InputConstants.KEY_M, CATEGORY);
 
+    /** The name of a player in the world around you (the owner of a tamed mob), or null if they are not near. */
+    private static @org.jspecify.annotations.Nullable String playerName(java.util.UUID id) {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        Player player = level == null ? null : level.getPlayerByUUID(id);
+        return player == null ? null : player.getName().getString();
+    }
+
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         MenuScreens.register(ModMenus.IRON_FARM, IronFarmScreen::new);
@@ -31,6 +39,23 @@ public final class NexusEssentialsClient {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);
             }
+        });
+
+        // A Captured Mob's age, owner, gear and status show while Shift is held (what it looks like is always shown), then
+        // the hint on letting it out. It runs ahead of the other tooltip hooks, so those hints stay below it.
+        net.minecraft.resources.Identifier early = StorageNexus.id("captured_mob_details");
+        ItemTooltipCallback.EVENT.addPhaseOrdering(early, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
+        ItemTooltipCallback.EVENT.register(early, (stack, context, flag, lines) -> {
+            net.storagenexus.essentials.capture.CapturedMob mob = stack.get(net.storagenexus.essentials.registry.ModComponents.CAPTURED_MOB);
+            if (mob == null) return;
+            var details = net.storagenexus.essentials.capture.CapturedMobDetails.details(mob, NexusEssentialsClient::playerName);
+            if (!details.isEmpty()) {
+                if (net.minecraft.client.Minecraft.getInstance().hasShiftDown()) lines.addAll(details);
+                else lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexusessentials.captured_mob_shift")
+                        .withStyle(net.minecraft.ChatFormatting.DARK_GRAY, net.minecraft.ChatFormatting.ITALIC));
+            }
+            lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexusessentials.captured_mob_release")
+                    .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
         });
 
         // What other players wear in their wings slot, so their elytra can be drawn

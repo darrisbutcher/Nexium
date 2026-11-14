@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.14
+
+* **Captured Mobs tell you more.** The tooltip always shows what the mob looks like: a frog, cat, wolf, cow, pig or chicken
+  **variant** (so a warm frog is easy to tell from a cold one for the Froglight Farm), a horse's coat and markings, a sheep's
+  wool colour, a villager's job, level and village type, and the variants of llamas, parrots, axolotls, rabbits, foxes,
+  mooshrooms, pandas and tropical fish. **Hold Shift** for the rest: how long a baby has to grow up or an adult has to wait to
+  breed again, whether it is in love, who tamed it (by name when they are nearby), its collar colour and whether it sits,
+  what it wears and holds, its potion effects with the time left, and traits such as a slime's size, a charged creeper, a
+  sheared sheep or a zombie villager being cured. A mob with nothing more to say shows no hint. The "Right-click a block to
+  let it out" and Codex lines now come last.
+
 ## 1.21.13
 
 * **Experience Farm**: a one-block farm that turns Nexus Energy into experience. Made at the Farm Assembler from **64 Bottles
