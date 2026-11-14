@@ -16,7 +16,7 @@ import net.storagenexus.energy.NexusFurnaceBlockEntity;
 import net.storagenexus.registry.ModBlocks;
 
 /**
- * The Nexus Furnace: eight slots cooking at once, smelting, blasting and smoking recipes, 2.5 seconds an item, 10 NE/t per
+ * The Nexus Furnace: eight slots cooking at once, smelting, blasting and smoking recipes, 2.5 seconds an item, 30 NE/t per
  * working slot, as many slots as the energy pays for, stacks shared out evenly, and the experience kept.
  */
 public class NexusFurnaceGameTest {
@@ -67,8 +67,8 @@ public class NexusFurnaceGameTest {
         long before = f.energy().stored();
         tick(h, f, 1);
         h.assertValueEqual(f.working(), 8, "eight slots working");
-        h.assertValueEqual(NexusFurnaceBlockEntity.ENERGY_PER_SLOT, 10, "10 NE/t a slot");
-        h.assertValueEqual(before - f.energy().stored(), 80L, "10 NE/t each, 80 for all eight");
+        h.assertValueEqual(NexusFurnaceBlockEntity.ENERGY_PER_SLOT, 30, "30 NE/t a slot");
+        h.assertValueEqual(before - f.energy().stored(), 240L, "30 NE/t each, 240 for all eight");
         tick(h, f, NexusFurnaceBlockEntity.COOK_TICKS - 1);
         h.assertValueEqual(count(f, 8, 16, Items.IRON_INGOT), 8, "eight ingots after 2.5 seconds");
         tick(h, f, NexusFurnaceBlockEntity.COOK_TICKS * 3);

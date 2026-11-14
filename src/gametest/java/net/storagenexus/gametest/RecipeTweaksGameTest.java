@@ -181,4 +181,38 @@ public class RecipeTweaksGameTest {
         h.assertTrue(buddingTable.getRandomItems(without).isEmpty(), "and without it nothing drops");
         h.succeed();
     }
+
+    private static boolean makesItem(List<ItemStack> made, Item result, int count) {
+        for (ItemStack s : made) if (s.is(result) && s.getCount() == count) return true;
+        return false;
+    }
+
+    /** The grid, three across, from a pattern whose letters are given in the map's order: " " is an empty cell. */
+    private static List<ItemStack> grid(String pattern, java.util.Map<Character, Item> key) {
+        List<ItemStack> grid = new ArrayList<>();
+        for (char c : pattern.toCharArray()) grid.add(c == ' ' ? ItemStack.EMPTY : new ItemStack(key.get(c)));
+        return grid;
+    }
+
+    /** 1.21.11: the Tier 1 item and fluid conduits make 8, the Infinite Lava Source takes an eye of ender, the Elevator chiseled deepslate. */
+    @GameTest
+    public void conduitLavaSourceAndElevatorRecipes(GameTestHelper h) {
+        var nugget = Items.IRON_NUGGET;
+        var item = grid("NNNGHGNNN", java.util.Map.of('N', nugget, 'G', Items.GLASS, 'H', Items.HOPPER));
+        h.assertTrue(makesItem(craft(h, 3, 3, item), net.storagenexus.registry.ModItems.ITEM_CONDUIT, 8), "the Item Conduit makes 8");
+        var fluid = grid("NNNGBGNNN", java.util.Map.of('N', nugget, 'G', Items.GLASS, 'B', Items.BUCKET));
+        h.assertTrue(makesItem(craft(h, 3, 3, fluid), net.storagenexus.registry.ModItems.FLUID_CONDUIT, 8), "the Fluid Conduit makes 8");
+
+        var lava = java.util.Map.<Character, Item>of('O', Items.OBSIDIAN, 'L', Items.LAVA_BUCKET, 'E', Items.ENDER_EYE, 'S', Items.NETHER_STAR);
+        h.assertTrue(makesItem(craft(h, 3, 3, grid("OLOLELOLO", lava)), net.storagenexus.registry.ModBlocks.LAVA_SPRING.asItem(), 1),
+                "obsidian, lava buckets and an eye of ender make the Infinite Lava Source");
+        h.assertTrue(craft(h, 3, 3, grid("OLOLSLOLO", lava)).isEmpty(), "a nether star no longer does");
+
+        var elevator = java.util.Map.<Character, Item>of('B', Items.CHISELED_DEEPSLATE, 'I', Items.IRON_INGOT, 'R', Items.REDSTONE_BLOCK,
+                'P', Items.POLISHED_BLACKSTONE);
+        h.assertTrue(makesItem(craft(h, 3, 3, grid("BBBIRII I", elevator)), net.storagenexus.registry.ModBlocks.ELEVATOR.asItem(), 2),
+                "chiseled deepslate, iron and a redstone block make 2 Elevators");
+        h.assertTrue(craft(h, 3, 3, grid("PPPIRII I", elevator)).isEmpty(), "polished blackstone no longer does");
+        h.succeed();
+    }
 }

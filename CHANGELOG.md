@@ -3,6 +3,20 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.11
+
+* **Scroll wheel transfer**: with an empty cursor over a stack in a chest, barrel or machine screen, **scroll down** sends one
+  item of it to the other inventory and **scroll up** pulls one matching item in from it. The player's main inventory and
+  hotbar are one side, the chest or machine the other. It is done with ordinary slot clicks, so each slot's own rules
+  decide what fits. Not in your own inventory screen, the creative menu or the terminals.
+* **Nexus Furnace** is back to **30 NE/t** for every working slot (240 NE/t for all eight); its buffer is 48,000 NE again.
+* **Redstone Fuel Rod** lasts **96 hours** at the default depth (was 8). A rod already in use keeps its wear, so it gets
+  proportionally more time left.
+* **Tier 1 Item and Fluid Conduits** now make **8** per craft (was 6), like the Energy Conduit.
+* **Infinite Lava Source** is made with an **eye of ender** instead of a nether star.
+* **Elevator** is made with **chiseled deepslate** instead of polished blackstone.
+* **Nexium Ingot** no longer needs a netherite upgrade template: a diamond, an emerald and a netherite ingot make 3.
+
 ## 1.21.10
 
 * **Fix: a Battery on an Energy Conduit now charges.** The conduit used to pull a Battery's charge into the cable at 500 NE a

@@ -4,8 +4,7 @@
   "ingredients": [
     "minecraft:diamond",
     "minecraft:emerald",
-    "minecraft:netherite_ingot",
-    "minecraft:netherite_upgrade_smithing_template"
+    "minecraft:netherite_ingot"
   ],
   "result": {
     "id": "storagenexus:nexium_ingot",

@@ -100,6 +100,10 @@ so on):
 * **Hold Shift, left click and drag** across slots and **every item the cursor passes over** goes to the other inventory. The
   first slot you press is the ordinary shift-click. In your own inventory screen this works between the **hotbar and the
   main inventory**, in both directions.
+* **Scroll the wheel over a stack** to move **one item** at a time: **scroll down** sends one item of that stack to the
+  other inventory, **scroll up** pulls one matching item in from it (the player's main inventory and hotbar are one
+  side, the chest or machine the other). It works in chests, barrels and machines, not in your own inventory screen, the
+  creative menu or the terminals, and each slot's own rules decide what fits.
 
 Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. Plain shift + click keeps vanilla's
 single stack. In the survival inventory screen only the shift + click and drag is added (Space + click is not); the creative
@@ -141,8 +145,8 @@ place it or right-click it to outline those chunks for a minute.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
   facade.
-* **Fluid Intake** pulls from the source blocks touching it. An **Infinite Lava Source** (obsidian, lava buckets and a
-  nether star) next to it gives endless lava.
+* **Fluid Intake** pulls from the source blocks touching it. An **Infinite Lava Source** (obsidian, lava buckets and an
+  eye of ender) next to it gives endless lava.
 * **Basic Filter** (whitelist/blacklist) and **Advanced Filter** (by item tag).
 
 ## Tools and Nexium
@@ -237,7 +241,7 @@ is placed as one and uses two slabs.
 * If a builder breaks, the module in it drops at your feet.
 
 ### Nexium
-* **Nexium Ingot**: a diamond, an emerald, a netherite ingot and a netherite upgrade template in a crafting table make
+* **Nexium Ingot**: a diamond, an emerald and a netherite ingot in a crafting table make
   **3 ingots**. Nine make a **Block of Nexium** (a beacon base).
 * **Gear**: at a smithing table, a netherite upgrade template, the netherite piece and a Nexium ingot. There is a
   Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and boots**, and the Nexium AIOT.
@@ -320,7 +324,7 @@ villagers are used up and a **Master Librarian** comes out as a Captured Mob: ri
 
 ### Elevator
 
-A flat Nexium platform, a quarter of a block tall. **Craft:** polished blackstone across the top, iron ingots at the
+A flat Nexium platform, a quarter of a block tall. **Craft:** chiseled deepslate across the top, iron ingots at the
 sides and bottom corners, a block of redstone in the middle (makes 2).
 
 * Put elevators at different heights **in the same column** (same X and Z), anywhere from the bottom of the world to the top.
@@ -485,7 +489,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with
   0.25x, 0.5x, 1x, 1.6x and 2.25x the heat and 0.5x to 1.5x the rod wear. Ice takes the heat away once it passes 25% (blue
   ice best; three slots of blue ice hold nine default rods). Output is full to 60% heat, falls steadily to 10% at 90%, and
-  at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 8 hours at the default depth and
+  at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 96 hours at the default depth and
   leaves a **Spent Fuel Rod**.
 * **Recipes**: Redstone Fuel Rod: 8 redstone blocks around a Nexium ingot; a Spent Fuel Rod with 8 redstone blocks around it
   gives a fresh one. Reactor: nexium ingots in the corners, iron blocks above and below the middle, redstone blocks
@@ -497,7 +501,7 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 
 * **Eight inputs, eight outputs**: each input slot has an output slot of its own. It cooks anything a furnace, a blast
   furnace or a smoker does, each item in **2.5 seconds**.
-* **10 NE/t for every working slot** (80 NE/t for all eight), with a buffer of ten seconds' worth. With less energy than the
+* **30 NE/t for every working slot** (240 NE/t for all eight), with a buffer of ten seconds' worth. With less energy than the
   working slots need, it runs as many slots as it can pay for and they take turns, so all of them cook the same amount over
   time. Its screen shows how many are cooking.
 * **A stack you put in is shared out evenly** over the input slots, by hand, shift-click, hopper or pipe: 64 iron ore become

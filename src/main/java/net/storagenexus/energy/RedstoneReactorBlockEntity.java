@@ -34,8 +34,8 @@ public class RedstoneReactorBlockEntity extends BaseContainerBlockEntity impleme
     public static final double[] HEAT = {0.25, 0.5, 1.0, 1.6, 2.25};
     public static final double[] WEAR = {0.5, 0.75, 1.0, 1.25, 1.5};
     public static final long CAPACITY = 1_000_000;
-    /** How long a Redstone Fuel Rod lasts at the default depth, in ticks (eight hours). */
-    public static final int ROD_LIFE = 576_000;
+    /** How long a Redstone Fuel Rod lasts at the default depth, in ticks (96 hours). */
+    public static final int ROD_LIFE = 6_912_000;
 
     /** Heat is a fraction, 0 to 1. A rod makes {@value #HEAT_PER_ROD} a tick at the default depth; the casing sheds {@value #PASSIVE_COOLING}. */
     public static final double HEAT_PER_ROD = 2.0e-5;

@@ -43,7 +43,7 @@ import java.util.Optional;
 public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos> {
     public static final int SLOTS = 8, SIZE = SLOTS * 2;
     public static final int COOK_TICKS = 50;
-    public static final int ENERGY_PER_SLOT = 10;
+    public static final int ENERGY_PER_SLOT = 30;
     /** Ten seconds of energy for every slot. */
     public static final long CAPACITY = (long) ENERGY_PER_SLOT * SLOTS * 200;
 

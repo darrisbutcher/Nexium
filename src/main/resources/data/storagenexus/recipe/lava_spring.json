@@ -9,7 +9,7 @@
   "key": {
     "O": "minecraft:obsidian",
     "L": "minecraft:lava_bucket",
-    "N": "minecraft:nether_star"
+    "N": "minecraft:ender_eye"
   },
   "result": {
     "id": "storagenexus:lava_spring",

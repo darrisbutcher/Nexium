@@ -79,11 +79,11 @@ public class NexiumGameTest {
     @GameTest
     public void ingotsBlocksAndTheirRecipes(GameTestHelper h) {
         ItemStack ingots = craft(h, List.of(new ItemStack(Items.DIAMOND), new ItemStack(Items.EMERALD),
-                new ItemStack(Items.NETHERITE_INGOT), template()));
+                new ItemStack(Items.NETHERITE_INGOT)));
         h.assertTrue(ingots.is(ModItems.NEXIUM_INGOT) && ingots.getCount() == 3,
-                "diamond + emerald + netherite ingot + template = 3 Nexium ingots, got " + ingots);
+                "diamond + emerald + netherite ingot = 3 Nexium ingots, got " + ingots);
         h.assertTrue(craft(h, List.of(new ItemStack(Items.DIAMOND), new ItemStack(Items.EMERALD),
-                new ItemStack(Items.NETHERITE_INGOT))).isEmpty(), "no template, no Nexium");
+                new ItemStack(Items.NETHERITE_INGOT), template())).isEmpty(), "the upgrade template is no longer part of it");
         h.assertTrue(craft(h, List.of(new ItemStack(Items.DIAMOND_BLOCK), new ItemStack(Items.EMERALD_BLOCK),
                 new ItemStack(Items.NETHERITE_BLOCK), template())).isEmpty(), "the old recipe with blocks no longer works");
 
