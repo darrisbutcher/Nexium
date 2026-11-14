@@ -88,6 +88,7 @@ public class StorageNexusClient implements ClientModInitializer {
         CodexClient.init();
         SortClient.init();
         ShiftTransferClient.init();
+        ScrollTransferClient.init();
         NexusEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();

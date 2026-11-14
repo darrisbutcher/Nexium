@@ -68,7 +68,8 @@ public final class ShiftTransferClient {
         return slot.mayPickup(Minecraft.getInstance().player);
     }
 
-    private static Slot slotAt(AbstractContainerScreen<?> screen, double x, double y) {
+    /** The slot under a point of the screen, in GUI coordinates. */
+    static Slot slotAt(AbstractContainerScreen<?> screen, double x, double y) {
         for (Slot slot : screen.getMenu().slots) {
             if (!slot.isActive()) continue;
             double left = screen.leftPos + slot.x, top = screen.topPos + slot.y;
