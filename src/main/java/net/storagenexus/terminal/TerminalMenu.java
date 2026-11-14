@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.RecipeBookType;
@@ -79,6 +80,15 @@ public class TerminalMenu extends AbstractCraftingMenu {
     private final @Nullable Runnable onClose;
     private int syncTimer;
     private int lastHash = Integer.MIN_VALUE;
+
+    /**
+     * The most stacks of the result one shift-click on it crafts. The grid refills from the network after every craft, so
+     * without a limit a single click would go on until the network ran out of ingredients.
+     */
+    public static final int MAX_SHIFT_CRAFT_STACKS = 2;
+    /** How many items the shift-click in progress may craft in all, and how many it has crafted so far. */
+    private int shiftCraftLimit, shiftCrafted;
+    private boolean shiftCrafting;
 
     private final int rows;
     private int playerSlotStart;
@@ -362,12 +372,38 @@ public class TerminalMenu extends AbstractCraftingMenu {
 
     // ---- Shift-click ----------------------------------------------------------------------------
 
+    /**
+     * A shift-click on the result repeats the craft until the result changes, so this sets how much that one click may
+     * craft: {@value #MAX_SHIFT_CRAFT_STACKS} stacks of what the result is.
+     */
+    @Override
+    public void clicked(int slotIndex, int button, ContainerInput input, Player player) {
+        if (crafting && slotIndex == 0 && input == ContainerInput.QUICK_MOVE && slots.get(0).hasItem()) {
+            shiftCraftLimit = MAX_SHIFT_CRAFT_STACKS * slots.get(0).getItem().getMaxStackSize();
+            shiftCrafted = 0;
+            shiftCrafting = true;
+            try {
+                super.clicked(slotIndex, button, input, player);
+            } finally {
+                shiftCrafting = false;
+            }
+            return;
+        }
+        super.clicked(slotIndex, button, input, player);
+    }
+
     @Override
     public ItemStack quickMoveStack(Player p, int index) {
         Slot slot = slots.get(index);
         if (!slot.hasItem()) return ItemStack.EMPTY;
         if (crafting && index == 0) {
             // Crafting result: craft into the player inventory; the grid refills from the network.
+            // A shift-click stops after two stacks: the next craft would go over, so it is left in the result slot
+            if (shiftCrafting) {
+                int made = slot.getItem().getCount();
+                if (shiftCrafted > 0 && shiftCrafted + made > shiftCraftLimit) return ItemStack.EMPTY;
+                shiftCrafted += made;
+            }
             ItemStack stack = slot.getItem();
             ItemStack original = stack.copy();
             if (!moveItemStackTo(stack, playerSlotStart, slots.size(), true)) return ItemStack.EMPTY;

@@ -115,6 +115,50 @@ public class TerminalGameTest {
     }
 
     @GameTest
+    public void shiftCraftingStopsAtTwoStacksAClick(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        TerminalMenu menu = craftingTerminal(h, player, 1000);
+        // Sticks: two planks, one above the other, make 4. The grid refills from the network after every craft
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS, 1));
+        menu.getInputGridSlots().get(3).set(new ItemStack(Items.OAK_PLANKS, 1));
+        menu.slotsChanged(menu.getInputGridSlots().get(0).container);
+        h.assertValueEqual(menu.getResultSlot().getItem().getCount(), 4, "two planks make 4 sticks");
+        menu.clicked(0, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+        h.assertValueEqual(player.getInventory().countItem(Items.STICK), 128, "one shift-click makes two stacks of sticks and no more");
+        h.assertValueEqual(count(h.getBlockEntity(CHEST, ChestBlockEntity.class)), 1000 - 64, "using 32 crafts' worth of planks from the network");
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.STICK), "the next craft waits in the result slot");
+        // Another click makes the next two stacks
+        menu.clicked(0, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+        h.assertValueEqual(player.getInventory().countItem(Items.STICK), 256, "a second click makes two more stacks");
+        h.succeed();
+    }
+
+    @GameTest
+    public void shiftCraftingCountsStacksOfWhatIsMade(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        TerminalMenu menu = craftingTerminal(h, player, 1000);
+        // A boat (5 planks) stacks to 1, so two stacks is two boats
+        for (int slot : new int[]{3, 5, 6, 7, 8}) menu.getInputGridSlots().get(slot).set(new ItemStack(Items.OAK_PLANKS, 1));
+        menu.slotsChanged(menu.getInputGridSlots().get(3).container);
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.OAK_BOAT), "five planks make a boat");
+        menu.clicked(0, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+        h.assertValueEqual(player.getInventory().countItem(Items.OAK_BOAT), 2, "a boat stacks to 1, so one shift-click makes two");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aPlainClickOnTheResultStillCraftsOnce(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        TerminalMenu menu = craftingTerminal(h, player, 1000);
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS, 1));
+        menu.getInputGridSlots().get(3).set(new ItemStack(Items.OAK_PLANKS, 1));
+        menu.slotsChanged(menu.getInputGridSlots().get(0).container);
+        menu.clicked(0, 0, net.minecraft.world.inventory.ContainerInput.PICKUP, player);
+        h.assertValueEqual(menu.getCarried().getCount(), 4, "a plain click takes one craft onto the cursor");
+        h.succeed();
+    }
+
+    @GameTest
     public void rightClickTakesOneItem(GameTestHelper h) {
         ServerPlayer player = player(h);
         TerminalMenu menu = craftingTerminal(h, player, 10);

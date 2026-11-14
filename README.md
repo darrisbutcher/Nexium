@@ -79,7 +79,9 @@ on). What is inside stays inside.
   Only sides with an inventory or tank can be chosen, the others are greyed out, and the side it faces now is framed.
 * **Level Emitter**: a redstone signal while the network holds at least (or fewer than) an amount of one item or fluid.
 * **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting (A to Z to start with; the button cycles name, count and mod), a network
-  fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
+  fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. **Shift-clicking the result** crafts
+  until the network's ingredients run out, but at most **2 stacks of the result per click** (click again for more), so one
+  click cannot empty the network. JEI / REI "+" fills the grid from
   the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
   **Right-click the search box** (here, on the recipe book's, and in the Codex) to clear it. The terminal's search, the recipe book's and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
