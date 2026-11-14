@@ -182,8 +182,11 @@ place it or right-click it to outline those chunks for a minute.
 * **Haste II**: turns a Nexium tool's Haste II on or off. The setting is saved on the tool.
 * **Vein size**: steps how many blocks one vein mining swing mines with this AIOT (4, 9, 18, 32 ... up to `aiotVeinMaxBlocks`).
   Vein mining needs no module.
-* **Tunnel**: steps how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 4, 8, 16, 24, 32 (up to
-  `aiotTunnelMaxLength`). Press **Z** (rebindable) to step it without opening the menu.
+* **Tunnel**: how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 3, 8, 16, 24, 32 (up to
+  `aiotTunnelMaxLength`). Click it in the menu to step on (round to off after the deepest), or without opening the menu
+  **hold Z** (rebindable) and **scroll the wheel**: up for a deeper tunnel, down for a shallower one. It stops at off and at
+  the deepest, and while Z is held with an AIOT in your hand the wheel does not change the hotbar slot. A plain press of Z
+  shows the readout.
 * **Modules** (AIOTs only): two slots. Put a module in like any item; the button beside each slot turns it on or off.
 * The **Armor** button goes to the armor menu, and its **Tools** button comes back.
 

@@ -12,6 +12,7 @@
     "CapeLayerMixin",
     "CreativeModeInventoryScreenMixin",
     "InventoryScreenMixin",
+    "MouseHandlerMixin",
     "WingsLayerMixin"
   ],
   "injectors": {

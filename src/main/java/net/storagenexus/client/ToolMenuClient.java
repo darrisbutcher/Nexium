@@ -33,7 +33,10 @@ public final class ToolMenuClient {
             InputConstants.KEY_V, NexusEssentialsClient.CATEGORY);
     private static boolean veinSent;
 
-    /** Press with an AIOT in hand to step its tunnel length (off, 2, 4, 8, 16, 24, 32). */
+    /**
+     * Hold with an AIOT in hand and scroll the wheel to move its tunnel length up or down (off, 2, 3, 8, 16, 24, 32); a
+     * plain press only shows the readout. While it is held with an AIOT in hand the wheel does not change the hotbar slot.
+     */
     public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.storagenexus.step_tunnel",
             InputConstants.KEY_Z, NexusEssentialsClient.CATEGORY);
 
@@ -61,11 +64,9 @@ public final class ToolMenuClient {
                     AiotHud.show();
                 }
             }
+            // A press of the tunnel key shows the readout (what it is set to); the wheel, while it is held, changes it
             while (STEP_TUNNEL.consumeClick()) {
-                if (client.player != null && client.gui.screen() == null) {
-                    ClientPlayNetworking.send(TunnelStepPayload.INSTANCE);
-                    AiotHud.show();
-                }
+                if (client.player != null && client.gui.screen() == null) AiotHud.show();
             }
             while (TOOL_MENU.consumeClick()) {
                 if (client.player == null || client.gui.screen() != null) continue;
@@ -79,6 +80,20 @@ public final class ToolMenuClient {
                 }
             }
         });
+    }
+
+    /**
+     * The scroll wheel turned by this much (up is positive). While the tunnel key is held with an AIOT in the main hand and
+     * no screen is open, it moves the tunnel length one step instead of changing the hotbar slot. Returns whether it took
+     * the scroll.
+     */
+    public static boolean tunnelScroll(double amount) {
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        if (amount == 0 || mc.player == null || mc.gui.screen() != null || !STEP_TUNNEL.isDown()) return false;
+        if (!(mc.player.getMainHandItem().getItem() instanceof net.storagenexus.aiot.AiotItem)) return false;
+        ClientPlayNetworking.send(new TunnelStepPayload(amount > 0 ? 1 : -1));
+        AiotHud.show();
+        return true;
     }
 
     private ToolMenuClient() {}
