@@ -161,13 +161,30 @@ public class XpFarmGameTest {
 
     @GameTest
     public void breakingItReleasesTheBankAsOrbs(GameTestHelper h) {
-        XpFarmBlockEntity f = farm(h);
-        f.addExperience(5_000);
-        h.setBlock(POS, Blocks.AIR);
+        // Over and over, so that orbs of equal value merge (they do about one time in forty) and the sums still add up
         AABB area = new AABB(h.absolutePos(POS)).inflate(4);
-        int total = 0;
-        for (ExperienceOrb orb : h.getLevel().getEntitiesOfClass(ExperienceOrb.class, area)) total += orb.getValue();
-        h.assertValueEqual(total, 5_000, "all 5,000 points came out as orbs");
+        for (int round = 1; round <= 40; round++) {
+            XpFarmBlockEntity f = farm(h);
+            f.addExperience(5_000);
+            h.setBlock(POS, Blocks.AIR);
+            long total = 0;
+            for (ExperienceOrb orb : h.getLevel().getEntitiesOfClass(ExperienceOrb.class, area)) total += worth(orb);
+            h.assertValueEqual(total, 5_000L * round, "all the points are in orbs after " + round + " breaks");
+        }
         h.succeed();
+    }
+
+    /**
+     * What an orb is worth in all: vanilla merges orbs of equal value into one that remembers how many it stands for
+     * (which ones merge depends on entity ids, so a plain sum of values can come up a few points short).
+     */
+    private static long worth(ExperienceOrb orb) {
+        try {
+            var count = ExperienceOrb.class.getDeclaredField("count");
+            count.setAccessible(true);
+            return (long) orb.getValue() * count.getInt(orb);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError("cannot read how many orbs this one stands for", e);
+        }
     }
 }
