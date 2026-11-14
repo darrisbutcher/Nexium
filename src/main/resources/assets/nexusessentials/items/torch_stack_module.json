@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexusessentials:item/torch_stack_module"
+  }
+}

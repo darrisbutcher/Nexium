@@ -29,10 +29,11 @@ abstract class CreativeModeInventoryScreenMixin extends AbstractContainerScreen<
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     /**
      * Right of the armor, above the inventory rows, in two columns (trinket and arrows on the top row, wings and totem
-     * below). Lower down they would sit on top of the inventory slots.
+     * below). Lower down they would sit on top of the inventory slots. The backpack slot ends the lower row, under the
+     * page arrows: left of the player it would cover the leggings slot.
      */
-    private static final int[] X = {127, 127, 145, 145};
-    private static final int[] Y = {6, 33, 6, 33};
+    private static final int[] X = {127, 127, 145, 145, 163};
+    private static final int[] Y = {6, 33, 6, 33, 33};
 
     @Shadow
     private static CreativeModeTab selectedTab;

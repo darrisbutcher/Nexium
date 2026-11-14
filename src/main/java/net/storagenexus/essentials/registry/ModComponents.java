@@ -6,7 +6,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.backpack.BackpackContents;
 import net.storagenexus.essentials.capture.CapturedMob;
 import net.storagenexus.essentials.ironfarm.IronFarmTimers;
 
@@ -36,6 +38,14 @@ public final class ModComponents {
     /** Which mode a Gourd and Cactus Farm or a Generator was on, kept in the dropped item. */
     public static final DataComponentType<Integer> FARM_MODE = register("farm_mode",
             b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** What a Backpack holds (see BackpackContents): every occupied slot as an item, a count and a slot number. */
+    public static final DataComponentType<BackpackContents.Saved> BACKPACK_ITEMS = register("backpack_items",
+            b -> b.persistent(BackpackContents.Saved.CODEC).networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(BackpackContents.Saved.CODEC)));
+
+    /** The modules installed in a Backpack, one per slot (see BackpackModules). */
+    public static final DataComponentType<ItemContainerContents> BACKPACK_MODULES = register("backpack_modules",
+            b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexusEssentials.id(name),

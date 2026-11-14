@@ -13,6 +13,9 @@ import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.backpack.BackpackItem;
+import net.storagenexus.essentials.backpack.BackpackModuleItem;
+import net.storagenexus.essentials.backpack.BackpackModuleType;
 import net.storagenexus.essentials.bedrock.BedrockBreakerElixirItem;
 import net.storagenexus.essentials.capture.CapturedMobItem;
 import net.storagenexus.essentials.config.NexusConfig;
@@ -31,6 +34,18 @@ public final class ModItems {
             .stacksTo(1)
             .component(ModComponents.MAGNET_RANGE, MagnetItem.DEFAULT_RANGE)
             .component(ModComponents.MAGNET_ACTIVE, true));
+
+    /** Worn in the backpack slot above the trinket slot; 36 slots and module slots. */
+    public static final BackpackItem BACKPACK = register("backpack", BackpackItem::new, new Item.Properties().stacksTo(1));
+
+    /** Backpack modules, one per type: {@code nexusessentials:<type>_module}. */
+    public static final Map<BackpackModuleType, BackpackModuleItem> BACKPACK_MODULES = new EnumMap<>(BackpackModuleType.class);
+
+    static {
+        for (BackpackModuleType type : BackpackModuleType.values()) {
+            BACKPACK_MODULES.put(type, register(type.id() + "_module", p -> new BackpackModuleItem(p, type), new Item.Properties().stacksTo(1)));
+        }
+    }
 
     /** Drink it to mine bedrock for a while. The duration comes from the config. */
     public static final BedrockBreakerElixirItem BEDROCK_BREAKER_ELIXIR = register("bedrock_breaker_elixir", BedrockBreakerElixirItem::new, new Item.Properties()
@@ -83,8 +98,10 @@ public final class ModItems {
      * What the Nexium creative tab shows after its own items. The Captured Mob is left out: an empty one is
      * meaningless, so it only comes from picking up a mob.
      */
-    public static final List<Item> TAB_ORDER = java.util.stream.Stream.concat(
-            java.util.stream.Stream.of(MAGNET, BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream()).map(i -> (Item) i).toList();
+    public static final List<Item> TAB_ORDER = java.util.stream.Stream.of(
+            java.util.stream.Stream.of(MAGNET, BACKPACK), BACKPACK_MODULES.values().stream(),
+            java.util.stream.Stream.of(BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream())
+            .flatMap(stream -> stream).map(i -> (Item) i).toList();
 
     public static void init() {}
 

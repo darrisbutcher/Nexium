@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "T": "minecraft:torch",
+    "C": "minecraft:chest"
+  },
+  "pattern": [
+    "ITI",
+    "TCT",
+    "ITI"
+  ],
+  "result": {
+    "id": "nexusessentials:torch_stack_module"
+  }
+}

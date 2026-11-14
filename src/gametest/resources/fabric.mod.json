@@ -26,6 +26,7 @@
       "net.storagenexus.gametest.client.FreezerFarmsClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
+      "net.storagenexus.gametest.client.BackpackClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",
       "net.storagenexus.gametest.client.EnergyClientTest",
       "net.storagenexus.gametest.client.SortClientTest",
@@ -33,6 +34,7 @@
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
+      "net.storagenexus.gametest.BackpackGameTest",
       "net.storagenexus.gametest.CapturedMobDetailsGameTest",
       "net.storagenexus.gametest.AdvancementTabGameTest",
       "net.storagenexus.gametest.AiotGameTest",

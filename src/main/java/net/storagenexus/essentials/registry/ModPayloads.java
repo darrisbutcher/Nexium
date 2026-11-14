@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.NexusEssentials;
+import net.storagenexus.essentials.backpack.Backpacks;
 import net.storagenexus.essentials.magnet.MagnetLogic;
 
 public final class ModPayloads {
@@ -16,6 +17,18 @@ public final class ModPayloads {
         public static final ToggleMagnet INSTANCE = new ToggleMagnet();
         public static final Type<ToggleMagnet> TYPE = new Type<>(NexusEssentials.id("toggle_magnet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, ToggleMagnet> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /** Client to server: the Open Backpack key was pressed. */
+    public record OpenBackpack() implements CustomPacketPayload {
+        public static final OpenBackpack INSTANCE = new OpenBackpack();
+        public static final Type<OpenBackpack> TYPE = new Type<>(NexusEssentials.id("open_backpack"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenBackpack> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -39,7 +52,9 @@ public final class ModPayloads {
 
     public static void init() {
         PayloadTypeRegistry.serverboundPlay().register(ToggleMagnet.TYPE, ToggleMagnet.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(OpenBackpack.TYPE, OpenBackpack.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(WingsSync.TYPE, WingsSync.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(OpenBackpack.TYPE, (payload, context) -> Backpacks.openEquipped(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(ToggleMagnet.TYPE, (payload, context) -> MagnetLogic.toggle(context.player()));
     }
 

@@ -22,6 +22,10 @@ public final class NexusEssentialsClient {
     public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexusessentials.toggle_magnet",
             InputConstants.KEY_M, CATEGORY);
 
+    /** Opens the Backpack worn in the backpack slot. B by default; change it under Controls > Key Binds. */
+    public static final KeyMapping OPEN_BACKPACK = new KeyMapping("key.nexusessentials.open_backpack",
+            InputConstants.KEY_B, CATEGORY);
+
     /** The name of a player in the world around you (the owner of a tamed mob), or null if they are not near. */
     private static @org.jspecify.annotations.Nullable String playerName(java.util.UUID id) {
         var level = net.minecraft.client.Minecraft.getInstance().level;
@@ -31,6 +35,8 @@ public final class NexusEssentialsClient {
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
+        KeyMappingHelper.registerKeyMapping(OPEN_BACKPACK);
+        MenuScreens.register(ModMenus.BACKPACK, net.storagenexus.client.screen.BackpackScreen::new);
         MenuScreens.register(ModMenus.IRON_FARM, IronFarmScreen::new);
         MenuScreens.register(ModMenus.XP_FARM, XpFarmScreen::new);
         MenuScreens.register(ModMenus.FARM, FarmScreen::new);
@@ -38,6 +44,9 @@ public final class NexusEssentialsClient {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);
+            }
+            while (OPEN_BACKPACK.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(ModPayloads.OpenBackpack.INSTANCE);
             }
         });
 

@@ -304,7 +304,7 @@ public class EssentialsGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void inventoryHasTheTwoSlots(GameTestHelper h) {
         ServerPlayer player = player(h);
-        h.assertValueEqual(player.inventoryMenu.slots.size(), 50, "inventory menu slots");
+        h.assertValueEqual(player.inventoryMenu.slots.size(), 51, "inventory menu slots");
         h.assertTrue(player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS).mayPlace(new ItemStack(Items.ELYTRA)), "elytra fits the wings slot");
         h.assertTrue(!player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS).mayPlace(new ItemStack(Items.DIAMOND_CHESTPLATE)), "a chestplate doesn't");
         h.assertTrue(player.inventoryMenu.getSlot(ExtraSlots.MENU_TRINKET).mayPlace(new ItemStack(ModItems.MAGNET)), "the magnet fits the trinket slot");
