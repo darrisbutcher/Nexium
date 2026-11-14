@@ -14,6 +14,7 @@
       "net.storagenexus.gametest.client.ScrollTransferClientTest",
       "net.storagenexus.gametest.client.NetworkBusClientTest",
       "net.storagenexus.gametest.client.XpFarmClientTest",
+      "net.storagenexus.gametest.client.TunnelScrollClientTest",
       "net.storagenexus.gametest.client.CapturedMobTooltipClientTest",
       "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
@@ -26,6 +27,7 @@
       "net.storagenexus.gametest.client.FreezerFarmsClientTest",
       "net.storagenexus.gametest.client.TerminalClientTest",
       "net.storagenexus.gametest.client.SlotsClientTest",
+      "net.storagenexus.gametest.client.BackpackClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",
       "net.storagenexus.gametest.client.EnergyClientTest",
       "net.storagenexus.gametest.client.SortClientTest",
@@ -33,6 +35,7 @@
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
+      "net.storagenexus.gametest.BackpackGameTest",
       "net.storagenexus.gametest.CapturedMobDetailsGameTest",
       "net.storagenexus.gametest.AdvancementTabGameTest",
       "net.storagenexus.gametest.AiotGameTest",

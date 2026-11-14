@@ -21,6 +21,10 @@ public final class ModMenus {
     public static final ExtendedMenuType<FarmAssemblerMenu, BlockPos> FARM_ASSEMBLER = Registry.register(BuiltInRegistries.MENU,
             NexusEssentials.id("farm_assembler"), new ExtendedMenuType<>(FarmAssemblerMenu::new, BlockPos.STREAM_CODEC));
 
+    /** Opening data: {@code Backpacks.EQUIPPED}, or the inventory slot holding the Backpack. */
+    public static final ExtendedMenuType<net.storagenexus.essentials.backpack.BackpackMenu, Integer> BACKPACK = Registry.register(BuiltInRegistries.MENU,
+            NexusEssentials.id("backpack"), new ExtendedMenuType<>(net.storagenexus.essentials.backpack.BackpackMenu::new, net.minecraft.network.codec.ByteBufCodecs.VAR_INT));
+
     public static void init() {}
 
     private ModMenus() {}

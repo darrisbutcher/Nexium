@@ -40,6 +40,7 @@ public class SlotsClientTest implements FabricClientGameTest {
                 ExtraSlots.of(player).setItem(ExtraSlots.TRINKET, new ItemStack(ModItems.MAGNET));
                 ExtraSlots.of(player).setItem(ExtraSlots.ARROWS, new ItemStack(Items.ARROW, 40));
                 ExtraSlots.of(player).setItem(ExtraSlots.TOTEM, new ItemStack(Items.TOTEM_OF_UNDYING));
+                ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, new ItemStack(ModItems.BACKPACK));
                 Cow cow = EntityTypes.COW.create(player.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
                 cow.snapTo(player.getX() + 2, player.getY(), player.getZ(), 0, 0);
                 player.level().addFreshEntity(cow);
@@ -100,7 +101,7 @@ public class SlotsClientTest implements FabricClientGameTest {
                 return bad.toString();
             });
             if (!overlaps.isEmpty()) throw new AssertionError("creative extra slots overlap other slots: " + overlaps);
-            if (!placed.equals("46@127,6 47@127,33 48@145,6 49@145,33")) throw new AssertionError("creative inventory places the extra slots at " + placed);
+            if (!placed.equals("46@127,6 47@127,33 48@145,6 49@145,33 50@163,33")) throw new AssertionError("creative inventory places the extra slots at " + placed);
             String survival = ctx.computeOnClient(mc -> {
                 Slot trinket = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_TRINKET);
                 Slot wings = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_WINGS);
@@ -116,6 +117,12 @@ public class SlotsClientTest implements FabricClientGameTest {
                 return arrows.getItem() + " " + totem.getItem();
             });
             if (!ammoAndTotem.equals("40 minecraft:arrow 1 minecraft:totem_of_undying")) throw new AssertionError("arrow and totem slots: " + ammoAndTotem);
+            // The backpack slot sits right above the trinket slot
+            String backpack = ctx.computeOnClient(mc -> {
+                Slot slot = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_BACKPACK);
+                return slot.x + "," + slot.y + " " + slot.getItem();
+            });
+            if (!backpack.equals("77,8 1 nexusessentials:backpack")) throw new AssertionError("backpack slot: " + backpack);
             ctx.setScreen(() -> null);
 
             world.getServer().runCommand("gamemode survival @a");

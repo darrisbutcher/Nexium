@@ -8,12 +8,13 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.NexusEssentials;
 import org.jspecify.annotations.Nullable;
 
-/** The trinket or wings slot as it appears in the player's inventory screen. */
+/** One of the extra slots (trinket, wings, arrows, totem, backpack) as it appears in the player's inventory screen. */
 public class ExtraSlotMenuSlot extends Slot {
     public static final Identifier EMPTY_TRINKET_ICON = NexusEssentials.id("container/slot/trinket");
     public static final Identifier EMPTY_WINGS_ICON = NexusEssentials.id("container/slot/wings");
     public static final Identifier EMPTY_ARROWS_ICON = NexusEssentials.id("container/slot/arrows");
     public static final Identifier EMPTY_TOTEM_ICON = NexusEssentials.id("container/slot/totem");
+    public static final Identifier EMPTY_BACKPACK_ICON = NexusEssentials.id("container/slot/backpack");
 
     private final Player owner;
 
@@ -54,6 +55,7 @@ public class ExtraSlotMenuSlot extends Slot {
             case ExtraSlots.WINGS -> EMPTY_WINGS_ICON;
             case ExtraSlots.ARROWS -> EMPTY_ARROWS_ICON;
             case ExtraSlots.TOTEM -> EMPTY_TOTEM_ICON;
+            case ExtraSlots.BACKPACK -> EMPTY_BACKPACK_ICON;
             default -> EMPTY_TRINKET_ICON;
         };
     }

@@ -3,6 +3,32 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.15
+
+* **Backpack**: a new **backpack slot** above the trinket (magnet) slot in your inventory, for a Backpack crafted from
+  **8 leather around a chest**. It holds **36 stacks**, as much as your whole inventory including the hotbar, and uses no
+  inventory space. Wear it with **sneak + right-click** (or shift-click it into the slot). Press **B** (rebindable under
+  Controls > Key Binds) to open the worn one, or **right-click** a Backpack in your hand to open that one. What is in it stays
+  with the item: it drops with everything in it when you die (unless keepInventory is on) and can sit in a chest. A Backpack
+  can't hold another Backpack. It also has **5 module slots**, each with an on/off button, and modules only work while it is
+  worn.
+* **Auto Torch Module** (iron ingots in the corners, 4 torches on the edges, a redstone lamp in the middle): places torches
+  taken straight from the Backpack wherever a hostile mob could still spawn within **32 blocks** of you in every direction,
+  in the open, in caves behind walls and in caves nobody has seen. It reads the real block light, so lit ground is left
+  alone, and it spaces the torches as far apart as it can while leaving no dark block (a torch stops spawns 13 blocks away,
+  so on open ground they form a staggered grid about 19 blocks apart). Up to 8 per sweep, only as many as the Backpack holds,
+  and nothing in the Nether, in adventure or spectator mode or while the Backpack's screen is open.
+* **Torch Stack Module** (iron ingots in the corners, 4 torches on the edges, a chest in the middle): torches stack to **256**
+  in the Backpack's slots. Switched off or taken out, torches over a normal stack go back to the Backpack's other free slots
+  and then to your inventory, so none are lost.
+* In the creative inventory the backpack slot ends the lower row of extra slots.
+* **Tunnel steps** for the 3x3 Mining module are now **off, 2, 3, 8, 16, 24 and 32** layers (up to `aiotTunnelMaxLength`).
+  Hold the tunnel key (**Z**, rebindable) and **scroll the wheel** with an AIOT in hand to step up (deeper) or down
+  (shallower); it stops at off and at the deepest, and the hotbar doesn't scroll while the key is held. A plain press of the
+  key now only shows the readout, and the button in the tool menu still steps on and wraps round to off.
+* **Crafting Terminal**: shift-clicking the crafting result crafts at most **2 stacks** (twice the result's stack size) per
+  click, so one click can't flood the system. Click again for more; a plain click still crafts once.
+
 ## 1.21.14
 
 * **Captured Mobs tell you more.** The tooltip always shows what the mob looks like: a frog, cat, wolf, cow, pig or chicken

@@ -79,7 +79,9 @@ on). What is inside stays inside.
   Only sides with an inventory or tank can be chosen, the others are greyed out, and the side it faces now is framed.
 * **Level Emitter**: a redstone signal while the network holds at least (or fewer than) an amount of one item or fluid.
 * **Crafting Terminal**: items and fluids in one grid with search (`@modname` filters by mod) and sorting (A to Z to start with; the button cycles name, count and mod), a network
-  fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. JEI / REI "+" fills the grid from
+  fill bar, the vanilla recipe book, and a red **X** that empties the crafting grid. **Shift-clicking the result** crafts
+  until the network's ingredients run out, but at most **2 stacks of the result per click** (click again for more), so one
+  click cannot empty the network. JEI / REI "+" fills the grid from
   the network; when something is missing, JEI marks the missing slots in red and REI lists them in the button's tooltip.
   **Right-click the search box** (here, on the recipe book's, and in the Codex) to clear it. The terminal's search, the recipe book's and JEI's (or REI's) stay the same: typing in either changes both (`terminalSearchSync`, client,
   turns it off). Neither mod is required.
@@ -182,8 +184,11 @@ place it or right-click it to outline those chunks for a minute.
 * **Haste II**: turns a Nexium tool's Haste II on or off. The setting is saved on the tool.
 * **Vein size**: steps how many blocks one vein mining swing mines with this AIOT (4, 9, 18, 32 ... up to `aiotVeinMaxBlocks`).
   Vein mining needs no module.
-* **Tunnel**: steps how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 4, 8, 16, 24, 32 (up to
-  `aiotTunnelMaxLength`). Press **Z** (rebindable) to step it without opening the menu.
+* **Tunnel**: how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 3, 8, 16, 24, 32 (up to
+  `aiotTunnelMaxLength`). Click it in the menu to step on (round to off after the deepest), or without opening the menu
+  **hold Z** (rebindable) and **scroll the wheel**: up for a deeper tunnel, down for a shallower one. It stops at off and at
+  the deepest, and while Z is held with an AIOT in your hand the wheel does not change the hotbar slot. A plain press of Z
+  shows the readout.
 * **Modules** (AIOTs only): two slots. Put a module in like any item; the button beside each slot turns it on or off.
 * The **Armor** button goes to the armor menu, and its **Tools** button comes back.
 
@@ -277,10 +282,11 @@ Creeper and ghast explosions break no blocks and light no fires (they still hurt
 armor stands, dropped items, minecarts and boats. TNT, beds, respawn anchors, withers and end crystals work as in
 vanilla. Endermen never pick up blocks.
 
-### Trinket, wings, arrow and totem slots
-* Four slots that use no inventory space. Above the offhand slot: the **trinket slot** (the magnet) and the **wings
-  slot** (an elytra, or any item that glides like one). Under the crafting grid: the **arrow slot** (up to 64 arrows
-  of any kind) and the **totem slot** (a Totem of Undying or any item with death protection).
+### Backpack, trinket, wings, arrow and totem slots
+* Five slots that use no inventory space. Above the offhand slot: the **backpack slot** (a Backpack), the **trinket
+  slot** (the magnet) and the **wings slot** (an elytra, or any item that glides like one). Under the crafting grid:
+  the **arrow slot** (up to 64 arrows of any kind) and the **totem slot** (a Totem of Undying or any item with death
+  protection).
 * Shift-click an item to send it to its slot.
 * **Arrows**: bows and crossbows shoot from the arrow slot after anything held in a hand and before arrows in your
   inventory. Arrows you pick up fill the slot first.
@@ -299,6 +305,31 @@ vanilla. Endermen never pick up blocks.
 * Works while it is in your **trinket slot**. It picks up every item and experience orb in range, through walls.
   **Sneak + right-click** it to change the range (4, 8, 12, 16, up to `magnetMaxRange`). Press **M** to switch it on
   or off.
+
+### Backpack
+* Crafted from 8 leather around a chest:
+  ```
+  L L L
+  L C L
+  L L L
+  ```
+* Wear it in the **backpack slot** (shift-click it, or **sneak + right-click** it in your hand). It holds **36 stacks**,
+  as much as your whole inventory including the hotbar, and uses no inventory space. Press **B** to open the worn one
+  (change the key under Controls > Key Binds), or **right-click** a Backpack in your hand to open that one. A Backpack
+  can't hold another Backpack. Its contents are saved in the item: it drops with everything in it when you die (unless
+  keepInventory is on), and can be kept in a chest.
+* It has **5 module slots** at the right of its screen. Each module fits once, and the button beside it switches it
+  on or off. Modules only work while the Backpack is worn.
+* **Auto Torch Module** (4 torches around a redstone lamp, with iron ingots in the corners): places torches taken
+  straight from the Backpack wherever a hostile mob could still spawn within **32 blocks** of you in every direction:
+  in the open, in caves behind walls, even in caves nobody has seen. It reads the real block light and only lights
+  ground that is dark, and the torches are spaced as far apart as they can be and still leave no dark block (a torch
+  stops spawns 13 blocks away, so on open ground they sit in a staggered grid about 19 blocks apart). It places up
+  to 8 per sweep, takes no more than the Backpack holds, and does nothing in the Nether (light can't stop spawns
+  there), in adventure or spectator mode, or while the Backpack's screen is open.
+* **Torch Stack Module** (4 torches around a chest, with iron ingots in the corners): torches stack to **256** in the
+  Backpack's slots. Switch it off or take it out and torches over a normal stack go back to the Backpack's other free
+  slots, then to your inventory.
 
 ### Elytra enchanting
 At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).

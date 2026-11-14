@@ -108,16 +108,21 @@ public final class ToolMenu {
     }
 
     /**
-     * The tunnel key: steps the tunnel length of the AIOT in the main hand (off, 2, 4, 8, 16, 24, 32, up to the
-     * server's limit), with a message above the hotbar. Does nothing when the main hand holds something else, and says
-     * so when the AIOT has no 3x3 Mining module.
+     * The tunnel key held with the scroll wheel: moves the tunnel length of the AIOT in the main hand one step up (a
+     * positive direction) or down along off, 2, 3, 8, 16, 24, 32 (up to the server's limit), with a message above the
+     * hotbar. It stops at the ends. Does nothing when the main hand holds something else, and says so when the AIOT has no
+     * 3x3 Mining module.
      */
-    public static void stepTunnel(ServerPlayer player) {
+    public static void stepTunnel(ServerPlayer player, int direction) {
         ItemStack tool = player.getMainHandItem();
         if (!(tool.getItem() instanceof AiotItem)) return;
-        if (!cycleTunnelLength(player, tool)) {
+        int length = AiotModules.stepTunnelLength(tool, direction);
+        if (length == 0) {
             player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+            return;
         }
+        player.sendOverlayMessage(length == 1 ? Component.translatable("message.storagenexus.tool_menu.tunnel_off")
+                : Component.translatable("message.storagenexus.tool_menu.tunnel", length));
     }
 
     private ToolMenu() {}

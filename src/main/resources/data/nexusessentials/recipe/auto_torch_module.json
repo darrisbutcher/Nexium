@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "T": "minecraft:torch",
+    "L": "minecraft:redstone_lamp"
+  },
+  "pattern": [
+    "ITI",
+    "TLT",
+    "ITI"
+  ],
+  "result": {
+    "id": "nexusessentials:auto_torch_module"
+  }
+}

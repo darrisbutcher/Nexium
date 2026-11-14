@@ -412,30 +412,59 @@ public class ModuleGameTest {
     }
 
     @GameTest
-    public void tunnelLengthStepsInTheToolMenu(GameTestHelper h) {
+    public void tunnelLengthStepsInTheToolMenuAndWithTheWheel(GameTestHelper h) {
         var config = net.storagenexus.essentials.config.NexusConfig.get();
         int max = config.aiotTunnelMaxLength;
         try {
             ServerPlayer player = miner(h, ModuleType.AREA_MINING);
             h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 1, "a new 3x3 module is a plain 3x3");
-            int[] expected = {2, 4, 8, 16, 24, 32, 1};
+            int[] expected = {2, 3, 8, 16, 24, 32, 1};
             for (int length : expected) {
                 h.assertTrue(ToolMenu.cycleTunnelLength(player, player.getMainHandItem()), "the button works with the module in");
                 h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the next tunnel length");
             }
-            // The server's limit cuts the steps short: 2, 4, 8, then off
+            // The server's limit cuts the steps short: 2, 3, 8, then off
             config.aiotTunnelMaxLength = 8;
-            for (int length : new int[]{2, 4, 8, 1}) {
+            for (int length : new int[]{2, 3, 8, 1}) {
                 ToolMenu.cycleTunnelLength(player, player.getMainHandItem());
                 h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the next length, limit 8");
             }
-            // The Z key steps it the same way
-            ToolMenu.stepTunnel(player);
-            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 2, "the key steps it from off to 2");
+            // The tunnel key held with the wheel moves it up and down the same steps, and stops at the ends
+            for (int length : new int[]{2, 3, 8, 8}) {
+                ToolMenu.stepTunnel(player, 1);
+                h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the wheel up steps to the next length (limit 8, then no further)");
+            }
+            for (int length : new int[]{3, 2, 1, 1}) {
+                ToolMenu.stepTunnel(player, -1);
+                h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "the wheel down steps to the one before (then stays off)");
+            }
+            config.aiotTunnelMaxLength = 32;
+            for (int length : new int[]{2, 3, 8, 16, 24, 32, 32}) {
+                ToolMenu.stepTunnel(player, 1);
+                h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), length, "up through every step to the top at 32");
+            }
+            ToolMenu.stepTunnel(player, -1);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 24, "and back down from the top");
+            // A length from an older version that is no longer a step (4) goes to the nearest step in the direction of the wheel
+            var slots = AiotModules.slots(player.getMainHandItem());
+            for (int i = 0; i < slots.size(); i++) {
+                if (slots.get(i).getItem() instanceof net.storagenexus.aiot.module.ModuleItem m && m.type() == ModuleType.AREA_MINING) {
+                    ItemStack module = slots.get(i).copy();
+                    module.set(net.storagenexus.registry.ModComponents.TUNNEL_LENGTH, 4);
+                    slots.set(i, module);
+                }
+            }
+            AiotModules.setSlots(player.getMainHandItem(), slots);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 4, "an older setting of 4 still digs 4");
+            ToolMenu.stepTunnel(player, 1);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 8, "up from 4 is 8");
+            AiotModules.setSlots(player.getMainHandItem(), slots);
+            ToolMenu.stepTunnel(player, -1);
+            h.assertValueEqual(AiotModules.tunnelLength(player.getMainHandItem()), 3, "down from 4 is 3");
             // No 3x3 module, no tunnel
             ServerPlayer other = miner(h, ModuleType.NEXUS_LINK);
-            ToolMenu.stepTunnel(other);
-            h.assertValueEqual(AiotModules.tunnelLength(other.getMainHandItem()), 1, "the key does nothing without a 3x3 module");
+            ToolMenu.stepTunnel(other, 1);
+            h.assertValueEqual(AiotModules.tunnelLength(other.getMainHandItem()), 1, "the wheel does nothing without a 3x3 module");
             h.assertFalse(ToolMenu.cycleTunnelLength(other, other.getMainHandItem()), "nothing to set without a 3x3 module");
         } finally {
             config.aiotTunnelMaxLength = max;
@@ -451,20 +480,20 @@ public class ModuleGameTest {
         ServerPlayer player = miner(h, ModuleType.AREA_MINING);
         VeinKey.set(player, false); // V held would vein mine the stone instead
         ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 2
-        ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 4
+        ToolMenu.cycleTunnelLength(player, player.getMainHandItem()); // 3
         BlockPos center = new BlockPos(2, 2, 3);
         lookAt(h, player, center);
         int damage = player.getMainHandItem().getDamageValue();
         mine(h, player, center);
-        for (int z = 3; z <= 6; z++) {
+        for (int z = 3; z <= 5; z++) {
             for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) {
                 if (x == 1 && y == 1 && z == 3) continue;
                 h.assertBlockPresent(Blocks.AIR, new BlockPos(x, y, z));
             }
         }
         h.assertBlockPresent(Blocks.OBSIDIAN, new BlockPos(1, 1, 3));
-        for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.assertBlockPresent(Blocks.STONE, new BlockPos(x, y, 7));
-        h.assertValueEqual(player.getMainHandItem().getDamageValue() - damage, 4 * 9 - 1, "1 durability per block: 35 (obsidian left)");
+        for (int z = 6; z <= 7; z++) for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.assertBlockPresent(Blocks.STONE, new BlockPos(x, y, z));
+        h.assertValueEqual(player.getMainHandItem().getDamageValue() - damage, 3 * 9 - 1, "1 durability per block: 26 (obsidian left)");
 
         // Sneaking still mines the one block
         for (int z = 3; z <= 6; z++) for (int x = 1; x <= 3; x++) for (int y = 1; y <= 3; y++) h.setBlock(new BlockPos(x, y, z), Blocks.STONE);

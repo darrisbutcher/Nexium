@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Gives every player the trinket, wings, arrow and totem slots, saves them, and drops them on death. */
+/** Gives every player the trinket, wings, arrow, totem and backpack slots, saves them, and drops them on death. */
 @Mixin(Player.class)
 abstract class PlayerMixin extends LivingEntity implements ExtraSlotsHolder {
     @Unique

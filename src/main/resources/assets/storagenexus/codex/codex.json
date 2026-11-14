@@ -92,6 +92,10 @@
         "totem",
         "wings",
         "magnet",
+        "backpack",
+        "backpack_modules",
+        "auto_torch",
+        "torch_stack",
         "elytra"
       ]
     },
@@ -1080,7 +1084,8 @@
         "arrows",
         "totem",
         "wings",
-        "magnet"
+        "magnet",
+        "backpack"
       ]
     },
     "arrows": {
@@ -1141,6 +1146,87 @@
       "see": [
         "slots",
         "keys"
+      ]
+    },
+    "backpack": {
+      "pages": [
+        "essentials.backpack",
+        "essentials.backpack2"
+      ],
+      "icon": "nexusessentials:backpack",
+      "recipes": [
+        "backpack"
+      ],
+      "items": [
+        "nexusessentials:backpack"
+      ],
+      "aliases": [
+        "Backpack",
+        "backpack slot",
+        "Backpack slot"
+      ],
+      "see": [
+        "slots",
+        "backpack_modules",
+        "keys"
+      ]
+    },
+    "backpack_modules": {
+      "pages": [
+        "essentials.backpack_modules"
+      ],
+      "icon": "nexusessentials:auto_torch_module",
+      "aliases": [
+        "Backpack modules",
+        "backpack module"
+      ],
+      "see": [
+        "backpack",
+        "auto_torch",
+        "torch_stack"
+      ]
+    },
+    "auto_torch": {
+      "pages": [
+        "essentials.auto_torch",
+        "essentials.auto_torch2"
+      ],
+      "icon": "nexusessentials:auto_torch_module",
+      "recipes": [
+        "auto_torch_module"
+      ],
+      "items": [
+        "nexusessentials:auto_torch_module"
+      ],
+      "aliases": [
+        "Auto torch",
+        "auto torch module",
+        "torch placement"
+      ],
+      "see": [
+        "backpack_modules",
+        "torch_stack"
+      ]
+    },
+    "torch_stack": {
+      "pages": [
+        "essentials.torch_stack"
+      ],
+      "icon": "nexusessentials:torch_stack_module",
+      "recipes": [
+        "torch_stack_module"
+      ],
+      "items": [
+        "nexusessentials:torch_stack_module"
+      ],
+      "aliases": [
+        "Torch stack",
+        "torch stack module",
+        "stack torches"
+      ],
+      "see": [
+        "backpack_modules",
+        "auto_torch"
       ]
     },
     "elytra": {

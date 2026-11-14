@@ -140,7 +140,7 @@ public final class NexusConfig {
     public Integer configVersion;
     /** The 3x3 Mining module works. */
     public boolean aiotAreaMining = true;
-    /** Longest tunnel the 3x3 Mining module can dig, in 3x3 layers. Players pick a shorter one (2, 4, 8, 16, 24, 32) per tool in the tool menu. */
+    /** Longest tunnel the 3x3 Mining module can dig, in 3x3 layers. Players pick a shorter one (2, 3, 8, 16, 24, 32) per tool, in the tool menu or by holding the tunnel key and scrolling. */
     public int aiotTunnelMaxLength = 32;
     /** Client side: outline the blocks the AIOT in your hand would mine along with the one you look at. */
     public boolean aiotMiningPreview = true;

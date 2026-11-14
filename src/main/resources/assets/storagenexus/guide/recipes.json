@@ -76,6 +76,9 @@
     "ender_energy_conduit": {"type": "shaped", "pattern": ["CCC", "CPC", "CCC"], "key": {"C": "storagenexus:energy_conduit", "P": "minecraft:ender_pearl"}, "result": {"id": "storagenexus:ender_energy_conduit", "count": 8}},
     "assembler": {"type": "shaped", "pattern": ["LIL", "ICI", "LIL"], "key": {"C": "minecraft:crafting_table", "I": "minecraft:iron_ingot", "L": "minecraft:lapis_lazuli"}, "result": {"id": "nexusessentials:farm_assembler"}},
     "magnet": {"type": "shaped", "pattern": ["R L", "I I", "III"], "key": {"I": "minecraft:iron_ingot", "L": "minecraft:lapis_lazuli", "R": "minecraft:redstone"}, "result": {"id": "nexusessentials:magnet"}},
+    "backpack": {"type": "shaped", "pattern": ["LLL", "LCL", "LLL"], "key": {"C": "minecraft:chest", "L": "minecraft:leather"}, "result": {"id": "nexusessentials:backpack"}},
+    "auto_torch_module": {"type": "shaped", "pattern": ["ITI", "TLT", "ITI"], "key": {"I": "minecraft:iron_ingot", "L": "minecraft:redstone_lamp", "T": "minecraft:torch"}, "result": {"id": "nexusessentials:auto_torch_module"}},
+    "torch_stack_module": {"type": "shaped", "pattern": ["ITI", "TCT", "ITI"], "key": {"C": "minecraft:chest", "I": "minecraft:iron_ingot", "T": "minecraft:torch"}, "result": {"id": "nexusessentials:torch_stack_module"}},
     "elixir": {"type": "shaped", "pattern": [" O ", "DBD", " O "], "key": {"B": "minecraft:glass_bottle", "D": "minecraft:diamond", "O": "minecraft:obsidian"}, "result": {"id": "nexusessentials:bedrock_breaker_elixir"}}
   }
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.storagenexus.essentials.backpack.BackpackItem;
 import net.storagenexus.essentials.magnet.MagnetItem;
 
 /**
@@ -22,11 +23,13 @@ public final class ExtraSlots extends SimpleContainer {
     public static final int WINGS = 1;
     public static final int ARROWS = 2;
     public static final int TOTEM = 3;
+    public static final int BACKPACK = 4;
     /** Where the slots sit in the player's inventory menu, after vanilla's 46 (0-45). */
     public static final int MENU_TRINKET = 46;
     public static final int MENU_WINGS = 47;
     public static final int MENU_ARROWS = 48;
     public static final int MENU_TOTEM = 49;
+    public static final int MENU_BACKPACK = 50;
     /** The arrow slot holds one stack; every other slot holds one item. */
     public static final int ARROWS_MAX = 64;
 
@@ -34,12 +37,13 @@ public final class ExtraSlots extends SimpleContainer {
     private static final String WINGS_KEY = "NexusEssentialsWings";
     private static final String ARROWS_KEY = "NexusEssentialsArrows";
     private static final String TOTEM_KEY = "NexusEssentialsTotem";
+    private static final String BACKPACK_KEY = "NexusEssentialsBackpack";
 
     /** Server only: the wings last sent to the players who can see the owner. */
     private ItemStack sentWings = ItemStack.EMPTY;
 
     public ExtraSlots() {
-        super(4);
+        super(5);
     }
 
     public static ExtraSlots of(Player player) {
@@ -60,6 +64,10 @@ public final class ExtraSlots extends SimpleContainer {
 
     public ItemStack totem() {
         return getItem(TOTEM);
+    }
+
+    public ItemStack backpack() {
+        return getItem(BACKPACK);
     }
 
     /** How many items fit in this slot. */
@@ -95,6 +103,10 @@ public final class ExtraSlots extends SimpleContainer {
         }
     }
 
+    public static boolean isBackpack(ItemStack stack) {
+        return stack.getItem() instanceof BackpackItem;
+    }
+
     public static boolean isTrinket(ItemStack stack) {
         return stack.getItem() instanceof MagnetItem;
     }
@@ -120,6 +132,7 @@ public final class ExtraSlots extends SimpleContainer {
             case WINGS -> isWings(stack);
             case ARROWS -> isArrows(stack);
             case TOTEM -> isTotem(stack);
+            case BACKPACK -> isBackpack(stack);
             default -> false;
         };
     }
@@ -143,6 +156,7 @@ public final class ExtraSlots extends SimpleContainer {
         if (!wings().isEmpty()) output.store(WINGS_KEY, ItemStack.CODEC, wings());
         if (!arrows().isEmpty()) output.store(ARROWS_KEY, ItemStack.CODEC, arrows());
         if (!totem().isEmpty()) output.store(TOTEM_KEY, ItemStack.CODEC, totem());
+        if (!backpack().isEmpty()) output.store(BACKPACK_KEY, ItemStack.CODEC, backpack());
     }
 
     public void load(ValueInput input) {
@@ -150,6 +164,7 @@ public final class ExtraSlots extends SimpleContainer {
         setItem(WINGS, input.read(WINGS_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY));
         setItem(ARROWS, input.read(ARROWS_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY));
         setItem(TOTEM, input.read(TOTEM_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+        setItem(BACKPACK, input.read(BACKPACK_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY));
     }
 
     /** True once if the wings changed since they were last sent to other players. */
