@@ -3,6 +3,21 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.12
+
+* **Import/Export Bus: choose the side it faces.** Its screen has a row of six buttons (D, U, N, S, W, E). Only sides with
+  an inventory or tank can be chosen, the others are greyed out, the side it faces now is framed, and hovering a button
+  names what is on that side. A new chest beside the bus becomes selectable at once. The old side gets an ordinary arm
+  and the new one the snout.
+* **Crafting Terminal** opens sorted **A to Z** instead of by count (the sort button still cycles name, count and mod).
+* **Fix: the scroll wheel pulled items out of a bundle.** The wheel lifted the bundle onto the cursor and a click then
+  poured its contents out. A bundle is never touched now, and over one the wheel keeps its vanilla job.
+* **Nexus Furnace gives ten times the experience** the recipes do (raw iron 7, a steak 3.5).
+* **Fix: Nexus Furnace experience came up short.** The bank was a sum of floats, and 0.7 is really 0.69999999, so ten raw
+  iron made 6.9999999 and Collect XP handed over 6 instead of 7 (a hundred made 69 instead of 70). The bank is now kept to a
+  thousandth of a point. The number on the Collect XP button was also capped at 32,767 while Collect took the whole bank; it
+  now shows every point, so the button shows exactly what you receive.
+
 ## 1.21.11
 
 * **Scroll wheel transfer**: with an empty cursor over a stack in a chest, barrel or machine screen, **scroll down** sends one

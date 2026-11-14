@@ -21,8 +21,9 @@ public class NexusFurnaceMenu extends AbstractContainerMenu {
     public static final int BTN_COLLECT = 0;
     private static final int SLOTS = NexusFurnaceBlockEntity.SLOTS;
     private static final int FIRST_PLAYER_SLOT = NexusFurnaceBlockEntity.SIZE;
-    /** Screen values travel as 16-bit numbers, so the energy is sent as two halves of 15 bits. */
-    private static final int D_PROGRESS = 0, D_ENERGY = SLOTS, D_XP = SLOTS + 2, D_WORKING = SLOTS + 3, D_WANTING = SLOTS + 4, D_COUNT = SLOTS + 5;
+    /** Screen values travel as 16-bit numbers, so the energy and the experience are each sent as two halves of 15 bits. */
+    private static final int D_PROGRESS = 0, D_ENERGY = SLOTS, D_XP = SLOTS + 2, D_WORKING = SLOTS + 4, D_WANTING = SLOTS + 5, D_COUNT = SLOTS + 6;
+    private static final long MAX_XP_SHOWN = 0x3FFF_FFFFL;
 
     private final Container container;
     private final ContainerData data;
@@ -64,11 +65,16 @@ public class NexusFurnaceMenu extends AbstractContainerMenu {
                 return switch (index) {
                     case D_ENERGY -> (int) (furnace.energy().stored() & 0x7FFF);
                     case D_ENERGY + 1 -> (int) (furnace.energy().stored() >> 15);
-                    case D_XP -> (int) Math.min(32767, Math.floor(furnace.experience()));
+                    case D_XP -> (int) (xpShown() & 0x7FFF);
+                    case D_XP + 1 -> (int) (xpShown() >> 15);
                     case D_WORKING -> furnace.working();
                     case D_WANTING -> furnace.wanting();
                     default -> 0;
                 };
+            }
+
+            private long xpShown() {
+                return Math.min(MAX_XP_SHOWN, (long) Math.floor(furnace.experience()));
             }
 
             @Override
@@ -85,7 +91,8 @@ public class NexusFurnaceMenu extends AbstractContainerMenu {
     /** Ticks a slot has cooked its item, 0 to {@value NexusFurnaceBlockEntity#COOK_TICKS}. */
     public int progress(int slot) { return data.get(D_PROGRESS + slot); }
     public int energy() { return data.get(D_ENERGY) | data.get(D_ENERGY + 1) << 15; }
-    public int experience() { return data.get(D_XP); }
+    /** The whole points banked, as Collect XP would hand them over. */
+    public int experience() { return data.get(D_XP) | data.get(D_XP + 1) << 15; }
     public int working() { return data.get(D_WORKING); }
     public int wanting() { return data.get(D_WANTING); }
 

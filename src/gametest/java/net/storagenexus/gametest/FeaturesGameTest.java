@@ -82,6 +82,34 @@ public class FeaturesGameTest {
     }
 
     @GameTest
+    public void theBusTurnsOnlyToSidesWithAnInventory(GameTestHelper h) {
+        NetworkBusBlockEntity bus = busLayout(h, false);
+        BlockPos south = BUS.south();
+        h.assertValueEqual(bus.workableFaces(), 1 << Direction.WEST.get3DDataValue(), "only the chest beside it is worth facing");
+        h.assertTrue(!bus.face(Direction.EAST), "it cannot face the cable (a network block)");
+        h.assertTrue(!bus.face(Direction.SOUTH), "or an empty side");
+        h.assertValueEqual(h.getBlockState(BUS).getValue(NetworkBusBlock.FACING), Direction.WEST, "so it still faces the chest");
+
+        h.setBlock(south, Blocks.CHEST);
+        h.assertValueEqual(bus.workableFaces(), 1 << Direction.WEST.get3DDataValue() | 1 << Direction.SOUTH.get3DDataValue(), "a second chest makes a second choice");
+        h.assertTrue(bus.face(Direction.SOUTH), "it turns to the new chest");
+        var state = h.getBlockState(BUS);
+        h.assertValueEqual(state.getValue(NetworkBusBlock.FACING), Direction.SOUTH, "and faces it");
+        h.assertTrue(!state.getValue(NetworkBusBlock.PROPS.get(Direction.SOUTH)), "the side it faces has its own snout, not an arm");
+        h.assertTrue(state.getValue(NetworkBusBlock.PROPS.get(Direction.WEST)), "the chest it left gets an ordinary arm");
+        h.assertTrue(state.getValue(NetworkBusBlock.PROPS.get(Direction.EAST)), "and the cable keeps its arm");
+        h.assertTrue(!bus.face(Direction.SOUTH), "turning to the side it already faces does nothing");
+
+        // It now works on the new chest
+        h.getBlockEntity(south, ChestBlockEntity.class).setItem(0, new ItemStack(Items.OAK_PLANKS, 10));
+        h.getBlockEntity(SOURCE, ChestBlockEntity.class).setItem(0, new ItemStack(Items.IRON_INGOT, 10));
+        run(h, bus);
+        h.assertValueEqual(count(h.getBlockEntity(STORE, ChestBlockEntity.class), Items.OAK_PLANKS), 10, "it imported from the chest it faces now");
+        h.assertValueEqual(count(h.getBlockEntity(STORE, ChestBlockEntity.class), Items.IRON_INGOT), 0, "and left the chest it turned from alone");
+        h.succeed();
+    }
+
+    @GameTest
     public void busExportsOnlyWhatTheFilterAllows(GameTestHelper h) {
         NetworkBusBlockEntity bus = busLayout(h, true);
         ChestBlockEntity store = h.getBlockEntity(STORE, ChestBlockEntity.class);

@@ -104,6 +104,11 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         view.setSearchText(text);
     }
 
+    /** The names in the grid, in the order shown (for the client test). */
+    public java.util.List<String> gridNames() {
+        return view.gridNames();
+    }
+
     @Override
     public void containerTick() {
         super.containerTick();

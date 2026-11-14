@@ -5,12 +5,14 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
 import net.storagenexus.terminal.TerminalMenu;
 
@@ -26,7 +28,7 @@ import java.util.List;
  * full, into its inventory).</li>
  * </ul>
  * It is done with ordinary slot clicks (pick the stack up, put one down, put the rest back), so each slot's own rules
- * decide what fits. Chests, barrels and machines only: the survival inventory screen, the creative menu and the
+ * decide what fits. A bundle is never touched (the wheel over one keeps its vanilla job). Chests, barrels and machines only: the survival inventory screen, the creative menu and the
  * terminals keep vanilla's wheel.
  */
 public final class ScrollTransferClient {
@@ -96,9 +98,17 @@ public final class ScrollTransferClient {
         return null;
     }
 
-    /** Whether a slot can give its stack up and take it back: needed to lift it for a moment. */
+    /**
+     * A bundle: lifted onto the cursor, a click on a slot would pour items out of it (or pick the slot's item up into it)
+     * instead of setting it down, and vanilla uses the wheel over one to choose which item in it is shown.
+     */
+    private static boolean isBundle(ItemStack stack) {
+        return stack.getItem() instanceof BundleItem || stack.has(DataComponents.BUNDLE_CONTENTS);
+    }
+
+    /** Whether a slot can give its stack up and take it back: needed to lift it for a moment. Never a bundle. */
     private static boolean liftable(Slot slot, Player player) {
-        return slot.hasItem() && slot.mayPickup(player) && slot.mayPlace(slot.getItem());
+        return slot.hasItem() && !isBundle(slot.getItem()) && slot.mayPickup(player) && slot.mayPlace(slot.getItem());
     }
 
     private static void click(AbstractContainerScreen<?> screen, Slot slot, int button) {
@@ -148,6 +158,7 @@ public final class ScrollTransferClient {
         if (amount == 0 || mc.player == null || !screen.getMenu().getCarried().isEmpty()) return false;
         Slot hovered = ShiftTransferClient.slotAt(screen, x, y);
         if (hovered == null || !usable(hovered) || !hovered.hasItem()) return false;
+        if (isBundle(hovered.getItem())) return false; // the wheel keeps its vanilla job over a bundle
         if (Math.signum(amount) != Math.signum(pending)) pending = 0;
         pending += amount;
         int notches = (int) Math.max(-64, Math.min(64, pending));

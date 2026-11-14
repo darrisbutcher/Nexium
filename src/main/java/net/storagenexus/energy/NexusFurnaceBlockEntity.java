@@ -38,11 +38,13 @@ import java.util.Optional;
  * furnace, a blast furnace or a smoker does, in {@value #COOK_TICKS} ticks, for {@value #ENERGY_PER_SLOT} NE a tick per
  * slot that is working. With less energy than every working slot needs, it runs as many slots as it can pay for and the
  * rest wait their turn, so every slot cooks the same amount over time. A stack put in is shared out evenly over the
- * input slots. The experience the recipes give is kept until a player collects it.
+ * input slots. The experience the recipes give, times {@value #XP_MULTIPLIER}, is kept until a player collects it.
  */
 public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos> {
     public static final int SLOTS = 8, SIZE = SLOTS * 2;
     public static final int COOK_TICKS = 50;
+    /** Every item gives ten times the experience its recipe does. */
+    public static final int XP_MULTIPLIER = 10;
     public static final int ENERGY_PER_SLOT = 30;
     /** Ten seconds of energy for every slot. */
     public static final long CAPACITY = (long) ENERGY_PER_SLOT * SLOTS * 200;
@@ -143,14 +145,24 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         else if (ItemStack.isSameItemSameComponents(out, result)) out.grow(result.getCount());
         else return;
         in.shrink(1);
-        experience += recipe.get().experience();
+        // The recipe's amount in thousandths of a point, so 0.7 (a float that is really 0.69999999) is exactly 0.7
+        addExperience(Math.round(recipe.get().experience() * 1000.0) * XP_MULTIPLIER / 1000.0);
+    }
+
+    /**
+     * Banks experience. The bank is kept to a thousandth of a point, so adding up many small amounts never drifts below the
+     * whole number it should reach (ten times 0.7 is 7, not 6.9999999).
+     */
+    public void addExperience(double points) {
+        experience = Math.round((experience + points) * 1000.0) / 1000.0;
+        setChanged();
     }
 
     /** Gives the player the whole points of experience collected so far; the fraction stays. Returns how many. */
     public int takeExperience(Player player) {
         int points = (int) Math.floor(experience);
         if (points <= 0) return 0;
-        experience -= points;
+        experience = Math.round((experience - points) * 1000.0) / 1000.0;
         player.giveExperiencePoints(points);
         setChanged();
         return points;

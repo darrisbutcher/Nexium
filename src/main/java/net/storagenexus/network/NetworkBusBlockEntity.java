@@ -60,6 +60,34 @@ public class NetworkBusBlockEntity extends BlockEntity {
         if (level != null) level.setBlock(worldPosition, getBlockState().cycle(NetworkBusBlock.EXPORT), 3);
     }
 
+    /**
+     * The sides with something the bus could work with (an inventory or a tank, not a network block), one bit each:
+     * bit {@code i} is {@code Direction.from3DDataValue(i)}.
+     */
+    public int workableFaces() {
+        if (level == null) return 0;
+        int mask = 0;
+        for (Direction d : Direction.values()) {
+            BlockPos target = worldPosition.relative(d);
+            if (level.getBlockState(target).getBlock() instanceof NetworkBlock) continue;
+            if (ItemStorage.SIDED.find(level, target, d.getOpposite()) != null
+                    || FluidStorage.SIDED.find(level, target, d.getOpposite()) != null) {
+                mask |= 1 << d.get3DDataValue();
+            }
+        }
+        return mask;
+    }
+
+    /** Turns the bus to face this side, if there is something there to work with. Returns whether it turned. */
+    public boolean face(Direction face) {
+        if (level == null || level.isClientSide()) return false;
+        BlockState state = getBlockState();
+        if (!(state.getBlock() instanceof NetworkBusBlock block) || state.getValue(NetworkBusBlock.FACING) == face) return false;
+        if ((workableFaces() & 1 << face.get3DDataValue()) == 0) return false;
+        level.setBlock(worldPosition, block.turnedTo(state, level, worldPosition, face), 3);
+        return true;
+    }
+
     private @Nullable FilterData filterData() {
         ItemStack s = filterSlot.getItem(0);
         return s.getItem() instanceof FilterItem fi ? fi.data(s) : null;

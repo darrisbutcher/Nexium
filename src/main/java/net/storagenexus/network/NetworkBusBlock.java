@@ -50,6 +50,11 @@ public class NetworkBusBlock extends ArmedNetworkBlock {
         return withArms(defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite()), context.getLevel(), context.getClickedPos());
     }
 
+    /** This state turned to face another side, with the arms worked out again: the old side may need one, the new one never does. */
+    public BlockState turnedTo(BlockState state, Level level, BlockPos pos, Direction face) {
+        return withArms(state.setValue(FACING, face), level, pos);
+    }
+
     /** The side it works on has its own snout, so it never gets an ordinary arm too. */
     @Override
     protected BlockState withArms(BlockState state, Level level, BlockPos pos) {

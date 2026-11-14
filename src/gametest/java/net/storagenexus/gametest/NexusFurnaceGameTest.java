@@ -184,13 +184,85 @@ public class NexusFurnaceGameTest {
         f.energy().set(NexusFurnaceBlockEntity.CAPACITY);
         for (int i = 0; i < 8; i++) f.setItem(i, new ItemStack(Items.RAW_IRON, 1));
         tick(h, f, NexusFurnaceBlockEntity.COOK_TICKS);
-        h.assertTrue(f.experience() > 4.0 && f.experience() < 8.0, "raw iron gives 0.7 each: " + f.experience());
+        h.assertValueEqual(f.experience(), 56.0, "raw iron gives 0.7 x 10 = 7 each, 56 for eight");
         ServerPlayer player = h.makeMockServerPlayerInLevel();
         int before = player.totalExperience;
         int points = f.takeExperience(player);
-        h.assertTrue(points >= 5, "whole points handed over: " + points);
-        h.assertTrue(player.totalExperience - before >= 5, "the player has them");
-        h.assertTrue(f.experience() < 1.0, "the fraction stays: " + f.experience());
+        h.assertValueEqual(points, 56, "all 56 points handed over");
+        h.assertValueEqual(player.totalExperience - before, 56, "the player has them");
+        h.assertTrue(f.experience() == 0.0, "nothing is left: " + f.experience());
+        // A fraction stays: beef gives 0.35 x 10 = 3.5 each
+        NexusFurnaceBlockEntity beef = furnace(h);
+        beef.energy().set(NexusFurnaceBlockEntity.CAPACITY);
+        beef.setItem(0, new ItemStack(Items.BEEF, 1));
+        tick(h, beef, NexusFurnaceBlockEntity.COOK_TICKS);
+        h.assertValueEqual(beef.experience(), 3.5, "a steak gives 3.5");
+        h.assertValueEqual(beef.takeExperience(player), 3, "three whole points are handed over");
+        h.assertValueEqual(beef.experience(), 0.5, "and the half stays");
+        h.succeed();
+    }
+
+    /** Every item banks its recipe's experience, however many slots run at once and however short the energy is. */
+    @GameTest
+    public void everyItemBanksItsExperienceWithAllEightSlotsRunning(GameTestHelper h) {
+        placed = 0;
+        NexusFurnaceBlockEntity full = furnace(h);
+        for (int i = 0; i < 8; i++) full.setItem(i, new ItemStack(Items.RAW_IRON, 64));
+        for (int t = 0; t < 64 * NexusFurnaceBlockEntity.COOK_TICKS; t++) {
+            full.energy().set(NexusFurnaceBlockEntity.CAPACITY);
+            tick(h, full, 1);
+            for (int i = 0; i < 8; i++) if (full.getItem(8 + i).getCount() >= 60) full.setItem(8 + i, ItemStack.EMPTY); // an output taken away
+        }
+        h.assertValueEqual(count(full, 0, 8, Items.RAW_IRON), 0, "all 512 raw iron cooked");
+        h.assertValueEqual(full.experience(), 3584.0, "512 raw iron bank exactly 3,584 points (7 each)");
+
+        // Short of energy the slots take turns, and every item still banks its experience
+        NexusFurnaceBlockEntity short_ = furnace(h);
+        for (int i = 0; i < 8; i++) short_.setItem(i, new ItemStack(Items.RAW_IRON, 16));
+        int cooked = 0;
+        for (int t = 0; t < 40_000 && count(short_, 0, 8, Items.RAW_IRON) > 0; t++) {
+            short_.energy().set(3L * NexusFurnaceBlockEntity.ENERGY_PER_SLOT);
+            tick(h, short_, 1);
+            for (int i = 0; i < 8; i++) {
+                int made = short_.getItem(8 + i).getCount();
+                cooked += made;
+                if (made > 0) short_.setItem(8 + i, ItemStack.EMPTY);
+            }
+        }
+        h.assertValueEqual(cooked, 128, "128 ingots made on three slots' worth of energy");
+        h.assertValueEqual(short_.experience(), 896.0, "and exactly 896 points banked");
+        h.succeed();
+    }
+
+    /** Ten times 0.7 is 7: adding up the recipe's float must not leave the bank a hair short, which would floor to 6. */
+    @GameTest
+    public void theBankNeverDriftsBelowAWholeNumber(GameTestHelper h) {
+        placed = 0;
+        NexusFurnaceBlockEntity f = furnace(h);
+        f.energy().set(NexusFurnaceBlockEntity.CAPACITY);
+        f.setItem(0, new ItemStack(Items.RAW_IRON, 10));
+        for (int t = 0; t < 10 * NexusFurnaceBlockEntity.COOK_TICKS; t++) tick(h, f, 1);
+        h.assertValueEqual(count(f, 8, 16, Items.IRON_INGOT), 10, "ten ingots");
+        h.assertTrue(f.experience() == 70.0, "ten raw iron bank exactly 70 points: " + f.experience());
+        h.assertValueEqual(f.takeExperience(h.makeMockServerPlayerInLevel()), 70, "and 70 are handed over");
+        // A big bank is exact too: addExperience adds thousandths without drift
+        NexusFurnaceBlockEntity big = furnace(h);
+        for (int i = 0; i < 100_000; i++) big.addExperience(0.7);
+        h.assertTrue(big.experience() == 70_000.0, "100,000 times 0.7 is exactly 70,000: " + big.experience());
+        h.succeed();
+    }
+
+    /** The number the screen shows is the number Collect hands over, even for a bank far past 32,767. */
+    @GameTest
+    public void theScreenNumberIsWhatCollectHandsOver(GameTestHelper h) {
+        placed = 0;
+        NexusFurnaceBlockEntity f = furnace(h);
+        f.addExperience(123_456.789);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        var menu = new net.storagenexus.energy.NexusFurnaceMenu(1, player.getInventory(), f);
+        h.assertValueEqual(menu.experience(), 123_456, "the menu's number is the whole points, not capped at 32,767");
+        h.assertValueEqual(f.takeExperience(player), 123_456, "and Collect hands over exactly that");
+        h.assertValueEqual(menu.experience(), 0, "leaving the fraction, which shows as 0");
         h.succeed();
     }
 

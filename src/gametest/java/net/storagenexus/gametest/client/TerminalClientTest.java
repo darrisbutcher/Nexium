@@ -54,6 +54,12 @@ public class TerminalClientTest implements FabricClientGameTest {
             ctx.waitFor(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> s && s.getMenu() instanceof TerminalMenu);
             ctx.waitTicks(40);
             ctx.takeScreenshot("terminal_open");
+            // The grid starts sorted A to Z, not by count (oak planks hold the most)
+            java.util.List<String> names = ctx.computeOnClient(mc -> ((net.storagenexus.client.screen.CraftingTerminalScreen) mc.gui.screen()).gridNames());
+            int diamond = names.indexOf("Diamond"), iron = names.indexOf("Iron Ingot"), planks = names.indexOf("Oak Planks");
+            if (diamond < 0 || iron < 0 || planks < 0 || !(diamond < iron && iron < planks)) {
+                throw new AssertionError("Expected: the terminal starts sorted A to Z, got " + names);
+            }
 
             for (int pass = 0; pass < 3; pass++) {
                 System.out.println("=== pass " + pass + (pass == 1 ? " (recipe book open)" : pass == 2 ? " (gui scale 2, drag)" : ""));
@@ -72,15 +78,16 @@ public class TerminalClientTest implements FabricClientGameTest {
                     });
                     ctx.waitTicks(10);
                 }
-                expect(click(ctx, 0, 0, LEFT, false, "left on planks (take stack)"), "carried=[64 minecraft:oak_planks]");
+                // The grid starts A to Z: diamonds, iron ingots, oak planks
+                expect(click(ctx, 0, 0, LEFT, false, "left on diamonds (take stack)"), "carried=[7 minecraft:diamond]");
                 expect(click(ctx, 5, 0, LEFT, false, "left on empty cell (deposit all)"), "carried=[0 minecraft:air]");
-                expect(click(ctx, 0, 0, RIGHT, false, "right on planks (take one)"), "carried=[1 minecraft:oak_planks]");
-                expect(click(ctx, 0, 0, RIGHT, false, "right on planks (deposit one)"), "carried=[0 minecraft:air]");
+                expect(click(ctx, 0, 0, RIGHT, false, "right on diamonds (take one)"), "carried=[1 minecraft:diamond]");
+                expect(click(ctx, 0, 0, RIGHT, false, "right on diamonds (deposit one)"), "carried=[0 minecraft:air]");
                 click(ctx, 1, 0, LEFT, true, "shift-left on iron (to inventory)");
-                click(ctx, 2, 0, RIGHT, false, "right on diamonds (take one)");
-                click(ctx, 8, 0, LEFT, false, "left on empty cell holding diamond (deposit)");
+                click(ctx, 2, 0, RIGHT, false, "right on planks (take one)");
+                click(ctx, 8, 0, LEFT, false, "left on empty cell holding a plank (deposit)");
                 click(ctx, 2, 1, LEFT, false, "left, 2nd row empty");
-                if (pass == 2) { click(ctx, 0, 0, LEFT, false, "scale2: take planks"); click(ctx, 4, 7, LEFT, false, "scale2: deposit deep row"); click(ctx, 0, 0, RIGHT, false, "scale2: take one iron/planks"); click(ctx, 4, 7, RIGHT, false, "scale2: deposit one deep row"); }
+                if (pass == 2) { click(ctx, 0, 0, LEFT, false, "scale2: take diamonds"); click(ctx, 4, 7, LEFT, false, "scale2: deposit deep row"); click(ctx, 0, 0, RIGHT, false, "scale2: take one diamond"); click(ctx, 4, 7, RIGHT, false, "scale2: deposit one deep row"); }
             }
             // ---- a stack of mod items (Gold Barrel Upgrades), alone in the network
             ctx.runOnClient(mc -> mc.player.containerMenu.setCarried(ItemStack.EMPTY));

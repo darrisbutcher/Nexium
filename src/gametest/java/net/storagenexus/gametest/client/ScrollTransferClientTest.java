@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +14,9 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BundleContents;
+
+import java.util.stream.Stream;
 
 /**
  * The scroll wheel over a stack moves one item at a time: down sends it to the other inventory, up pulls a matching one
@@ -67,6 +71,26 @@ public class ScrollTransferClientTest implements FabricClientGameTest {
             check(inChest(Items.BREAD) == 5 && inInventory(world, Items.BREAD) == 0, "the hotbar bread went to the chest: " + inChest(Items.BREAD));
             check(ctx.computeOnClient(mc -> ((AbstractContainerScreen<?>) mc.gui.screen()).getMenu().getCarried().isEmpty()), "nothing is left on the cursor");
 
+            // A bundle is left alone: the wheel over it must not pour items out of it, nor move it (vanilla uses the wheel
+            // there to pick which item in it is shown)
+            world.getServer().runOnServer(server -> {
+                ItemStack bundle = new ItemStack(Items.BUNDLE);
+                bundle.set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY.copyWithContents(Stream.of(new ItemStack(Items.APPLE, 5))));
+                server.getPlayerList().getPlayers().get(0).getInventory().setItem(11, bundle);
+            });
+            ctx.waitTicks(4);
+            int applesBefore = inChest(Items.APPLE);
+            moveTo(ctx, 8 + 18 * 2, 85);
+            ctx.getInput().scroll(-1);
+            ctx.waitTicks(6);
+            ctx.getInput().scroll(1);
+            ctx.waitTicks(6);
+            check(inChest(Items.APPLE) == applesBefore, "no apples came out of the bundle into the chest: " + inChest(Items.APPLE) + " apples in the chest");
+            check(bundleApples(world) == 5, "the bundle still holds its 5 apples, it holds " + bundleApples(world));
+            check(chestStacks(Items.BUNDLE) == 0, "and the bundle itself stayed in the inventory");
+            check(inInventory(world, Items.APPLE) == 1, "nothing else came out into the inventory: " + inInventory(world, Items.APPLE) + " loose apples");
+            check(ctx.computeOnClient(mc -> ((AbstractContainerScreen<?>) mc.gui.screen()).getMenu().getCarried().isEmpty()), "nothing is on the cursor");
+
             // The player's own inventory screen keeps vanilla's wheel: nothing moves
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
@@ -105,6 +129,17 @@ public class ScrollTransferClientTest implements FabricClientGameTest {
         int n = 0;
         for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(item)) n += chest.getItem(i).getCount();
         return n;
+    }
+
+    /** How many apples the bundle in inventory slot 11 holds. */
+    private static int bundleApples(TestSingleplayerContext world) {
+        int[] n = new int[1];
+        world.getServer().runOnServer(server -> {
+            ItemStack bundle = server.getPlayerList().getPlayers().get(0).getInventory().getItem(11);
+            BundleContents contents = bundle.get(DataComponents.BUNDLE_CONTENTS);
+            if (contents != null) n[0] = contents.itemCopies().mapToInt(ItemStack::getCount).sum();
+        });
+        return n[0];
     }
 
     private int chestStacks(Item item) {
