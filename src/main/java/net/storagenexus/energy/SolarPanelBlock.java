@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
-/** The Solar Panel: 20 NE a tick by day with open sky above it, nothing at night or in rain. Costs nothing to run. */
+/** The Solar Panel: 30 NE a tick by day with open sky above it (8 in rain), nothing at night. Costs nothing to run. */
 public class SolarPanelBlock extends BaseEntityBlock {
     public SolarPanelBlock(Properties properties) {
         super(properties);

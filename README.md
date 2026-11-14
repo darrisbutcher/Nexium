@@ -98,10 +98,12 @@ so on):
 * **Hold Space and left click** an item and **every stack of that same item** in that inventory goes to the other one (the
   player's main inventory and hotbar count as one inventory), not just the stack you clicked.
 * **Hold Shift, left click and drag** across slots and **every item the cursor passes over** goes to the other inventory. The
-  first slot you press is the ordinary shift-click.
+  first slot you press is the ordinary shift-click. In your own inventory screen this works between the **hotbar and the
+  main inventory**, in both directions.
 
 Each stack moves with the ordinary shift-click, so where it lands is the screen's own rule. Plain shift + click keeps vanilla's
-single stack. The survival inventory screen, the creative menu and crafting results keep vanilla's clicks.
+single stack. In the survival inventory screen only the shift + click and drag is added (Space + click is not); the creative
+menu and crafting results keep vanilla's clicks.
 
 ### Disk Drive and storage disks
 Digital storage for the network, counted like Refined Storage: a disk holds a number of items, of any kinds.
@@ -452,7 +454,6 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
 | **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 5 ochre, 5 verdant and 5 pearlescent froglights |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, poplar, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
-| **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
 | **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. |
 
 ### Power (Nexus Energy)
@@ -465,15 +466,15 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 | Block | Makes | Notes |
 |---|---|---|
 | **Combustion Generator** | 20 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
-| **Solar Panel** | 20 NE/t | Daylight with open sky above; 5 NE/t in rain; nothing at night or under a roof |
+| **Solar Panel** | 30 NE/t | Daylight with open sky above; 8 NE/t in rain; nothing at night or under a roof; stores 5,000 NE |
 | **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
 | **Redstone Reactor** | up to 2,700 NE/t | Stores 1,000,000 NE; see below |
 
-* **Energy Conduit**: Tier 1 moves 500 NE/t a side, the Ender Energy Conduit (Tier 2) 4,000 NE/t. Touching Energy Conduits
-  form one network with a **shared pool**: each segment holds 2,000 NE (Tier 1) or 16,000 (Tier 2), added together, so a
-  long run keeps a reserve. Generators and Batteries on its sides fill the pool and machines draw from it, highest
-  priority first and equal priorities evenly. **Batteries come last** and only take what is above half of the pool, so a
-  Battery never starves a farm. Sides can be set to extract or insert as with the other conduits; energy ignores colour
+* **Energy Conduit**: Tier 1 moves 2,500 NE/t a side, the Ender Energy Conduit (Tier 2) 50,000 NE/t. Touching Energy Conduits
+  form one network with a **shared pool**: each segment holds 10,000 NE (Tier 1) or 200,000 (Tier 2), added together, so a
+  long run keeps a reserve. Generators on its sides fill the pool and machines draw from it, highest priority first
+  and equal priorities evenly. **Batteries are the backup**: they give only what the generators leave short of what the machines
+  want, and they take whatever is left over, so a Battery neither starves a farm nor drains itself into the cable. Sides can be set to extract or insert as with the other conduits; energy ignores colour
   channels. A broken conduit loses its share of the pool.
 * **Jade** (optional): with Jade installed, looking at any of these blocks, or an Energy Conduit (its whole network), shows
   the energy it holds.
@@ -496,7 +497,7 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 
 * **Eight inputs, eight outputs**: each input slot has an output slot of its own. It cooks anything a furnace, a blast
   furnace or a smoker does, each item in **2.5 seconds**.
-* **30 NE/t for every working slot** (240 NE/t for all eight), with a buffer of ten seconds' worth. With less energy than the
+* **10 NE/t for every working slot** (80 NE/t for all eight), with a buffer of ten seconds' worth. With less energy than the
   working slots need, it runs as many slots as it can pay for and they take turns, so all of them cook the same amount over
   time. Its screen shows how many are cooking.
 * **A stack you put in is shared out evenly** over the input slots, by hand, shift-click, hopper or pipe: 64 iron ore become

@@ -86,16 +86,22 @@ public class EnergyGameTest {
         h.assertTrue(one.connectsTo(ConduitType.ENERGY, Direction.WEST), "it joins the generator");
         h.assertTrue(two.connectsTo(ConduitType.ENERGY, Direction.EAST), "and the farm");
         g.energy().set(CombustionGeneratorBlockEntity.CAPACITY);
-        // One tick of a Tier 1 conduit moves 500 NE
+        // One tick of a Tier 1 conduit moves up to 2,500 NE: more than the farm holds, so it is filled at once
+        long room = farm.energy().capacity();
+        h.assertTrue(room < ConduitBundleBlockEntity.ENERGY_TIER_1, "the farm holds less than a tick of a Tier 1 conduit: " + room);
+        nextTick(h);
         ConduitBundleBlockEntity.serverTick(h.getLevel(), one.getBlockPos(), one.getBlockState(), one);
-        h.assertValueEqual(farm.energy().stored(), 500L, "500 NE a tick on Tier 1");
-        h.assertValueEqual(g.energy().stored(), CombustionGeneratorBlockEntity.CAPACITY - 500, "taken from the generator");
-        // Tier 2 moves 4,000 a tick (the farm holds 2,000)
+        h.assertValueEqual(farm.energy().stored(), room, "the farm is filled in a tick on Tier 1");
+        // The generator fills the pool first (a full 2,500); what the farm could not hold stays in the cable
+        h.assertValueEqual(g.energy().stored(), CombustionGeneratorBlockEntity.CAPACITY - ConduitBundleBlockEntity.ENERGY_TIER_1, "a Tier 1 tick taken from the generator");
+        h.assertValueEqual(net.storagenexus.conduit.EnergyNetwork.of(one).stored(), ConduitBundleBlockEntity.ENERGY_TIER_1 - room, "the rest waits in the cable");
+        // Tier 2 does the same once the farm is empty again
+        farm.energy().set(0);
         one.addConduit(ConduitType.ENERGY, 2);
         two.addConduit(ConduitType.ENERGY, 2);
+        nextTick(h);
         ConduitBundleBlockEntity.serverTick(h.getLevel(), one.getBlockPos(), one.getBlockState(), one);
-        ConduitBundleBlockEntity.serverTick(h.getLevel(), one.getBlockPos(), one.getBlockState(), one);
-        h.assertValueEqual(farm.energy().stored(), 2000L, "filled in a tick on Tier 2");
+        h.assertValueEqual(farm.energy().stored(), room, "filled in a tick on Tier 2");
         h.succeedWhen(() -> h.assertTrue(farm.progress() >= 20, "the farm runs: progress " + farm.progress()));
     }
 
@@ -104,15 +110,17 @@ public class EnergyGameTest {
         BlockPos pos = new BlockPos(2, 2, 2);
         h.setBlock(pos, ModBlocks.SOLAR_PANEL);
         net.storagenexus.energy.SolarPanelBlockEntity panel = h.getBlockEntity(pos, net.storagenexus.energy.SolarPanelBlockEntity.class);
-        h.assertValueEqual(net.storagenexus.energy.SolarPanelBlockEntity.OUTPUT, 20, "20 NE a tick");
+        h.assertValueEqual(net.storagenexus.energy.SolarPanelBlockEntity.OUTPUT, 30, "30 NE a tick");
+        h.assertValueEqual(net.storagenexus.energy.SolarPanelBlockEntity.CAPACITY, 5_000L, "it stores 5,000 NE");
+        h.assertValueEqual(panel.energy().capacity(), 5_000L, "in its buffer");
         var level = h.getLevel();
         BlockPos abs = h.absolutePos(pos);
-        h.assertValueEqual(net.storagenexus.energy.SolarPanelBlockEntity.RAIN_OUTPUT, 5, "a quarter in rain");
+        h.assertValueEqual(net.storagenexus.energy.SolarPanelBlockEntity.RAIN_OUTPUT, 8, "8 NE a tick in rain");
         long expected = net.storagenexus.energy.SolarPanelBlockEntity.output(level, abs);
         net.storagenexus.energy.SolarPanelBlockEntity.serverTick(level, abs, h.getBlockState(pos), panel);
         // Whether it is day depends on when the test world runs, so the output is checked against the same rule
         h.assertValueEqual(panel.energy().stored(), expected, "what the rule says");
-        h.assertTrue(expected == 0 || expected == 20 || expected == 5, "0, 5 or 20");
+        h.assertTrue(expected == 0 || expected == 30 || expected == 8, "0, 8 or 30");
         // Under a roof it makes nothing
         panel.energy().set(0);
         h.setBlock(pos.above(), net.minecraft.world.level.block.Blocks.STONE);
@@ -189,9 +197,11 @@ public class EnergyGameTest {
         conduit.addConduit(ConduitType.ENERGY, 1);
         net.storagenexus.energy.BatteryBlockEntity b = h.getBlockEntity(battery, net.storagenexus.energy.BatteryBlockEntity.class);
         b.energy().set(100_000);
+        nextTick(h);
         ConduitBundleBlockEntity.serverTick(h.getLevel(), conduit.getBlockPos(), conduit.getBlockState(), conduit);
-        h.assertValueEqual(farm.energy().stored(), 500L, "the conduit takes 500 NE a tick out of the battery");
-        h.assertValueEqual(b.energy().stored(), 99_500L, "from the battery");
+        long room = farm.energy().capacity();
+        h.assertValueEqual(farm.energy().stored(), room, "the conduit fills the farm out of the battery in a tick");
+        h.assertValueEqual(b.energy().stored(), 100_000L - room, "from the battery");
         h.succeed();
     }
 
@@ -343,7 +353,7 @@ public class EnergyGameTest {
         }
         var network = net.storagenexus.conduit.EnergyNetwork.of(c[0]);
         h.assertValueEqual(network.size(), 3, "three conduits in one network");
-        h.assertValueEqual(network.capacity(), 2_000L + 2_000L + 16_000L, "their capacities add up");
+        h.assertValueEqual(network.capacity(), 10_000L + 10_000L + 200_000L, "their capacities add up");
         h.assertValueEqual(network.insert(5_000), 5_000L, "the pool takes energy");
         h.assertValueEqual(network.stored(), 5_000L, "and holds it");
         h.assertValueEqual(c[0].energyStored() + c[1].energyStored() + c[2].energyStored(), 5_000L, "spread over the conduits");
@@ -388,39 +398,113 @@ public class EnergyGameTest {
         h.succeed();
     }
 
+    /** A Reactor with plenty stored on one side of a conduit and a Battery on the other: one tick moves the conduit's rate. */
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
-    public void aBatteryOnlyTakesWhatIsLeftOverAndAFarmIsServedFirst(GameTestHelper h) {
+    public void conduitsMove2500AndFiftyThousandEnergyATick(GameTestHelper h) {
+        h.assertValueEqual(ConduitBundleBlockEntity.ENERGY_TIER_1, 2_500L, "Tier 1 moves 2,500 NE a tick");
+        h.assertValueEqual(ConduitBundleBlockEntity.ENERGY_TIER_2, 50_000L, "Tier 2 moves 50,000 NE a tick");
+        h.assertValueEqual(net.storagenexus.conduit.EnergyNetwork.CAPACITY_TIER_1, 10_000L, "a Tier 1 segment holds 10,000");
+        h.assertValueEqual(net.storagenexus.conduit.EnergyNetwork.CAPACITY_TIER_2, 200_000L, "a Tier 2 segment holds 200,000");
         BlockPos conduit = new BlockPos(3, 2, 3);
         h.setBlock(conduit, ModBlocks.CONDUIT_BUNDLE);
         ConduitBundleBlockEntity c = h.getBlockEntity(conduit, ConduitBundleBlockEntity.class);
         c.addConduit(ConduitType.ENERGY, 1);
-        CombustionGeneratorBlockEntity g = generator(h);
+        h.setBlock(conduit.west(), ModBlocks.REDSTONE_REACTOR);
+        var reactor = h.getBlockEntity(conduit.west(), net.storagenexus.energy.RedstoneReactorBlockEntity.class);
+        h.setBlock(conduit.east(), ModBlocks.IRON_BATTERY);
+        var battery = h.getBlockEntity(conduit.east(), net.storagenexus.energy.BatteryBlockEntity.class);
+        reactor.energy().set(900_000);
+        battery.energy().set(0);
+        nextTick(h);
+        netTick(h, c);
+        h.assertValueEqual(battery.energy().stored(), 2_500L, "2,500 NE in one tick on Tier 1");
+        h.assertValueEqual(reactor.energy().stored(), 900_000L - 2_500L, "taken from the reactor");
+        c.addConduit(ConduitType.ENERGY, 2);
+        battery.energy().set(0);
+        reactor.energy().set(900_000);
+        nextTick(h);
+        netTick(h, c);
+        h.assertValueEqual(battery.energy().stored(), 50_000L, "50,000 NE in one tick on Tier 2");
+        h.assertValueEqual(reactor.energy().stored(), 900_000L - 50_000L, "taken from the reactor");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void aBatteryGivesOnlyWhatTheGeneratorsLeaveShortAndTakesTheRest(GameTestHelper h) {
+        BlockPos conduit = new BlockPos(3, 2, 3);
+        h.setBlock(conduit, ModBlocks.CONDUIT_BUNDLE);
+        ConduitBundleBlockEntity c = h.getBlockEntity(conduit, ConduitBundleBlockEntity.class);
+        c.addConduit(ConduitType.ENERGY, 1);
+        // A battery (the backup), a farm (the machine) and a generator with a little energy on one conduit
         h.setBlock(conduit.north(), ModBlocks.IRON_BATTERY);
         var battery = h.getBlockEntity(conduit.north(), net.storagenexus.energy.BatteryBlockEntity.class);
         FarmBlockEntity farm = farm(h, conduit.south());
+        h.setBlock(conduit.east(), ModBlocks.SOLAR_PANEL);
+        var panel = h.getBlockEntity(conduit.east(), net.storagenexus.energy.SolarPanelBlockEntity.class);
         farm.energy().set(0);
-        battery.energy().set(0);
-        // A source with a little energy: the generator is two blocks away, so use a second battery as the source
-        h.setBlock(conduit.east(), ModBlocks.GOLD_BATTERY);
-        var source = h.getBlockEntity(conduit.east(), net.storagenexus.energy.BatteryBlockEntity.class);
-        source.energy().set(1_000_000);
-        c.config(ConduitType.ENERGY, Direction.EAST).mode = SideConfig.Mode.EXTRACT;
-        c.config(ConduitType.ENERGY, Direction.NORTH).mode = SideConfig.Mode.INSERT;
-        c.config(ConduitType.ENERGY, Direction.SOUTH).mode = SideConfig.Mode.INSERT;
+        battery.energy().set(100_000);
+        panel.energy().set(0);
         c.changed();
+        // The panel has nothing: the farm is short, so the battery covers it
+        long room = farm.energy().capacity();
         net.storagenexus.util.StorageEvents.conduitsChanged();
         netTick(h, c);
-        // The source gives 500 a tick: the farm takes all of it first, the battery nothing
-        h.assertValueEqual(farm.energy().stored(), 500L, "the farm is served first");
-        h.assertValueEqual(battery.energy().stored(), 0L, "the battery gets nothing while a machine wants it all");
-        // With the farm full, the pool builds up, and the battery takes only what is above half of the pool
+        h.assertValueEqual(farm.energy().stored(), room, "the farm is served, from the battery");
+        h.assertValueEqual(battery.energy().stored(), 100_000L - room, "the battery gave exactly what the farm took");
+        // The panel has 1,500 and the farm wants its full room: the panel goes first, the battery makes up the rest
+        farm.energy().set(0);
+        battery.energy().set(100_000);
+        panel.energy().set(1_500);
+        net.storagenexus.util.StorageEvents.conduitsChanged();
+        netTick(h, c);
+        h.assertValueEqual(farm.energy().stored(), room, "the farm gets all it wants");
+        h.assertValueEqual(panel.energy().stored(), 0L, "all of the panel's energy was used first");
+        h.assertValueEqual(battery.energy().stored(), 100_000L - (room - 1_500L), "and the battery gave only what was short");
+        // With the farm full, the panel's energy charges the battery instead, and the battery gives nothing
         farm.energy().set(farm.energy().capacity());
-        for (int i = 0; i < 6; i++) {
-            net.storagenexus.util.StorageEvents.conduitsChanged();
-            netTick(h, c);
+        battery.energy().set(1_000);
+        panel.energy().set(400);
+        net.storagenexus.util.StorageEvents.conduitsChanged();
+        netTick(h, c);
+        h.assertValueEqual(battery.energy().stored(), 1_400L, "the surplus charges the battery");
+        h.assertValueEqual(panel.energy().stored(), 0L, "the panel gave it all");
+        h.succeed();
+    }
+
+    /** What was reported: a Solar Panel, a run of conduits and a Battery. The Battery has to charge, and a panel never takes energy in. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void aSolarPanelChargesABatteryThroughConduitsAndGeneratorsNeverTakeEnergyIn(GameTestHelper h) {
+        BlockPos first = new BlockPos(1, 2, 3);
+        ConduitBundleBlockEntity[] run = new ConduitBundleBlockEntity[6];
+        for (int i = 0; i < run.length; i++) {
+            h.setBlock(first.east(i + 1), ModBlocks.CONDUIT_BUNDLE);
+            run[i] = h.getBlockEntity(first.east(i + 1), ConduitBundleBlockEntity.class);
+            run[i].addConduit(ConduitType.ENERGY, 1);
         }
-        h.assertTrue(battery.energy().stored() > 0, "the surplus goes to the battery: " + battery.energy().stored());
-        h.assertTrue(net.storagenexus.conduit.EnergyNetwork.of(c).stored() >= 999L, "while half the pool stays in reserve: " + net.storagenexus.conduit.EnergyNetwork.of(c).stored());
+        h.setBlock(first, ModBlocks.IRON_BATTERY);
+        var battery = h.getBlockEntity(first, net.storagenexus.energy.BatteryBlockEntity.class);
+        h.setBlock(first.east(run.length + 1), ModBlocks.SOLAR_PANEL);
+        var one = h.getBlockEntity(first.east(run.length + 1), net.storagenexus.energy.SolarPanelBlockEntity.class);
+        long made = 0;
+        for (int tick = 0; tick < 200; tick++) {
+            made += one.energy().add(net.storagenexus.energy.SolarPanelBlockEntity.OUTPUT, false);   // what the sun gives each tick
+            net.storagenexus.util.StorageEvents.conduitsChanged();
+            netTick(h, run[0]);
+        }
+        h.assertTrue(battery.energy().stored() >= made - 400, "the battery holds what the panel made: " + battery.energy().stored() + " of " + made);
+        h.assertTrue(battery.energy().stored() > 500, "well past 500 NE: " + battery.energy().stored());
+        // A second panel on the same run: panels never take energy in, so the first one's charge only ever leaves
+        h.setBlock(first.east(0).above(), ModBlocks.SOLAR_PANEL);
+        h.setBlock(first.east(run.length / 2 + 1).above(), ModBlocks.SOLAR_PANEL);
+        var two = h.getBlockEntity(first.east(run.length / 2 + 1).above(), net.storagenexus.energy.SolarPanelBlockEntity.class);
+        h.assertValueEqual(two.energy().insert(100, false), 0L, "a Solar Panel takes nothing in from outside");
+        one.energy().set(400);
+        two.energy().set(0);
+        long before = battery.energy().stored();
+        net.storagenexus.util.StorageEvents.conduitsChanged();
+        netTick(h, run[0]);
+        h.assertValueEqual(two.energy().stored(), 0L, "the second panel was not filled from the first");
+        h.assertValueEqual(battery.energy().stored(), before + 400, "the first panel's 400 went to the battery");
         h.succeed();
     }
 }
