@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nexusessentials:xp_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexusessentials:blocks/xp_farm"
+}

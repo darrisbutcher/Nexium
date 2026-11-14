@@ -444,7 +444,7 @@ A comparator reads how full the output is, and 15 once the farm has stopped for 
 | **Bamboo Farm** | 32 bamboo, 4 water buckets, 8 pistons, 16 observers, 576 dirt | 4 bamboo every 20 seconds |
 | **Nether Wart Farm** | 32 nether wart, 16 soul sand, 4 lava buckets, 8 magma blocks, 576 netherrack | 4 nether wart every 30 seconds |
 
-The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. Every farm asks for the same filler: 576 (nine stacks) of one block, except the Tree Farm (18 stacks of logs).
+The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven targets. Every farm asks for the same filler: 576 (nine stacks) of one block, except the Tree Farm (18 stacks of logs) and the Experience Farm (one stack of Bottles o' Enchanting).
 
 **More farms** (576 of their filler block; mobs are spawn eggs or Captured Mobs):
 
@@ -461,6 +461,7 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
 | **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 5 ochre, 5 verdant and 5 pearlescent froglights |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, poplar, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
+| **Experience Farm** | 64 Bottles o' Enchanting; no other parts | Makes **40 XP a second** (2 a tick) on **10 NE/t** and banks it up to **200 levels' worth** (149,720 points). Right-click it: **Collect all** gives you everything banked, **+1 level** and **+10 levels** give just enough to rise that many levels (or all that is banked if less). It stops when full and starts again once you collect; a redstone signal pauses it, a comparator reads how full the bank is, and broken it gives the bank back as experience orbs. XP is only collected by hand: it cannot be moved by conduits |
 | **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. |
 
 ### Power (Nexus Energy)

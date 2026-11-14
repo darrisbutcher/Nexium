@@ -123,6 +123,7 @@
         "mossfarm",
         "froglightfarm",
         "treefarm",
+        "xpfarm",
         "power",
         "freezer",
         "harvest"
@@ -1234,6 +1235,7 @@
         "mossfarm",
         "froglightfarm",
         "treefarm",
+        "xpfarm",
         "iron_farm"
       ]
     },
@@ -1838,6 +1840,24 @@
       "see": [
         "farms",
         "iron_farm"
+      ]
+    },
+    "xpfarm": {
+      "pages": [
+        "mobs.xpfarm"
+      ],
+      "icon": "nexusessentials:xp_farm",
+      "items": [
+        "nexusessentials:xp_farm"
+      ],
+      "aliases": [
+        "Experience Farm",
+        "XP Farm",
+        "Experience"
+      ],
+      "see": [
+        "farms",
+        "power"
       ]
     },
     "froglightfarm": {

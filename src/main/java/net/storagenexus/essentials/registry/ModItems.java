@@ -56,6 +56,11 @@ public final class ModItems {
             .useBlockDescriptionPrefix()
             .rarity(Rarity.UNCOMMON));
 
+    /** The Experience Farm. Only made at the Farm Assembler, but creative players find it in the Farms and Power tab. */
+    public static final net.storagenexus.essentials.xpfarm.XpFarmItem XP_FARM = register("xp_farm",
+            p -> new net.storagenexus.essentials.xpfarm.XpFarmItem(ModBlocks.XP_FARM, p), new Item.Properties()
+                    .useBlockDescriptionPrefix()
+                    .rarity(Rarity.UNCOMMON));
     /** The other one-block farms. Only made at the Farm Assembler, but creative players find them in the Nexium tab. */
     public static final Map<FarmKind, FarmItem> FARMS = new EnumMap<>(FarmKind.class);
 
@@ -79,7 +84,7 @@ public final class ModItems {
      * meaningless, so it only comes from picking up a mob.
      */
     public static final List<Item> TAB_ORDER = java.util.stream.Stream.concat(
-            java.util.stream.Stream.of(MAGNET, BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM), FARMS.values().stream()).map(i -> (Item) i).toList();
+            java.util.stream.Stream.of(MAGNET, BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream()).map(i -> (Item) i).toList();
 
     public static void init() {}
 
