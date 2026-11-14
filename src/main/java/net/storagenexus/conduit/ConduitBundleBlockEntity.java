@@ -45,7 +45,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     private static final int FLUID_INTERVAL = 5;
     private static final long DROPLETS_PER_MB = 81;
     /** Nexus Energy an Energy Conduit moves each tick, per extracting side. */
-    public static final long ENERGY_TIER_1 = 500, ENERGY_TIER_2 = 4000;
+    public static final long ENERGY_TIER_1 = 2_500, ENERGY_TIER_2 = 50_000;
 
     private final int[] tiers = new int[ConduitType.VALUES.length];
     private final SideConfig[][] configs = new SideConfig[ConduitType.VALUES.length][6];
@@ -308,7 +308,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     /** NE this conduit holds (its share of the network's pool). */
     public long energyStored() { return energy; }
 
-    /** NE this conduit holds when full: 2,000 at Tier 1, 16,000 at Tier 2, nothing without an Energy Conduit. */
+    /** NE this conduit holds when full: 10,000 at Tier 1, 200,000 at Tier 2, nothing without an Energy Conduit. */
     public long energyCapacity() {
         int tier = tier(ConduitType.ENERGY);
         return tier <= 0 ? 0 : tier >= 2 ? EnergyNetwork.CAPACITY_TIER_2 : EnergyNetwork.CAPACITY_TIER_1;

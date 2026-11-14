@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
@@ -16,7 +17,8 @@ import net.minecraft.world.item.Items;
 
 /**
  * Space + left click on an item sends every stack of that item to the other inventory (shift + click stays vanilla's
- * single stack), and shift + left click and drag moves every item the cursor passes over.
+ * single stack), and shift + left click and drag moves every item the cursor passes over. In the player's own inventory
+ * screen the drag moves between the hotbar and the main inventory, and Space + click stays vanilla's.
  */
 public class ShiftTransferClientTest implements FabricClientGameTest {
     private SimpleContainer chest;
@@ -70,6 +72,47 @@ public class ShiftTransferClientTest implements FabricClientGameTest {
                     "all the items arrived: bread " + inInventory(world, Items.BREAD) + ", torches " + inInventory(world, Items.TORCH));
             System.out.println("[nexus] shift drag: " + ctx.takeScreenshot("nexus_shift_drag"));
 
+            // The survival inventory screen: shift + drag along the hotbar sends everything to the main inventory
+            openInventory(ctx, world);
+            moveTo(ctx, 8, 142);
+            ctx.getInput().holdShift();
+            ctx.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            for (int col = 0; col < 9; col++) moveTo(ctx, 8 + 18 * col, 142);
+            ctx.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.getInput().releaseShift();
+            ctx.waitTicks(6);
+            check(inHotbar(world, Items.APPLE) + inHotbar(world, Items.BREAD) + inHotbar(world, Items.TORCH) == 0,
+                    "the drag emptied the hotbar");
+            check(inMain(world, Items.APPLE) == 74 && inMain(world, Items.BREAD) == 5 && inMain(world, Items.TORCH) == 22,
+                    "everything from the hotbar is in the main inventory: apples " + inMain(world, Items.APPLE));
+            System.out.println("[nexus] inventory drag down: " + ctx.takeScreenshot("nexus_inventory_drag_down"));
+
+            // And back: drag across the first row of the main inventory, it all goes to the hotbar
+            moveTo(ctx, 8, 84 + 18 * 2);
+            ctx.getInput().holdShift();
+            ctx.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            for (int row = 2; row >= 0; row--) {
+                for (int col = 0; col < 9; col++) moveTo(ctx, 8 + 18 * col, 84 + 18 * row);
+            }
+            ctx.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.getInput().releaseShift();
+            ctx.waitTicks(6);
+            check(inHotbar(world, Items.APPLE) > 0 && inHotbar(world, Items.BREAD) == 5 && inHotbar(world, Items.TORCH) == 22,
+                    "the main inventory drag filled the hotbar: apples " + inHotbar(world, Items.APPLE));
+            System.out.println("[nexus] inventory drag up: " + ctx.takeScreenshot("nexus_inventory_drag_up"));
+
+            // Space + click is off in this screen: the click picks the stack up as usual
+            openInventory(ctx, world);
+            moveTo(ctx, 8, 142);
+            ctx.getInput().holdKey(InputConstants.KEY_SPACE);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.getInput().releaseKey(InputConstants.KEY_SPACE);
+            ctx.waitTicks(4);
+            check(ctx.computeOnClient(mc -> ((AbstractContainerScreen<?>) mc.gui.screen()).getMenu().getCarried().is(Items.APPLE)),
+                    "Space + click still picks the stack up in the inventory screen");
+            check(inHotbar(world, Items.APPLE) == 10 && inMain(world, Items.APPLE) == 0,
+                    "no other stack of apples was sent anywhere: hotbar " + inHotbar(world, Items.APPLE) + ", main " + inMain(world, Items.APPLE));
+
         }
     }
 
@@ -93,10 +136,46 @@ public class ShiftTransferClientTest implements FabricClientGameTest {
         ctx.runOnClient(mc -> mc.gui.toastManager().clear());
     }
 
+    /** The player's own inventory screen, with a few stacks in the hotbar. */
+    private void openInventory(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        world.getServer().runOnServer(server -> {
+            ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+            player.closeContainer();
+            player.containerMenu.setCarried(ItemStack.EMPTY);
+            player.getInventory().clearContent();
+            player.getInventory().setItem(0, new ItemStack(Items.APPLE, 64));
+            player.getInventory().setItem(2, new ItemStack(Items.BREAD, 5));
+            player.getInventory().setItem(3, new ItemStack(Items.TORCH, 22));
+            player.getInventory().setItem(5, new ItemStack(Items.APPLE, 10));
+            player.containerMenu.broadcastChanges();
+        });
+        ctx.waitTicks(5);
+        ctx.setScreen(() -> new InventoryScreen(net.minecraft.client.Minecraft.getInstance().player));
+        ctx.waitTicks(5);
+        ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+    }
+
     private int inChest(Item item) {
         int n = 0;
         for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(item)) n += chest.getItem(i).getCount();
         return n;
+    }
+
+    private static int inHotbar(TestSingleplayerContext world, Item item) {
+        return slots(world, item, 0, 9);
+    }
+
+    private static int inMain(TestSingleplayerContext world, Item item) {
+        return slots(world, item, 9, 36);
+    }
+
+    private static int slots(TestSingleplayerContext world, Item item, int from, int to) {
+        int[] n = new int[1];
+        world.getServer().runOnServer(server -> {
+            var inventory = server.getPlayerList().getPlayers().get(0).getInventory();
+            for (int i = from; i < to; i++) if (inventory.getItem(i).is(item)) n[0] += inventory.getItem(i).getCount();
+        });
+        return n[0];
     }
 
     private static int inInventory(TestSingleplayerContext world, Item item) {

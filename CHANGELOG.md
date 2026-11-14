@@ -3,6 +3,23 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.10
+
+* **Fix: a Battery on an Energy Conduit now charges.** The conduit used to pull a Battery's charge into the cable at 500 NE a
+  tick and only give back what was above half of the cable's pool, so a Battery next to one or two Solar Panels never rose
+  past a few hundred NE (a second panel only made it look better by pushing the pool over half). Now **generators fill the
+  pool first**, the machines are served from it, and a **Battery gives only what is short** of what the machines want and
+  **takes whatever is left over**. Generators still never take energy in: a Solar Panel, Thermal or Combustion Generator or
+  the Reactor only stores and sends.
+* **Energy Conduit rates**: Tier 1 now moves **2,500 NE/t** a side (was 500) and Tier 2 **50,000 NE/t** (was 4,000). A
+  segment's share of the pool is four ticks of that, **10,000 NE** (Tier 1) and **200,000 NE** (Tier 2). The Tier 1
+  recipe now makes **8** conduits (was 6).
+* **Nexus Furnace** uses **10 NE/t** for every working slot (was 30), 80 NE/t for all eight. Its buffer is still ten seconds'
+  worth, so it now holds 16,000 NE (was 48,000).
+* **Solar Panel**: makes **30 NE/t** (was 20), **8 NE/t** in rain (was 5) and stores **5,000 NE** (was 400).
+* **Shift + click and drag now also works in your own inventory screen**: drag across the hotbar and the inventory to move
+  everything you cross to the other part. (Space + click stays in chests and machines only.)
+
 ## 1.21.9
 
 * **Nexus Furnace**: a furnace on Nexus Energy with **eight smelting slots running at once**, each with an output slot of its

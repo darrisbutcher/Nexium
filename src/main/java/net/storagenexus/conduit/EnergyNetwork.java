@@ -24,12 +24,13 @@ import java.util.WeakHashMap;
  * individual conduit, is what generators fill and machines draw from. The energy is kept in the conduits themselves, so it
  * survives the run being cut or joined; breaking a conduit loses its share.
  *
- * <p>Each tick the network (once, whichever member ticks first) pulls from the generators and batteries on its extracting
- * sides, then gives to the machines on its inserting sides: higher priority first, equal priorities sharing evenly.
- * Batteries come last and only take what is above half of the pool, so a machine is never starved by a battery filling.
+ * <p>Each tick the network (once, whichever member ticks first) pulls from the generators on its extracting sides, then
+ * gives to the machines on its inserting sides: higher priority first, equal priorities sharing evenly. Batteries are
+ * the backup: they give only what the generators leave short of the machines' demand, and they take whatever is left over,
+ * so a Battery neither starves a machine nor drains itself into the pool for nothing.
  */
 public final class EnergyNetwork {
-    public static final long CAPACITY_TIER_1 = 2_000, CAPACITY_TIER_2 = 16_000;
+    public static final long CAPACITY_TIER_1 = 10_000, CAPACITY_TIER_2 = 200_000;
 
     private static final int MAX_MEMBERS = 4096;
     private static final Map<ConduitBundleBlockEntity, EnergyNetwork> NETWORKS = new WeakHashMap<>();
@@ -129,28 +130,29 @@ public final class EnergyNetwork {
         }
         if (sources.isEmpty() && sinks.isEmpty()) return;
 
-        // Fill the pool from the generators and batteries
-        Set<BlockPos> feeding = new HashSet<>();
+        Set<BlockPos> gave = new HashSet<>();
+        List<Side> machines = new ArrayList<>(), batteries = new ArrayList<>();
+        for (Side s : sinks) (s.battery ? batteries : machines).add(s);
+        machines.sort(Comparator.comparingInt((Side s) -> -s.priority));
+
+        // 1. The generators fill the pool: their energy is free, so it is always taken first
+        for (Side s : sources) if (!s.battery) pull(level, s, s.rate, gave);
+
+        // 2. What the machines would take this tick, and how much of that the pool can't cover
+        long demand = 0;
+        for (Side s : machines) {
+            NexusEnergy dest = NexusEnergy.SIDED.find(level, s.pos, s.dir.getOpposite());
+            if (dest != null) demand += dest.insert(s.rate, true);
+        }
+        long shortfall = demand - stored();
+
+        // 3. Batteries only give what the generators leave short
         for (Side s : sources) {
-            NexusEnergy source = NexusEnergy.SIDED.find(level, s.pos, s.dir.getOpposite());
-            if (source == null) continue;
-            long take = Math.min(s.rate, source.extract(s.rate, true));
-            if (take <= 0) continue;
-            long fits = insert(take);
-            if (fits <= 0) continue;
-            long got = source.extract(fits, false);
-            if (got < fits) extract(fits - got); // the source gave less than it promised: hand the rest back
-            feeding.add(s.pos);
+            if (shortfall <= 0) break;
+            if (s.battery) shortfall -= pull(level, s, shortfall, gave);
         }
 
-        // Give it to the machines, then to batteries
-        long capacity = capacity();
-        List<Side> machines = new ArrayList<>(), batteries = new ArrayList<>();
-        for (Side s : sinks) {
-            if (feeding.contains(s.pos)) continue; // never feed a block the pool just took from
-            (s.battery ? batteries : machines).add(s);
-        }
-        machines.sort(Comparator.comparingInt((Side s) -> -s.priority));
+        // 4. The machines, highest priority first, equal priorities evenly
         int i = 0;
         while (i < machines.size()) {
             int j = i;
@@ -158,8 +160,25 @@ public final class EnergyNetwork {
             give(level, machines.subList(i, j), 0);
             i = j;
         }
-        // Batteries take only what is above half of the pool
-        give(level, batteries, capacity / 2);
+
+        // 5. Whatever is left charges the batteries (not one that just gave)
+        List<Side> charging = new ArrayList<>();
+        for (Side s : batteries) if (!gave.contains(s.pos)) charging.add(s);
+        give(level, charging, 0);
+    }
+
+    /** Moves up to {@code limit} NE (and no more than the side's rate and the pool's room) from the block on this side into the pool. */
+    private long pull(Level level, Side side, long limit, Set<BlockPos> gave) {
+        NexusEnergy source = NexusEnergy.SIDED.find(level, side.pos, side.dir.getOpposite());
+        if (source == null) return 0;
+        long take = Math.min(Math.min(side.rate, limit), source.extract(side.rate, true));
+        if (take <= 0) return 0;
+        long fits = insert(take);
+        if (fits <= 0) return 0;
+        long got = source.extract(fits, false);
+        if (got < fits) extract(fits - got); // the source gave less than it promised: hand the rest back
+        if (got > 0) gave.add(side.pos);
+        return got;
     }
 
     /** Shares the pool, above {@code keep}, evenly between these sides, up to each one's rate. */

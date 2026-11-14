@@ -8,10 +8,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.storagenexus.registry.ModBlockEntities;
 
-/** Makes {@value #OUTPUT} NE a tick in daylight with open sky (a quarter of that in rain), and gives it to what touches it. */
+/** Makes {@value #OUTPUT} NE a tick in daylight with open sky ({@value #RAIN_OUTPUT} in rain), and gives it to what touches it. */
 public class SolarPanelBlockEntity extends BlockEntity {
-    public static final int OUTPUT = 20;
-    public static final long CAPACITY = 400;
+    public static final int OUTPUT = 30;
+    public static final long CAPACITY = 5_000;
 
     private final EnergyBuffer energy = EnergyBuffer.generator(CAPACITY, this::setChanged);
 
@@ -21,10 +21,10 @@ public class SolarPanelBlockEntity extends BlockEntity {
 
     public EnergyBuffer energy() { return energy; }
 
-    /** In rain it still makes a quarter. */
-    public static final int RAIN_OUTPUT = OUTPUT / 4;
+    /** In rain it still makes a little: a quarter of the daylight rate, rounded up. */
+    public static final int RAIN_OUTPUT = 8;
 
-    /** What it makes now: all of it in daylight with open sky above, a quarter in rain, nothing at night or under a roof. */
+    /** What it makes now: all of it in daylight with open sky above, a little in rain, nothing at night or under a roof. */
     public static int output(Level level, BlockPos pos) {
         if (!level.dimensionType().hasSkyLight() || !level.canSeeSky(pos.above())
                 || !level.getBlockState(pos.above()).propagatesSkylightDown()) return 0;
