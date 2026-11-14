@@ -14,6 +14,7 @@
       "net.storagenexus.gametest.client.ScrollTransferClientTest",
       "net.storagenexus.gametest.client.NetworkBusClientTest",
       "net.storagenexus.gametest.client.XpFarmClientTest",
+      "net.storagenexus.gametest.client.CapturedMobTooltipClientTest",
       "net.storagenexus.gametest.client.GuideClientTest",
       "net.storagenexus.gametest.client.AiotClientTest",
       "net.storagenexus.gametest.client.PreviewClientTest",
@@ -32,6 +33,7 @@
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
+      "net.storagenexus.gametest.CapturedMobDetailsGameTest",
       "net.storagenexus.gametest.AdvancementTabGameTest",
       "net.storagenexus.gametest.AiotGameTest",
       "net.storagenexus.gametest.AnchorGameTest",
