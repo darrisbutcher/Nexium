@@ -22,6 +22,12 @@ Pull requests are squash merged, so each one is a single commit on `main`.
   in the Backpack's slots. Switched off or taken out, torches over a normal stack go back to the Backpack's other free slots
   and then to your inventory, so none are lost.
 * In the creative inventory the backpack slot ends the lower row of extra slots.
+* **Tunnel steps** for the 3x3 Mining module are now **off, 2, 3, 8, 16, 24 and 32** layers (up to `aiotTunnelMaxLength`).
+  Hold the tunnel key (**Z**, rebindable) and **scroll the wheel** with an AIOT in hand to step up (deeper) or down
+  (shallower); it stops at off and at the deepest, and the hotbar doesn't scroll while the key is held. A plain press of the
+  key now only shows the readout, and the button in the tool menu still steps on and wraps round to off.
+* **Crafting Terminal**: shift-clicking the crafting result crafts at most **2 stacks** (twice the result's stack size) per
+  click, so one click can't flood the system. Click again for more; a plain click still crafts once.
 
 ## 1.21.14
 
