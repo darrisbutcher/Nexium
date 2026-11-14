@@ -257,6 +257,7 @@ public class AssemblerGameTest {
                 mobs(list, capturedMobs, 9, EntityTypes.SLIME, Items.SLIME_SPAWN_EGG);
                 for (int i = 0; i < 9; i++) { add(list, Items.GLASS, 32); add(list, i % 2 == 0 ? Items.STAINED_GLASS.red() : Items.TINTED_GLASS, 32); }
             }
+            case XP_FARM -> add(list, Items.EXPERIENCE_BOTTLE, AssemblyTarget.XP_FARM_BOTTLES);
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
         }
         return list;
@@ -303,12 +304,18 @@ public class AssemblerGameTest {
         // (The four newer farms ask a quarter of that: 12 stacks.)
         // Every farm asks 9 stacks of its filler block (the Tree Farm 18 of logs)
         Map<AssemblyTarget, Integer> filler = new java.util.EnumMap<>(AssemblyTarget.class);
-        for (AssemblyTarget target : AssemblyTarget.values()) if (target != AssemblyTarget.LIBRARIAN) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
+        for (AssemblyTarget target : AssemblyTarget.values()) {
+            if (target != AssemblyTarget.LIBRARIAN && target != AssemblyTarget.XP_FARM) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
+        }
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");
         });
         h.assertValueEqual(AssemblyTarget.LIBRARIAN.requirements().getFirst().needed(), 12, "the librarian takes 12 villagers");
+        // The Experience Farm takes one stack of Bottles o' Enchanting and nothing else
+        h.assertValueEqual(AssemblyTarget.XP_FARM.requirements().size(), 1, "the Experience Farm has one line");
+        h.assertValueEqual(AssemblyTarget.XP_FARM.requirements().getFirst().needed(), 64, "64 Bottles o' Enchanting");
+        h.assertTrue(AssemblyTarget.XP_FARM.requirements().getFirst().icon() == Items.EXPERIENCE_BOTTLE, "shown as the bottle");
         h.assertTrue(AssemblyTarget.IRON_FARM.requirements().size() == AssemblyTarget.MAX_REQUIREMENTS, "the Iron Farm has the most lines");
         for (AssemblyTarget t : AssemblyTarget.values()) h.assertTrue(t.requirements().size() <= AssemblyTarget.MAX_REQUIREMENTS, t + " fits the screen");
         // What counts as what

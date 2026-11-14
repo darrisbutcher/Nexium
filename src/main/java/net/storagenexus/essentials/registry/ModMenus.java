@@ -13,6 +13,8 @@ public final class ModMenus {
     public static final ExtendedMenuType<IronFarmMenu, BlockPos> IRON_FARM = Registry.register(BuiltInRegistries.MENU,
             NexusEssentials.id("iron_farm"), new ExtendedMenuType<>(IronFarmMenu::new, BlockPos.STREAM_CODEC));
 
+    public static final ExtendedMenuType<net.storagenexus.essentials.xpfarm.XpFarmMenu, BlockPos> XP_FARM = Registry.register(BuiltInRegistries.MENU,
+            NexusEssentials.id("xp_farm"), new ExtendedMenuType<>(net.storagenexus.essentials.xpfarm.XpFarmMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<FarmMenu, BlockPos> FARM = Registry.register(BuiltInRegistries.MENU,
             NexusEssentials.id("farm"), new ExtendedMenuType<>(FarmMenu::new, BlockPos.STREAM_CODEC));
 

@@ -33,7 +33,8 @@ public final class ModTab {
     public static Group groupOf(Item item) {
         String path = BuiltInRegistries.ITEM.getKey(item).getPath();
         if (net.storagenexus.essentials.registry.ModItems.FARMS.containsValue(item)
-                || item == net.storagenexus.essentials.registry.ModItems.IRON_FARM || POWER.contains(path)) return Group.FARMS_AND_POWER;
+                || item == net.storagenexus.essentials.registry.ModItems.IRON_FARM || item == net.storagenexus.essentials.registry.ModItems.XP_FARM
+                || POWER.contains(path)) return Group.FARMS_AND_POWER;
         if (TOOLS.contains(path) || path.endsWith("_aiot") || path.endsWith("_builder")) return Group.TOOLS;
         return Group.STORAGE;
     }

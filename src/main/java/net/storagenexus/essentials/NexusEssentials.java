@@ -45,6 +45,7 @@ public final class NexusEssentials {
         // The farms run on Nexus Energy
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.FARM);
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.IRON_FARM);
+        net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.XP_FARM);
         ModMenus.init();
         ModPayloads.init();
         ExtraSlotEvents.init();

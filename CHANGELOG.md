@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.13
+
+* **Experience Farm**: a one-block farm that turns Nexus Energy into experience. Made at the Farm Assembler from **64 Bottles
+  o' Enchanting** and nothing else. On **10 NE/t** it banks **40 XP a second** (2 a tick) while it has power, up to **200 levels'
+  worth** (149,720 points), and starts again once you collect some. Its screen shows the bank (points and level) and the
+  energy, with **Collect all**, **+1 level** and **+10 levels**: the level buttons give just enough to reach the start of that
+  level, or everything banked if there is less. A redstone signal pauses it, a comparator reads how full the bank is, and
+  broken it gives the bank back as experience orbs. XP is only collected by hand; it is not carried by conduits.
+
 ## 1.21.12
 
 * **Import/Export Bus: choose the side it faces.** Its screen has a row of six buttons (D, U, N, S, W, E). Only sides with

@@ -256,6 +256,9 @@ public class SaveLoadGameTest {
         cases.add(new Case("Iron Farm", net.storagenexus.essentials.registry.ModBlocks.IRON_FARM, List.of(
                 part(IronFarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.IRON_INGOT, 5))),
                 part(IronFarmBlockEntity.class, "timers", be -> be.setTimers(new IronFarmTimers(10, 20, 30, 40))))));
+        cases.add(new Case("Experience Farm", net.storagenexus.essentials.registry.ModBlocks.XP_FARM, List.of(
+                part(net.storagenexus.essentials.xpfarm.XpFarmBlockEntity.class, "experience", be -> be.addExperience(12_345)),
+                part(net.storagenexus.essentials.xpfarm.XpFarmBlockEntity.class, "energy", be -> be.energy().set(1234)))));
         cases.add(new Case("Farm Assembler", net.storagenexus.essentials.registry.ModBlocks.FARM_ASSEMBLER, List.of(
                 part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "target", be -> be.select(net.storagenexus.essentials.assembler.AssemblyTarget.SHULKER, null)),
                 part(net.storagenexus.essentials.assembler.FarmAssemblerBlockEntity.class, "materials", be -> be.accept(new ItemStack(Items.TORCH, 5))),

@@ -14,6 +14,8 @@ public final class ModBlockEntities {
     public static final BlockEntityType<IronFarmBlockEntity> IRON_FARM = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
             NexusEssentials.id("iron_farm"), new BlockEntityType<>(IronFarmBlockEntity::new, Set.of(ModBlocks.IRON_FARM)));
 
+    public static final BlockEntityType<net.storagenexus.essentials.xpfarm.XpFarmBlockEntity> XP_FARM = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            NexusEssentials.id("xp_farm"), new BlockEntityType<>(net.storagenexus.essentials.xpfarm.XpFarmBlockEntity::new, Set.of(ModBlocks.XP_FARM)));
     /** One type for every farm kind (the kind comes from the block). */
     public static final BlockEntityType<FarmBlockEntity> FARM = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
             NexusEssentials.id("farm"), new BlockEntityType<>(FarmBlockEntity::new, new java.util.HashSet<>(ModBlocks.FARMS.values())));

@@ -31,6 +31,9 @@ public final class ModBlocks {
     public static final IronFarmBlock IRON_FARM = register("iron_farm", IronFarmBlock::new, BlockBehaviour.Properties.of()
             .mapColor(MapColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL));
 
+    /** The Experience Farm, made at the Farm Assembler from Bottles o' Enchanting. */
+    public static final net.storagenexus.essentials.xpfarm.XpFarmBlock XP_FARM = register("xp_farm", net.storagenexus.essentials.xpfarm.XpFarmBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL));
     /** The other one-block farms, made at the Farm Assembler like the Iron Farm. */
     public static final Map<FarmKind, FarmBlock> FARMS = new EnumMap<>(FarmKind.class);
 
