@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 public final class NexusConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
     private static NexusConfig instance = new NexusConfig();
 
     // --- Mob griefing
@@ -128,8 +128,8 @@ public final class NexusConfig {
     // --- Freezer
     /** Ticks the Freezer takes for 1 ice (1 bucket of water), 1 packed ice (9 buckets) and 1 blue ice (81 buckets). The water is used up steadily over that time. */
     public int freezerIceTicks = 100;
-    public int freezerPackedIceTicks = 900;
-    public int freezerBlueIceTicks = 1800;
+    public int freezerPackedIceTicks = 450;
+    public int freezerBlueIceTicks = 900;
 
     // --- AIOT modules (server-side only)
     /** Vein mining works: with the Vein Mine key held, an AIOT mines a whole vein. Off, the key does nothing. No module is needed. */
@@ -169,6 +169,20 @@ public final class NexusConfig {
         return instance;
     }
 
+    /** Carries a changed default over once for a file written by an older version (a fresh file already has the new defaults). */
+    public static void migrate(NexusConfig instance, boolean fromFile) {
+        // 1.6.0 raised the vein limit from 64 to 256: a file written before that, still on 64, moves up once
+        if (fromFile && instance.configVersion == null && instance.aiotVeinMaxBlocks == 64) instance.aiotVeinMaxBlocks = 256;
+        // 1.18.0 cut the Villager Breeder from 20 minutes to 10: a file still on the old 24000 moves down once
+        if (fromFile && (instance.configVersion == null || instance.configVersion < 3) && instance.villagerBreederTicks == 24000) instance.villagerBreederTicks = 12000;
+        // 1.22.1 halved the Freezer's packed ice (900 to 450) and blue ice (1800 to 900): a file still on the old numbers moves down once
+        if (fromFile && (instance.configVersion == null || instance.configVersion < 4)) {
+            if (instance.freezerPackedIceTicks == 900) instance.freezerPackedIceTicks = 450;
+            if (instance.freezerBlueIceTicks == 1800) instance.freezerBlueIceTicks = 900;
+        }
+        instance.configVersion = VERSION;
+    }
+
     public static void load() {
         Path file = FabricLoader.getInstance().getConfigDir().resolve(NexusEssentials.NAMESPACE + ".json");
         NexusConfig loaded = null;
@@ -180,11 +194,7 @@ public final class NexusConfig {
             }
         }
         instance = loaded == null ? new NexusConfig() : loaded;
-        // 1.6.0 raised the vein limit from 64 to 256: a file written before that, still on 64, moves up once
-        if (loaded != null && instance.configVersion == null && instance.aiotVeinMaxBlocks == 64) instance.aiotVeinMaxBlocks = 256;
-        // 1.18.0 cut the Villager Breeder from 20 minutes to 10: a file still on the old 24000 moves down once
-        if (loaded != null && (instance.configVersion == null || instance.configVersion < 3) && instance.villagerBreederTicks == 24000) instance.villagerBreederTicks = 12000;
-        instance.configVersion = VERSION;
+        migrate(instance, loaded != null);
         instance.clamp();
         try {
             Files.createDirectories(file.getParent());

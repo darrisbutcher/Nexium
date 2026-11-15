@@ -90,8 +90,9 @@ public class FreezerGameTest {
         f.setWater(FreezerBlockEntity.CAPACITY);
         tick(h, f, ticks);
         h.assertValueEqual(count(f, Items.PACKED_ICE), 1, "refilled, it finishes");
-        // Blue ice: 90 seconds by default
-        h.assertValueEqual(FreezerMode.BLUE_ICE.ticks(), 1800, "blue ice takes 90 seconds");
+        // Packed ice 22.5 seconds and blue ice 45 seconds by default, half what they were
+        h.assertValueEqual(FreezerMode.PACKED_ICE.ticks(), 450, "packed ice takes 22.5 seconds");
+        h.assertValueEqual(FreezerMode.BLUE_ICE.ticks(), 900, "blue ice takes 45 seconds");
         h.assertValueEqual(FreezerMode.BLUE_ICE.buckets(), 81, "from 81 buckets");
         h.succeed();
     }

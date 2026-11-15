@@ -561,14 +561,13 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
 
   Then press Build.
 * **Place it anywhere.** Every 7.5 seconds it makes a golem's drops: 3-5 iron, about **1,900 iron an
-  hour**. Hoppers and pipes take the output from below.
+  hour**. Hoppers take the output from below; item conduits take it from any side.
 * **Power only**: the farm needs Nexus Energy and nothing else (no bread or other boost).
 * A full output or a **redstone signal** pauses the farm. Breaking it keeps its progress in the item.
 * A **comparator** reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 ### More one-block farms
-Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Every farm needs **power** (see Power below). Place it anywhere; hoppers and pipes
-take the output from below, a full output or a redstone signal pauses it, and breaking it keeps its progress in the item.
+Made at the Farm Assembler like the Iron Farm (mobs can be spawn eggs or Captured Mobs). Every farm needs **power** (see Power below). Place it anywhere; hoppers take the output from below (item conduits from any side), a full output or a redstone signal pauses it, and breaking it keeps its progress in the item.
 A comparator reads how full the output is, and 15 once the farm has stopped for lack of room.
 
 | Farm | Recipe | Makes |
@@ -608,7 +607,7 @@ Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Dri
 A farm uses 10 NE a tick (Sugar Cane, Bamboo, Nether Wart, Crop, Gourd and Cactus, Generator, Moss, Tree), 20 (every other
 farm and the Freezer) or 40 (Iron Farm), and keeps 10 seconds' worth in a buffer. Without power it waits and its screen says so.
 
-* **Overclock**: every one-block farm, the Iron Farm and the Experience Farm has an **OC** button at the top right of its screen.
+* **Overclock**: every one-block farm, the Iron Farm, the Experience Farm and the Freezer has an **OC** button at the top right of its screen.
   Click it to step through **off, x2, x4 and x8** (Shift-click goes back). At x4 the farm does 4 ticks of work a tick, so it cycles four
   times as fast, and draws 4 times the NE/t, so **a cycle costs the same energy at any speed**. The buffer grows with the setting to
   keep holding ten seconds' worth. Short of energy it does not stop: it runs as fast as the energy it holds can pay for. The setting is
@@ -666,8 +665,8 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 * **Recipe**: 3 packed ice, 5 iron ingots and a cauldron (`PPP / ICI / III`).
 * **Fill it with water** with a water bucket or a pipe (fluid conduit, Dimensional Output). The tank holds 8 buckets and
   only takes water. It freezes **ice** (1 bucket, 5 seconds), and its button switches it to **packed ice** (9 buckets,
-  45 seconds) or **blue ice** (81 buckets, 90 seconds). The water is used up steadily while it works, so a tank that runs
-  dry waits for more. Hoppers and pipes take the ice from below; a full output or a redstone signal pauses it.
+  22.5 seconds) or **blue ice** (81 buckets, 45 seconds). The water is used up steadily while it works, so a tank that runs
+  dry waits for more. Hoppers take the ice from below and item conduits from any side; a full output or a redstone signal pauses it.
 * **Dyeable like leather armor**: put it in the crafting grid with dyes (several mix). The body and frame take the colour;
   the frost, glow and water don't. A cauldron of water washes it. It keeps its colour, water and mode when broken.
 * **Ice recipes**: 9 ice make packed ice and 9 packed ice make blue ice (vanilla); packed ice also crafts into 9 ice and

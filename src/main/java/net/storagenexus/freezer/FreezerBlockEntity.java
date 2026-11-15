@@ -66,6 +66,18 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
 
     public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
 
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    private int overclock;
+
+    public int overclock() { return overclock; }
+
+    /** Sets the overclock level; the energy buffer is resized to hold ten seconds of work at the new speed. */
+    public void setOverclock(int level) {
+        overclock = net.storagenexus.essentials.farm.Overclock.clamp(level);
+        energy.setCapacity(net.storagenexus.essentials.farm.Overclock.capacity(ENERGY_PER_TICK, overclock));
+        setChanged();
+    }
+
     /** Whether the Freezer is waiting for Nexus Energy. */
     public boolean isUnpowered() { return unpowered; }
 
@@ -98,14 +110,20 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         // The water this tick takes: the share of the cost between this tick's progress and the next
         long take = cost * (progress + 1) / ticks - cost * progress / ticks;
         dry = tank.amount < take;
-        unpowered = energy.stored() < ENERGY_PER_TICK;
+        // Overclocked, it does as many ticks of work as the energy it holds can pay for, up to its setting
+        int run = net.storagenexus.essentials.farm.Overclock.ticksOfWork(overclock, energy.stored(), ENERGY_PER_TICK);
+        unpowered = run < 1;
         if (!full && !dry && !isPaused() && !unpowered) {
-            energy.use(ENERGY_PER_TICK);
+            // ... and as many as the water in the tank lasts for
+            while (run > 1 && tank.amount < cost * (progress + run) / ticks - cost * progress / ticks) run--;
+            take = cost * (progress + run) / ticks - cost * progress / ticks;
+            energy.use((long) ENERGY_PER_TICK * run);
             tank.amount -= take;
             if (tank.amount == 0) tank.variant = FluidVariant.blank();
-            progress++;
+            progress += run;
             if (progress >= ticks) {
-                progress = 0;
+                // What went past the end of the cycle counts towards the next one
+                progress = Math.min(progress - ticks, run - 1);
                 insert(new ItemStack(mode.output()));
             }
             setChanged();
@@ -245,6 +263,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         output.putLong("amount", tank.amount);
         output.putInt("mode", mode.ordinal());
         output.putInt("progress", progress);
+        output.putInt("overclock", overclock);
         output.putInt("color", color);
         output.putLong("energy", energy.stored());
     }
@@ -258,6 +277,8 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         tank.amount = Math.max(0, Math.min(CAPACITY, input.getLongOr("amount", 0L)));
         mode = FreezerMode.byOrdinal(input.getIntOr("mode", 0));
         progress = Math.max(0, input.getIntOr("progress", 0));
+        overclock = net.storagenexus.essentials.farm.Overclock.clamp(input.getIntOr("overclock", 0));
+        energy.setCapacity(net.storagenexus.essentials.farm.Overclock.capacity(ENERGY_PER_TICK, overclock));
         energy.set(input.getLongOr("energy", 0L));
         int before = color;
         color = input.getIntOr("color", -1);
@@ -283,6 +304,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         if (color >= 0) components.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
         if (tank.amount > 0) components.set(ModComponents.FREEZER_WATER, tank.amount);
         if (mode != FreezerMode.ICE) components.set(ModComponents.FREEZER_MODE, mode.ordinal());
+        if (overclock > 0) components.set(net.storagenexus.essentials.registry.ModComponents.OVERCLOCK, overclock);
     }
 
     @Override
@@ -294,6 +316,8 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         if (water != null) setWater(water);
         Integer saved = components.get(ModComponents.FREEZER_MODE);
         if (saved != null) mode = FreezerMode.byOrdinal(saved);
+        Integer savedOverclock = components.get(net.storagenexus.essentials.registry.ModComponents.OVERCLOCK);
+        if (savedOverclock != null) setOverclock(savedOverclock);
     }
 
     @Override
@@ -303,5 +327,6 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
         output.discard("amount");
         output.discard("fluid");
         output.discard("mode");
+        output.discard("overclock");
     }
 }
