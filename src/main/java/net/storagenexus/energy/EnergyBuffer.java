@@ -5,7 +5,7 @@ package net.storagenexus.energy;
  * a machine's buffer only takes energy in, a generator's only gives it out, a Battery's does both.
  */
 public class EnergyBuffer implements NexusEnergy {
-    private final long capacity;
+    private long capacity;
     private final boolean accepts, gives;
     private final Runnable onChange;
     private long stored;
@@ -72,6 +72,12 @@ public class EnergyBuffer implements NexusEnergy {
 
     @Override
     public long capacity() { return capacity; }
+
+    /** Resizes the buffer (a machine whose speed setting changes); what is stored is cut down to fit. */
+    public void setCapacity(long capacity) {
+        this.capacity = Math.max(0, capacity);
+        if (stored > this.capacity) stored = this.capacity;
+    }
 
     /** For loading and tests: sets what is stored, within the size. */
     public void set(long amount) {

@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.storagenexus.essentials.farm.Overclock;
 import net.storagenexus.essentials.registry.ModMenus;
 import org.jspecify.annotations.Nullable;
 
@@ -21,8 +22,10 @@ public class XpFarmMenu extends AbstractContainerMenu {
     public static final int INVENTORY_TOP = 122;
     /** Buttons: collect everything, or just enough for 1 or 10 levels. */
     public static final int BTN_COLLECT_ALL = 0, BTN_LEVEL_1 = 1, BTN_LEVEL_10 = 2;
+    /** Menu buttons: step the overclock forward or back. */
+    public static final int BTN_OVERCLOCK = 3, BTN_OVERCLOCK_BACK = 4;
 
-    private static final int D_XP = 0, D_ENERGY = 2, D_FLAGS = 4, D_COUNT = 5;
+    private static final int D_XP = 0, D_ENERGY = 2, D_FLAGS = 4, D_OVERCLOCK = 5, D_COUNT = 6;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_UNPOWERED = 4, FLAG_WORKING = 8;
 
     private final ContainerData data;
@@ -57,6 +60,7 @@ public class XpFarmMenu extends AbstractContainerMenu {
                     case D_ENERGY + 1 -> (int) (farm.energy().stored() >> 15);
                     case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
                             | (farm.isUnpowered() ? FLAG_UNPOWERED : 0) | (farm.isWorking() ? FLAG_WORKING : 0);
+                    case D_OVERCLOCK -> farm.overclock();
                     default -> 0;
                 };
             }
@@ -82,6 +86,8 @@ public class XpFarmMenu extends AbstractContainerMenu {
     /** Waiting for Nexus Energy. */
     public boolean unpowered() { return (data.get(D_FLAGS) & FLAG_UNPOWERED) != 0; }
     public boolean working() { return (data.get(D_FLAGS) & FLAG_WORKING) != 0; }
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    public int overclock() { return Overclock.clamp(data.get(D_OVERCLOCK)); }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
@@ -90,6 +96,8 @@ public class XpFarmMenu extends AbstractContainerMenu {
             case BTN_COLLECT_ALL -> farm.takeAll(player);
             case BTN_LEVEL_1 -> farm.takeLevels(player, 1);
             case BTN_LEVEL_10 -> farm.takeLevels(player, 10);
+            case BTN_OVERCLOCK -> farm.setOverclock(Overclock.next(farm.overclock()));
+            case BTN_OVERCLOCK_BACK -> farm.setOverclock(Overclock.previous(farm.overclock()));
             default -> { return false; }
         }
         return true;

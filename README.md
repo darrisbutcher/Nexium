@@ -608,6 +608,12 @@ Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Dri
 A farm uses 10 NE a tick (Sugar Cane, Bamboo, Nether Wart, Crop, Gourd and Cactus, Generator, Moss, Tree), 20 (every other
 farm and the Freezer) or 40 (Iron Farm), and keeps 10 seconds' worth in a buffer. Without power it waits and its screen says so.
 
+* **Overclock**: every one-block farm, the Iron Farm and the Experience Farm has an **OC** button at the top right of its screen.
+  Click it to step through **off, x2, x4 and x8** (Shift-click goes back). At x4 the farm does 4 ticks of work a tick, so it cycles four
+  times as fast, and draws 4 times the NE/t, so **a cycle costs the same energy at any speed**. The buffer grows with the setting to
+  keep holding ten seconds' worth. Short of energy it does not stop: it runs as fast as the energy it holds can pay for. The setting is
+  saved with the farm and kept in the dropped item.
+
 Generators give energy to the machines touching them; **Energy Conduits** carry it further.
 
 | Block | Makes | Notes |

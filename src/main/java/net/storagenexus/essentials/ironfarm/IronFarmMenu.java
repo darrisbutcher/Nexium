@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.storagenexus.essentials.config.NexusConfig;
+import net.storagenexus.essentials.farm.Overclock;
 import net.storagenexus.essentials.registry.ModMenus;
 import org.jspecify.annotations.Nullable;
 
@@ -24,13 +25,16 @@ public class IronFarmMenu extends AbstractContainerMenu {
     public static final int BREAD_X = 8, BREAD_Y = 20;
     public static final int OUTPUT_TOP = 44;
     public static final int INVENTORY_TOP = 112;
+    /** Menu buttons: step the overclock forward or back. */
+    public static final int BTN_OVERCLOCK = 2, BTN_OVERCLOCK_BACK = 3;
 
     private static final int FIRST_PLAYER_SLOT = IronFarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_BOOST = 1, D_COOLDOWN = 3, D_FLAGS = 5, D_SPEED_UP = 6, D_GOLEM_TICKS = 7, D_COUNT = 8;
+    private static final int D_PROGRESS = 0, D_BOOST = 1, D_COOLDOWN = 3, D_FLAGS = 5, D_SPEED_UP = 6, D_GOLEM_TICKS = 7, D_OVERCLOCK = 8, D_COUNT = 9;
     private static final int FLAG_FULL = 1, FLAG_BOOSTING = 2, FLAG_PAUSED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
     private final ContainerData data;
+    private final @Nullable IronFarmBlockEntity farm;
 
     /** Client side. */
     public IronFarmMenu(int id, Inventory inventory, BlockPos pos) {
@@ -45,6 +49,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
     private IronFarmMenu(int id, Inventory inventory, Container container, @Nullable IronFarmBlockEntity farm) {
         super(ModMenus.IRON_FARM, id);
         this.container = container;
+        this.farm = farm;
         container.startOpen(inventory.player);
         for (int i = 0; i < IronFarmBlockEntity.OUTPUT_SLOTS; i++) {
             addSlot(new Slot(container, i, 8 + (i % 9) * 18, OUTPUT_TOP + (i / 9) * 18) {
@@ -80,6 +85,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
                     case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
                             | (farm.isUnpowered() ? FLAG_UNPOWERED : 0);
                     case D_GOLEM_TICKS -> NexusConfig.get().ironFarmGolemTicks;
+                    case D_OVERCLOCK -> farm.overclock();
                     default -> 0;
                 };
             }
@@ -121,6 +127,17 @@ public class IronFarmMenu extends AbstractContainerMenu {
     public boolean unpowered() { return (data.get(D_FLAGS) & FLAG_UNPOWERED) != 0; }
     public int speedUp() { return Math.max(1, data.get(D_SPEED_UP)); }
     public int golemTicks() { return Math.max(1, data.get(D_GOLEM_TICKS)); }
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    public int overclock() { return Overclock.clamp(data.get(D_OVERCLOCK)); }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (farm == null) return false;
+        if (id == BTN_OVERCLOCK) farm.setOverclock(Overclock.next(farm.overclock()));
+        else if (id == BTN_OVERCLOCK_BACK) farm.setOverclock(Overclock.previous(farm.overclock()));
+        else return false;
+        return true;
+    }
 
     @Override
     public boolean stillValid(Player player) {

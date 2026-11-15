@@ -18,6 +18,10 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.storagenexus.energy.EnergyBuffer;
 import net.storagenexus.essentials.farm.FarmBlockEntity;
+import net.storagenexus.essentials.farm.Overclock;
+import net.storagenexus.essentials.registry.ModComponents;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.storagenexus.essentials.registry.ModBlockEntities;
 import net.storagenexus.util.ComparatorReadable;
 
@@ -48,6 +52,18 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
 
     public EnergyBuffer energy() { return energy; }
 
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    private int overclock;
+
+    public int overclock() { return overclock; }
+
+    /** Sets the overclock level; the energy buffer is resized to hold ten seconds of work at the new speed. */
+    public void setOverclock(int level) {
+        overclock = Overclock.clamp(level);
+        energy.setCapacity(Overclock.capacity(ENERGY_PER_TICK, overclock));
+        setChanged();
+    }
+
     /** Experience points banked and waiting to be collected. */
     public long experience() { return experience; }
 
@@ -69,11 +85,12 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
         int before = comparatorSignal();
         boolean paused = isPaused();
         full = experience >= CAPACITY;
-        unpowered = !full && !paused && energy.stored() < ENERGY_PER_TICK;
+        int run = Overclock.ticksOfWork(overclock, energy.stored(), ENERGY_PER_TICK);
+        unpowered = !full && !paused && run < 1;
         working = false;
         if (!full && !paused && !unpowered) {
-            energy.use(ENERGY_PER_TICK);
-            experience = Math.min(CAPACITY, experience + XP_PER_TICK);
+            energy.use((long) ENERGY_PER_TICK * run);
+            experience = Math.min(CAPACITY, experience + (long) XP_PER_TICK * run);
             full = experience >= CAPACITY;
             working = true;
             setChanged();
@@ -150,6 +167,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putLong("experience", experience);
+        output.putInt("overclock", overclock);
         output.putLong("energy", energy.stored());
     }
 
@@ -157,6 +175,28 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         experience = Math.max(0, Math.min(CAPACITY, input.getLongOr("experience", 0L)));
+        overclock = Overclock.clamp(input.getIntOr("overclock", 0));
+        energy.setCapacity(Overclock.capacity(ENERGY_PER_TICK, overclock));
         energy.set(input.getLongOr("energy", 0L));
+    }
+
+    /** The overclock setting stays in the dropped item. */
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        Integer saved = components.get(ModComponents.OVERCLOCK);
+        if (saved != null) setOverclock(saved);
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("overclock");
     }
 }

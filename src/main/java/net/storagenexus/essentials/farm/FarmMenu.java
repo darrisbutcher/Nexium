@@ -22,9 +22,11 @@ public class FarmMenu extends AbstractContainerMenu {
     public static final int INPUT_X = 8, INPUT_Y = 20;
     public static final int OUTPUT_TOP = 44;
     public static final int INVENTORY_TOP = 112;
+    /** Menu buttons: 0 and 1 step the mode forward and back; 2 and 3 step the overclock forward and back. */
+    public static final int BTN_OVERCLOCK = 2, BTN_OVERCLOCK_BACK = 3;
 
     private static final int FIRST_PLAYER_SLOT = FarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_COUNT = 5;
+    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_OVERCLOCK = 5, D_COUNT = 6;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
@@ -85,6 +87,7 @@ public class FarmMenu extends AbstractContainerMenu {
                     case D_CYCLE -> farm.cycleTicks() & 0x7FFF;
                     case D_CYCLE + 1 -> farm.cycleTicks() >> 15;
                     case D_MODE -> farm.mode();
+                    case D_OVERCLOCK -> farm.overclock();
                     default -> 0;
                 };
             }
@@ -115,6 +118,9 @@ public class FarmMenu extends AbstractContainerMenu {
     /** The farm's mode, as an index into its kind's modes. */
     public int mode() { return data.get(D_MODE); }
 
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    public int overclock() { return Overclock.clamp(data.get(D_OVERCLOCK)); }
+
 
     /** Button 0 steps the mode of the farms that have modes. */
     @Override
@@ -125,6 +131,14 @@ public class FarmMenu extends AbstractContainerMenu {
         }
         if (id == 1 && farm != null && !kind.modes().isEmpty()) {
             farm.previousMode();
+            return true;
+        }
+        if (id == BTN_OVERCLOCK && farm != null) {
+            farm.setOverclock(Overclock.next(farm.overclock()));
+            return true;
+        }
+        if (id == BTN_OVERCLOCK_BACK && farm != null) {
+            farm.setOverclock(Overclock.previous(farm.overclock()));
             return true;
         }
         return false;

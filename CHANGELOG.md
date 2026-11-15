@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.0
+
+* **Overclock**: every one-block farm, the Iron Farm and the Experience Farm has an **OC** button at the top right of its screen. Click
+  it to step the farm through **off, x2, x4 and x8** (Shift-click steps back). At x4 the farm does 4 ticks of work every tick, so it
+  cycles four times as fast, and draws 4 times the NE/t, so a cycle costs the same energy at any speed: you pay for the speed in
+  power draw, not in extra energy per item. The energy buffer grows with the setting to keep holding ten seconds of work. With less
+  energy than the setting needs the farm does not stop: it runs as fast as the energy it holds can pay for (a farm set to x8 with
+  25 NE left, on 10 NE/t, still does 2 ticks of work that tick). The setting is saved with the farm and kept in the dropped item.
+
 ## 1.21.25
 
 * **Nexus Link**: a shulker box (of any colour) or an ender chest mined with an AIOT whose Nexus Link is on is no longer sent to the

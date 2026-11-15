@@ -60,6 +60,18 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
 
     public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
 
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    private int overclock;
+
+    public int overclock() { return overclock; }
+
+    /** Sets the overclock level; the energy buffer is resized to hold ten seconds of work at the new speed. */
+    public void setOverclock(int level) {
+        overclock = net.storagenexus.essentials.farm.Overclock.clamp(level);
+        energy.setCapacity(net.storagenexus.essentials.farm.Overclock.capacity(ENERGY_PER_TICK, overclock));
+        setChanged();
+    }
+
     /** Whether the farm is waiting for Nexus Energy. */
     public boolean isUnpowered() { return unpowered; }
 
@@ -88,10 +100,11 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         full = !hasRoomForGolem();
         // A comparator reads 15 while the farm is stopped for lack of room
         if (full != wasFull && level != null) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
-        unpowered = energy.stored() < ENERGY_PER_TICK;
+        int run = net.storagenexus.essentials.farm.Overclock.ticksOfWork(overclock, energy.stored(), ENERGY_PER_TICK);
+        unpowered = run < 1;
         if (!full && !isPaused() && !unpowered) {
-            energy.use(ENERGY_PER_TICK);
-            progress += 1;
+            energy.use((long) ENERGY_PER_TICK * run);
+            progress += run;
             int perGolem = config.ironFarmGolemTicks;
             while (progress >= perGolem && hasRoomForGolem()) {
                 progress -= perGolem;
@@ -245,6 +258,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.store("timers", IronFarmTimers.CODEC, timers());
+        output.putInt("overclock", overclock);
         output.putLong("energy", energy.stored());
     }
 
@@ -254,6 +268,8 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         setTimersQuietly(input.read("timers", IronFarmTimers.CODEC).orElse(IronFarmTimers.NONE));
+        overclock = net.storagenexus.essentials.farm.Overclock.clamp(input.getIntOr("overclock", 0));
+        energy.setCapacity(net.storagenexus.essentials.farm.Overclock.capacity(ENERGY_PER_TICK, overclock));
         energy.set(input.getLongOr("energy", 0L));
     }
 
@@ -266,6 +282,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         super.collectImplicitComponents(components);
         IronFarmTimers timers = timers();
         if (!timers.isNone()) components.set(ModComponents.IRON_FARM_TIMERS, timers);
+        if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
     }
 
     @Override
@@ -273,11 +290,14 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         super.applyImplicitComponents(components);
         IronFarmTimers timers = components.get(ModComponents.IRON_FARM_TIMERS);
         if (timers != null) setTimersQuietly(timers);
+        Integer savedOverclock = components.get(ModComponents.OVERCLOCK);
+        if (savedOverclock != null) setOverclock(savedOverclock);
     }
 
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard("timers");
+        output.discard("overclock");
     }
 }

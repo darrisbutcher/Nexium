@@ -39,6 +39,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> FARM_MODE = register("farm_mode",
             b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** A farm's overclock level (1 to 3: 2x, 4x, 8x), kept in the dropped item. Off is not stored. */
+    public static final DataComponentType<Integer> OVERCLOCK = register("overclock",
+            b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** What a Backpack holds (see BackpackContents): every occupied slot as an item, a count and a slot number. */
     public static final DataComponentType<BackpackContents.Saved> BACKPACK_ITEMS = register("backpack_items",
             b -> b.persistent(BackpackContents.Saved.CODEC).networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(BackpackContents.Saved.CODEC)));
