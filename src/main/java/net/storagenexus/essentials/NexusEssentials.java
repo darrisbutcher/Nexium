@@ -50,6 +50,8 @@ public final class NexusEssentials {
         ModPayloads.init();
         ExtraSlotEvents.init();
         net.storagenexus.essentials.backpack.AutoTorch.init();
+        net.storagenexus.essentials.backpack.BackpackFeeding.init();
+        net.storagenexus.essentials.backpack.BackpackCompacting.init();
         MagnetLogic.init();
         MobCapture.init();
         ElytraEnchanting.init();

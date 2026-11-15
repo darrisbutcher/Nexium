@@ -3,6 +3,21 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.16
+
+* **Feeding Module** for the Backpack (4 bread around a golden carrot, with iron ingots in the corners): eats for you while
+  the Backpack is worn. Once a second it checks how much of your hunger bar is missing, and eats the food in the Backpack that
+  restores the most without any of it being wasted, so a missing 2 points eats nothing and a missing 8 eats a cooked steak
+  rather than bread. It never eats foods with side effects (rotten flesh, pufferfish, golden apples, chorus fruit, suspicious
+  stew and the like), gives back a bowl from stew, and does nothing in creative mode or while the Backpack's screen is open.
+* **Compacting Module** for the Backpack (4 pistons around a crafting table, with iron ingots in the corners): packs what the
+  Backpack holds into storage blocks once a second, in its own free slots: 9 iron ingots into an iron block, 9 nuggets into an
+  ingot and on into a block, 9 wheat into a hay bale. It finds the packs from the crafting recipes, as the Compacting Drawer
+  does, and only uses those that craft straight back, so nothing is lost or changed (sand never becomes sandstone) and modded
+  blocks work too. Renamed and enchanted items are left alone, and nothing is packed that has no room for its block.
+* **Torch Stack Module** now stacks torches to **512**, double the 256 of 1.21.15 (its icon says 512). Torches already in a
+  Backpack stay as they are.
+
 ## 1.21.15
 
 * **Backpack**: a new **backpack slot** above the trinket (magnet) slot in your inventory, for a Backpack crafted from

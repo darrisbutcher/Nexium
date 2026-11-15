@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * The Backpack in a real game: its slot above the magnet slot in the inventory, the Open Backpack key (B, listed in the key
  * binds) opening the worn one and closing it again, right-click opening the one in the hand, the screen with its modules
- * and their switches, a stack of 256 torches sent to the client in full, and the Torch Stack switch putting the extra torches
+ * and their switches, a stack of 512 torches sent to the client in full, the four modules, and the Torch Stack switch putting the extra torches
  * back. Takes screenshots of the inventory and of the screen.
  */
 public class BackpackClientTest implements FabricClientGameTest {
@@ -70,11 +70,17 @@ public class BackpackClientTest implements FabricClientGameTest {
                 autoTorch.set(net.storagenexus.registry.ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
                 modules.add(autoTorch);
                 modules.add(new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)));
+                // Feeding and Compacting start switched off too: Compacting would pack the 12 diamonds into a block before they are counted
+                for (BackpackModuleType type : List.of(BackpackModuleType.FEEDING, BackpackModuleType.COMPACTING)) {
+                    ItemStack off = new ItemStack(ModItems.BACKPACK_MODULES.get(type));
+                    off.set(net.storagenexus.registry.ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
+                    modules.add(off);
+                }
                 for (int i = modules.size(); i < BackpackModules.SLOTS; i++) modules.add(ItemStack.EMPTY);
                 BackpackModules.setSlots(worn, modules);
                 List<ItemStack> contents = new ArrayList<>();
                 for (int i = 0; i < BackpackContents.SIZE; i++) contents.add(ItemStack.EMPTY);
-                contents.set(0, new ItemStack(Items.TORCH, 256));
+                contents.set(0, new ItemStack(Items.TORCH, 512));
                 contents.set(1, new ItemStack(Items.DIAMOND, 12));
                 contents.set(2, new ItemStack(Items.IRON_PICKAXE));
                 contents.set(9, new ItemStack(Items.COBBLESTONE, 64));
@@ -112,18 +118,21 @@ public class BackpackClientTest implements FabricClientGameTest {
                 BackpackMenu menu = ((BackpackScreen) mc.gui.screen()).getMenu();
                 var torches = menu.getSlot(BackpackModules.SLOTS).getItem();
                 return menu.source() + " " + torches.getCount() + " " + torches.getItem() + " | " + menu.getSlot(BackpackModules.SLOTS + 1).getItem().getCount() + " | "
-                        + menu.getSlot(0).getItem().getItem() + " " + menu.getSlot(1).getItem().getItem() + " " + menu.getSlot(2).getItem().isEmpty() + " | " + menu.torchStack();
+                        + menu.getSlot(0).getItem().getItem() + " " + menu.getSlot(1).getItem().getItem() + " " + menu.getSlot(2).getItem().getItem() + " " + menu.getSlot(3).getItem().getItem()
+                        + " " + menu.getSlot(4).getItem().isEmpty() + " | " + menu.torchStack();
             });
-            check(shown.equals(Backpacks.EQUIPPED + " 256 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:torch_stack_module true | true"),
-                    "the client sees 256 torches in one slot, the diamonds, the modules and Torch Stack on: " + shown);
-            // Switch Auto Torch on from inside the screen (it doesn't work while the screen is open)
-            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "Auto Torch starts off");
-            ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE));
-            ctx.waitTicks(10);
-            check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "its switch turns it on");
+            check(shown.equals(Backpacks.EQUIPPED + " 512 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:torch_stack_module nexusessentials:feeding_module nexusessentials:compacting_module true | true"),
+                    "the client sees 512 torches in one slot, the diamonds, the four modules and Torch Stack on: " + shown);
+            // Switch Auto Torch, Feeding and Compacting on from inside the screen (none of them works while it is open)
+            for (int slot : new int[] {0, 2, 3}) {
+                check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "module " + slot + " starts off");
+                ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + slot));
+                ctx.waitTicks(10);
+                check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "its switch turns module " + slot + " on");
+            }
             System.out.println("[nexus] backpack screen: " + ctx.takeScreenshot("nexus_backpack_screen"));
 
-            // The Torch Stack switch: off, the 256 torches become stacks of 64 (nothing is lost); on again, they can be put back
+            // The Torch Stack switch: off, the 512 torches become stacks of 64 (nothing is lost); on again, they can be put back
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
             ctx.waitTicks(10);
             String off = ctx.computeOnClient(mc -> {
@@ -138,7 +147,7 @@ public class BackpackClientTest implements FabricClientGameTest {
                 }
                 return torches + " " + biggest + " " + menu.torchStack();
             });
-            check(off.equals("256 64 false"), "with Torch Stack off the 256 torches are stacks of 64, none lost (total, biggest, stacking): " + off);
+            check(off.equals("512 64 false"), "with Torch Stack off the 512 torches are stacks of 64, none lost (total, biggest, stacking): " + off);
             System.out.println("[nexus] backpack, Torch Stack off: " + ctx.takeScreenshot("nexus_backpack_torch_stack_off"));
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
             ctx.waitTicks(10);
@@ -168,7 +177,7 @@ public class BackpackClientTest implements FabricClientGameTest {
             ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
             ctx.getInput().releaseShift();
             ctx.waitTicks(10);
-            // (The backpack that was worn has Auto Torch on and was working while it was worn, so it may be a torch or two short of 256)
+            // (The backpack that was worn has Auto Torch on and was working while it was worn, so it may be a torch or two short of 512)
             String swapped = world.getServer().computeOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 ItemStack inHand = player.getItemInHand(InteractionHand.MAIN_HAND);

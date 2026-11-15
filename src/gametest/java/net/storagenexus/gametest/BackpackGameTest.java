@@ -3,6 +3,14 @@ package net.storagenexus.gametest;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.storagenexus.essentials.backpack.BackpackCompacting;
+import net.storagenexus.essentials.backpack.BackpackFeeding;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -39,9 +47,10 @@ import java.util.List;
 
 /**
  * The Backpack: its slot above the magnet slot, what it holds (36 slots, counts above 99), its module slots and their
- * switches, the Torch Stack module (torches to 256 a slot, and what happens to the extra torches when it goes), and the
+ * switches, the Torch Stack module (torches to 512 a slot, and what happens to the extra torches when it goes), and the
  * Auto Torch module (torches from the Backpack, spaced out so nothing hostile can spawn, even behind walls and in caves
- * nobody has seen).
+ * nobody has seen), the Feeding module (eats only what fits the missing hunger, never foods with effects), the Compacting
+ * module (packs storage blocks, only packs that craft straight back) and the recipes of the Backpack and every module.
  */
 public class BackpackGameTest {
     private static final BlockPos CENTER = new BlockPos(4, 2, 4);
@@ -144,7 +153,7 @@ public class BackpackGameTest {
     public void theBackpackAndItsContentsSaveAndDropOnDeath(GameTestHelper h) throws ReflectiveOperationException {
         ServerPlayer player = player(h);
         ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK, BackpackModuleType.AUTO_TORCH);
-        storeTorches(backpack, 300);
+        storeTorches(backpack, 600);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
 
         TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, h.getLevel().registryAccess());
@@ -152,7 +161,7 @@ public class BackpackGameTest {
         ExtraSlots loaded = new ExtraSlots();
         loaded.load(TagValueInput.create(ProblemReporter.DISCARDING, h.getLevel().registryAccess(), output.buildResult()));
         h.assertTrue(loaded.backpack().is(ModItems.BACKPACK), "the backpack is saved with the player");
-        h.assertValueEqual(BackpackContents.count(loaded.backpack(), Items.TORCH), 300, "with its 300 torches (stacks of 256 and 44)");
+        h.assertValueEqual(BackpackContents.count(loaded.backpack(), Items.TORCH), 600, "with its 600 torches (stacks of 512 and 88)");
         h.assertTrue(BackpackModules.find(loaded.backpack(), BackpackModuleType.TORCH_STACK).is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "and its modules");
 
         var dropEquipment = Player.class.getDeclaredMethod("dropEquipment", ServerLevel.class);
@@ -164,7 +173,7 @@ public class BackpackGameTest {
         dropEquipment.invoke(player, h.getLevel());
         h.assertTrue(ExtraSlots.of(player).backpack().isEmpty(), "dying empties the slot");
         List<ItemEntity> drops = h.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(4));
-        h.assertTrue(drops.stream().anyMatch(e -> e.getItem().is(ModItems.BACKPACK) && BackpackContents.count(e.getItem(), Items.TORCH) == 300),
+        h.assertTrue(drops.stream().anyMatch(e -> e.getItem().is(ModItems.BACKPACK) && BackpackContents.count(e.getItem(), Items.TORCH) == 600),
                 "the backpack dropped with everything in it");
         h.succeed();
     }
@@ -172,19 +181,19 @@ public class BackpackGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void countsAbove99SurviveTheSaveAndTheNetwork(GameTestHelper h) {
         ItemStack backpack = new ItemStack(ModItems.BACKPACK);
-        storeTorches(backpack, 256);
+        storeTorches(backpack, 512);
         var ops = h.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
         var tag = ItemStack.CODEC.encodeStart(ops, backpack).getOrThrow();
         ItemStack decoded = ItemStack.CODEC.parse(ops, tag).getOrThrow();
-        h.assertValueEqual(BackpackContents.count(decoded, Items.TORCH), 256, "256 torches saved and loaded again (vanilla's stack codec stops at 99)");
-        h.assertValueEqual(BackpackContents.read(decoded).get(0).getCount(), 256, "in one slot");
+        h.assertValueEqual(BackpackContents.count(decoded, Items.TORCH), 512, "512 torches saved and loaded again (vanilla's stack codec stops at 99)");
+        h.assertValueEqual(BackpackContents.read(decoded).get(0).getCount(), 512, "in one slot");
 
         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), h.getLevel().registryAccess());
         ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, backpack);
-        h.assertValueEqual(BackpackContents.count(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf), Items.TORCH), 256, "and sent to the client in full");
+        h.assertValueEqual(BackpackContents.count(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf), Items.TORCH), 512, "and sent to the client in full");
         RegistryFriendlyByteBuf torches = new RegistryFriendlyByteBuf(Unpooled.buffer(), h.getLevel().registryAccess());
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(torches, new ItemStack(Items.TORCH, 256));
-        h.assertValueEqual(ItemStack.OPTIONAL_STREAM_CODEC.decode(torches).getCount(), 256, "a stack of 256 torches crosses the network as it is");
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(torches, new ItemStack(Items.TORCH, 512));
+        h.assertValueEqual(ItemStack.OPTIONAL_STREAM_CODEC.decode(torches).getCount(), 512, "a stack of 512 torches crosses the network as it is");
         h.succeed();
     }
 
@@ -260,29 +269,29 @@ public class BackpackGameTest {
     // ---------------------------------------------------------------- Torch Stack
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void torchesStackTo256WithTheModule(GameTestHelper h) {
+    public void torchesStackTo512WithTheModule(GameTestHelper h) {
         ServerPlayer player = player(h);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpackWith(BackpackModuleType.TORCH_STACK));
         BackpackMenu menu = openEquipped(player);
         h.assertTrue(menu.torchStack(), "the module is in and on");
         Slot slot = menu.getSlot(TORCH_SLOT);
-        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.TORCH)), 256, "a slot takes 256 torches");
+        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.TORCH)), 512, "a slot takes 512 torches");
         h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.COBBLESTONE)), 64, "but cobblestone still stacks to 64");
         h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.DIAMOND_SWORD)), 1, "and a sword to 1");
 
-        ItemStack torches = new ItemStack(Items.TORCH, 256);
+        ItemStack torches = new ItemStack(Items.TORCH, 512);
         slot.safeInsert(torches);
-        h.assertValueEqual(slot.getItem().getCount(), 256, "256 torches went into the slot");
+        h.assertValueEqual(slot.getItem().getCount(), 512, "512 torches went into the slot");
         h.assertTrue(torches.isEmpty(), "all of them");
-        h.assertValueEqual(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).getCount(), 256, "and are saved as 256");
+        h.assertValueEqual(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).getCount(), 512, "and are saved as 512");
 
         // Shift-clicking a stack from the inventory tops it up, past 99
-        slot.set(new ItemStack(Items.TORCH, 200));
+        slot.set(new ItemStack(Items.TORCH, 500));
         player.getInventory().setItem(0, new ItemStack(Items.TORCH, 64));
         menu.quickMoveStack(player, menu.slots.size() - 9);
-        h.assertValueEqual(slot.getItem().getCount(), 256, "shift-click topped it up to 256");
-        h.assertTrue(player.getInventory().getItem(0).isEmpty(), "the other 8 went to another free slot of the backpack");
-        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 264, "264 torches in the backpack in all");
+        h.assertValueEqual(slot.getItem().getCount(), 512, "shift-click topped it up to 512");
+        h.assertTrue(player.getInventory().getItem(0).isEmpty(), "the other 52 went to another free slot of the backpack");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 564, "564 torches in the backpack in all");
         h.succeed();
     }
 
@@ -295,7 +304,7 @@ public class BackpackGameTest {
         h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 64, "a slot takes 64 torches");
 
         menu.getSlot(0).set(module(BackpackModuleType.TORCH_STACK));
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 256, "with the module, 256");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 512, "with the module, 512");
         menu.clickMenuButton(player, BackpackMenu.BTN_TOGGLE_MODULE);
         h.assertTrue(!menu.torchStack(), "the module switched off");
         h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 64, "is back to 64");
@@ -306,23 +315,23 @@ public class BackpackGameTest {
     public void takingTheModuleOutKeepsEveryTorch(GameTestHelper h) {
         ServerPlayer player = player(h);
         ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK);
-        storeTorches(backpack, 256);
+        storeTorches(backpack, 512);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         BackpackMenu menu = openEquipped(player);
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 256, "the stack of 256 is there");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 512, "the stack of 512 is there");
 
         menu.getSlot(0).set(ItemStack.EMPTY);
         for (int i = 0; i < BackpackContents.SIZE; i++) {
             ItemStack stack = menu.getSlot(TORCH_SLOT + i).getItem();
             h.assertTrue(stack.getCount() <= stack.getMaxStackSize(), "slot " + i + " holds at most a normal stack, holds " + stack.getCount());
         }
-        h.assertValueEqual(total(player, Items.TORCH), 256, "all 256 torches are still there, in the backpack or the inventory");
-        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 256, "here, in the backpack's other slots");
+        h.assertValueEqual(total(player, Items.TORCH), 512, "all 512 torches are still there, in the backpack or the inventory");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 512, "here, in the backpack's other slots");
 
         // Full backpack: the extra goes to the inventory
         ItemStack full = backpackWith(BackpackModuleType.TORCH_STACK);
         List<ItemStack> slots = new ArrayList<>();
-        slots.add(new ItemStack(Items.TORCH, 256));
+        slots.add(new ItemStack(Items.TORCH, 512));
         for (int i = 1; i < BackpackContents.SIZE; i++) slots.add(new ItemStack(Items.COBBLESTONE, 64));
         BackpackContents.write(full, slots);
         player.getInventory().clearContent();
@@ -330,7 +339,7 @@ public class BackpackGameTest {
         BackpackMenu fullMenu = openEquipped(player);
         fullMenu.getSlot(0).set(ItemStack.EMPTY);
         h.assertValueEqual(fullMenu.getSlot(TORCH_SLOT).getItem().getCount(), 64, "the slot keeps 64");
-        h.assertValueEqual(total(player, Items.TORCH), 256, "and the other 192 went to the inventory");
+        h.assertValueEqual(total(player, Items.TORCH), 512, "and the other 448 went to the inventory");
         h.succeed();
     }
 
@@ -338,10 +347,10 @@ public class BackpackGameTest {
     public void theMenuHoldsStacksOverTheItemsOwnLimit(GameTestHelper h) {
         ServerPlayer player = player(h);
         ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK);
-        storeTorches(backpack, 256);
+        storeTorches(backpack, 512);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         BackpackMenu menu = openEquipped(player);
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 256, "the server's menu holds 256");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 512, "the server's menu holds 512");
         h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getMaxStackSize(), 64, "of an item that stacks to 64");
         h.succeed();
     }
@@ -550,6 +559,310 @@ public class BackpackGameTest {
         player.setGameMode(GameType.ADVENTURE);
         h.assertValueEqual(AutoTorch.sweepNow(player), 0, "adventure mode can't place blocks, and neither can Auto Torch");
         h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 10, "no torches used");
+        h.succeed();
+    }
+    // ---------------------------------------------------------------- recipes
+
+    private static ItemStack craft(GameTestHelper h, String pattern, java.util.Map<Character, net.minecraft.world.item.Item> key) {
+        List<ItemStack> grid = new ArrayList<>();
+        for (char c : pattern.toCharArray()) grid.add(c == '.' ? ItemStack.EMPTY : new ItemStack(key.get(c)));
+        CraftingInput input = CraftingInput.of(3, 3, grid);
+        java.util.Optional<RecipeHolder<CraftingRecipe>> recipe = h.getLevel().recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, h.getLevel());
+        return recipe.map(r -> r.value().assemble(input)).orElse(ItemStack.EMPTY);
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theBackpackAndEveryModuleCraftFromTheirRecipes(GameTestHelper h) {
+        h.assertTrue(craft(h, "LLLLCLLLL", java.util.Map.of('L', Items.LEATHER, 'C', Items.CHEST)).is(ModItems.BACKPACK), "8 leather around a chest make a Backpack");
+        h.assertTrue(craft(h, "ITITLTITI", java.util.Map.of('I', Items.IRON_INGOT, 'T', Items.TORCH, 'L', Items.REDSTONE_LAMP))
+                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.AUTO_TORCH)), "iron, 4 torches and a redstone lamp make the Auto Torch module");
+        h.assertTrue(craft(h, "ITITCTITI", java.util.Map.of('I', Items.IRON_INGOT, 'T', Items.TORCH, 'C', Items.CHEST))
+                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "iron, 4 torches and a chest make the Torch Stack module");
+        h.assertTrue(craft(h, "IBIBGBIBI", java.util.Map.of('I', Items.IRON_INGOT, 'B', Items.BREAD, 'G', Items.GOLDEN_CARROT))
+                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.FEEDING)), "iron, 4 bread and a golden carrot make the Feeding module");
+        h.assertTrue(craft(h, "IPIPTPIPI", java.util.Map.of('I', Items.IRON_INGOT, 'P', Items.PISTON, 'T', Items.CRAFTING_TABLE))
+                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.COMPACTING)), "iron, 4 pistons and a crafting table make the Compacting module");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- Feeding
+
+    private static void fill(ItemStack backpack, ItemStack... stacks) {
+        List<ItemStack> slots = new ArrayList<>();
+        for (int i = 0; i < BackpackContents.SIZE; i++) slots.add(i < stacks.length ? stacks[i] : ItemStack.EMPTY);
+        BackpackContents.write(backpack, slots);
+    }
+
+    private static ServerPlayer wearing(GameTestHelper h, ItemStack backpack) {
+        ServerPlayer player = player(h);
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
+        return player;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingPicksTheBestFoodThatWastesNothing(GameTestHelper h) {
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        fill(backpack, new ItemStack(Items.APPLE, 3), new ItemStack(Items.BREAD, 3), new ItemStack(Items.COOKED_BEEF, 3));
+        ServerPlayer player = wearing(h, backpack);
+
+        player.getFoodData().setFoodLevel(20);
+        h.assertTrue(!BackpackFeeding.feed(player), "a full food bar eats nothing");
+        player.getFoodData().setFoodLevel(18);
+        h.assertTrue(!BackpackFeeding.feed(player), "missing 2: nothing in the backpack fits, so nothing is eaten (no waste)");
+        h.assertValueEqual(BackpackContents.usedSlots(ExtraSlots.of(player).backpack()), 3, "all three stacks are still there");
+
+        player.getFoodData().setFoodLevel(12);
+        h.assertTrue(BackpackFeeding.feed(player), "missing 8: it eats");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.COOKED_BEEF), 2, "the cooked beef (8), the best that fits, not the bread or the apple");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 20, "and the food bar is full");
+
+        player.getFoodData().setFoodLevel(15);
+        h.assertTrue(BackpackFeeding.feed(player), "missing 5: it eats");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.BREAD), 2, "bread (5), not the apple (4): the one that restores the most without waste");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 20, "full again");
+
+        player.getFoodData().setFoodLevel(16);
+        h.assertTrue(BackpackFeeding.feed(player), "missing 4: it eats");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.APPLE), 2, "the apple (4), the only one that fits");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingNeverEatsFoodsWithSideEffects(GameTestHelper h) {
+        for (net.minecraft.world.item.Item risky : List.of(Items.ROTTEN_FLESH, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.PUFFERFISH,
+                Items.CHORUS_FRUIT, Items.POISONOUS_POTATO, Items.SPIDER_EYE, Items.HONEY_BOTTLE)) {
+            h.assertTrue(BackpackFeeding.safeFood(new ItemStack(risky)) == null, risky + " is not safe to eat for you");
+        }
+        // A suspicious stew as it is made carries its effects, which act when it is eaten
+        ItemStack stew = new ItemStack(Items.SUSPICIOUS_STEW);
+        stew.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, new net.minecraft.world.item.component.SuspiciousStewEffects(
+                List.of(new net.minecraft.world.item.component.SuspiciousStewEffects.Entry(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 100))));
+        h.assertTrue(BackpackFeeding.safeFood(stew) == null, "a suspicious stew with effects is not safe to eat for you");
+        for (net.minecraft.world.item.Item plain : List.of(Items.BREAD, Items.APPLE, Items.COOKED_BEEF, Items.GOLDEN_CARROT, Items.DRIED_KELP, Items.MUSHROOM_STEW)) {
+            h.assertTrue(BackpackFeeding.safeFood(new ItemStack(plain)) != null, plain + " is safe to eat for you");
+        }
+        h.assertTrue(BackpackFeeding.safeFood(new ItemStack(Items.DIAMOND)) == null && BackpackFeeding.safeFood(ItemStack.EMPTY) == null, "and what is not food is not eaten");
+
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        fill(backpack, new ItemStack(Items.ROTTEN_FLESH, 8), new ItemStack(Items.GOLDEN_APPLE, 2), new ItemStack(Items.PUFFERFISH, 2), new ItemStack(Items.DIAMOND, 5));
+        ServerPlayer player = wearing(h, backpack);
+        player.getFoodData().setFoodLevel(0);
+        h.assertTrue(!BackpackFeeding.feed(player), "starving, with only risky food: nothing is eaten");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 0, "the food bar is still empty");
+        h.assertValueEqual(BackpackContents.usedSlots(ExtraSlots.of(player).backpack()), 4, "and nothing left the backpack");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingNeedsTheModuleOnTheBackpackWornAndASurvivalPlayer(GameTestHelper h) {
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        fill(backpack, new ItemStack(Items.BREAD, 4));
+        ServerPlayer player = wearing(h, backpack);
+        player.getFoodData().setFoodLevel(5);
+
+        BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
+        h.assertTrue(!BackpackFeeding.feed(player), "module off: nothing is eaten");
+        BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
+
+        player.setGameMode(GameType.CREATIVE);
+        h.assertTrue(!BackpackFeeding.feed(player), "creative mode: nothing is eaten");
+        player.setGameMode(GameType.SURVIVAL);
+
+        Backpacks.open(player, Backpacks.EQUIPPED);
+        h.assertTrue(!BackpackFeeding.feed(player), "while the backpack's screen is open: nothing is eaten");
+        player.closeContainer();
+
+        ItemStack carried = ExtraSlots.of(player).backpack().copy();
+        ExtraSlots.of(player).clearContent();
+        player.getInventory().setItem(0, carried);
+        h.assertTrue(!BackpackFeeding.feed(player), "a backpack that isn't worn does nothing");
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, carried);
+        player.getInventory().clearContent();
+
+        h.assertTrue(BackpackFeeding.feed(player), "worn, on, survival, screen closed, hungry: it eats");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.BREAD), 3, "one bread");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 10, "restoring its 5 points");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingKeepsABowlFromStew(GameTestHelper h) {
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        fill(backpack, new ItemStack(Items.MUSHROOM_STEW));
+        ServerPlayer player = wearing(h, backpack);
+        player.getFoodData().setFoodLevel(0);
+        h.assertTrue(BackpackFeeding.feed(player), "it eats the stew");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.MUSHROOM_STEW), 0, "the stew is gone");
+        h.assertValueEqual(total(player, Items.BOWL), 1, "and the bowl came back, in the backpack or the inventory");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingPicksByNutritionThenSaturationThenSlot(GameTestHelper h) {
+        var foods = List.of(new BackpackFeeding.Food(0, 4, 2.4F), new BackpackFeeding.Food(1, 5, 6.0F), new BackpackFeeding.Food(2, 5, 9.0F), new BackpackFeeding.Food(3, 8, 12.8F),
+                new BackpackFeeding.Food(4, 0, 1.0F), new BackpackFeeding.Food(5, 5, 9.0F));
+        h.assertValueEqual(BackpackFeeding.pick(20, foods), 3, "plenty missing: the most nutritious");
+        h.assertValueEqual(BackpackFeeding.pick(8, foods), 3, "exactly what the best restores");
+        h.assertValueEqual(BackpackFeeding.pick(7, foods), 2, "too little for the best: 5 points, and of the two with the most saturation the earlier slot");
+        h.assertValueEqual(BackpackFeeding.pick(4, foods), 0, "only the 4-point food fits");
+        h.assertValueEqual(BackpackFeeding.pick(3, foods), -1, "nothing fits: nothing is eaten");
+        h.assertValueEqual(BackpackFeeding.pick(5, List.of()), -1, "no food at all");
+        h.assertValueEqual(BackpackFeeding.pick(5, List.of(new BackpackFeeding.Food(0, 0, 5.0F))), -1, "a food that restores nothing is never picked");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- Compacting
+
+    private static ServerPlayer compactingWith(GameTestHelper h, ItemStack... stacks) {
+        ItemStack backpack = backpackWith(BackpackModuleType.COMPACTING);
+        fill(backpack, stacks);
+        return wearing(h, backpack);
+    }
+
+    private static int held(ServerPlayer player, net.minecraft.world.item.Item item) {
+        return BackpackContents.count(ExtraSlots.of(player).backpack(), item);
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingPacksIngotsIntoBlocksAndKeepsTheRest(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_INGOT, 20), new ItemStack(Items.GOLD_INGOT, 8));
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs");
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 2, "18 of the 20 iron ingots became 2 iron blocks");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 2, "2 iron ingots are left");
+        h.assertValueEqual(held(player, Items.GOLD_INGOT), 8, "8 gold ingots are too few for a block");
+        h.assertValueEqual(held(player, Items.GOLD_BLOCK), 0, "so there is no gold block");
+        h.assertTrue(!BackpackCompacting.compactNow(player), "a second pass finds nothing more to pack");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingGoesFromNuggetsToIngotsToBlocks(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_NUGGET, 64), new ItemStack(Items.IRON_NUGGET, 26));
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs");
+        // 90 nuggets are 10 ingots, which are 1 block and 1 ingot
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "an iron block");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 1, "and an iron ingot");
+        h.assertValueEqual(held(player, Items.IRON_NUGGET), 0, "and no nuggets");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingKnowsStorageBlocksOfEveryKind(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.WHEAT, 9), new ItemStack(Items.DIAMOND, 9), new ItemStack(Items.REDSTONE, 9), new ItemStack(Items.LAPIS_LAZULI, 9),
+                new ItemStack(Items.COAL, 9), new ItemStack(Items.EMERALD, 9), new ItemStack(Items.RAW_IRON, 9), new ItemStack(Items.SLIME_BALL, 9), new ItemStack(Items.BONE_MEAL, 9));
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs");
+        for (net.minecraft.world.item.Item block : List.of(Items.HAY_BLOCK, Items.DIAMOND_BLOCK, Items.REDSTONE_BLOCK, Items.LAPIS_BLOCK, Items.COAL_BLOCK,
+                Items.EMERALD_BLOCK, Items.RAW_IRON_BLOCK, Items.SLIME_BLOCK, Items.BONE_BLOCK)) {
+            h.assertValueEqual(held(player, block), 1, block + " made");
+        }
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingLeavesPacksThatDoNotCraftBack(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.SAND, 16), new ItemStack(Items.GLOWSTONE_DUST, 8), new ItemStack(Items.SNOWBALL, 16), new ItemStack(Items.CLAY_BALL, 8),
+                new ItemStack(Items.MELON_SLICE, 18), new ItemStack(Items.OAK_PLANKS, 16), new ItemStack(Items.QUARTZ, 8));
+        h.assertTrue(!BackpackCompacting.compactNow(player), "nothing here packs back, so nothing is packed");
+        h.assertValueEqual(held(player, Items.SAND), 16, "sand stays sand, not sandstone");
+        h.assertValueEqual(held(player, Items.GLOWSTONE_DUST), 8, "glowstone dust stays");
+        h.assertValueEqual(held(player, Items.SNOWBALL), 16, "snowballs stay");
+        h.assertValueEqual(held(player, Items.CLAY_BALL), 8, "clay balls stay");
+        h.assertValueEqual(held(player, Items.MELON_SLICE), 18, "melon slices stay");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 16, "planks stay");
+        h.assertValueEqual(held(player, Items.QUARTZ), 8, "quartz stays");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingLeavesRenamedAndEnchantedItemsAlone(GameTestHelper h) {
+        ItemStack renamed = new ItemStack(Items.IRON_INGOT, 9);
+        renamed.set(DataComponents.CUSTOM_NAME, Component.literal("Dad's iron"));
+        ItemStack mixed = new ItemStack(Items.GOLD_INGOT, 5);
+        ItemStack namedGold = new ItemStack(Items.GOLD_INGOT, 5);
+        namedGold.set(DataComponents.CUSTOM_NAME, Component.literal("Shiny"));
+        ServerPlayer player = compactingWith(h, renamed, mixed, namedGold);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "9 renamed ingots, and 5 + 5 gold of which 5 are renamed: nothing packs");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 9, "the renamed iron is kept as it is");
+        h.assertValueEqual(held(player, Items.GOLD_INGOT), 10, "and so is the gold");
+        h.assertTrue(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).has(DataComponents.CUSTOM_NAME), "its name too");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingAddsToAnExistingBlockStack(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_BLOCK, 10), new ItemStack(Items.IRON_INGOT, 9));
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs");
+        h.assertValueEqual(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).getCount(), 11, "the new block went on the stack of iron blocks");
+        h.assertValueEqual(BackpackContents.usedSlots(ExtraSlots.of(player).backpack()), 1, "and the ingots' slot is empty");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingNeedsRoomForTheBlock(GameTestHelper h) {
+        // 35 full slots, and 10 iron ingots in the last: the 9 that pack leave 1 ingot in the slot, so there is no room for the block
+        ItemStack[] stacks = new ItemStack[BackpackContents.SIZE];
+        for (int i = 0; i < stacks.length - 1; i++) stacks[i] = new ItemStack(Items.COBBLESTONE, 64);
+        stacks[stacks.length - 1] = new ItemStack(Items.IRON_INGOT, 10);
+        ServerPlayer player = compactingWith(h, stacks);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "no room for a block: nothing is packed");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 10, "all 10 ingots are still there");
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 0, "and no block was lost into thin air");
+
+        // 9 ingots free their own slot, so the block fits
+        stacks[stacks.length - 1] = new ItemStack(Items.IRON_INGOT, 9);
+        ItemStack backpack = backpackWith(BackpackModuleType.COMPACTING);
+        fill(backpack, stacks);
+        ServerPlayer other = wearing(h, backpack);
+        h.assertTrue(BackpackCompacting.compactNow(other), "9 ingots in a full backpack: the block takes the slot they free");
+        h.assertValueEqual(held(other, Items.IRON_BLOCK), 1, "an iron block");
+        h.assertValueEqual(held(other, Items.IRON_INGOT), 0, "and no ingots");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingNeedsTheModuleOnTheBackpackWornAndTheScreenClosed(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_INGOT, 9));
+        BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "module off: nothing is packed");
+        BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
+
+        Backpacks.open(player, Backpacks.EQUIPPED);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "while the backpack's screen is open: nothing is packed");
+        player.closeContainer();
+
+        ItemStack carried = ExtraSlots.of(player).backpack().copy();
+        ExtraSlots.of(player).clearContent();
+        player.getInventory().setItem(0, carried);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "a backpack that isn't worn does nothing");
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, carried);
+        player.getInventory().clearContent();
+
+        h.assertTrue(BackpackCompacting.compactNow(player), "worn, on, screen closed: it packs");
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "an iron block");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void insertFillsStacksThenEmptySlotsAndReturnsWhatDoesNotFit(GameTestHelper h) {
+        List<ItemStack> slots = new ArrayList<>();
+        for (int i = 0; i < 3; i++) slots.add(ItemStack.EMPTY);
+        slots.set(0, new ItemStack(Items.COBBLESTONE, 60));
+        slots.set(1, new ItemStack(Items.DIRT, 64));
+        ItemStack left = BackpackContents.insert(slots, new ItemStack(Items.COBBLESTONE, 70), false);
+        h.assertValueEqual(slots.get(0).getCount(), 64, "the stack of cobblestone is topped up to 64");
+        h.assertValueEqual(slots.get(2).getCount(), 64, "the empty slot takes a full stack");
+        h.assertValueEqual(left.getCount(), 2, "and 2 do not fit anywhere");
+        h.assertValueEqual(slots.get(1).getCount(), 64, "dirt is left alone");
+
+        List<ItemStack> torches = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 500), ItemStack.EMPTY));
+        h.assertTrue(BackpackContents.insert(torches, new ItemStack(Items.TORCH, 100), true).isEmpty(), "with Torch Stack 100 torches fit");
+        h.assertValueEqual(torches.get(0).getCount(), 512, "the first stack goes to 512");
+        h.assertValueEqual(torches.get(1).getCount(), 88, "and the rest goes in the next slot");
+        List<ItemStack> plain = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 60), ItemStack.EMPTY));
+        ItemStack tooMany = BackpackContents.insert(plain, new ItemStack(Items.TORCH, 100), false);
+        h.assertValueEqual(plain.get(0).getCount(), 64, "without it the first stack stops at 64");
+        h.assertValueEqual(plain.get(1).getCount(), 64, "the next slot takes a stack of 64");
+        h.assertValueEqual(tooMany.getCount(), 32, "and 32 of the 100 do not fit");
         h.succeed();
     }
 }
