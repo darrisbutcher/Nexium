@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.18
+
+* **Diagonal placement**: hold a key (**Left Alt** by default, rebindable under Controls > Key Binds, in the Nexium group) and
+  right-click with a block in your hand to place it diagonally, off the edge of the block face you aim at: one step out from the
+  face and one step over toward the nearest edge of that face. The block can float with nothing to hold it. It is placed as if
+  you had clicked the cell itself, so stairs, slabs, logs and the like face the way they do for a normal click, and one block is
+  used up (none in creative). The cell must be free or replaceable (grass, water) and within your reach, otherwise nothing is
+  placed. Without the key, right-click works as before. The server checks every request (reach, build permission, loaded
+  chunks, the block in your hand).
+* **Diagonal preview**: while the key is held with a block in your hand, an outline shows the cell the block would go in, white
+  when it is free and red when it is taken. `diagonalPreview` (client setting, on by default) turns it off.
+
 ## 1.21.17
 
 * **Compressed blocks**: 48 new blocks, a *Compressed*, *Double Compressed* and *Triple Compressed* version of 16 bulk blocks that

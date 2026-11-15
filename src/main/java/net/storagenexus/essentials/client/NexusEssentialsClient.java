@@ -5,11 +5,15 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.storagenexus.StorageNexus;
+import net.storagenexus.essentials.placement.DiagonalPlacePayload;
 import net.storagenexus.essentials.registry.ModMenus;
 import net.storagenexus.essentials.registry.ModPayloads;
 import net.storagenexus.essentials.slots.ExtraSlots;
@@ -21,6 +25,13 @@ public final class NexusEssentialsClient {
     /** Switches the magnet in the trinket slot on or off. M by default; change it under Controls > Key Binds. */
     public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexusessentials.toggle_magnet",
             InputConstants.KEY_M, CATEGORY);
+
+    /**
+     * Hold while right-clicking a block with a block in hand to place it diagonally: one out from the face you click and one over
+     * toward the nearest edge of it. Left Alt by default; change it under Controls > Key Binds.
+     */
+    public static final KeyMapping DIAGONAL_PLACE = new KeyMapping("key.nexusessentials.diagonal_place",
+            InputConstants.KEY_LALT, CATEGORY);
 
     /** Opens the Backpack worn in the backpack slot. B by default; change it under Controls > Key Binds. */
     public static final KeyMapping OPEN_BACKPACK = new KeyMapping("key.nexusessentials.open_backpack",
@@ -36,6 +47,16 @@ public final class NexusEssentialsClient {
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         KeyMappingHelper.registerKeyMapping(OPEN_BACKPACK);
+        KeyMappingHelper.registerKeyMapping(DIAGONAL_PLACE);
+        // With the key held, a right-click on a block with a block in hand is sent as a diagonal placement instead of a normal click.
+        // FAIL, not SUCCESS: SUCCESS would still send the normal click to the server (a second block in the usual cell); FAIL stops it.
+        // The server swings the arm when it places.
+        UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
+            if (!level.isClientSide() || !DIAGONAL_PLACE.isDown() || player.isSpectator()) return InteractionResult.PASS;
+            if (!(player.getItemInHand(hand).getItem() instanceof BlockItem)) return InteractionResult.PASS;
+            ClientPlayNetworking.send(new DiagonalPlacePayload(hit.getBlockPos(), hit.getDirection(), hit.getLocation(), hand));
+            return InteractionResult.FAIL;
+        });
         MenuScreens.register(ModMenus.BACKPACK, net.storagenexus.client.screen.BackpackScreen::new);
         MenuScreens.register(ModMenus.IRON_FARM, IronFarmScreen::new);
         MenuScreens.register(ModMenus.XP_FARM, XpFarmScreen::new);

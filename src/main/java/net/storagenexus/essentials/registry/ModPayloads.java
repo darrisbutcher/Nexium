@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.NexusEssentials;
 import net.storagenexus.essentials.backpack.Backpacks;
 import net.storagenexus.essentials.magnet.MagnetLogic;
+import net.storagenexus.essentials.placement.DiagonalPlacePayload;
+import net.storagenexus.essentials.placement.DiagonalPlacement;
 
 public final class ModPayloads {
     /** Client to server: the magnet hotkey was pressed. */
@@ -53,7 +55,10 @@ public final class ModPayloads {
     public static void init() {
         PayloadTypeRegistry.serverboundPlay().register(ToggleMagnet.TYPE, ToggleMagnet.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(OpenBackpack.TYPE, OpenBackpack.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(DiagonalPlacePayload.TYPE, DiagonalPlacePayload.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(WingsSync.TYPE, WingsSync.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(DiagonalPlacePayload.TYPE, (payload, context) ->
+                DiagonalPlacement.place(context.player(), payload.hand(), payload.pos(), payload.face(), payload.hit()));
         ServerPlayNetworking.registerGlobalReceiver(OpenBackpack.TYPE, (payload, context) -> Backpacks.openEquipped(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(ToggleMagnet.TYPE, (payload, context) -> MagnetLogic.toggle(context.player()));
     }

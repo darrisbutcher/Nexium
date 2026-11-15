@@ -65,6 +65,7 @@
   "effect.nexusessentials.bedrock_breaker": "Bedrock Breaker",
   "key.nexusessentials.toggle_magnet": "Toggle Magnet",
   "key.nexusessentials.open_backpack": "Open Backpack",
+  "key.nexusessentials.diagonal_place": "Place Diagonally (hold)",
   "tooltip.nexusessentials.magnet_on": "On",
   "tooltip.nexusessentials.magnet_off": "Off",
   "tooltip.nexusessentials.magnet_range": "Range: %s blocks",

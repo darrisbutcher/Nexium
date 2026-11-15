@@ -30,6 +30,7 @@
       "net.storagenexus.gametest.client.ShulkerPreviewClientTest",
       "net.storagenexus.gametest.client.CompressedBlocksClientTest",
       "net.storagenexus.gametest.client.BackpackClientTest",
+      "net.storagenexus.gametest.client.DiagonalPlacementClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",
       "net.storagenexus.gametest.client.EnergyClientTest",
       "net.storagenexus.gametest.client.SortClientTest",
@@ -38,6 +39,7 @@
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
       "net.storagenexus.gametest.BackpackGameTest",
+      "net.storagenexus.gametest.DiagonalPlacementGameTest",
       "net.storagenexus.gametest.CompressedBlocksGameTest",
       "net.storagenexus.gametest.CapturedMobDetailsGameTest",
       "net.storagenexus.gametest.AdvancementTabGameTest",
