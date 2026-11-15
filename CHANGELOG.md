@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.23
+
+* **Free camera**: the speed now changes with **Left Ctrl and the scroll wheel** (the key is `Free Camera Speed` under Controls > Key Binds,
+  in Nexium, so you can change it); the plain scroll wheel does nothing while the camera is away, not even the hotbar. The experience
+  bar and its level number are hidden while it is on. Your own body is drawn once the camera is outside it, so you no longer look at the
+  inside of your head right after switching it on.
+
 ## 1.21.22
 
 * **Free camera**: press **K** (Controls > Key Binds, in Nexium) to take the camera off your player. You stay where you are while the

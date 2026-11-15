@@ -19,12 +19,18 @@ import org.jspecify.annotations.Nullable;
 /**
  * The free camera: a key (K by default) detaches the camera from the player. The player stands where they are, the movement
  * keys and the mouse fly the camera through everything (forward goes where it looks, jump and sneak go up and down, sprint is
- * faster, the scroll wheel changes the speed), and the key again puts the camera back. Nothing you click reaches the world while
- * it is on. It ends by itself if the player is hurt or dies, or the world changes. All on the client; the server is not told.
+ * faster, Left Ctrl and the scroll wheel change the speed), and the key again puts the camera back. Nothing you click reaches the
+ * world while it is on, the plain scroll wheel does nothing, and the experience bar is not drawn. It ends by itself if the player is hurt or dies, or the world changes. All on the client; the server is not told.
  */
 public final class FreeCamera {
     /** Switches the free camera on and off. K by default; change it under Controls > Key Binds. */
     public static final KeyMapping TOGGLE = new KeyMapping("key.nexusessentials.free_camera", InputConstants.KEY_K, NexusEssentialsClient.CATEGORY);
+
+    /**
+     * Held with the scroll wheel while the camera is away, changes how fast it flies. Left Ctrl by default (the plain scroll wheel
+     * does nothing then); change it under Controls > Key Binds.
+     */
+    public static final KeyMapping SPEED_MODIFIER = new KeyMapping("key.nexusessentials.free_camera_speed", InputConstants.KEY_LCONTROL, NexusEssentialsClient.CATEGORY);
 
     /** Blocks per tick at the start (10 a second), the slowest and the fastest the wheel can make it, and what sprint multiplies by. */
     private static final double START_SPEED = 0.5, MIN_SPEED = 0.05, MAX_SPEED = 5.0, SPRINT = 3.0;
@@ -43,12 +49,22 @@ public final class FreeCamera {
         return camera;
     }
 
+    /**
+     * Whether the camera is far enough from the player to see the player's body: outside it (and a little around it). Starting
+     * from the player's eyes, the camera is inside the head, and you would see the inside of your own face until you move.
+     */
+    public static boolean showsPlayer() {
+        var player = Minecraft.getInstance().player;
+        return camera != null && player != null && !player.getBoundingBox().inflate(0.5).contains(camera.position());
+    }
+
     public static double speed() {
         return speed;
     }
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE);
+        KeyMappingHelper.registerKeyMapping(SPEED_MODIFIER);
         ClientTickEvents.END_CLIENT_TICK.register(FreeCamera::tick);
         // Leaving the world drops it (the player it belonged to is gone with the world)
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
@@ -115,9 +131,13 @@ public final class FreeCamera {
         cam.setPos(cam.position().add(direction.scale(speed * (options.keySprint.isDown() ? SPRINT : 1.0))));
     }
 
-    /** The scroll wheel while the camera is away changes how fast it flies instead of the hotbar slot. Returns whether it took the scroll. */
+    /**
+     * The scroll wheel while the camera is away: with the speed key (Left Ctrl) held it changes how fast the camera flies, without it
+     * it does nothing (not even the hotbar slot). Returns whether it took the scroll, which is always while the camera is away.
+     */
     public static boolean scroll(double amount) {
-        if (camera == null || amount == 0) return false;
+        if (camera == null) return false;
+        if (amount == 0 || !SPEED_MODIFIER.isDown()) return true;
         speed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, speed * Math.pow(1.25, amount)));
         var player = Minecraft.getInstance().player;
         if (player != null) player.sendOverlayMessage(Component.translatable("message.nexusessentials.free_camera_speed", String.format("%.2f", speed * 20)));

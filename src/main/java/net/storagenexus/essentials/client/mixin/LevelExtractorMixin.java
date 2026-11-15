@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 /**
  * The game does not draw the local player when the camera is on some other entity (that is how spectating a mob avoids drawing you
- * inside it). With the free camera away from the player, the player is drawn: you see your own body where you left it.
+ * inside it). With the free camera away from the player, the player is drawn: you see your own body where you left it (not while the
+ * camera is still inside it, right after switching it on).
  */
 @Mixin(LevelExtractor.class)
 abstract class LevelExtractorMixin {
@@ -19,6 +20,6 @@ abstract class LevelExtractorMixin {
     @Expression("? instanceof LocalPlayer")
     @ModifyExpressionValue(method = "extractVisibleEntities", at = @At("MIXINEXTRAS:EXPRESSION"))
     private boolean nexusessentials$drawThePlayerFromTheFreeCamera(boolean isLocalPlayer) {
-        return isLocalPlayer && !FreeCamera.active();
+        return isLocalPlayer && !FreeCamera.showsPlayer();
     }
 }
