@@ -68,7 +68,8 @@
         "tunnels",
         "vein",
         "builder",
-        "builder_crafting"
+        "builder_crafting",
+        "diagonal"
       ]
     },
     {
@@ -1301,6 +1302,22 @@
         "compacting_module",
         "compacting",
         "drawers"
+      ]
+    },
+    "diagonal": {
+      "pages": [
+        "essentials.diagonal"
+      ],
+      "icon": "minecraft:stone_stairs",
+      "aliases": [
+        "Diagonal placement",
+        "place diagonally",
+        "diagonal blocks",
+        "Left Alt"
+      ],
+      "see": [
+        "keys",
+        "builder"
       ]
     },
     "elytra": {

@@ -146,6 +146,8 @@ public final class NexusConfig {
     public boolean aiotMiningPreview = true;
     /** Client side: outline where the Construction Builder in your hand would put blocks. */
     public boolean builderPreview = true;
+    /** Client side: outline the cell a diagonal placement (the Diagonal Placement key held) would put the block in. */
+    public boolean diagonalPreview = true;
     /** Client side: show the AIOT's mode and module states in the corner of the screen while you hold it. */
     public boolean aiotHud = true;
     /** Client side: seconds the AIOT readout and mining outline stay up after you switch to an AIOT or press its 3x3, tunnel or vein key. 0 keeps them up. */

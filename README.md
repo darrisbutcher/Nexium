@@ -345,6 +345,25 @@ vanilla. Endermen never pick up blocks.
   every item and count. It replaces the normal item list ("Iron Ingot x64 ... and 12 more"), which is hidden; an empty box and
   other containers keep their normal tooltip.
 
+### Diagonal placement
+* Hold **Left Alt** (change it under Controls > Key Binds, in the Nexium group) and **right-click a block with a block in your
+  hand** to place it **diagonally**: one step out from the face you clicked and one step over toward the **nearest edge of that
+  face**, the edge your crosshair is closest to. Aim near the top of a wall and the block lands diagonally up and out; near its
+  left edge, diagonally left; on a top face, toward the edge you are nearest.
+  ```
+  aiming at the top part of the face:        aiming at its left part:
+
+              [ NEW ]                        [ NEW ]
+     [BLOCK]                                          [BLOCK]
+  ```
+* The new block touches the one you clicked only along an edge, and it **may float**, so staircases, roofs, diagonal lines and
+  pillars need no support block first. It uses up the item like any placement (not in creative), follows the aimed half of a slab or
+  stair and the face for logs, never replaces a block (tall grass and water it does, as in vanilla), and refuses where you may not
+  build (adventure and spectator mode, spawn protection, out of reach, or where another mod's protection says no).
+* With the key held, a **white outline** shows the cell the block would go in before you click, and a **red** one where that cell is
+  already taken (so nothing would be placed); `diagonalPreview` (client) turns it off.
+* Without the key, right-click places the normal way. The block must be in your main hand or, failing that, your offhand.
+
 ### Compressed blocks
 * Sixteen bulk blocks have compressed versions that hold **9, 81 and 729** of them: **stone, cobblestone, deepslate, cobbled
   deepslate, tuff, granite, diorite, andesite, netherrack, blackstone, basalt, end stone, dirt, sand, red sand and gravel**.
@@ -626,6 +645,7 @@ server's file is the one that counts.
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
+| `diagonalPreview` | `true` | Client: outline the cell a diagonal placement would put the block in, while the Diagonal Placement key is held |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or V; 0 keeps them up |
