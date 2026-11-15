@@ -108,6 +108,55 @@ public class ModuleGameTest {
     private static final BlockPos STONE = new BlockPos(1, 2, 4);
 
     @GameTest(maxTicks = 40)
+    public void nexusLinkLeavesShulkerBoxesAndEnderChestsAlone(GameTestHelper h) {
+        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(CHEST, Blocks.CHEST);
+        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK);
+        GlobalPos terminal = GlobalPos.of(h.getLevel().dimension(), h.absolutePos(TERMINAL));
+        h.assertTrue(AiotModules.relink(player.getMainHandItem(), terminal), "linked");
+        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
+
+        // A shulker box, whatever its colour, drops on the ground and not into the network
+        for (var box : new net.minecraft.world.level.block.Block[]{Blocks.SHULKER_BOX, Blocks.DYED_SHULKER_BOX.purple(), Blocks.DYED_SHULKER_BOX.red()}) {
+            h.setBlock(STONE, box);
+            mine(h, player, STONE);
+            h.assertTrue(chest.isEmpty(), box + " was not sent to the network");
+        }
+        h.assertValueEqual(itemsOnGround(h), 3, "all three shulker boxes dropped on the ground");
+
+        // An ender chest too: what it drops (obsidian) stays on the ground
+        h.setBlock(STONE, Blocks.ENDER_CHEST);
+        mine(h, player, STONE);
+        h.assertTrue(chest.isEmpty(), "the ender chest's drops were not sent to the network");
+        h.assertTrue(itemsOnGround(h) > 3, "they dropped on the ground");
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
+    public void aVeinOrAreaSwingStillSendsTheRestButNotAShulkerBox(GameTestHelper h) {
+        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(CHEST, Blocks.CHEST);
+        ServerPlayer player = miner(h, ModuleType.NEXUS_LINK);
+        AiotModules.relink(player.getMainHandItem(), GlobalPos.of(h.getLevel().dimension(), h.absolutePos(TERMINAL)));
+        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
+        h.setBlock(STONE, Blocks.STONE);
+        h.setBlock(STONE.east(), Blocks.DYED_SHULKER_BOX.purple());
+        h.setBlock(STONE.west(), Blocks.STONE);
+        // One swing that breaks all three, as a vein or a 3x3 does
+        net.storagenexus.aiot.module.NexusLink.batch(player, () -> {
+            mine(h, player, STONE);
+            mine(h, player, STONE.east());
+            mine(h, player, STONE.west());
+        });
+        h.assertValueEqual(count(chest, Items.COBBLESTONE), 2, "the two stones went to the network");
+        h.assertValueEqual(count(chest, Items.DYED_SHULKER_BOX.purple()), 0, "the shulker box did not");
+        h.assertValueEqual(itemsOnGround(h), 1, "it dropped on the ground");
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
     public void nexusLinkSendsDropsToTheNetwork(GameTestHelper h) {
         h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
         h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);

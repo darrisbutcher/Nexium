@@ -452,7 +452,7 @@ public class BackpackGameTest {
         }
     }
 
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 200)
+    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 300)
     public void autoTorchLightsADarkRoomSpacedOut(GameTestHelper h) {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
@@ -473,6 +473,9 @@ public class BackpackGameTest {
                     h.assertTrue(countTorches(level, origin, -14, 14, -14, 14) >= 2, "several of them in the room");
                 })
                 .thenWaitUntil(() -> assertLit(h, level, origin, -14, 14, -14, 14, "the room"))
+                // The module's own tick sweeps run for this player too: let any in flight finish and the light settle, so the count below is
+                // not racing a torch placed a moment ago (the light of which the next sweep has not read yet)
+                .thenIdle(60)
                 .thenExecute(() -> {
                     int before = countTorches(level, origin, -14, 14, -14, 14);
                     int more = AutoTorch.sweepNow(player);
