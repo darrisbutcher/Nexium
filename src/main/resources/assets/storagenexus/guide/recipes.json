@@ -79,6 +79,8 @@
     "backpack": {"type": "shaped", "pattern": ["LLL", "LCL", "LLL"], "key": {"C": "minecraft:chest", "L": "minecraft:leather"}, "result": {"id": "nexusessentials:backpack"}},
     "auto_torch_module": {"type": "shaped", "pattern": ["ITI", "TLT", "ITI"], "key": {"I": "minecraft:iron_ingot", "L": "minecraft:redstone_lamp", "T": "minecraft:torch"}, "result": {"id": "nexusessentials:auto_torch_module"}},
     "torch_stack_module": {"type": "shaped", "pattern": ["ITI", "TCT", "ITI"], "key": {"C": "minecraft:chest", "I": "minecraft:iron_ingot", "T": "minecraft:torch"}, "result": {"id": "nexusessentials:torch_stack_module"}},
+    "feeding_module": {"type": "shaped", "pattern": ["IBI", "BGB", "IBI"], "key": {"B": "minecraft:bread", "G": "minecraft:golden_carrot", "I": "minecraft:iron_ingot"}, "result": {"id": "nexusessentials:feeding_module"}},
+    "compacting_module": {"type": "shaped", "pattern": ["IPI", "PTP", "IPI"], "key": {"I": "minecraft:iron_ingot", "P": "minecraft:piston", "T": "minecraft:crafting_table"}, "result": {"id": "nexusessentials:compacting_module"}},
     "elixir": {"type": "shaped", "pattern": [" O ", "DBD", " O "], "key": {"B": "minecraft:glass_bottle", "D": "minecraft:diamond", "O": "minecraft:obsidian"}, "result": {"id": "nexusessentials:bedrock_breaker_elixir"}}
   }
 }

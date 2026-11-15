@@ -19,7 +19,7 @@ import net.storagenexus.essentials.slots.ExtraSlots;
 import java.util.function.Consumer;
 
 /**
- * A Backpack: 36 slots like the player's inventory, and module slots (Auto Torch, Torch Stack). Wear it in the backpack
+ * A Backpack: 36 slots like the player's inventory, and module slots (Auto Torch, Torch Stack, Feeding, Compacting). Wear it in the backpack
  * slot above the trinket slot; the Open Backpack key (B) opens the worn one. Right-click: open the one in your hand.
  * Sneak + right-click: wear it.
  */

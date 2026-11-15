@@ -96,6 +96,8 @@
         "backpack_modules",
         "auto_torch",
         "torch_stack",
+        "feeding",
+        "compacting_module",
         "elytra"
       ]
     },
@@ -1183,7 +1185,9 @@
       "see": [
         "backpack",
         "auto_torch",
-        "torch_stack"
+        "torch_stack",
+        "feeding",
+        "compacting_module"
       ]
     },
     "auto_torch": {
@@ -1227,6 +1231,49 @@
       "see": [
         "backpack_modules",
         "auto_torch"
+      ]
+    },
+    "feeding": {
+      "pages": [
+        "essentials.feeding"
+      ],
+      "icon": "nexusessentials:feeding_module",
+      "recipes": [
+        "feeding_module"
+      ],
+      "items": [
+        "nexusessentials:feeding_module"
+      ],
+      "aliases": [
+        "Feeding",
+        "feeding module",
+        "auto eat"
+      ],
+      "see": [
+        "backpack_modules",
+        "backpack"
+      ]
+    },
+    "compacting_module": {
+      "pages": [
+        "essentials.compacting_module"
+      ],
+      "icon": "nexusessentials:compacting_module",
+      "recipes": [
+        "compacting_module"
+      ],
+      "items": [
+        "nexusessentials:compacting_module"
+      ],
+      "aliases": [
+        "Compacting module",
+        "backpack compacting",
+        "pack blocks"
+      ],
+      "see": [
+        "backpack_modules",
+        "compacting",
+        "backpack"
       ]
     },
     "elytra": {

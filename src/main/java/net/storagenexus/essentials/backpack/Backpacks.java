@@ -12,6 +12,17 @@ public final class Backpacks {
     /** The menu's source: the Backpack worn in the backpack slot. Any other source is the inventory slot holding it. */
     public static final int EQUIPPED = -1;
 
+    /**
+     * The Backpack this player wears if the module of this type is in it and switched on, and nothing else can be
+     * editing its contents (its screen is closed, the player is alive and not a spectator): otherwise an empty stack.
+     */
+    public static ItemStack activeFor(ServerPlayer player, BackpackModuleType type) {
+        ItemStack backpack = ExtraSlots.of(player).backpack();
+        if (!(backpack.getItem() instanceof BackpackItem) || !BackpackModules.active(backpack, type)) return ItemStack.EMPTY;
+        if (!player.isAlive() || player.isSpectator() || player.containerMenu instanceof BackpackMenu) return ItemStack.EMPTY;
+        return backpack;
+    }
+
     /** The Open Backpack key: opens the Backpack worn in the backpack slot, or says there is none. */
     public static void openEquipped(ServerPlayer player) {
         if (player.isSpectator()) return;

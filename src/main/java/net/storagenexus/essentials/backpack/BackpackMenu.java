@@ -139,7 +139,7 @@ public class BackpackMenu extends BaseMenu {
         return source;
     }
 
-    /** Whether torches stack to 256 here: the Torch Stack module is in one of the module slots and on. Works on both sides, from the module slots. */
+    /** Whether torches stack to 512 here: the Torch Stack module is in one of the module slots and on. Works on both sides, from the module slots. */
     public boolean torchStack() {
         return moduleActive(BackpackModuleType.TORCH_STACK);
     }

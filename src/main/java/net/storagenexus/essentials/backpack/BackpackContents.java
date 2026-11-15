@@ -23,7 +23,7 @@ public final class BackpackContents {
     /** Slots in a Backpack: the same as the player's inventory including the hotbar. */
     public static final int SIZE = 36;
     /** How many torches fit in a slot while the Torch Stack module is in and on. */
-    public static final int TORCH_STACK_MAX = 256;
+    public static final int TORCH_STACK_MAX = 512;
 
     /** One occupied slot. */
     public record Entry(int slot, ItemVariant variant, int count) {
@@ -91,6 +91,27 @@ public final class BackpackContents {
         if (left == amount) return 0;
         write(backpack, slots);
         return amount - left;
+    }
+
+    /**
+     * Puts the stack into these slots: first on top of stacks of the same item, then into empty slots, as many as fit
+     * (torches to {@value #TORCH_STACK_MAX} when {@code torchStack}). Returns what did not fit.
+     */
+    public static ItemStack insert(List<ItemStack> slots, ItemStack stack, boolean torchStack) {
+        ItemStack left = stack.copy();
+        int max = maxStack(left, torchStack);
+        for (int i = 0; i < slots.size() && !left.isEmpty(); i++) {
+            ItemStack there = slots.get(i);
+            if (there.isEmpty() || !ItemStack.isSameItemSameComponents(there, left)) continue;
+            int moved = Math.min(max - there.getCount(), left.getCount());
+            if (moved <= 0) continue;
+            there.grow(moved);
+            left.shrink(moved);
+        }
+        for (int i = 0; i < slots.size() && !left.isEmpty(); i++) {
+            if (slots.get(i).isEmpty()) slots.set(i, left.split(Math.min(max, left.getCount())));
+        }
+        return left;
     }
 
     /** How many of this stack fit in one slot: torches stack to {@link #TORCH_STACK_MAX} with the Torch Stack module on, everything else to its own limit. */

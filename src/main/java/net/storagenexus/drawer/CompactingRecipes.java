@@ -23,6 +23,14 @@ public final class CompactingRecipes {
 
     private record Step(Item item, int factor) {}
 
+    /** What an item packs into, and how many of it that takes: 9 iron ingots into 1 iron block. */
+    public record Pack(Item into, int count) {}
+
+    /** What this item packs into, if 3x3 (or 2x2) of it crafts one bigger item that uncrafts back into the same items; the Backpack's Compacting module packs with it. */
+    public static Optional<Pack> packInto(ServerLevel level, Item item) {
+        return findUp(level, item).map(step -> new Pack(step.item(), step.factor()));
+    }
+
     /** Largest form first. factorToNextSmaller is 1 for the smallest tier. */
     public static List<Tier> chain(ServerLevel level, Item start) {
         List<Item> items = new ArrayList<>();
