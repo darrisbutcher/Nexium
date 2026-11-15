@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.24
+
+* **Move up**: a new button in the Disk Drive's screen, beside Move to disks. It moves what the **lower tier disks in that drive** hold
+  onto its **higher tier disks**, item disks onto higher item disks and fluid disks onto higher fluid disks (never one kind onto the
+  other). Each disk's contents go to the biggest disk first, then the next biggest, as far as there is room, so swapping a 16k disk
+  for a 64k one takes one click; what does not fit stays where it was, and disks of the same tier are left alone.
+
 ## 1.21.23
 
 * **Free camera**: the speed now changes with **Left Ctrl and the scroll wheel** (the key is `Free Camera Speed` under Controls > Key Binds,

@@ -111,7 +111,39 @@ public class DiskClientTest implements FabricClientGameTest {
                     server.overworld().getBlockEntity(at[0].east(2)) instanceof ChestBlockEntity chest && chest.isEmpty());
             check(emptied, "Move to disks empties the chest");
             System.out.println("[nexus] disk drive after move: " + ctx.takeScreenshot("nexus_disk_drive_moved"));
+
+            // Move up is the fourth widget, beside Move to disks: it puts what the lower tier disks hold onto the highest tier one
+            long before = world.getServer().computeOnServer(server -> totalItems(server, at[0]));
+            double[] up = ctx.computeOnClient(mc -> {
+                var w = (AbstractWidget) mc.gui.screen().children().get(3);
+                double s = mc.getWindow().getGuiScale();
+                return new double[]{(w.getX() + w.getWidth() / 2.0) * s, (w.getY() + w.getHeight() / 2.0) * s};
+            });
+            ctx.getInput().setCursorPos(up[0], up[1]);
+            ctx.waitTicks(3);
+            System.out.println("[nexus] disk drive move up hint: " + ctx.takeScreenshot("nexus_disk_drive_move_up_hint"));
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.waitTicks(15);
+            String after = world.getServer().computeOnServer(server -> {
+                DiskDriveBlockEntity be = (DiskDriveBlockEntity) server.overworld().getBlockEntity(at[0]);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < 5; i++) sb.append(StorageDiskItem.items(server, be.disks().getItem(i)).stored()).append(' ');
+                return sb.toString().trim();
+            });
+            check(after.equals("0 0 0 0 " + before), "Move up put everything the four lower disks held (" + before + " items in all) on the Nexium disk: " + after);
+            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+            ctx.getInput().setCursorPos(0, 0);
+            ctx.waitTicks(15);
+            System.out.println("[nexus] disk drive after move up: " + ctx.takeScreenshot("nexus_disk_drive_moved_up"));
         }
+    }
+
+    /** Every item held on the drive's five item disks. */
+    private static long totalItems(MinecraftServer server, BlockPos drive) {
+        DiskDriveBlockEntity be = (DiskDriveBlockEntity) server.overworld().getBlockEntity(drive);
+        long total = 0;
+        for (int i = 0; i < 5; i++) total += StorageDiskItem.items(server, be.disks().getItem(i)).stored();
+        return total;
     }
 
     private static ItemStack filled(MinecraftServer server, Item diskItem, Item content, long amount) {
