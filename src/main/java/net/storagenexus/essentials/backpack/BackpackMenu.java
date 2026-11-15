@@ -1,6 +1,7 @@
 package net.storagenexus.essentials.backpack;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Prediction;
@@ -131,6 +132,34 @@ public class BackpackMenu extends BaseMenu {
     /** Whether this is one of the Backpack's {@value BackpackContents#SIZE} storage slots (not a module slot or the player's). Works on both sides. */
     public boolean isStorageSlot(Slot slot) {
         return slot.container == contents;
+    }
+
+    /** Server: copies of the Backpack's {@value BackpackContents#SIZE} storage slots as this open screen holds them right now. */
+    public NonNullList<ItemStack> contentsCopy() {
+        NonNullList<ItemStack> list = NonNullList.withSize(BackpackContents.SIZE, ItemStack.EMPTY);
+        for (int i = 0; i < BackpackContents.SIZE; i++) list.set(i, contents.getItem(i).copy());
+        return list;
+    }
+
+    /**
+     * Server: puts these stacks in the storage slots (only those that differ), saves them in the Backpack and sends the change to the
+     * screen. How the modules (Compacting, Feeding, Auto Torch) edit a Backpack whose screen is open: the screen keeps its own copy of
+     * the slots and writes all of it back on every change, so an edit made to the saved data behind its back would be put back over.
+     */
+    public void replaceContents(List<ItemStack> stacks) {
+        boolean changed = false;
+        loading = true;
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack next = i < stacks.size() ? stacks.get(i) : ItemStack.EMPTY;
+            if (ItemStack.matches(contents.getItem(i), next)) continue;
+            contents.setItem(i, next.copy());
+            changed = true;
+        }
+        loading = false;
+        if (changed) {
+            saveContents();
+            broadcastChanges();
+        }
     }
 
     /** The Backpack this menu is for. */

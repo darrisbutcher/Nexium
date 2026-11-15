@@ -78,18 +78,23 @@ public final class BackpackContents {
 
     /** Takes up to this many of the item out of the Backpack, from its last slots first. Returns how many came out. */
     public static int take(ItemStack backpack, Item item, int amount) {
-        if (amount <= 0) return 0;
         NonNullList<ItemStack> slots = read(backpack);
+        int took = takeFrom(slots, item, amount);
+        if (took > 0) write(backpack, slots);
+        return took;
+    }
+
+    /** Takes up to this many of the item out of these slots, from the last slot first. Returns how many came out. */
+    public static int takeFrom(List<ItemStack> slots, Item item, int amount) {
+        if (amount <= 0) return 0;
         int left = amount;
-        for (int slot = SIZE - 1; slot >= 0 && left > 0; slot--) {
+        for (int slot = slots.size() - 1; slot >= 0 && left > 0; slot--) {
             ItemStack stack = slots.get(slot);
             if (stack.isEmpty() || !stack.is(item)) continue;
             int took = Math.min(left, stack.getCount());
             stack.shrink(took);
             left -= took;
         }
-        if (left == amount) return 0;
-        write(backpack, slots);
         return amount - left;
     }
 
