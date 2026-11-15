@@ -371,9 +371,11 @@ vanilla. Endermen never pick up blocks.
 ### Free camera
 * Press **K** (change it under Controls > Key Binds, in Nexium) to take the camera off your player. You stay where you are while the
   movement keys and the mouse **fly the camera through everything**: forward goes where it looks, jump goes up, sneak goes down,
-  sprint is 3 times faster, and the **scroll wheel changes the speed** (10 blocks a second to start). Press K again to come back.
-* While it is away nothing you click reaches the world and the hand is not drawn. It ends by itself if your player is hurt or dies,
-  or you change world. It is all on the client: the server is not told.
+  sprint is 3 times faster, and **Left Ctrl + the scroll wheel change the speed** (10 blocks a second to start; the speed key is
+  `Free Camera Speed` under Controls > Key Binds, in Nexium). The plain scroll wheel does nothing. Press K again to come back.
+* While it is away nothing you click reaches the world, and the hand, the experience bar and its level number are not drawn. Your own
+  body is drawn once the camera is outside it. It ends by itself if your player is hurt or dies, or you change world. It is all on the
+  client: the server is not told.
 
 ### Villagers
 * **Trades never run out.** Every trade can be made as often as you like and none is ever locked after a few uses; prices still follow

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * The scroll wheel, held with the tunnel key and an AIOT in hand, steps the tunnel length instead of the hotbar slot. With the free
- * camera away it changes the camera's speed, and the mouse turns the camera instead of the player.
+ * camera away, Left Ctrl and the scroll wheel change the camera's speed (the plain wheel does nothing), and the mouse turns the camera instead of the player.
  */
 @Mixin(MouseHandler.class)
 abstract class MouseHandlerMixin {

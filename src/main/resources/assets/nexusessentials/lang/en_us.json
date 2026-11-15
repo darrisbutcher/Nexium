@@ -115,6 +115,7 @@
   "key.nexusessentials.diagonal_place": "Place Diagonally (hold)",
   "key.nexusessentials.cycle_trades": "Cycle Villager Trades (in the trading screen)",
   "key.nexusessentials.free_camera": "Free Camera (on / off)",
+  "key.nexusessentials.free_camera_speed": "Free Camera Speed (hold, and scroll)",
   "message.nexusessentials.free_camera_on": "Free camera on",
   "message.nexusessentials.free_camera_off": "Free camera off",
   "message.nexusessentials.free_camera_speed": "Free camera speed: %s blocks a second",

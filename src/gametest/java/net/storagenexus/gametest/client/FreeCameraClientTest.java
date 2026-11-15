@@ -52,6 +52,34 @@ public class FreeCameraClientTest implements FabricClientGameTest {
                     "K detaches the camera from the player");
             check(ctx.computeOnClient(mc -> !(mc.player.input instanceof KeyboardInput)), "and the player's own keys are parked");
 
+            // The scroll wheel: on its own it does nothing (not the speed, not the hotbar); with the speed key (Left Ctrl) held it changes the speed
+            check(ctx.computeOnClient(mc -> FreeCamera.SPEED_MODIFIER.getDefaultKey().getValue() == InputConstants.KEY_LCONTROL), "the speed key defaults to Left Ctrl");
+            double speed0 = ctx.computeOnClient(mc -> FreeCamera.speed());
+            int slot0 = ctx.computeOnClient(mc -> mc.player.getInventory().getSelectedSlot());
+            ctx.getInput().scroll(1);
+            ctx.waitTicks(3);
+            ctx.getInput().scroll(-1);
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> FreeCamera.speed()) == speed0, "plain scroll does not change the speed");
+            check(ctx.computeOnClient(mc -> mc.player.getInventory().getSelectedSlot()) == slot0, "and does not change the hotbar slot either");
+            ctx.getInput().holdKey(FreeCamera.SPEED_MODIFIER);
+            ctx.waitTicks(2);
+            ctx.getInput().scroll(1);
+            ctx.waitTicks(3);
+            double faster = ctx.computeOnClient(mc -> FreeCamera.speed());
+            check(faster > speed0, "Left Ctrl and scroll up make it faster: " + speed0 + " to " + faster);
+            ctx.getInput().scroll(-1);
+            ctx.getInput().scroll(-1);
+            ctx.waitTicks(3);
+            double slower = ctx.computeOnClient(mc -> FreeCamera.speed());
+            check(slower < speed0, "and scroll down slower: " + slower);
+            ctx.getInput().releaseKey(FreeCamera.SPEED_MODIFIER);
+            ctx.waitTicks(2);
+            ctx.getInput().scroll(1);
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> FreeCamera.speed()) == slower, "with Ctrl let go, the scroll does nothing again");
+            check(ctx.computeOnClient(mc -> mc.player.getInventory().getSelectedSlot()) == slot0, "and the hotbar slot is still the same");
+
             // Fly back (north, behind the player) with the sneak key down for a moment too: the camera moves, the player does not
             ctx.getInput().holdKey(options -> options.keyDown);
             ctx.waitTicks(16);
@@ -84,9 +112,15 @@ public class FreeCameraClientTest implements FabricClientGameTest {
             // Being hurt puts it back at once
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(5);
+            world.getServer().runCommand("xp add @p 7 levels");
+            ctx.waitTicks(10);
+            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+            System.out.println("[nexus] experience bar shown: " + ctx.takeScreenshot("nexus_free_camera_xp_off"));
             ctx.getInput().pressKey(FreeCamera.TOGGLE);
             ctx.waitTicks(3);
             check(ctx.computeOnClient(mc -> FreeCamera.active()), "it goes on again");
+            ctx.waitTicks(25);
+            System.out.println("[nexus] experience bar hidden: " + ctx.takeScreenshot("nexus_free_camera_xp_on"));
             world.getServer().runCommand("damage @p 1");
             ctx.waitTicks(6);
             check(ctx.computeOnClient(mc -> !FreeCamera.active() && mc.getCameraEntity() == mc.player), "when the player is hurt the camera comes back by itself");
