@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nexusessentials:block/double_compressed_terracotta"
+    }
+  }
+}

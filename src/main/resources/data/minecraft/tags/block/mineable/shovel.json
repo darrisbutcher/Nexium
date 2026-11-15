@@ -11,6 +11,21 @@
     "nexusessentials:triple_compressed_red_sand",
     "nexusessentials:compressed_gravel",
     "nexusessentials:double_compressed_gravel",
-    "nexusessentials:triple_compressed_gravel"
+    "nexusessentials:triple_compressed_gravel",
+    "nexusessentials:compressed_mud",
+    "nexusessentials:double_compressed_mud",
+    "nexusessentials:triple_compressed_mud",
+    "nexusessentials:compressed_clay",
+    "nexusessentials:double_compressed_clay",
+    "nexusessentials:triple_compressed_clay",
+    "nexusessentials:compressed_soul_sand",
+    "nexusessentials:double_compressed_soul_sand",
+    "nexusessentials:triple_compressed_soul_sand",
+    "nexusessentials:compressed_soul_soil",
+    "nexusessentials:double_compressed_soul_soil",
+    "nexusessentials:triple_compressed_soul_soil",
+    "nexusessentials:compressed_snow_block",
+    "nexusessentials:double_compressed_snow_block",
+    "nexusessentials:triple_compressed_snow_block"
   ]
 }

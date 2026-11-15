@@ -489,7 +489,8 @@ public class BackpackGameTest {
                         System.out.println(row);
                     }
                     h.assertValueEqual(standing, before, "once the room is lit, the next sweep puts no more torches in it");
-                    h.assertTrue(standing <= 8, "a 29 x 29 room needs only a handful of torches, has " + standing);
+                    // The module's own tick sweeps also run for this player while the test does, so a torch or two more than the explicit sweeps place is normal (6 to 9 seen)
+                    h.assertTrue(standing <= 10, "a 29 x 29 room needs only a handful of torches, has " + standing);
                 })
                 .thenSucceed();
     }
@@ -756,15 +757,18 @@ public class BackpackGameTest {
 
     @GameTest(environment = EssentialsEnvironment.ID)
     public void compactingLeavesPacksThatDoNotCraftBack(GameTestHelper h) {
-        ServerPlayer player = compactingWith(h, new ItemStack(Items.GLOWSTONE_DUST, 8), new ItemStack(Items.SNOWBALL, 16), new ItemStack(Items.CLAY_BALL, 8),
-                new ItemStack(Items.MELON_SLICE, 18), new ItemStack(Items.OAK_PLANKS, 16), new ItemStack(Items.QUARTZ, 8));
+        // Glowstone dust, snowballs, clay balls and melon slices used to be here: they have a way back now. These still have none
+        // (planks make a crafting table, quartz, nether bricks and string make blocks that already craft into slabs, flint makes
+        // gravel, honey bottles need their glass bottles back)
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.OAK_PLANKS, 16), new ItemStack(Items.QUARTZ, 8), new ItemStack(Items.STRING, 8),
+                new ItemStack(Items.NETHER_BRICK, 8), new ItemStack(Items.FLINT, 8), new ItemStack(Items.HONEY_BOTTLE, 4));
         h.assertTrue(!BackpackCompacting.compactNow(player), "nothing here packs back, so nothing is packed");
-        h.assertValueEqual(held(player, Items.GLOWSTONE_DUST), 8, "glowstone dust stays");
-        h.assertValueEqual(held(player, Items.SNOWBALL), 16, "snowballs stay");
-        h.assertValueEqual(held(player, Items.CLAY_BALL), 8, "clay balls stay");
-        h.assertValueEqual(held(player, Items.MELON_SLICE), 18, "melon slices stay");
         h.assertValueEqual(held(player, Items.OAK_PLANKS), 16, "planks stay");
         h.assertValueEqual(held(player, Items.QUARTZ), 8, "quartz stays");
+        h.assertValueEqual(held(player, Items.STRING), 8, "string stays");
+        h.assertValueEqual(held(player, Items.NETHER_BRICK), 8, "nether bricks stay");
+        h.assertValueEqual(held(player, Items.FLINT), 8, "flint stays");
+        h.assertValueEqual(held(player, Items.HONEY_BOTTLE), 4, "honey bottles stay");
         h.succeed();
     }
 
@@ -825,6 +829,24 @@ public class BackpackGameTest {
         h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.DIRT, 1)), 1, "a Compressed Dirt");
         h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.NETHERRACK, 1)), 1, "a Compressed Netherrack");
         h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.END_STONE, 1)), 2, "two Compressed End Stone");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingPacksTheNewBlocksAndTheOneWayPacks(GameTestHelper h) {
+        net.storagenexus.essentials.compressed.CompressedBlocks.Base calcite = net.storagenexus.essentials.compressed.CompressedBlocks.Base.CALCITE;
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.CALCITE, 20), new ItemStack(Items.SNOWBALL, 9), new ItemStack(Items.CLAY_BALL, 4),
+                new ItemStack(Items.MELON_SLICE, 10), new ItemStack(Items.OBSIDIAN, 9), new ItemStack(Items.GLOWSTONE_DUST, 3));
+        h.assertTrue(BackpackCompacting.compactNow(player), "they pack");
+        h.assertValueEqual(held(player, net.storagenexus.essentials.compressed.CompressedBlocks.item(calcite, 1)), 2, "20 calcite: 2 Compressed Calcite");
+        h.assertValueEqual(held(player, Items.CALCITE), 2, "and 2 calcite");
+        h.assertValueEqual(held(player, Items.SNOW_BLOCK), 2, "9 snowballs: 2 snow blocks");
+        h.assertValueEqual(held(player, Items.SNOWBALL), 1, "and a snowball");
+        h.assertValueEqual(held(player, Items.CLAY), 1, "4 clay balls: a clay block");
+        h.assertValueEqual(held(player, Items.MELON), 1, "9 of the 10 melon slices: a melon");
+        h.assertValueEqual(held(player, Items.MELON_SLICE), 1, "and a slice");
+        h.assertValueEqual(held(player, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.OBSIDIAN, 1)), 1, "9 obsidian: a Compressed Obsidian");
+        h.assertValueEqual(held(player, Items.GLOWSTONE_DUST), 3, "3 glowstone dust are too few for a block and stay");
         h.succeed();
     }
 

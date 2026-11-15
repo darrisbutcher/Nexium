@@ -369,18 +369,29 @@ vanilla. Endermen never pick up blocks.
 * Without the key, right-click places the normal way. The block must be in your main hand or, failing that, your offhand.
 
 ### Compressed blocks
-* Sixteen bulk blocks have compressed versions that hold **9, 81 and 729** of them: **stone, cobblestone, deepslate, cobbled
-  deepslate, tuff, granite, diorite, andesite, netherrack, blackstone, basalt, end stone, dirt, sand, red sand and gravel**.
-  That is 48 new blocks: *Compressed*, *Double Compressed* and *Triple Compressed* of each.
+* Twenty-nine bulk blocks have compressed versions that hold **9, 81 and 729** of them: **stone, cobblestone, deepslate, cobbled
+  deepslate, tuff, granite, diorite, andesite, calcite, dripstone block, smooth basalt, terracotta, sandstone, red sandstone,
+  obsidian, netherrack, blackstone, basalt, magma block, end stone, dirt, mud, clay, sand, red sand, gravel, soul sand, soul soil
+  and snow block**. That is 87 new blocks: *Compressed*, *Double Compressed* and *Triple Compressed* of each. (Ice has none: 9 ice
+  make packed ice and 9 packed ice make blue ice already, each with a way back.)
   ```
   B B B
   B B B      9 of a block make 1 Compressed block, 9 of those a Double Compressed, 9 of those a Triple Compressed;
   B B B      each one crafts back into 9 of the one below
   ```
-* Each is mined like the block it stands for (same hardness, blast resistance, sound and tool) and drops itself. Its tooltip says how
-  many of the plain block it stands for. They are in the Nexium Storage creative tab.
+* Each is mined like the block it stands for (same hardness, blast resistance, sound, light and tool; compressed obsidian takes a
+  diamond pickaxe) and drops itself. Its tooltip says how many of the plain block it stands for. They are in the Nexium Storage
+  creative tab.
 * A Backpack's **Compacting Module** packs them by itself (729 cobblestone become one Triple Compressed Cobblestone), because it finds
   what packs into what from the crafting recipes, and a **Compacting Drawer** holds a block and its compressed versions as tiers.
+* **Way back for one-way packs.** The Compacting Module only packs what crafts straight back, so these blocks, which packed but
+  could not unpack, now craft back into exactly what made them (one block in the crafting grid): **snow block** into 4 snowballs,
+  **clay** into 4 clay balls, **amethyst block** into 4 amethyst shards, **glowstone** into 4 glowstone dust, **honeycomb block**
+  into 4 honeycomb, **magma block** into 4 magma cream, **melon** into 9 melon slices, **dripstone block** into 4 pointed
+  dripstone and **resin bricks** into 4 resin bricks. Quartz, nether bricks, prismarine bricks and wool are left out (this version
+  already crafts those blocks into slabs), and so are planks, coral, bamboo, honey bottles, flint and rabbit hide. Loose glowstone
+  dust, honeycomb, magma cream and amethyst shards in a Backpack with the Compacting Module are packed 4 at a time until you
+  unpack them.
 
 ### Elytra enchanting
 At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).

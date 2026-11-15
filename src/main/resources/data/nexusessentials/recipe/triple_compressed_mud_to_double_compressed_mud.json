@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:triple_compressed_mud"
+  ],
+  "result": {
+    "id": "nexusessentials:double_compressed_mud",
+    "count": 9
+  }
+}

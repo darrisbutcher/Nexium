@@ -1,0 +1,63 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_base": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:dripstone_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_compressed": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:compressed_dripstone_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_double": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:double_compressed_dripstone_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_triple": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:triple_compressed_dripstone_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_base",
+      "has_compressed",
+      "has_double",
+      "has_triple"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:compressed_dripstone_block",
+      "nexusessentials:compressed_dripstone_block_to_dripstone_block",
+      "nexusessentials:double_compressed_dripstone_block",
+      "nexusessentials:double_compressed_dripstone_block_to_compressed_dripstone_block",
+      "nexusessentials:triple_compressed_dripstone_block",
+      "nexusessentials:triple_compressed_dripstone_block_to_double_compressed_dripstone_block"
+    ]
+  }
+}

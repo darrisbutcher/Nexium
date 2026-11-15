@@ -3,6 +3,22 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.21
+
+* **More compressed blocks**: 13 more bulk blocks have *Compressed*, *Double Compressed* and *Triple Compressed* versions that hold
+  **9, 81 and 729** of them, 39 new blocks in all: **calcite, dripstone block, smooth basalt, terracotta, sandstone, red sandstone,
+  obsidian, magma block, mud, clay, soul sand, soul soil and snow block**. They work like the others (nine make one, each crafts
+  back into nine of the one below, mined like the block they stand for, a Backpack's Compacting Module packs them). Compressed
+  obsidian still takes a diamond pickaxe, and a Compressed Magma Block gives off light like a magma block. Ice has no compressed
+  block: 9 ice already make packed ice and 9 packed ice make blue ice, each with a way back.
+* **Way back for one-way packs**: a block that packed but could not unpack now crafts back into exactly what made it, so the
+  Compacting Module packs them too: **snow block** (4 snowballs), **clay** (4 clay balls), **amethyst block** (4 amethyst shards),
+  **glowstone** (4 glowstone dust), **honeycomb block** (4 honeycomb), **magma block** (4 magma cream), **melon** (9 melon slices),
+  **dripstone block** (4 pointed dripstone) and **resin bricks** (4 resin bricks). Quartz, nether bricks, prismarine bricks and
+  wool are left out because those blocks already craft into slabs in this version, and planks, coral, bamboo, honey bottles,
+  flint and rabbit hide are not storage packs. Loose glowstone dust, honeycomb, magma cream and amethyst shards in a Backpack
+  with the Compacting Module are packed 4 at a time until you unpack them.
+
 ## 1.21.20
 
 * **Backpack modules work while its screen is open**: the Compacting, Feeding and Auto Torch modules used to wait until you

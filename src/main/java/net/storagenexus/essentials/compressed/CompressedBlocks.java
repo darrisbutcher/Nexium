@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Compressed blocks: for each of sixteen bulk blocks three blocks that stand for 9, 81 and 729 of it. Nine of a block craft
+ * Compressed blocks: for each of twenty-nine bulk blocks three blocks that stand for 9, 81 and 729 of it. Nine of a block craft
  * into its Compressed block, nine Compressed blocks into a Double Compressed one, and nine of those into a Triple Compressed
  * one; each uncrafts back into nine of the one below. A Backpack's Compacting module packs them by itself, as the
  * crafting recipes are the ones it finds (see {@code BackpackCompacting}).
@@ -31,7 +31,12 @@ public final class CompressedBlocks {
         COBBLED_DEEPSLATE(Blocks.COBBLED_DEEPSLATE, false), TUFF(Blocks.TUFF, false), GRANITE(Blocks.GRANITE, false),
         DIORITE(Blocks.DIORITE, false), ANDESITE(Blocks.ANDESITE, false),
         NETHERRACK(Blocks.NETHERRACK, false), BLACKSTONE(Blocks.BLACKSTONE, false), BASALT(Blocks.BASALT, false), END_STONE(Blocks.END_STONE, false),
-        DIRT(Blocks.DIRT, true), SAND(Blocks.SAND, true), RED_SAND(Blocks.RED_SAND, true), GRAVEL(Blocks.GRAVEL, true);
+        DIRT(Blocks.DIRT, true), SAND(Blocks.SAND, true), RED_SAND(Blocks.RED_SAND, true), GRAVEL(Blocks.GRAVEL, true),
+        CALCITE(Blocks.CALCITE, false), DRIPSTONE_BLOCK(Blocks.DRIPSTONE_BLOCK, false), SMOOTH_BASALT(Blocks.SMOOTH_BASALT, false),
+        TERRACOTTA(Blocks.TERRACOTTA, false), SANDSTONE(Blocks.SANDSTONE, false), RED_SANDSTONE(Blocks.RED_SANDSTONE, false),
+        OBSIDIAN(Blocks.OBSIDIAN, false), MAGMA_BLOCK(Blocks.MAGMA_BLOCK, false),
+        MUD(Blocks.MUD, true), CLAY(Blocks.CLAY, true), SOUL_SAND(Blocks.SOUL_SAND, true), SOUL_SOIL(Blocks.SOUL_SOIL, true),
+        SNOW_BLOCK(Blocks.SNOW_BLOCK, true);
 
         private final Block block;
         private final boolean shovel;
@@ -78,6 +83,9 @@ public final class CompressedBlocks {
                         .strength(base.block.defaultDestroyTime(), base.block.getExplosionResistance())
                         .sound(base.block.defaultBlockState().getSoundType());
                 if (!base.shovel) props.requiresCorrectToolForDrops();
+                // Glows like the block it stands for (a magma block gives off light)
+                int light = base.block.defaultBlockState().getLightEmission();
+                if (light > 0) props.lightLevel(state -> light);
                 Block block = new Block(props);
                 Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 
@@ -103,7 +111,7 @@ public final class CompressedBlocks {
         return ITEMS.get(base)[level - 1];
     }
 
-    /** All 48, in order: each base's three levels together. */
+    /** All of them, in order: each base's three levels together. */
     public static List<Item> items() {
         return ALL_ITEMS;
     }
