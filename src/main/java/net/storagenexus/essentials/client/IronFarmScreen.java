@@ -2,10 +2,13 @@ package net.storagenexus.essentials.client;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.storagenexus.essentials.farm.Overclock;
+import net.storagenexus.essentials.ironfarm.IronFarmBlockEntity;
 import net.storagenexus.essentials.ironfarm.IronFarmMenu;
 
 import java.util.List;
@@ -27,6 +30,21 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
         inventoryLabelY = IronFarmMenu.INVENTORY_TOP - 11;
     }
 
+    private Button overclockButton;
+
+    @Override
+    protected void init() {
+        super.init();
+        overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, IronFarmMenu.BTN_OVERCLOCK, IronFarmMenu.BTN_OVERCLOCK_BACK));
+        OverclockUi.refresh(overclockButton, menu.overclock(), IronFarmBlockEntity.ENERGY_PER_TICK);
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        OverclockUi.refresh(overclockButton, menu.overclock(), IronFarmBlockEntity.ENERGY_PER_TICK);
+    }
+
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
@@ -40,7 +58,7 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
             status = Component.translatable("screen.nexusessentials.iron_farm_full");
             colour = FULL;
         } else if (menu.unpowered()) {
-            status = Component.translatable("screen.nexusessentials.no_power", net.storagenexus.essentials.ironfarm.IronFarmBlockEntity.ENERGY_PER_TICK);
+            status = Component.translatable("screen.nexusessentials.no_power", IronFarmBlockEntity.ENERGY_PER_TICK);
             colour = FULL;
         } else {
             status = Component.translatable("screen.nexusessentials.iron_farm_working", ironPerHour());
@@ -82,12 +100,17 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
 
     /** Uses the server's numbers (from the menu), which can differ from this client's config. */
     private String ironPerHour() {
-        return String.format(Locale.ROOT, "%,d", 72000L / menu.golemTicks() * 4);
+        return String.format(Locale.ROOT, "%,d", 72000L / menu.golemTicks() * 4 * Overclock.multiplier(menu.overclock()));
     }
 
     private static void slot(GuiGraphicsExtractor g, int x, int y) {
         g.fill(x - 1, y - 1, x + 17, y + 17, SLOT_DARK);
         g.fill(x, y, x + 17, y + 17, SLOT_LIGHT);
         g.fill(x, y, x + 16, y + 16, SLOT_FILL);
+    }
+
+    /** The middle of the Overclock button in GUI pixels (for the client test). */
+    public int[] overclockCentre() {
+        return new int[]{overclockButton.getX() + overclockButton.getWidth() / 2, overclockButton.getY() + overclockButton.getHeight() / 2};
     }
 }

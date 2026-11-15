@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.storagenexus.essentials.farm.FarmBlockEntity;
 import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.farm.FarmMenu;
+import net.storagenexus.essentials.farm.Overclock;
 import net.storagenexus.essentials.ironfarm.IronFarmItem;
 
 import java.util.List;
@@ -31,11 +32,13 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         inventoryLabelY = FarmMenu.INVENTORY_TOP - 11;
     }
 
-    private Button modeButton;
+    private Button modeButton, overclockButton;
 
     @Override
     protected void init() {
         super.init();
+        overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, FarmMenu.BTN_OVERCLOCK, FarmMenu.BTN_OVERCLOCK_BACK));
+        OverclockUi.refresh(overclockButton, menu.overclock(), menu.kind().energyPerTick());
         if (!menu.kind().modes().isEmpty()) {
             // Right of the status line: click to step through what the farm makes
             modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
@@ -55,6 +58,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     protected void containerTick() {
         super.containerTick();
         if (modeButton != null) refreshModeButton();
+        OverclockUi.refresh(overclockButton, menu.overclock(), menu.kind().energyPerTick());
     }
 
     @Override
@@ -72,7 +76,8 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         } else if (menu.starved()) {
             status = Component.translatable("screen.nexusessentials." + menu.kind().lang("needs"));
         } else {
-            int left = Math.round((1.0F - menu.progress()) * menu.cycleTicks());
+            // Overclocked, the same work takes that many times fewer ticks
+            int left = Math.round((1.0F - menu.progress()) * menu.cycleTicks() / Overclock.multiplier(menu.overclock()));
             status = Component.translatable("screen.nexusessentials.farm_next", IronFarmItem.time(left));
             colour = MUTED;
         }
@@ -120,7 +125,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
             g.setComponentTooltipForNextFrame(font, List.of(
                     Component.translatable("screen.nexusessentials.farm_progress", Math.round(menu.progress() * 100)),
                     Component.translatable("tooltip.nexusessentials." + kind.lang("makes")).withStyle(ChatFormatting.GRAY),
-                    Component.translatable("tooltip.nexusessentials.farm_every", IronFarmItem.time(menu.cycleTicks())).withStyle(ChatFormatting.GRAY)
+                    Component.translatable("tooltip.nexusessentials.farm_every", IronFarmItem.time(Math.max(1, menu.cycleTicks() / Overclock.multiplier(menu.overclock())))).withStyle(ChatFormatting.GRAY)
             ), mouseX, mouseY);
         } else if (kind.hasInput() && hoveredSlot != null && hoveredSlot.index == FarmBlockEntity.INPUT_SLOT && !hoveredSlot.hasItem()) {
             g.setComponentTooltipForNextFrame(font, List.of(
@@ -137,5 +142,10 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         g.fill(x - 1, y - 1, x + 17, y + 17, SLOT_DARK);
         g.fill(x, y, x + 17, y + 17, SLOT_LIGHT);
         g.fill(x, y, x + 16, y + 16, SLOT_FILL);
+    }
+
+    /** The middle of the Overclock button in GUI pixels (for the client test). */
+    public int[] overclockCentre() {
+        return new int[]{overclockButton.getX() + overclockButton.getWidth() / 2, overclockButton.getY() + overclockButton.getHeight() / 2};
     }
 }

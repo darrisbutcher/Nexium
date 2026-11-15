@@ -57,7 +57,8 @@ public class MoreFarmsClientTest implements FabricClientGameTest {
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FarmScreen), "a farm's screen opens");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
-            check(ctx.computeOnClient(mc -> mc.gui.screen().children().stream().noneMatch(c -> c instanceof AbstractWidget)), "no mode button");
+            // The only button is the Overclock one at the top right
+            check(ctx.computeOnClient(mc -> mc.gui.screen().children().stream().filter(c -> c instanceof AbstractWidget).count() == 1), "no mode button, only Overclock");
             ctx.getInput().setCursorPos(0, 0);
             ctx.waitTicks(2);
             System.out.println("[nexus] gourd farm screen: " + ctx.takeScreenshot("nexus_gourd_farm_screen"));

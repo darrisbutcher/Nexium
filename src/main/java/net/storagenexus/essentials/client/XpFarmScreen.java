@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.storagenexus.client.screen.Palette;
+import net.storagenexus.essentials.farm.Overclock;
 import net.storagenexus.essentials.xpfarm.ExperienceMath;
 import net.storagenexus.essentials.xpfarm.XpFarmBlockEntity;
 import net.storagenexus.essentials.xpfarm.XpFarmMenu;
@@ -25,7 +26,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
     private static final int BAR_X = 8, XP_Y = 29, XP_H = 8, ENERGY_Y = 53, ENERGY_H = 6, BAR_W = 160;
     private static final int COLLECT_Y = 76, LEVELS_Y = 92, BUTTON_H = 14;
 
-    private Button collectAll, level1, level10;
+    private Button collectAll, level1, level10, overclockButton;
 
     public XpFarmScreen(XpFarmMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, XpFarmMenu.WIDTH, XpFarmMenu.HEIGHT);
@@ -41,6 +42,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
                 XpFarmMenu.BTN_LEVEL_1, "screen.nexusessentials.xp_farm.level.tip");
         level10 = button(89, LEVELS_Y, 79, Component.translatable("screen.nexusessentials.xp_farm.level_10"),
                 XpFarmMenu.BTN_LEVEL_10, "screen.nexusessentials.xp_farm.level.tip");
+        overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, XpFarmMenu.BTN_OVERCLOCK, XpFarmMenu.BTN_OVERCLOCK_BACK));
         updateButtons();
     }
 
@@ -54,6 +56,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
 
     private void updateButtons() {
         if (collectAll == null) return;
+        OverclockUi.refresh(overclockButton, menu.overclock(), XpFarmBlockEntity.ENERGY_PER_TICK);
         collectAll.setMessage(Component.translatable("screen.nexusessentials.xp_farm.collect_all", number(menu.experience())));
         boolean any = menu.experience() > 0;
         collectAll.active = any;
@@ -92,7 +95,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
             status = Component.translatable("screen.nexusessentials.no_power", XpFarmBlockEntity.ENERGY_PER_TICK);
             colour = WARN;
         } else {
-            status = Component.translatable("screen.nexusessentials.xp_farm.working", XpFarmBlockEntity.XP_PER_TICK * 20);
+            status = Component.translatable("screen.nexusessentials.xp_farm.working", XpFarmBlockEntity.XP_PER_TICK * 20 * Overclock.multiplier(menu.overclock()));
             colour = GOOD;
         }
         g.text(font, status, BAR_X, 17, colour, false);
@@ -105,8 +108,8 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
                 BAR_X, ENERGY_Y + ENERGY_H + 3, MUTED, false);
     }
 
-    private static long energyCapacity() {
-        return XpFarmBlockEntity.ENERGY_PER_TICK * net.storagenexus.essentials.farm.FarmBlockEntity.ENERGY_TICKS;
+    private long energyCapacity() {
+        return Overclock.capacity(XpFarmBlockEntity.ENERGY_PER_TICK, menu.overclock());
     }
 
     @Override
@@ -136,8 +139,13 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
         if (isHovering(BAR_X, ENERGY_Y, BAR_W, ENERGY_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
                     Component.translatable("screen.nexusessentials.xp_farm.energy", number(menu.energy()), number(energyCapacity())),
-                    Component.translatable("screen.nexusessentials.xp_farm.energy.tip", XpFarmBlockEntity.ENERGY_PER_TICK,
-                            XpFarmBlockEntity.XP_PER_TICK * 20).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexusessentials.xp_farm.energy.tip", XpFarmBlockEntity.ENERGY_PER_TICK * Overclock.multiplier(menu.overclock()),
+                            XpFarmBlockEntity.XP_PER_TICK * 20 * Overclock.multiplier(menu.overclock())).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
+    }
+
+    /** The middle of the Overclock button in GUI pixels (for the client test). */
+    public int[] overclockCentre() {
+        return new int[]{overclockButton.getX() + overclockButton.getWidth() / 2, overclockButton.getY() + overclockButton.getHeight() / 2};
     }
 }

@@ -78,6 +78,8 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     private final net.storagenexus.energy.EnergyBuffer energy;
     /** Not saved: items a cycle made that found no room. */
     private int overflow;
+    /** The overclock level: 0 off, then 2x, 4x and 8x (see {@link Overclock}). */
+    private int overclock;
 
     public FarmBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FARM, pos, state);
@@ -89,6 +91,16 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     public static final long ENERGY_TICKS = 200;
 
     public net.storagenexus.energy.EnergyBuffer energy() { return energy; }
+
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    public int overclock() { return overclock; }
+
+    /** Sets the overclock level; the energy buffer is resized to hold ten seconds of work at the new speed. */
+    public void setOverclock(int level) {
+        overclock = Overclock.clamp(level);
+        energy.setCapacity(Overclock.capacity(kind().energyPerTick(), overclock));
+        setChanged();
+    }
 
     /** Whether the farm is waiting for Nexus Energy. */
     public boolean isUnpowered() { return unpowered; }
@@ -109,7 +121,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         full = !hasRoom(kind);
         // A comparator reads 15 while the farm is stopped for lack of room
         if (full != wasFull) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
-        unpowered = energy.stored() < kind.energyPerTick();
+        // Overclocked, it does as many ticks of work as the energy it holds can pay for, up to its setting
+        int run = Overclock.ticksOfWork(overclock, energy.stored(), kind.energyPerTick());
+        unpowered = run < 1;
         // A farm saved by an older version may still hold an input item: it is dropped
         if (!items.get(INPUT_SLOT).isEmpty()) {
             ItemStack old = items.get(INPUT_SLOT);
@@ -120,10 +134,11 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         starved = false;
         boostLeft = 0;
         if (!full && !isPaused() && !unpowered) {
-            energy.use(kind.energyPerTick());
-            progress += 1;
+            energy.use((long) kind.energyPerTick() * run);
+            progress += run;
             if (progress >= cycleTicks()) {
-                progress = 0;
+                // What went past the end of the cycle counts towards the next one
+                progress = Math.min(progress - cycleTicks(), run - 1);
                 cycle(level, kind, level.getRandom());
             }
             setChanged();
@@ -470,6 +485,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         ContainerHelper.saveAllItems(output, items);
         output.putInt("progress", progress);
         output.putInt("mode", mode);
+        output.putInt("overclock", overclock);
         output.putInt("boost", boostLeft);
         output.putLong("energy", energy.stored());
     }
@@ -482,6 +498,8 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         progress = Math.max(0, input.getIntOr("progress", 0));
         mode = Math.max(0, input.getIntOr("mode", 0));
         boostLeft = Math.max(0, input.getIntOr("boost", 0));
+        overclock = Overclock.clamp(input.getIntOr("overclock", 0));
+        energy.setCapacity(Overclock.capacity(kind().energyPerTick(), overclock));
         energy.set(input.getLongOr("energy", 0L));
         // 1.19 Bee Farms kept honey in a tank: hand it back as bottles (a quarter bucket each)
         long legacy = input.getLongOr("honey", 0L) / (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 4);
@@ -497,6 +515,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         super.collectImplicitComponents(components);
         if (progress > 0) components.set(ModComponents.FARM_PROGRESS, progress);
         if (mode() > 0) components.set(ModComponents.FARM_MODE, mode());
+        if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
     }
 
     @Override
@@ -506,6 +525,8 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         if (saved != null) progress = Math.max(0, saved);
         Integer savedMode = components.get(ModComponents.FARM_MODE);
         if (savedMode != null) mode = Math.max(0, savedMode);
+        Integer savedOverclock = components.get(ModComponents.OVERCLOCK);
+        if (savedOverclock != null) setOverclock(savedOverclock);
     }
 
     @Override
@@ -513,5 +534,6 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         super.removeComponentsFromTag(output);
         output.discard("progress");
         output.discard("mode");
+        output.discard("overclock");
     }
 }
