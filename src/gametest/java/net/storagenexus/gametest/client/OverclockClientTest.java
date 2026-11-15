@@ -14,6 +14,8 @@ import net.storagenexus.essentials.farm.FarmKind;
 import net.storagenexus.essentials.ironfarm.IronFarmBlockEntity;
 import net.storagenexus.essentials.registry.ModBlocks;
 import net.storagenexus.essentials.xpfarm.XpFarmBlockEntity;
+import net.storagenexus.client.screen.FreezerScreen;
+import net.storagenexus.freezer.FreezerBlockEntity;
 
 import java.util.function.Function;
 
@@ -115,6 +117,28 @@ public class OverclockClientTest implements FabricClientGameTest {
             click(ctx, mc -> ((XpFarmScreen) mc.gui.screen()).overclockCentre());
             int xp = world.getServer().computeOnServer(server -> ((XpFarmBlockEntity) server.overworld().getBlockEntity(at[0].south(2))).overclock());
             check(xp == 0, "a click took the Experience Farm from 8x to off: " + xp);
+
+            // The Freezer
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                player.closeContainer();
+                BlockPos pos = at[0].north(1);
+                player.level().setBlockAndUpdate(pos, net.storagenexus.registry.ModBlocks.FREEZER.defaultBlockState());
+                var freezer = (FreezerBlockEntity) player.level().getBlockEntity(pos);
+                freezer.setOverclock(2);
+                freezer.setWater(FreezerBlockEntity.CAPACITY);
+                freezer.energy().set(freezer.energy().capacity());
+                player.openMenu(freezer);
+            });
+            ctx.waitTicks(12);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FreezerScreen), "the Freezer screen opens");
+            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+            ctx.getInput().setCursorPos(0, 0);
+            ctx.waitTicks(3);
+            System.out.println("[nexus] overclock freezer 4x: " + ctx.takeScreenshot("nexus_overclock_freezer_4x"));
+            click(ctx, mc -> ((FreezerScreen) mc.gui.screen()).overclockCentre());
+            int freezerLevel = world.getServer().computeOnServer(server -> ((FreezerBlockEntity) server.overworld().getBlockEntity(at[0].north(1))).overclock());
+            check(freezerLevel == 3, "a click took the Freezer from 4x to 8x: " + freezerLevel);
         }
     }
 

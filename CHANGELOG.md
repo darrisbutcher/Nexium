@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.1
+
+* **Item conduits reach every face**: an item conduit (or any other pipe that uses Fabric's item storage, such as a Network Bus or
+  Connector) can pull the output of a **one-block farm, the Iron Farm and the Freezer from any side**, not only the bottom. They still
+  take nothing in. Hoppers are as before: they take the output from below only.
+* **Freezer overclock**: the Freezer's screen has the same **OC** button as the farms (off, x2, x4, x8; Shift-click goes back), with the
+  same rules: that many times the speed for that many times the NE/t, a bigger energy buffer, and a slower run, never a stop, when
+  energy or water is short. The setting is saved and kept in the dropped item.
+* **Packed ice and blue ice take half as long**: packed ice 22.5 seconds (450 ticks, was 900) and blue ice 45 seconds (900 ticks, was
+  1800). The water per item is the same, so the water is used twice as fast, and so is the energy per item halved. A config file that is
+  still on the old numbers moves to the new ones once; one you changed yourself is left alone.
+
 ## 1.22.0
 
 * **Overclock**: every one-block farm, the Iron Farm and the Experience Farm has an **OC** button at the top right of its screen. Click

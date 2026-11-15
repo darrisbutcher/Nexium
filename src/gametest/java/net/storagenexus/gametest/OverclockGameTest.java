@@ -213,4 +213,183 @@ public class OverclockGameTest {
         h.assertValueEqual(menu.overclock(), 3, "the screen reads 8x");
         h.succeed();
     }
+
+    // ---------------------------------------------------------------- the Freezer
+
+    private static net.storagenexus.freezer.FreezerBlockEntity freezer(GameTestHelper h) {
+        return freezer(h, POS);
+    }
+
+    /** A Freezer with a full tank at this spot (a block set again over the same block keeps its block entity, so each one needs a spot of its own). */
+    private static net.storagenexus.freezer.FreezerBlockEntity freezer(GameTestHelper h, BlockPos pos) {
+        h.setBlock(pos, net.storagenexus.registry.ModBlocks.FREEZER);
+        var f = h.getBlockEntity(pos, net.storagenexus.freezer.FreezerBlockEntity.class);
+        f.setWater(net.storagenexus.freezer.FreezerBlockEntity.CAPACITY);
+        return f;
+    }
+
+    private static void tick(GameTestHelper h, net.storagenexus.freezer.FreezerBlockEntity f, int ticks) {
+        for (int i = 0; i < ticks; i++) net.storagenexus.freezer.FreezerBlockEntity.serverTick(h.getLevel(), f.getBlockPos(), f.getBlockState(), f);
+    }
+
+    private static int ice(net.storagenexus.freezer.FreezerBlockEntity f) {
+        int n = 0;
+        for (int i = 0; i < f.getContainerSize(); i++) if (f.getItem(i).is(Items.ICE)) n += f.getItem(i).getCount();
+        return n;
+    }
+
+    @GameTest
+    public void packedAndBlueIceTakeHalfAsLongAsTheyDid(GameTestHelper h) {
+        h.assertValueEqual(new net.storagenexus.essentials.config.NexusConfig().freezerPackedIceTicks, 450, "packed ice: 22.5 seconds");
+        h.assertValueEqual(new net.storagenexus.essentials.config.NexusConfig().freezerBlueIceTicks, 900, "blue ice: 45 seconds");
+        h.assertValueEqual(new net.storagenexus.essentials.config.NexusConfig().freezerIceTicks, 100, "ice is as it was");
+        // A file written by an older version moves down once, only if it is still on the old numbers
+        var old = new net.storagenexus.essentials.config.NexusConfig();
+        old.configVersion = 3;
+        old.freezerPackedIceTicks = 900;
+        old.freezerBlueIceTicks = 1800;
+        net.storagenexus.essentials.config.NexusConfig.migrate(old, true);
+        h.assertValueEqual(old.freezerPackedIceTicks, 450, "an old packed ice time is halved");
+        h.assertValueEqual(old.freezerBlueIceTicks, 900, "and an old blue ice time");
+        var custom = new net.storagenexus.essentials.config.NexusConfig();
+        custom.configVersion = 3;
+        custom.freezerPackedIceTicks = 1000;
+        custom.freezerBlueIceTicks = 2000;
+        net.storagenexus.essentials.config.NexusConfig.migrate(custom, true);
+        h.assertValueEqual(custom.freezerPackedIceTicks, 1000, "a time the owner chose stays");
+        h.assertValueEqual(custom.freezerBlueIceTicks, 2000, "and the other");
+        var current = new net.storagenexus.essentials.config.NexusConfig();
+        current.configVersion = 4;
+        current.freezerPackedIceTicks = 900;
+        net.storagenexus.essentials.config.NexusConfig.migrate(current, true);
+        h.assertValueEqual(current.freezerPackedIceTicks, 900, "a file already on this version is left alone, so 900 can be chosen again");
+        h.succeed();
+    }
+
+    @GameTest
+    public void anOverclockedFreezerWorksFasterOnMoreEnergyAndWater(GameTestHelper h) {
+        var f = freezer(h);
+        f.setOverclock(3); // 8x
+        h.assertValueEqual(f.energy().capacity(), 20L * 200 * 8, "an 8x buffer");
+        f.energy().set(f.energy().capacity());
+        long before = f.energy().stored();
+        long waterBefore = f.water();
+        tick(h, f, 12);
+        h.assertValueEqual(f.progress(), 96, "12 ticks at 8x");
+        h.assertValueEqual(ice(f), 0, "not an ice yet");
+        h.assertValueEqual(before - f.energy().stored(), 12L * 8 * 20, "8x the energy a tick");
+        tick(h, f, 1);
+        h.assertValueEqual(ice(f), 1, "the thirteenth tick makes it: 100 ticks of work in 13");
+        h.assertValueEqual(f.progress(), 4, "and the 4 ticks past the end count towards the next");
+        h.assertValueEqual(waterBefore - f.water(), net.storagenexus.freezer.FreezerMode.ICE.cost() * 104 / 100, "water for 104 ticks of work, paid up to the next ice");
+        h.succeed();
+    }
+
+    @GameTest
+    public void anOverclockedFreezerRunsAsFastAsTheWaterAndEnergyAllow(GameTestHelper h) {
+        var f = freezer(h);
+        f.setOverclock(3);
+        f.energy().set(50);
+        tick(h, f, 1);
+        h.assertValueEqual(f.progress(), 2, "50 NE pays for 2 ticks of work");
+
+        var g = freezer(h, POS.east());
+        g.setOverclock(3);
+        g.energy().set(g.energy().capacity());
+        g.setWater(2_500); // 810 droplets a tick of ice
+        tick(h, g, 1);
+        h.assertValueEqual(g.progress(), 3, "2,500 droplets of water last 3 ticks of work");
+        h.assertValueEqual(g.water(), 2_500L - 3 * 810, "and exactly that is used");
+        h.succeed();
+    }
+
+    @GameTest
+    public void theFreezersSettingIsSavedKeptInTheItemAndStepsWithItsButton(GameTestHelper h) {
+        var f = freezer(h);
+        f.setOverclock(2);
+        f.energy().set(5_000);
+        var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess());
+        f.saveWithFullMetadata(out);
+        var loaded = new net.storagenexus.freezer.FreezerBlockEntity(f.getBlockPos(), f.getBlockState());
+        loaded.setLevel(h.getLevel());
+        loaded.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, h.getLevel().registryAccess(), out.buildResult()));
+        h.assertValueEqual(loaded.overclock(), 2, "the level is saved");
+        h.assertValueEqual(loaded.energy().stored(), 5_000L, "with the energy it held, more than a normal buffer");
+
+        Integer kept = f.collectComponents().get(ModComponents.OVERCLOCK);
+        h.assertTrue(kept != null && kept == 2, "the level goes into the item");
+        h.assertTrue(freezer(h, POS.west()).collectComponents().get(ModComponents.OVERCLOCK) == null, "a Freezer that is not overclocked leaves its item plain");
+
+        var g = freezer(h, POS.east());
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        var menu = new net.storagenexus.freezer.FreezerMenu(1, player.getInventory(), g);
+        h.assertTrue(menu.clickMenuButton(player, net.storagenexus.freezer.FreezerMenu.BTN_OVERCLOCK), "its button works");
+        h.assertValueEqual(g.overclock(), 1, "forward to 2x");
+        h.assertTrue(menu.clickMenuButton(player, net.storagenexus.freezer.FreezerMenu.BTN_OVERCLOCK_BACK), "and back");
+        h.assertTrue(menu.clickMenuButton(player, net.storagenexus.freezer.FreezerMenu.BTN_OVERCLOCK_BACK), "back past off");
+        h.assertValueEqual(menu.overclock(), 3, "to 8x, which the screen reads");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- conduits reach them from any face
+
+    /** The machines conduits pull the output of, each with an item in its first output slot. */
+    private static net.minecraft.world.WorldlyContainer machine(GameTestHelper h, int which, BlockPos pos) {
+        switch (which) {
+            case 0 -> h.setBlock(pos, ModBlocks.FARMS.get(FarmKind.SUGAR_CANE));
+            case 1 -> h.setBlock(pos, ModBlocks.IRON_FARM);
+            default -> h.setBlock(pos, net.storagenexus.registry.ModBlocks.FREEZER);
+        }
+        var machine = (net.minecraft.world.WorldlyContainer) h.getBlockEntity(pos, net.minecraft.world.level.block.entity.BlockEntity.class);
+        machine.setItem(0, new ItemStack(Items.COBBLESTONE, 8));
+        return machine;
+    }
+
+    @GameTest
+    public void everyFaceOfAFarmTheIronFarmAndTheFreezerGivesItsOutputAndTakesNothing(GameTestHelper h) {
+        for (int which = 0; which < 3; which++) {
+            BlockPos pos = new BlockPos(1 + which * 2, 1, 2);
+            var machine = machine(h, which, pos);
+            for (net.minecraft.core.Direction side : net.minecraft.core.Direction.values()) {
+                var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(h.getLevel(), h.absolutePos(pos), side);
+                h.assertTrue(storage != null, "machine " + which + " has item storage on " + side);
+                try (var t = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+                    long taken = storage.extract(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(Items.COBBLESTONE), 64, t);
+                    h.assertValueEqual(taken, 8L, "machine " + which + " gives its output on " + side);
+                }
+                try (var t = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+                    long put = storage.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(Items.COBBLESTONE), 64, t);
+                    h.assertValueEqual(put, 0L, "machine " + which + " takes nothing on " + side);
+                }
+            }
+            // Hoppers use the container itself, and are as before: the bottom only
+            h.assertValueEqual(machine.getSlotsForFace(net.minecraft.core.Direction.UP).length, 0, "a hopper above gets nothing from machine " + which);
+            h.assertValueEqual(machine.getSlotsForFace(net.minecraft.core.Direction.EAST).length, 0, "nor one at the side");
+            h.assertTrue(machine.getSlotsForFace(net.minecraft.core.Direction.DOWN).length > 0, "a hopper below still takes the output of machine " + which);
+        }
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 200)
+    public void aConduitOnTheSideOfEachMachinePullsItsOutput(GameTestHelper h) {
+        BlockPos[] chests = new BlockPos[3];
+        for (int which = 0; which < 3; which++) {
+            BlockPos pos = new BlockPos(1, 1, 1 + which * 2), conduit = pos.east(), chest = conduit.east();
+            machine(h, which, pos);
+            h.setBlock(chest, net.minecraft.world.level.block.Blocks.CHEST);
+            h.setBlock(conduit, net.storagenexus.registry.ModBlocks.CONDUIT_BUNDLE);
+            var bundle = h.getBlockEntity(conduit, net.storagenexus.conduit.ConduitBundleBlockEntity.class);
+            bundle.addConduit(net.storagenexus.conduit.ConduitType.ITEM, 1);
+            // The side facing the machine takes from it; the side facing the chest (insert, as it starts) fills it
+            bundle.config(net.storagenexus.conduit.ConduitType.ITEM, net.minecraft.core.Direction.WEST).mode = net.storagenexus.conduit.SideConfig.Mode.EXTRACT;
+            bundle.changed();
+            chests[which] = chest;
+        }
+        h.succeedWhen(() -> {
+            for (int which = 0; which < 3; which++) {
+                h.assertValueEqual(h.getBlockEntity(chests[which], net.minecraft.world.level.block.entity.ChestBlockEntity.class).countItem(Items.COBBLESTONE), 8,
+                        "machine " + which + "'s output reached the chest through a side conduit");
+            }
+        });
+    }
 }

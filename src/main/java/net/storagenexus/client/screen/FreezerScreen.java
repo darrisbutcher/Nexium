@@ -32,10 +32,15 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         inventoryLabelY = FreezerMenu.INVENTORY_TOP - 11;
     }
 
+    private Button modeButton, overclockButton;
+
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.empty(), b -> {
+        overclockButton = addRenderableWidget(net.storagenexus.essentials.client.OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId,
+                FreezerMenu.BTN_OVERCLOCK, FreezerMenu.BTN_OVERCLOCK_BACK));
+        net.storagenexus.essentials.client.OverclockUi.refresh(overclockButton, menu.overclock(), FreezerBlockEntity.ENERGY_PER_TICK);
+        modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
                     if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, FreezerMenu.BTN_MODE);
                 }).bounds(leftPos + BTN_X, topPos + BTN_Y, BTN_W, BTN_H).build());
     }
@@ -47,9 +52,8 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
-        for (var child : children()) {
-            if (child instanceof Button button) button.setMessage(modeLabel(menu.mode()));
-        }
+        modeButton.setMessage(modeLabel(menu.mode()));
+        net.storagenexus.essentials.client.OverclockUi.refresh(overclockButton, menu.overclock(), FreezerBlockEntity.ENERGY_PER_TICK);
         super.extractRenderState(g, mouseX, mouseY, partialTick);
     }
 
@@ -68,7 +72,8 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         } else if (menu.dry()) {
             status = Component.translatable("screen.storagenexus.freezer.dry");
         } else {
-            int left = Math.round((1.0F - menu.progress()) * menu.mode().ticks());
+            // Overclocked, the same work takes that many times fewer ticks
+            int left = Math.round((1.0F - menu.progress()) * menu.mode().ticks() / net.storagenexus.essentials.farm.Overclock.multiplier(menu.overclock()));
             status = Component.translatable("screen.storagenexus.freezer.next", IronFarmItem.time(left));
             colour = MUTED;
         }
@@ -124,5 +129,10 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         g.fill(x - 1, y - 1, x + 17, y + 17, SLOT_DARK);
         g.fill(x, y, x + 17, y + 17, SLOT_LIGHT);
         g.fill(x, y, x + 16, y + 16, SLOT_FILL);
+    }
+
+    /** The middle of the Overclock button in GUI pixels (for the client test). */
+    public int[] overclockCentre() {
+        return new int[]{overclockButton.getX() + overclockButton.getWidth() / 2, overclockButton.getY() + overclockButton.getHeight() / 2};
     }
 }

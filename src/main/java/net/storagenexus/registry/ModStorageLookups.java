@@ -31,7 +31,11 @@ public final class ModStorageLookups {
         // Nexus Energy: the machines that run on it (the farms register theirs with the Essentials)
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.FREEZER);
 
-        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, dir), ModBlockEntities.FREEZER);
+        // Item conduits (and other lookups) reach the Freezer, the farms and the Iron Farm from any face, as the bottom: they give
+        // their output out and take nothing in. Hoppers below, which use the container itself, are as before.
+        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, net.minecraft.core.Direction.DOWN), ModBlockEntities.FREEZER);
+        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, net.minecraft.core.Direction.DOWN), net.storagenexus.essentials.registry.ModBlockEntities.FARM);
+        ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, net.minecraft.core.Direction.DOWN), net.storagenexus.essentials.registry.ModBlockEntities.IRON_FARM);
     }
 
     private ModStorageLookups() {}
