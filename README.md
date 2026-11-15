@@ -90,7 +90,9 @@ on). What is inside stays inside.
 
 Press **O** (`Sort Inventory` under Nexium in Controls) with the mouse over a container's slots to sort that container,
 or over the main inventory to sort that: only the area under the mouse, never both, and never the hotbar. Chests,
-barrels, ender chests, shulker boxes, hoppers, dispensers, droppers and Nexium barrels sort. Stacks are merged first;
+barrels, ender chests, shulker boxes, hoppers, dispensers, droppers, Nexium barrels and the **Backpack's 36 slots** sort (its
+module slots never do; torches merge to 512 while the Torch Stack module is on; a Backpack opened from an inventory slot stays in
+that slot when the inventory sorts). Stacks are merged first;
 shulker boxes and bundles go to the bottom-right slots. Everything sorts **A to Z** (there are no other orders). It works with
 the mouse over an item or an empty slot, and its key is separate from JEI's, REI's and EMI's (R shows recipes there as usual);
 rebind it in Controls if you like.

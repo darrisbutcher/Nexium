@@ -128,6 +128,11 @@ public class BackpackMenu extends BaseMenu {
         return source == Backpacks.EQUIPPED ? ExtraSlots.of(player).backpack() : player.getInventory().getItem(source);
     }
 
+    /** Whether this is one of the Backpack's {@value BackpackContents#SIZE} storage slots (not a module slot or the player's). Works on both sides. */
+    public boolean isStorageSlot(Slot slot) {
+        return slot.container == contents;
+    }
+
     /** The Backpack this menu is for. */
     public ItemStack backpack() {
         return stackAt(player, source);
