@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.25
+
+* **Nexus Link**: a shulker box (of any colour) or an ender chest mined with an AIOT whose Nexus Link is on is no longer sent to the
+  storage network: it drops on the ground as it would without the module (an ender chest drops what it normally drops, obsidian
+  unless Silk Touch). It holds in a single swing and in a vein or a 3x3 alike, where everything else mined still goes to the network.
+
 ## 1.21.24
 
 * **Move up**: a new button in the Disk Drive's screen, beside Move to disks. It moves what the **lower tier disks in that drive** hold

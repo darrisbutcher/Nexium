@@ -205,7 +205,8 @@ place it or right-click it to outline those chunks for a minute.
 | **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
-  go into that terminal's network in any dimension; what the network can't take drops as usual.
+  go into that terminal's network in any dimension; what the network can't take drops as usual. **Shulker boxes (any colour) and
+  ender chests are never taken**: they drop where they were, in a single swing and in a vein or 3x3 alike.
 * **3x3 Mining**: mines the 3x3 around the block, facing you. Press **X** (rebind under Controls > Key Binds >
   Nexium) to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
   many 3x3 layers going away from you, one swing, with the same rules for every block. Only blocks the AIOT is made for, at most about twice as

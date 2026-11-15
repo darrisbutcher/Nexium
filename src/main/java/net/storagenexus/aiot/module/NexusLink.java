@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EnderChestBlock;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.essentials.config.NexusConfig;
@@ -30,7 +32,8 @@ import java.util.UUID;
  * The Nexus Link module: what an AIOT with an active, linked Nexus Link mines goes straight into the linked Crafting
  * Terminal's storage network, in any dimension. The terminal's chunk has to be loaded, as for tablets (a Dimensional
  * Anchor keeps it so). Whatever the network can't take drops as usual, and so does everything when the network can't be
- * reached; a message above the hotbar says which.
+ * reached; a message above the hotbar says which. Shulker boxes (of any colour) and ender chests are never taken: they drop
+ * as usual, in a single swing and in a vein or 3x3 alike.
  */
 public final class NexusLink {
     private static final int MESSAGE_EVERY_TICKS = 5 * 20;
@@ -45,11 +48,12 @@ public final class NexusLink {
     /**
      * Drops a block a player mined into the network their tool's Nexus Link points at, instead of onto the ground.
      * Called in place of vanilla's drop code; returns false (vanilla goes ahead) if the tool has no active, linked
-     * Nexus Link.
+     * Nexus Link, or the block is a shulker box or an ender chest.
      */
     public static boolean dropInto(BlockState state, ServerLevel level, BlockPos pos, @Nullable BlockEntity blockEntity,
                                    ServerPlayer player, ItemStack tool) {
         if (!NexusConfig.get().aiotNexusLink) return false;
+        if (isLeftAlone(state)) return false;
         GlobalPos link = AiotModules.activeLink(tool);
         if (link == null || Transaction.isOpen()) return false;
         List<ItemStack> drops = Block.getDrops(state, level, pos, blockEntity, player, tool);
@@ -76,6 +80,11 @@ public final class NexusLink {
         state.spawnAfterBreak(level, pos, tool, true);
         report(player, network, leftOver);
         return true;
+    }
+
+    /** Shulker boxes (any colour) and ender chests are never sent to the network: they drop where they were. */
+    public static boolean isLeftAlone(BlockState state) {
+        return state.getBlock() instanceof ShulkerBoxBlock || state.getBlock() instanceof EnderChestBlock;
     }
 
     /** The drops of a swing that mines several blocks, sent to the network together. */
