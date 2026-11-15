@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:double_compressed_obsidian"
+  ],
+  "result": {
+    "id": "nexusessentials:compressed_obsidian",
+    "count": 9
+  }
+}

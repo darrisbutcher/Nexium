@@ -1281,7 +1281,9 @@
     "compressed": {
       "pages": [
         "essentials.compressed",
-        "essentials.compressed2"
+        "essentials.compressed_craft",
+        "essentials.compressed2",
+        "essentials.way_back"
       ],
       "icon": "nexusessentials:compressed_cobbled_deepslate",
       "recipes": [
@@ -1295,6 +1297,11 @@
         "Compressed blocks",
         "compressed cobblestone",
         "compressed deepslate",
+        "compressed calcite",
+        "calcite",
+        "way back",
+        "unpack",
+        "uncraft",
         "double compressed",
         "triple compressed"
       ],

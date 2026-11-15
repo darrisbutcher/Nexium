@@ -30,6 +30,7 @@
       "net.storagenexus.gametest.client.ShulkerPreviewClientTest",
       "net.storagenexus.gametest.client.CompressedBlocksClientTest",
       "net.storagenexus.gametest.client.BackpackClientTest",
+      "net.storagenexus.gametest.client.MoreCompressedBlocksClientTest",
       "net.storagenexus.gametest.client.BackpackSortClientTest",
       "net.storagenexus.gametest.client.DiagonalPlacementClientTest",
       "net.storagenexus.gametest.client.KeyBindsClientTest",

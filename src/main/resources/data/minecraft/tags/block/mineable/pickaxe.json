@@ -1,5 +1,4 @@
 {
-  "replace": false,
   "values": [
     "storagenexus:compacting_drawer",
     "storagenexus:drawer_controller",
@@ -93,6 +92,30 @@
     "nexusessentials:triple_compressed_basalt",
     "nexusessentials:compressed_end_stone",
     "nexusessentials:double_compressed_end_stone",
-    "nexusessentials:triple_compressed_end_stone"
+    "nexusessentials:triple_compressed_end_stone",
+    "nexusessentials:compressed_calcite",
+    "nexusessentials:double_compressed_calcite",
+    "nexusessentials:triple_compressed_calcite",
+    "nexusessentials:compressed_dripstone_block",
+    "nexusessentials:double_compressed_dripstone_block",
+    "nexusessentials:triple_compressed_dripstone_block",
+    "nexusessentials:compressed_smooth_basalt",
+    "nexusessentials:double_compressed_smooth_basalt",
+    "nexusessentials:triple_compressed_smooth_basalt",
+    "nexusessentials:compressed_terracotta",
+    "nexusessentials:double_compressed_terracotta",
+    "nexusessentials:triple_compressed_terracotta",
+    "nexusessentials:compressed_sandstone",
+    "nexusessentials:double_compressed_sandstone",
+    "nexusessentials:triple_compressed_sandstone",
+    "nexusessentials:compressed_red_sandstone",
+    "nexusessentials:double_compressed_red_sandstone",
+    "nexusessentials:triple_compressed_red_sandstone",
+    "nexusessentials:compressed_obsidian",
+    "nexusessentials:double_compressed_obsidian",
+    "nexusessentials:triple_compressed_obsidian",
+    "nexusessentials:compressed_magma_block",
+    "nexusessentials:double_compressed_magma_block",
+    "nexusessentials:triple_compressed_magma_block"
   ]
 }

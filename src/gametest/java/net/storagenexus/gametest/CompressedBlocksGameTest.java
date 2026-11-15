@@ -22,6 +22,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.storagenexus.drawer.CompactingRecipes;
 import net.storagenexus.essentials.compressed.CompressedBlockItem;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Compressed blocks: 16 bulk blocks times 3 levels. Every one is registered, named, tagged and mined like the block it stands
+ * Compressed blocks: 29 bulk blocks times 3 levels. Every one is registered, named, tagged and mined like the block it stands
  * for, drops itself, crafts from nine of the one below and back into nine, and says what it stands for. (That the Compacting
  * module packs them is in BackpackGameTest.)
  */
@@ -46,7 +47,7 @@ public class CompressedBlocksGameTest {
     }
 
     @GameTest
-    public void allFortyEightAreThereWithTheirNames(GameTestHelper h) {
+    public void allEightySevenAreThereWithTheirNames(GameTestHelper h) {
         JsonObject lang = JsonParser.parseReader(new InputStreamReader(
                 CompressedBlocksGameTest.class.getResourceAsStream("/assets/nexusessentials/lang/en_us.json"), StandardCharsets.UTF_8)).getAsJsonObject();
         TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse("nexusessentials:compressed_blocks"));
@@ -63,8 +64,8 @@ public class CompressedBlocksGameTest {
                 count++;
             }
         }
-        h.assertValueEqual(count, 48, "sixteen blocks, three levels each");
-        h.assertValueEqual(CompressedBlocks.items().size(), 48, "and the list has all of them");
+        h.assertValueEqual(count, 87, "twenty-nine blocks, three levels each");
+        h.assertValueEqual(CompressedBlocks.items().size(), 87, "and the list has all of them");
         h.assertValueEqual(BuiltInRegistries.ITEM.getTagOrEmpty(tag).spliterator().estimateSize() > 0, true, "the tag has items");
         h.succeed();
     }
@@ -147,6 +148,99 @@ public class CompressedBlocksGameTest {
         h.assertTrue(chain.stream().anyMatch(t -> t.item() == CompressedBlocks.item(CompressedBlocks.Base.COBBLESTONE, 1)), "and the Compressed block");
         // Level 1 down to the plain block, and level 2 on top of it
         h.assertTrue(chain.stream().anyMatch(t -> t.item() == CompressedBlocks.item(CompressedBlocks.Base.COBBLESTONE, 2)), "and the Double Compressed one");
+        h.succeed();
+    }
+
+    @GameTest
+    public void theNewBulkBlocksAreAllThere(GameTestHelper h) {
+        List<String> expected = List.of("calcite", "dripstone_block", "smooth_basalt", "terracotta", "sandstone", "red_sandstone", "obsidian",
+                "magma_block", "mud", "clay", "soul_sand", "soul_soil", "snow_block");
+        List<String> have = new ArrayList<>();
+        for (CompressedBlocks.Base base : CompressedBlocks.Base.values()) have.add(base.id());
+        for (String id : expected) h.assertTrue(have.contains(id), id + " has compressed versions");
+        // Soft ones take a shovel, the stony ones a pickaxe
+        for (String id : List.of("mud", "clay", "soul_sand", "soul_soil", "snow_block")) {
+            h.assertTrue(CompressedBlocks.Base.valueOf(id.toUpperCase(java.util.Locale.ROOT)).shovel(), id + " is dug with a shovel");
+        }
+        for (String id : List.of("calcite", "dripstone_block", "smooth_basalt", "terracotta", "sandstone", "red_sandstone", "obsidian", "magma_block")) {
+            h.assertTrue(!CompressedBlocks.Base.valueOf(id.toUpperCase(java.util.Locale.ROOT)).shovel(), id + " is mined with a pickaxe");
+        }
+        h.succeed();
+    }
+
+    @GameTest
+    public void eachGlowsLikeTheBlockItStandsFor(GameTestHelper h) {
+        for (CompressedBlocks.Base base : CompressedBlocks.Base.values()) {
+            int light = base.block().defaultBlockState().getLightEmission();
+            for (int level = 1; level <= CompressedBlocks.LEVELS; level++) {
+                h.assertValueEqual(CompressedBlocks.block(base, level).defaultBlockState().getLightEmission(), light,
+                        LEVEL_NAMES[level - 1] + base.id() + " gives off the light of " + base.id());
+            }
+        }
+        h.assertTrue(CompressedBlocks.block(CompressedBlocks.Base.MAGMA_BLOCK, 1).defaultBlockState().getLightEmission() > 0, "a Compressed Magma Block glows");
+        h.assertValueEqual(CompressedBlocks.block(CompressedBlocks.Base.CALCITE, 1).defaultBlockState().getLightEmission(), 0, "a Compressed Calcite does not");
+        h.succeed();
+    }
+
+    @GameTest
+    public void compressedObsidianNeedsADiamondPickaxe(GameTestHelper h) {
+        for (int level = 1; level <= CompressedBlocks.LEVELS; level++) {
+            BlockState state = CompressedBlocks.block(CompressedBlocks.Base.OBSIDIAN, level).defaultBlockState();
+            h.assertTrue(state.is(BlockTags.NEEDS_DIAMOND_TOOL), LEVEL_NAMES[level - 1] + "obsidian takes a diamond (or better) pickaxe");
+            h.assertTrue(!state.is(BlockTags.NEEDS_IRON_TOOL), "and is not left at the iron tier");
+        }
+        h.assertTrue(CompressedBlocks.block(CompressedBlocks.Base.CALCITE, 1).defaultBlockState().is(BlockTags.NEEDS_DIAMOND_TOOL) == false, "calcite does not need a diamond pickaxe");
+        h.assertTrue(Blocks.OBSIDIAN.defaultBlockState().is(BlockTags.NEEDS_DIAMOND_TOOL), "which is what plain obsidian takes");
+        h.succeed();
+    }
+
+    /** What each way-back recipe turns a block into: the block, what it gives back and how many. */
+    private record WayBack(Item block, Item back, int count, Item pack) {}
+
+    private static final List<WayBack> WAY_BACK = List.of(
+            new WayBack(Items.SNOW_BLOCK, Items.SNOWBALL, 4, Items.SNOWBALL),
+            new WayBack(Items.CLAY, Items.CLAY_BALL, 4, Items.CLAY_BALL),
+            new WayBack(Items.AMETHYST_BLOCK, Items.AMETHYST_SHARD, 4, Items.AMETHYST_SHARD),
+            new WayBack(Items.GLOWSTONE, Items.GLOWSTONE_DUST, 4, Items.GLOWSTONE_DUST),
+            new WayBack(Items.HONEYCOMB_BLOCK, Items.HONEYCOMB, 4, Items.HONEYCOMB),
+            new WayBack(Items.MAGMA_BLOCK, Items.MAGMA_CREAM, 4, Items.MAGMA_CREAM),
+            new WayBack(Items.MELON, Items.MELON_SLICE, 9, Items.MELON_SLICE),
+            new WayBack(Items.DRIPSTONE_BLOCK, Items.POINTED_DRIPSTONE, 4, Items.POINTED_DRIPSTONE),
+            new WayBack(Items.RESIN_BRICKS, Items.RESIN_BRICK, 4, Items.RESIN_BRICK));
+
+    @GameTest
+    public void aBlockCraftsBackIntoExactlyWhatMadeIt(GameTestHelper h) {
+        for (WayBack w : WAY_BACK) {
+            String name = BuiltInRegistries.ITEM.getKey(w.block()).getPath();
+            ItemStack back = craft(h, List.of(new ItemStack(w.block())), 1, 1);
+            h.assertTrue(back.is(w.back()) && back.getCount() == w.count(), name + " crafts back into " + w.count() + " " + BuiltInRegistries.ITEM.getKey(w.back()).getPath() + ", got " + back);
+            // And the way there is what it always was: the same count of the item makes the block
+            int side = w.count() == 9 ? 3 : 2;
+            List<ItemStack> grid = new ArrayList<>();
+            for (int i = 0; i < side * side; i++) grid.add(new ItemStack(w.back()));
+            ItemStack made = craft(h, grid, side, side);
+            h.assertTrue(made.is(w.block()) && made.getCount() == 1, w.count() + " " + BuiltInRegistries.ITEM.getKey(w.back()).getPath() + " make " + name + ", got " + made);
+        }
+        h.succeed();
+    }
+
+    @GameTest
+    public void compactingKnowsEveryNewPack(GameTestHelper h) {
+        for (WayBack w : WAY_BACK) {
+            var pack = CompactingRecipes.packInto(h.getLevel(), w.pack());
+            h.assertTrue(pack.isPresent() && pack.get().into() == w.block() && pack.get().count() == w.count(),
+                    BuiltInRegistries.ITEM.getKey(w.pack()).getPath() + " packs into " + BuiltInRegistries.ITEM.getKey(w.block()).getPath() + ", " + pack);
+        }
+        // The new bulk blocks pack 9 to 1 into their Compressed block
+        for (CompressedBlocks.Base base : List.of(CompressedBlocks.Base.CALCITE, CompressedBlocks.Base.DRIPSTONE_BLOCK, CompressedBlocks.Base.OBSIDIAN,
+                CompressedBlocks.Base.MAGMA_BLOCK, CompressedBlocks.Base.MUD, CompressedBlocks.Base.SOUL_SAND, CompressedBlocks.Base.SNOW_BLOCK,
+                CompressedBlocks.Base.CLAY, CompressedBlocks.Base.SANDSTONE, CompressedBlocks.Base.TERRACOTTA)) {
+            var pack = CompactingRecipes.packInto(h.getLevel(), base.block().asItem());
+            h.assertTrue(pack.isPresent() && pack.get().into() == CompressedBlocks.item(base, 1) && pack.get().count() == 9, base.id() + " packs 9 into its Compressed block: " + pack);
+        }
+        // Ice already had its way: ice, packed ice, blue ice, each 9 to 1 and each back again
+        h.assertTrue(CompactingRecipes.packInto(h.getLevel(), Items.ICE).map(p -> p.into() == Items.PACKED_ICE && p.count() == 9).orElse(false), "9 ice make packed ice");
+        h.assertTrue(CompactingRecipes.packInto(h.getLevel(), Items.PACKED_ICE).map(p -> p.into() == Items.BLUE_ICE && p.count() == 9).orElse(false), "9 packed ice make blue ice");
         h.succeed();
     }
 }

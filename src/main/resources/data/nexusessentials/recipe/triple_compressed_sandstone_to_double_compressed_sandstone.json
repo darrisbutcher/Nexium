@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:triple_compressed_sandstone"
+  ],
+  "result": {
+    "id": "nexusessentials:double_compressed_sandstone",
+    "count": 9
+  }
+}

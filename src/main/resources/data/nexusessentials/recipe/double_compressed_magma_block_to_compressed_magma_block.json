@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:double_compressed_magma_block"
+  ],
+  "result": {
+    "id": "nexusessentials:compressed_magma_block",
+    "count": 9
+  }
+}
