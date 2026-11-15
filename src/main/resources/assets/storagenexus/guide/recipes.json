@@ -83,6 +83,8 @@
     "compacting_module": {"type": "shaped", "pattern": ["IPI", "PTP", "IPI"], "key": {"I": "minecraft:iron_ingot", "P": "minecraft:piston", "T": "minecraft:crafting_table"}, "result": {"id": "nexusessentials:compacting_module"}},
     "compressed_cobblestone": {"type": "shaped", "pattern": ["BBB", "BBB", "BBB"], "key": {"B": "minecraft:cobblestone"}, "result": {"id": "nexusessentials:compressed_cobblestone"}},
     "compressed_cobblestone_to_cobblestone": {"type": "shapeless", "ingredients": ["nexusessentials:compressed_cobblestone"], "result": {"id": "minecraft:cobblestone", "count": 9}, "verify": "nexusessentials:compressed_cobblestone_to_cobblestone"},
+    "large_sponge": {"type": "shaped", "pattern": ["SSS", "SSS", "SSS"], "key": {"S": "minecraft:sponge"}, "result": {"id": "nexusessentials:large_sponge"}},
+    "large_sponge_to_sponge": {"type": "shapeless", "ingredients": ["nexusessentials:large_sponge"], "result": {"id": "minecraft:sponge", "count": 9}, "verify": "nexusessentials:large_sponge_to_sponge"},
     "elixir": {"type": "shaped", "pattern": [" O ", "DBD", " O "], "key": {"B": "minecraft:glass_bottle", "D": "minecraft:diamond", "O": "minecraft:obsidian"}, "result": {"id": "nexusessentials:bedrock_breaker_elixir"}}
   }
 }

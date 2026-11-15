@@ -11,8 +11,11 @@
     "AvatarRenderStateMixin",
     "CapeLayerMixin",
     "CreativeModeInventoryScreenMixin",
+    "GameRendererMixin",
     "InventoryScreenMixin",
     "ItemStackMixin",
+    "LevelExtractorMixin",
+    "MinecraftMixin",
     "MouseHandlerMixin",
     "WingsLayerMixin"
   ],

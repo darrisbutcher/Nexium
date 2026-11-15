@@ -368,6 +368,40 @@ vanilla. Endermen never pick up blocks.
   already taken (so nothing would be placed); `diagonalPreview` (client) turns it off.
 * Without the key, right-click places the normal way. The block must be in your main hand or, failing that, your offhand.
 
+### Free camera
+* Press **K** (change it under Controls > Key Binds, in Nexium) to take the camera off your player. You stay where you are while the
+  movement keys and the mouse **fly the camera through everything**: forward goes where it looks, jump goes up, sneak goes down,
+  sprint is 3 times faster, and the **scroll wheel changes the speed** (10 blocks a second to start). Press K again to come back.
+* While it is away nothing you click reaches the world and the hand is not drawn. It ends by itself if your player is hurt or dies,
+  or you change world. It is all on the client: the server is not told.
+
+### Villagers
+* **Trades never run out.** Every trade can be made as often as you like and none is ever locked after a few uses; prices still follow
+  demand. It applies to villagers and wandering traders alike.
+* **Trade cycling.** In a villager's trading screen press **C** (change it under Controls > Key Binds, in Nexium) to give a villager
+  **nobody has traded with** a new set of trades, again and again until you like them, the way breaking and replacing its job site
+  block does, without the block. It only works on a Novice with no experience and no trade used: once you trade with a villager, or
+  it has experience, its trades stay. The new trades keep your discounts (reputation, Hero of the Village).
+
+### Mending anywhere
+* Experience orbs repair **any damaged item with Mending in your inventory**, not only what you hold or wear: the hotbar, the main
+  inventory and the extra slots too. Each orb picks one at random, at the usual rate (2 durability for each point). It is the same
+  for the XP you collect from the Experience Farm and the Nexus Furnace.
+
+### Combined sponges
+* **Nine sponges craft a Large Sponge, nine of those a Huge Sponge, nine of those a Giant Sponge**, and each crafts back into nine of the
+  one below.
+  | Sponge | Reach | Soaks up |
+  | --- | --- | --- |
+  | Sponge | 6 blocks | 65 water blocks |
+  | **Large Sponge** | 14 blocks | 585 |
+  | **Huge Sponge** | 32 blocks | 5,265 |
+  | **Giant Sponge** | 64 blocks | 47,385 |
+* They work like a sponge: placed next to water (or when water comes next to them) they soak up the water they can reach through the
+  water, kelp and seagrass included, and turn **wet**. A wet one **dries in a furnace** (10, 20 or 40 seconds for a Large, Huge or
+  Giant one) or at once in the Nether, and can soak again. Each is mined with a hoe, drops itself and shows its reach in its tooltip.
+* A Backpack's Compacting Module packs sponges by itself (nine become a Large Sponge). They are in the Nexium Storage creative tab.
+
 ### Compressed blocks
 * Twenty-nine bulk blocks have compressed versions that hold **9, 81 and 729** of them: **stone, cobblestone, deepslate, cobbled
   deepslate, tuff, granite, diorite, andesite, calcite, dripstone block, smooth basalt, terracotta, sandstone, red sandstone,

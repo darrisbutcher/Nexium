@@ -12,6 +12,8 @@ import net.storagenexus.essentials.backpack.Backpacks;
 import net.storagenexus.essentials.magnet.MagnetLogic;
 import net.storagenexus.essentials.placement.DiagonalPlacePayload;
 import net.storagenexus.essentials.placement.DiagonalPlacement;
+import net.storagenexus.essentials.trading.CycleTradesPayload;
+import net.storagenexus.essentials.trading.TradeCycling;
 
 public final class ModPayloads {
     /** Client to server: the magnet hotkey was pressed. */
@@ -56,9 +58,11 @@ public final class ModPayloads {
         PayloadTypeRegistry.serverboundPlay().register(ToggleMagnet.TYPE, ToggleMagnet.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(OpenBackpack.TYPE, OpenBackpack.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(DiagonalPlacePayload.TYPE, DiagonalPlacePayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(CycleTradesPayload.TYPE, CycleTradesPayload.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(WingsSync.TYPE, WingsSync.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(DiagonalPlacePayload.TYPE, (payload, context) ->
                 DiagonalPlacement.place(context.player(), payload.hand(), payload.pos(), payload.face(), payload.hit()));
+        ServerPlayNetworking.registerGlobalReceiver(CycleTradesPayload.TYPE, (payload, context) -> TradeCycling.cycle(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(OpenBackpack.TYPE, (payload, context) -> Backpacks.openEquipped(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(ToggleMagnet.TYPE, (payload, context) -> MagnetLogic.toggle(context.player()));
     }

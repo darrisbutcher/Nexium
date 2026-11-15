@@ -42,6 +42,7 @@ public final class NexusEssentials {
         ModBlocks.init();
         ModItems.init();
         net.storagenexus.essentials.compressed.CompressedBlocks.init();
+        net.storagenexus.essentials.sponge.BigSponges.init();
         ModBlockEntities.init();
         // The farms run on Nexus Energy
         net.storagenexus.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.FARM);

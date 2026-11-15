@@ -12,11 +12,13 @@
     "InventoryMenuMixin",
     "InventoryMixin",
     "LivingEntityMixin",
+    "MerchantOfferMixin",
     "PiglinAiMixin",
     "PlayerMixin",
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
-    "ServerLevelMixin"
+    "ServerLevelMixin",
+    "VillagerInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:huge_sponge"
+  ],
+  "result": {
+    "id": "nexusessentials:large_sponge",
+    "count": 9
+  }
+}
