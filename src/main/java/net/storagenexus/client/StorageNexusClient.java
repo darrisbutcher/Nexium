@@ -93,6 +93,7 @@ public class StorageNexusClient implements ClientModInitializer {
         ToolMenuClient.init();
         AiotPreview.init();
         DiagonalPreview.init();
+        net.storagenexus.essentials.client.FreeCamera.init();
         AiotHud.init();
 
         ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.elevator.ElevatorOpenPayload.TYPE, (payload, context) ->

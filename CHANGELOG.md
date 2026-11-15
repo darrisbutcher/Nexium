@@ -3,6 +3,24 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.22
+
+* **Free camera**: press **K** (Controls > Key Binds, in Nexium) to take the camera off your player. You stay where you are while the
+  movement keys and the mouse fly the camera through everything (forward goes where it looks, jump up, sneak down, sprint 3 times
+  faster, the scroll wheel changes the speed). Nothing you click reaches the world while it is away, and the hand is not drawn. K
+  again brings it back, and it ends by itself if your player is hurt or dies. All on the client.
+* **Villagers' trades never run out**: every trade of a villager or wandering trader can be made as often as you like and none is
+  ever locked. Prices still follow demand.
+* **Trade cycling**: in a villager's trading screen press **C** (Controls > Key Binds, in Nexium) to give a villager nobody has
+  traded with (a Novice with no experience and no trade used) a new set of trades, as often as you like. Once you have traded with a
+  villager its trades stay. The new trades keep your discounts.
+* **Mending anywhere**: experience orbs repair any damaged item with Mending in your inventory, not only what you hold or wear: the
+  hotbar, the main inventory and the extra slots too. One at random per orb, at the usual rate.
+* **Combined sponges**: nine sponges craft a **Large Sponge** (reach 14, soaks up 585 water blocks), nine of those a **Huge Sponge**
+  (reach 32, 5,265) and nine of those a **Giant Sponge** (reach 64, 47,385); each crafts back into nine of the one below. They work
+  like a sponge, turn wet, and a wet one dries in a furnace (10, 20 or 40 seconds) or at once in the Nether. A Backpack's Compacting
+  Module packs sponges by itself.
+
 ## 1.21.21
 
 * **More compressed blocks**: 13 more bulk blocks have *Compressed*, *Double Compressed* and *Triple Compressed* versions that hold

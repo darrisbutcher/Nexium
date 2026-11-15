@@ -22,7 +22,8 @@
         "compacting",
         "controller",
         "barrels",
-        "compressed"
+        "compressed",
+        "sponges"
       ]
     },
     {
@@ -69,7 +70,10 @@
         "vein",
         "builder",
         "builder_crafting",
-        "diagonal"
+        "diagonal",
+        "free_camera",
+        "villagers",
+        "mending"
       ]
     },
     {
@@ -1276,6 +1280,86 @@
         "backpack_modules",
         "compacting",
         "backpack"
+      ]
+    },
+    "free_camera": {
+      "pages": [
+        "essentials.free_camera"
+      ],
+      "icon": "minecraft:spyglass",
+      "aliases": [
+        "Free camera",
+        "freecam",
+        "camera",
+        "detach",
+        "fly camera",
+        "spectate"
+      ],
+      "see": [
+        "keys"
+      ]
+    },
+    "villagers": {
+      "pages": [
+        "essentials.villagers"
+      ],
+      "icon": "minecraft:emerald",
+      "aliases": [
+        "Villagers",
+        "trade cycling",
+        "cycle trades",
+        "refresh trades",
+        "reroll trades",
+        "locked trades",
+        "out of stock",
+        "trades"
+      ],
+      "see": [
+        "keys",
+        "librarian"
+      ]
+    },
+    "mending": {
+      "pages": [
+        "essentials.mending"
+      ],
+      "icon": "minecraft:enchanted_book",
+      "aliases": [
+        "Mending",
+        "repair",
+        "experience orbs",
+        "xp repair"
+      ],
+      "see": [
+        "xpfarm"
+      ]
+    },
+    "sponges": {
+      "pages": [
+        "essentials.sponges",
+        "essentials.sponges2"
+      ],
+      "icon": "nexusessentials:giant_sponge",
+      "recipes": [
+        "large_sponge",
+        "large_sponge_to_sponge"
+      ],
+      "items": [
+        "#nexusessentials:big_sponges"
+      ],
+      "aliases": [
+        "Sponges",
+        "sponge",
+        "large sponge",
+        "huge sponge",
+        "giant sponge",
+        "wet sponge",
+        "water",
+        "soak"
+      ],
+      "see": [
+        "compressed",
+        "compacting_module"
       ]
     },
     "compressed": {
