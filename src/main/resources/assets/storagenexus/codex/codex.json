@@ -21,7 +21,8 @@
         "fluid_drawer",
         "compacting",
         "controller",
-        "barrels"
+        "barrels",
+        "compressed"
       ]
     },
     {
@@ -1274,6 +1275,32 @@
         "backpack_modules",
         "compacting",
         "backpack"
+      ]
+    },
+    "compressed": {
+      "pages": [
+        "essentials.compressed",
+        "essentials.compressed2"
+      ],
+      "icon": "nexusessentials:compressed_cobbled_deepslate",
+      "recipes": [
+        "compressed_cobblestone",
+        "compressed_cobblestone_to_cobblestone"
+      ],
+      "items": [
+        "#nexusessentials:compressed_blocks"
+      ],
+      "aliases": [
+        "Compressed blocks",
+        "compressed cobblestone",
+        "compressed deepslate",
+        "double compressed",
+        "triple compressed"
+      ],
+      "see": [
+        "compacting_module",
+        "compacting",
+        "drawers"
       ]
     },
     "elytra": {

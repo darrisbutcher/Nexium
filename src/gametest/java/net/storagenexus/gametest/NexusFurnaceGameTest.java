@@ -7,6 +7,10 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.storagenexus.essentials.slots.ExtraSlots;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -277,6 +281,52 @@ public class NexusFurnaceGameTest {
         f.setItem(0, ItemStack.EMPTY);
         tick(h, f, 1);
         h.assertTrue(!h.getLevel().getBlockState(f.getBlockPos()).getValue(net.storagenexus.energy.NexusFurnaceBlock.LIT), "dark when there is nothing to cook");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- Mending
+
+    private static ItemStack damagedMending(GameTestHelper h, net.minecraft.world.item.Item item, int damage) {
+        ItemStack stack = new ItemStack(item);
+        stack.enchant(h.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.MENDING), 1);
+        stack.setDamageValue(damage);
+        return stack;
+    }
+
+    @GameTest
+    public void collectedFurnaceExperienceMendsATool(GameTestHelper h) {
+        NexusFurnaceBlockEntity f = furnace(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        ExtraSlots.of(player).clearContent();
+        player.giveExperienceLevels(-player.experienceLevel);
+        player.giveExperiencePoints(-player.totalExperience);
+        ItemStack pick = damagedMending(h, Items.DIAMOND_PICKAXE, 800);
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        f.addExperience(100.0);
+        h.assertValueEqual(f.takeExperience(player), 100, "Collect XP hands over 100 points");
+        h.assertValueEqual(pick.getDamageValue(), 600, "which mend 200 durability");
+        h.assertValueEqual(player.totalExperience, 0, "leaving the player none");
+
+        f.addExperience(1_000.5);
+        f.takeExperience(player);
+        h.assertValueEqual(pick.getDamageValue(), 0, "the rest finishes the pickaxe");
+        h.assertValueEqual(player.totalExperience, 1_000 - 300, "and what 600 durability did not need is the player's");
+        h.assertTrue(f.experience() == 0.5, "the half point stays in the furnace: " + f.experience());
+        h.succeed();
+    }
+
+    @GameTest
+    public void furnaceExperienceWithNothingToMendIsAllLevels(GameTestHelper h) {
+        NexusFurnaceBlockEntity f = furnace(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        ExtraSlots.of(player).clearContent();
+        player.giveExperienceLevels(-player.experienceLevel);
+        player.giveExperiencePoints(-player.totalExperience);
+        f.addExperience(40.0);
+        f.takeExperience(player);
+        h.assertValueEqual(player.totalExperience, 40, "with nothing damaged every point is the player's");
         h.succeed();
     }
 }

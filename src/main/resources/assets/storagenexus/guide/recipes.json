@@ -81,6 +81,8 @@
     "torch_stack_module": {"type": "shaped", "pattern": ["ITI", "TCT", "ITI"], "key": {"C": "minecraft:chest", "I": "minecraft:iron_ingot", "T": "minecraft:torch"}, "result": {"id": "nexusessentials:torch_stack_module"}},
     "feeding_module": {"type": "shaped", "pattern": ["IBI", "BGB", "IBI"], "key": {"B": "minecraft:bread", "G": "minecraft:golden_carrot", "I": "minecraft:iron_ingot"}, "result": {"id": "nexusessentials:feeding_module"}},
     "compacting_module": {"type": "shaped", "pattern": ["IPI", "PTP", "IPI"], "key": {"I": "minecraft:iron_ingot", "P": "minecraft:piston", "T": "minecraft:crafting_table"}, "result": {"id": "nexusessentials:compacting_module"}},
+    "compressed_cobblestone": {"type": "shaped", "pattern": ["BBB", "BBB", "BBB"], "key": {"B": "minecraft:cobblestone"}, "result": {"id": "nexusessentials:compressed_cobblestone"}},
+    "compressed_cobblestone_to_cobblestone": {"type": "shapeless", "ingredients": ["nexusessentials:compressed_cobblestone"], "result": {"id": "minecraft:cobblestone", "count": 9}, "verify": "nexusessentials:compressed_cobblestone_to_cobblestone"},
     "elixir": {"type": "shaped", "pattern": [" O ", "DBD", " O "], "key": {"B": "minecraft:glass_bottle", "D": "minecraft:diamond", "O": "minecraft:obsidian"}, "result": {"id": "nexusessentials:bedrock_breaker_elixir"}}
   }
 }

@@ -12,6 +12,7 @@
     "CapeLayerMixin",
     "CreativeModeInventoryScreenMixin",
     "InventoryScreenMixin",
+    "ItemStackMixin",
     "MouseHandlerMixin",
     "WingsLayerMixin"
   ],

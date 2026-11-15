@@ -3,6 +3,26 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.17
+
+* **Compressed blocks**: 48 new blocks, a *Compressed*, *Double Compressed* and *Triple Compressed* version of 16 bulk blocks that
+  hold **9, 81 and 729** of them: stone, cobblestone, deepslate, cobbled deepslate, tuff, granite, diorite, andesite, netherrack,
+  blackstone, basalt, end stone, dirt, sand, red sand and gravel. Nine make one (3 x 3 in a crafting grid) and each crafts back
+  into nine of the one below. Each is mined like the block it stands for (same hardness, blast resistance, sound and tool), drops
+  itself, and has an iron, gold or purple frame by level; its tooltip says how many of the plain block it stands for. A
+  Backpack's Compacting Module packs them by itself (729 cobblestone become one Triple Compressed Cobblestone, 9 sand one
+  Compressed Sand, not sandstone), and a Compacting Drawer holds a block and its compressed versions as tiers. They are in the
+  Nexium Storage creative tab.
+* **Mending**: what you collect from the Experience Farm (Collect all, +1 level, +10 levels) and the Nexus Furnace (Collect XP)
+  now repairs first, as an experience orb does. A random damaged item you carry or wear with Mending, the elytra in the wings slot
+  too, is mended at 2 durability a point, points it does not use go on to another damaged item, and the rest becomes levels. The
+  level buttons take the same points as before, so a repair can leave you short of that level.
+* **Shulker box preview**: a shulker box with something in it shows a 9 x 3 grid of its contents under its name, in slots
+  the colour of the box, with every item and count. The normal item list under the name ("Iron Ingot x64 ... and 12 more")
+  is hidden when it shows. An empty box and other containers keep their normal tooltip.
+* **Backpack screen**: its four rows of nine slots are evenly spaced now (the last row sat a little apart), and your inventory
+  below moved up to match.
+
 ## 1.21.16
 
 * **Feeding Module** for the Backpack (4 bread around a golden carrot, with iron ingots in the corners): eats for you while

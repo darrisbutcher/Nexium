@@ -1,0 +1,63 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_base": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:dirt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_compressed": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:compressed_dirt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_double": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:double_compressed_dirt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_triple": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexusessentials:triple_compressed_dirt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_base",
+      "has_compressed",
+      "has_double",
+      "has_triple"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexusessentials:compressed_dirt",
+      "nexusessentials:compressed_dirt_to_dirt",
+      "nexusessentials:double_compressed_dirt",
+      "nexusessentials:double_compressed_dirt_to_compressed_dirt",
+      "nexusessentials:triple_compressed_dirt",
+      "nexusessentials:triple_compressed_dirt_to_double_compressed_dirt"
+    ]
+  }
+}

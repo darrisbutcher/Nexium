@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.storagenexus.util.XpMending;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -94,7 +95,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
         setChanged();
     }
 
-    /** Hands the player every point banked. Returns how many. */
+    /** Hands the player every point banked, as an orb would: Mending items are repaired first. Returns how many. */
     public long takeAll(Player player) {
         return give(player, experience);
     }
@@ -110,7 +111,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     private long give(Player player, long points) {
         if (points <= 0) return 0;
         experience -= points;
-        player.giveExperiencePoints((int) points);
+        XpMending.give(player, (int) points);
         setChanged();
         if (level != null) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         return points;
