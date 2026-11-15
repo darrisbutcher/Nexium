@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.ToIntBiFunction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,11 +19,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.storagenexus.barrel.BarrelMenu;
+import net.storagenexus.essentials.backpack.BackpackMenu;
 
 /**
  * Sorts one region of an open menu: either the container's own slots or the player's main inventory (never the hotbar,
  * armor or offhand). Stacks are merged first, then put A to Z; shulker boxes and bundles go to the bottom-right slots
  * when there is room, so the rest of the items stay at the top.
+ *
+ * <p>In a Backpack's screen the container is its 36 storage slots (never its module slots), torches merge up to the
+ * Backpack's own limit (512 with the Torch Stack module on), and the inventory slot the Backpack was opened from stays
+ * where it is when the main inventory is sorted.
  */
 public final class InventorySorter {
     /** First and last inventory index of the main inventory: 0 to 8 is the hotbar, 9 to 35 the storage rows. */
@@ -33,10 +39,10 @@ public final class InventorySorter {
 
     private InventorySorter() {}
 
-    /** Menus whose container slots may be sorted: chests, barrels, ender chests, shulker boxes, hoppers, dispensers. */
+    /** Menus whose container slots may be sorted: chests, barrels, ender chests, shulker boxes, hoppers, dispensers, Backpacks. */
     public static boolean supportsContainer(AbstractContainerMenu menu) {
         return menu instanceof ChestMenu || menu instanceof ShulkerBoxMenu || menu instanceof HopperMenu
-                || menu instanceof DispenserMenu || menu instanceof BarrelMenu;
+                || menu instanceof DispenserMenu || menu instanceof BarrelMenu || menu instanceof BackpackMenu;
     }
 
     public static boolean isMainInventorySlot(Slot slot) {
@@ -51,9 +57,15 @@ public final class InventorySorter {
         for (Slot slot : menu.slots) {
             if (!slot.isActive()) continue;
             boolean main = isMainInventorySlot(slot);
-            if (region == Region.PLAYER ? main : !(slot.container instanceof Inventory)) result.add(slot);
+            if (region == Region.PLAYER ? main : isContainerSlot(menu, slot)) result.add(slot);
         }
         return result;
+    }
+
+    /** A container slot of the menu: anything that is not the player's inventory, except that a Backpack's module slots are not storage. */
+    private static boolean isContainerSlot(AbstractContainerMenu menu, Slot slot) {
+        if (slot.container instanceof Inventory) return false;
+        return !(menu instanceof BackpackMenu backpack) || backpack.isStorageSlot(slot);
     }
 
     /**
@@ -81,20 +93,28 @@ public final class InventorySorter {
         AbstractContainerMenu menu = player.containerMenu;
         if (menu.containerId != containerId) return false;
         List<Slot> slots = slotsOf(menu, playerRegion ? Region.PLAYER : Region.CONTAINER);
+        // A Backpack opened from an inventory slot is locked there: the slots around it sort, it stays
+        if (playerRegion && menu instanceof BackpackMenu backpack) slots.removeIf(slot -> slot.getContainerSlot() == backpack.source());
         if (slots.isEmpty()) return false;
-        boolean changed = sort(slots);
+        // The Backpack's slots know their own limit (torches to 512 with the Torch Stack module on)
+        boolean changed = !playerRegion && menu instanceof BackpackMenu ? sort(slots, Slot::getMaxStackSize) : sort(slots);
         if (changed) menu.broadcastChanges();
         return changed;
     }
 
-    /** Sorts the given slots in place, A to Z. */
+    /** Sorts the given slots in place, A to Z, merging stacks up to the item's own limit. */
     public static boolean sort(List<Slot> slots) {
+        return sort(slots, (slot, stack) -> Math.min(stack.getMaxStackSize(), slot.getMaxStackSize(stack)));
+    }
+
+    /** Sorts the given slots in place, A to Z, merging stacks up to what {@code limits} says a slot holds of a stack. */
+    public static boolean sort(List<Slot> slots, ToIntBiFunction<Slot, ItemStack> limits) {
         int n = slots.size();
         List<ItemStack> merged = new ArrayList<>();
         for (Slot slot : slots) {
             ItemStack stack = slot.getItem();
             if (stack.isEmpty()) continue;
-            int limit = Math.max(1, Math.min(stack.getMaxStackSize(), slot.getMaxStackSize(stack)));
+            int limit = Math.max(1, limits.applyAsInt(slot, stack));
             ItemStack rest = stack.copy();
             for (ItemStack into : merged) {
                 if (rest.isEmpty()) break;

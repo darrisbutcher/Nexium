@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.19
+
+* **Sorting the Backpack**: press the Sort key (**O**, `Sort Inventory` under Nexium in Controls) with the mouse over the
+  Backpack's 36 slots and they sort **A to Z** like a chest: stacks merge first, shulker boxes and bundles go to the bottom-right
+  slots, and only that area sorts (never the module slots, your inventory or the hotbar). Torches merge into stacks of **512**
+  while the Torch Stack module is on, and into 64 without it. The same key over the inventory below sorts the inventory.
+* **Fix**: sorting the main inventory while a Backpack screen was open could move the Backpack you opened it from out of its
+  slot and close the screen. That Backpack now stays where it is while the slots around it sort.
+
 ## 1.21.18
 
 * **Diagonal placement**: hold a key (**Left Alt** by default, rebindable under Controls > Key Binds, in the Nexium group) and
