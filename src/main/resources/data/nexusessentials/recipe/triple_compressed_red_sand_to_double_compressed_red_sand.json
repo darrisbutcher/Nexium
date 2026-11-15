@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:triple_compressed_red_sand"
+  ],
+  "result": {
+    "id": "nexusessentials:double_compressed_red_sand",
+    "count": 9
+  }
+}

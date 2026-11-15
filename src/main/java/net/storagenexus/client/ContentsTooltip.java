@@ -1,9 +1,11 @@
 package net.storagenexus.client;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.storagenexus.drawer.CompactingDrawerBlockEntity;
@@ -14,10 +16,16 @@ import net.storagenexus.util.Fmt;
 
 import java.util.List;
 
-/** Shows what a broken drawer, fluid drawer or tank is carrying. */
+/** Shows what a broken drawer, fluid drawer or tank is carrying, and what a shulker box holds. */
 public final class ContentsTooltip {
     public static void init() {
         ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> append(stack, lines));
+
+        // A shulker box with something in it shows a grid of its contents, and not the item list vanilla puts under its name
+        ClientTooltipComponentCallback.EVENT.register(data -> data instanceof ShulkerPreview preview ? new ClientShulkerPreview(preview) : null);
+        ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> {
+            if (ShulkerPreview.of(stack) != null) lines.removeIf(ContentsTooltip::isVanillaItemList);
+        });
     }
 
     private static void append(ItemStack stack, List<Component> lines) {
@@ -63,6 +71,12 @@ public final class ContentsTooltip {
             upgrades.nonEmptyItemCopyStream().forEach(up ->
                 lines.add(Component.literal("+ ").append(up.getHoverName()).withStyle(ChatFormatting.DARK_AQUA)));
         }
+    }
+
+    /** The lines vanilla lists a container's items with: "Iron Ingot x64" for the first five, then "and 12 more". */
+    private static boolean isVanillaItemList(Component line) {
+        return line.getContents() instanceof TranslatableContents t
+                && (t.getKey().equals("item.container.item_count") || t.getKey().equals("item.container.more_items"));
     }
 
     private static Component line(String amount, Component name) {

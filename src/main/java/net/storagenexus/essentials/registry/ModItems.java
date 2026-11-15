@@ -100,7 +100,8 @@ public final class ModItems {
      */
     public static final List<Item> TAB_ORDER = java.util.stream.Stream.of(
             java.util.stream.Stream.of(MAGNET, BACKPACK), BACKPACK_MODULES.values().stream(),
-            java.util.stream.Stream.of(BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream())
+            java.util.stream.Stream.of(BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream(),
+            net.storagenexus.essentials.compressed.CompressedBlocks.items().stream())
             .flatMap(stream -> stream).map(i -> (Item) i).toList();
 
     public static void init() {}

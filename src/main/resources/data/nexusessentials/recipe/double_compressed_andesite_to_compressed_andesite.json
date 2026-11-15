@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexusessentials:double_compressed_andesite"
+  ],
+  "result": {
+    "id": "nexusessentials:compressed_andesite",
+    "count": 9
+  }
+}

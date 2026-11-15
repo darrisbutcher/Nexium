@@ -760,10 +760,9 @@ public class BackpackGameTest {
 
     @GameTest(environment = EssentialsEnvironment.ID)
     public void compactingLeavesPacksThatDoNotCraftBack(GameTestHelper h) {
-        ServerPlayer player = compactingWith(h, new ItemStack(Items.SAND, 16), new ItemStack(Items.GLOWSTONE_DUST, 8), new ItemStack(Items.SNOWBALL, 16), new ItemStack(Items.CLAY_BALL, 8),
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.GLOWSTONE_DUST, 8), new ItemStack(Items.SNOWBALL, 16), new ItemStack(Items.CLAY_BALL, 8),
                 new ItemStack(Items.MELON_SLICE, 18), new ItemStack(Items.OAK_PLANKS, 16), new ItemStack(Items.QUARTZ, 8));
         h.assertTrue(!BackpackCompacting.compactNow(player), "nothing here packs back, so nothing is packed");
-        h.assertValueEqual(held(player, Items.SAND), 16, "sand stays sand, not sandstone");
         h.assertValueEqual(held(player, Items.GLOWSTONE_DUST), 8, "glowstone dust stays");
         h.assertValueEqual(held(player, Items.SNOWBALL), 16, "snowballs stay");
         h.assertValueEqual(held(player, Items.CLAY_BALL), 8, "clay balls stay");
@@ -798,10 +797,46 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingPacksBulkBlocksIntoCompressedBlocks(GameTestHelper h) {
+        // 729 cobblestone in eleven stacks of 64 and one of 25: nine packs of 81, nine of those, then one more step
+        ItemStack[] stacks = new ItemStack[12];
+        for (int i = 0; i < 11; i++) stacks[i] = new ItemStack(Items.COBBLESTONE, 64);
+        stacks[11] = new ItemStack(Items.COBBLESTONE, 25);
+        ServerPlayer player = compactingWith(h, stacks);
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs");
+        h.assertValueEqual(held(player, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.COBBLESTONE, 3)), 1, "one Triple Compressed Cobblestone");
+        h.assertValueEqual(held(player, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.COBBLESTONE, 2)), 0, "and no Double Compressed left over");
+        h.assertValueEqual(held(player, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.COBBLESTONE, 1)), 0, "or Compressed");
+        h.assertValueEqual(held(player, Items.COBBLESTONE), 0, "or plain cobblestone");
+        h.assertValueEqual(BackpackContents.usedSlots(ExtraSlots.of(player).backpack()), 1, "all in one slot");
+
+        // 800 is one of those and 71 more: 7 Compressed (63) and 8 plain
+        ItemStack[] more = new ItemStack[13];
+        for (int i = 0; i < 12; i++) more[i] = new ItemStack(Items.COBBLESTONE, 64);
+        more[12] = new ItemStack(Items.COBBLESTONE, 32);
+        ServerPlayer other = compactingWith(h, more);
+        h.assertTrue(BackpackCompacting.compactNow(other), "800 cobblestone pack");
+        h.assertValueEqual(held(other, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.COBBLESTONE, 3)), 1, "a Triple Compressed");
+        h.assertValueEqual(held(other, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.COBBLESTONE, 1)), 7, "7 Compressed");
+        h.assertValueEqual(held(other, Items.COBBLESTONE), 8, "and 8 plain cobblestone");
+
+        // Soil, and the Nether and End, pack the same way; sand is packed 9 to 1, not 4 to sandstone
+        ServerPlayer soil = compactingWith(h, new ItemStack(Items.SAND, 20), new ItemStack(Items.DIRT, 9), new ItemStack(Items.NETHERRACK, 9), new ItemStack(Items.END_STONE, 18));
+        h.assertTrue(BackpackCompacting.compactNow(soil), "they pack");
+        h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.SAND, 1)), 2, "20 sand: 2 Compressed Sand");
+        h.assertValueEqual(held(soil, Items.SAND), 2, "and 2 sand, with no sandstone");
+        h.assertValueEqual(held(soil, Items.SANDSTONE), 0, "none");
+        h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.DIRT, 1)), 1, "a Compressed Dirt");
+        h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.NETHERRACK, 1)), 1, "a Compressed Netherrack");
+        h.assertValueEqual(held(soil, net.storagenexus.essentials.compressed.CompressedBlocks.item(net.storagenexus.essentials.compressed.CompressedBlocks.Base.END_STONE, 1)), 2, "two Compressed End Stone");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void compactingNeedsRoomForTheBlock(GameTestHelper h) {
         // 35 full slots, and 10 iron ingots in the last: the 9 that pack leave 1 ingot in the slot, so there is no room for the block
         ItemStack[] stacks = new ItemStack[BackpackContents.SIZE];
-        for (int i = 0; i < stacks.length - 1; i++) stacks[i] = new ItemStack(Items.COBBLESTONE, 64);
+        for (int i = 0; i < stacks.length - 1; i++) stacks[i] = new ItemStack(Items.STICK, 64);
         stacks[stacks.length - 1] = new ItemStack(Items.IRON_INGOT, 10);
         ServerPlayer player = compactingWith(h, stacks);
         h.assertTrue(!BackpackCompacting.compactNow(player), "no room for a block: nothing is packed");

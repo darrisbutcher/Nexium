@@ -35,7 +35,7 @@ public class BackpackMenu extends BaseMenu {
     public static final int MODULE_X = 182, MODULE_Y = 18, MODULE_ROW = 20;
     public static final int GRID_X = 8, GRID_Y = 18;
     /** The player's inventory sits below the Backpack's rows. */
-    public static final int INVENTORY_Y = 108;
+    public static final int INVENTORY_Y = 104;
     public static final int WIDTH = 256, HEIGHT = INVENTORY_Y + 82;
 
     private final Player player;
@@ -100,9 +100,8 @@ public class BackpackMenu extends BaseMenu {
             });
         }
         for (int i = 0; i < BackpackContents.SIZE; i++) {
-            // Three rows like the inventory, then the last row (the "hotbar") a little apart
-            int row = i / 9;
-            addCustomSlot(new Slot(contents, i, GRID_X + (i % 9) * 18, GRID_Y + row * 18 + (row == 3 ? 4 : 0)) {
+            // Four even rows of nine
+            addCustomSlot(new Slot(contents, i, GRID_X + (i % 9) * 18, GRID_Y + (i / 9) * 18) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     // No Backpack inside a Backpack

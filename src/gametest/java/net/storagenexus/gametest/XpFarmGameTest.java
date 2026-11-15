@@ -3,6 +3,12 @@ package net.storagenexus.gametest;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.storagenexus.essentials.slots.ExtraSlots;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -186,5 +192,116 @@ public class XpFarmGameTest {
         } catch (ReflectiveOperationException e) {
             throw new AssertionError("cannot read how many orbs this one stands for", e);
         }
+    }
+
+    // ---------------------------------------------------------------- Mending
+
+    private static ItemStack damaged(GameTestHelper h, net.minecraft.world.item.Item item, int damage, boolean mending) {
+        ItemStack stack = new ItemStack(item);
+        if (mending) stack.enchant(h.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.MENDING), 1);
+        stack.setDamageValue(damage);
+        return stack;
+    }
+
+    private static ServerPlayer blank(GameTestHelper h) {
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        ExtraSlots.of(player).clearContent();
+        player.giveExperienceLevels(-player.experienceLevel);
+        player.giveExperiencePoints(-player.totalExperience);
+        return player;
+    }
+
+    @GameTest
+    public void whatYouCollectMendsATool(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack pick = damaged(h, Items.DIAMOND_PICKAXE, 800, true);
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        f.addExperience(100);
+        h.assertValueEqual(f.takeAll(player), 100L, "the farm hands over its 100 points");
+        h.assertValueEqual(pick.getDamageValue(), 600, "all of them mended: 2 durability a point, 200 in all");
+        h.assertValueEqual(player.totalExperience, 0, "so none were left for the player");
+        h.assertValueEqual(f.experience(), 0L, "and the bank is empty");
+        h.succeed();
+    }
+
+    @GameTest
+    public void whatMendingDoesNotNeedBecomesLevels(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack pick = damaged(h, Items.DIAMOND_PICKAXE, 800, true);
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        f.addExperience(1_000);
+        f.takeAll(player);
+        h.assertValueEqual(pick.getDamageValue(), 0, "the pickaxe is fully repaired");
+        h.assertValueEqual(player.totalExperience, 600, "1,000 points less the 400 that 800 durability costs (2 a point): 600 are the player's");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aToolWithoutMendingIsLeftAlone(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack plain = damaged(h, Items.DIAMOND_PICKAXE, 800, false);
+        ItemStack undamaged = damaged(h, Items.DIAMOND_SWORD, 0, true);
+        player.setItemInHand(InteractionHand.MAIN_HAND, plain);
+        player.setItemInHand(InteractionHand.OFF_HAND, undamaged);
+        f.addExperience(500);
+        f.takeAll(player);
+        h.assertValueEqual(plain.getDamageValue(), 800, "a damaged tool without Mending stays damaged");
+        h.assertValueEqual(player.totalExperience, 500, "and the player gets every point");
+        h.succeed();
+    }
+
+    @GameTest
+    public void mendingReachesArmorAndTheWingsSlot(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack elytra = damaged(h, Items.ELYTRA, 300, true);
+        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, elytra);
+        f.addExperience(50);
+        f.takeAll(player);
+        h.assertValueEqual(elytra.getDamageValue(), 200, "an elytra in the wings slot is mended: 100 durability for 50 points");
+        h.assertValueEqual(player.totalExperience, 0, "all of it");
+
+        ItemStack boots = damaged(h, Items.DIAMOND_BOOTS, 100, true);
+        ExtraSlots.of(player).clearContent();
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, boots);
+        f.addExperience(20);
+        f.takeAll(player);
+        h.assertValueEqual(boots.getDamageValue(), 60, "worn armor is mended too");
+        h.succeed();
+    }
+
+    @GameTest
+    public void aSpillOverMendsAnotherDamagedItem(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack pick = damaged(h, Items.DIAMOND_PICKAXE, 40, true);
+        ItemStack sword = damaged(h, Items.DIAMOND_SWORD, 40, true);
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        player.setItemInHand(InteractionHand.OFF_HAND, sword);
+        f.addExperience(100);
+        f.takeAll(player);
+        // One is picked at random first; either way each needs only 20 points for its 40 durability, and the 60 left are the player's
+        h.assertValueEqual(pick.getDamageValue(), 0, "the pickaxe is fully mended");
+        h.assertValueEqual(sword.getDamageValue(), 0, "and so is the sword, from what the first did not use");
+        h.assertValueEqual(player.totalExperience, 60, "and the player gets the 60 points that neither needed");
+        h.succeed();
+    }
+
+    @GameTest
+    public void theLevelButtonsMendFirstToo(GameTestHelper h) {
+        XpFarmBlockEntity f = farm(h);
+        ServerPlayer player = blank(h);
+        ItemStack pick = damaged(h, Items.DIAMOND_PICKAXE, 800, true);
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        f.addExperience(100_000);
+        h.assertValueEqual(f.takeLevels(player, 1), 7L, "+1 level still takes the 7 points it always does");
+        h.assertValueEqual(pick.getDamageValue(), 786, "they mended 14 durability");
+        h.assertValueEqual(player.experienceLevel, 0, "so the player is still on level 0");
+        h.assertValueEqual(f.experience(), 100_000L - 7L, "and the bank paid for them");
+        h.succeed();
     }
 }

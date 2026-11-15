@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.storagenexus.registry.ModBlockEntities;
+import net.storagenexus.util.XpMending;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
@@ -158,12 +159,12 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         setChanged();
     }
 
-    /** Gives the player the whole points of experience collected so far; the fraction stays. Returns how many. */
+    /** Gives the player the whole points of experience collected so far, as an orb would (Mending items are repaired first); the fraction stays. Returns how many. */
     public int takeExperience(Player player) {
         int points = (int) Math.floor(experience);
         if (points <= 0) return 0;
         experience = Math.round((experience - points) * 1000.0) / 1000.0;
-        player.giveExperiencePoints(points);
+        XpMending.give(player, points);
         setChanged();
         return points;
     }

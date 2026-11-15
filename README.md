@@ -340,6 +340,25 @@ vanilla. Endermen never pick up blocks.
   craft straight back, so nothing is lost or changed (sand never becomes sandstone) and modded blocks work too. The blocks
   go in the Backpack's own free slots, and renamed or enchanted items are left alone.
 
+### Shulker box preview
+* A shulker box with something in it shows a **9 x 3 grid of what is inside** under its name, in slots the colour of the box, with
+  every item and count. It replaces the normal item list ("Iron Ingot x64 ... and 12 more"), which is hidden; an empty box and
+  other containers keep their normal tooltip.
+
+### Compressed blocks
+* Sixteen bulk blocks have compressed versions that hold **9, 81 and 729** of them: **stone, cobblestone, deepslate, cobbled
+  deepslate, tuff, granite, diorite, andesite, netherrack, blackstone, basalt, end stone, dirt, sand, red sand and gravel**.
+  That is 48 new blocks: *Compressed*, *Double Compressed* and *Triple Compressed* of each.
+  ```
+  B B B
+  B B B      9 of a block make 1 Compressed block, 9 of those a Double Compressed, 9 of those a Triple Compressed;
+  B B B      each one crafts back into 9 of the one below
+  ```
+* Each is mined like the block it stands for (same hardness, blast resistance, sound and tool) and drops itself. Its tooltip says how
+  many of the plain block it stands for. They are in the Nexium Storage creative tab.
+* A Backpack's **Compacting Module** packs them by itself (729 cobblestone become one Triple Compressed Cobblestone), because it finds
+  what packs into what from the crafting recipes, and a **Compacting Drawer** holds a block and its compressed versions as tiers.
+
 ### Elytra enchanting
 At an anvil, elytra take Protection, Fire, Blast and Projectile Protection from books, all four at once (every armor piece does now).
 
@@ -506,7 +525,7 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Bee Farm** | 2 bees, 4 beehives, 4 campfires, 16 flowers, 8 glass bottles, oak planks | Every 20 s: 1 to 3 honeycomb, and 2 bottles of honey, both into its output slots |
 | **Froglight Farm** | 3 temperate, 3 warm and 3 cold frogs and 9 slimes (Captured Mobs), 576 glass of any colour | Every 20 s: 5 ochre, 5 verdant and 5 pearlescent froglights |
 | **Tree Farm** | 18 stacks of logs (any kinds); no other parts | Every 20 s, 8 logs of the tree its mode button picks (oak, spruce, birch, jungle, acacia, dark oak, mangrove, cherry, pale oak, poplar, crimson or warped stems); on chorus, 4 chorus fruit and a 5% chorus flower. Shift-click the button to go back |
-| **Experience Farm** | 64 Bottles o' Enchanting; no other parts | Makes **40 XP a second** (2 a tick) on **10 NE/t** and banks it up to **200 levels' worth** (149,720 points). Right-click it: **Collect all** gives you everything banked, **+1 level** and **+10 levels** give just enough to rise that many levels (or all that is banked if less). It stops when full and starts again once you collect; a redstone signal pauses it, a comparator reads how full the bank is, and broken it gives the bank back as experience orbs. XP is only collected by hand: it cannot be moved by conduits |
+| **Experience Farm** | 64 Bottles o' Enchanting; no other parts | Makes **40 XP a second** (2 a tick) on **10 NE/t** and banks it up to **200 levels' worth** (149,720 points). Right-click it: **Collect all** gives you everything banked, **+1 level** and **+10 levels** give just enough to rise that many levels (or all that is banked if less). Every point taken **mends first**, as an experience orb does: a random damaged Mending item you carry or wear (the wings slot included) is repaired before the rest becomes levels, so a press can leave you short of a level when something needed mending. It stops when full and starts again once you collect; a redstone signal pauses it, a comparator reads how full the bank is, and broken it gives the bank back as experience orbs. XP is only collected by hand: it cannot be moved by conduits |
 | **Moss Farm** | 32 moss blocks, 8 azaleas, 4 water buckets, 8 bone blocks, clay | Every 20 s: 3 moss blocks, 2 moss carpet, 3 pale moss blocks, 2 pale moss carpet, 2 pale hanging moss, 6 resin clumps, a 10% azalea. |
 
 ### Power (Nexus Energy)
@@ -557,7 +576,9 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
   8 in each slot, topping up the slots that already hold iron ore.
 * **Hoppers and pipes go in from the top and sides and out from the bottom.** A full output only stops its own slot.
 * **Experience** is **ten times** what the recipes give (raw iron 7, a steak 3.5) and is kept in the furnace; the **Collect XP** button
-  on its screen shows the whole points banked and gives you exactly that many (the fraction stays).
+  on its screen shows the whole points banked and gives you exactly that many (the fraction stays). Like an experience orb, it
+  **mends first**: a random damaged item you carry or wear with Mending (the elytra in the wings slot too) is repaired, 2 durability
+  a point, and what it does not use is yours.
 * No redstone control and no comparator output. It shows up in Jade with its energy.
 
 ### Freezer
