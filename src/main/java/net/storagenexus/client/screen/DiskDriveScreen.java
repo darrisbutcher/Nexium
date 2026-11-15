@@ -18,12 +18,12 @@ import java.util.Locale;
 
 /**
  * The Disk Drive's screen: its 8 disks (each with a fill bar: green with room, yellow over 75%, red full), priority
- * (shift-click steps by 10), the filter slot, item and fluid totals over its disks, and Move to disks.
+ * (shift-click steps by 10), the filter slot, item and fluid totals over its disks, Move to disks, and Move up.
  */
 public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
     private static final int GREEN = 0xFF5DFF6A, YELLOW = 0xFFFFD23A, RED = 0xFFFF4A3A;
     private final SideHints hints = new SideHints();
-    private Button minus, plus, move;
+    private Button minus, plus, move, moveUp;
 
     public DiskDriveScreen(DiskDriveMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, DiskDriveMenu.INVENTORY_Y + 82, DiskDriveMenu.INVENTORY_Y);
@@ -38,10 +38,13 @@ public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
         plus = addRenderableWidget(Button.builder(Component.literal("+"), b -> click(shift() ? DiskDriveMenu.BTN_PLUS_10 : DiskDriveMenu.BTN_PLUS_1))
                 .bounds(leftPos + 150, topPos + 28, 18, 14).build());
         move = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.disk_drive.move"), b -> click(DiskDriveMenu.BTN_MOVE))
-                .bounds(leftPos + 8, topPos + 104, 160, 16).build());
+                .bounds(leftPos + 8, topPos + 104, 79, 16).build());
+        moveUp = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.disk_drive.up"), b -> click(DiskDriveMenu.BTN_MOVE_UP))
+                .bounds(leftPos + 89, topPos + 104, 79, 16).build());
         hints.set(minus, Component.translatable("screen.storagenexus.disk_drive.priority.tooltip"));
         hints.set(plus, Component.translatable("screen.storagenexus.disk_drive.priority.tooltip"));
         hints.set(move, Component.translatable("screen.storagenexus.disk_drive.move.tooltip"));
+        hints.set(moveUp, Component.translatable("screen.storagenexus.disk_drive.up.tooltip"));
     }
 
     private static boolean shift() {

@@ -260,4 +260,111 @@ public class DiskGameTest {
         h.assertTrue(drive.is(ModBlocks.DISK_DRIVE.asItem()), "iron, glass and redstone make the Disk Drive");
         h.succeed();
     }
+
+    // ---------------------------------------------------------------- Move up: lower tier disks onto higher tier ones
+
+    private static void fill(GameTestHelper h, ItemStack disk, Item item, long amount) {
+        try (Transaction tx = Transaction.openOuter()) {
+            StorageDiskItem.items(h.getLevel().getServer(), disk).insert(ItemVariant.of(item), amount, tx);
+            tx.commit();
+        }
+    }
+
+    private static long held(GameTestHelper h, ItemStack disk, Item item) {
+        return StorageDiskItem.items(h.getLevel().getServer(), disk).amountOf(ItemVariant.of(item));
+    }
+
+    private static long stored(GameTestHelper h, ItemStack disk) {
+        return StorageDiskItem.items(h.getLevel().getServer(), disk).stored();
+    }
+
+    @GameTest
+    public void moveUpPutsALowerDisksItemsOnAHigherOne(GameTestHelper h) {
+        ItemStack low = disk(DiskTier.K16), high = disk(DiskTier.K64);
+        fill(h, low, Items.STONE, 100);
+        fill(h, low, Items.DIRT, 50);
+        DiskDriveBlockEntity be = drive(h, DRIVE, low, high);
+        DiskDriveBlockEntity.Moved moved = be.moveUp();
+        h.assertValueEqual(moved.items(), 150L, "150 items moved up");
+        h.assertValueEqual(moved.fluid(), 0L, "and no fluid");
+        h.assertValueEqual(stored(h, low), 0L, "the 16k disk is empty");
+        h.assertValueEqual(held(h, high, Items.STONE), 100L, "the 64k disk has the stone");
+        h.assertValueEqual(held(h, high, Items.DIRT), 50L, "and the dirt");
+        // The drive shows the new amounts on the disks at once
+        h.assertTrue(high.get(net.storagenexus.registry.ModComponents.DISK_USAGE).stored() == 150L, "the 64k disk's tooltip says 150 stored");
+        h.assertTrue(low.get(net.storagenexus.registry.ModComponents.DISK_USAGE).stored() == 0L, "and the 16k disk's says 0");
+        h.succeed();
+    }
+
+    @GameTest
+    public void moveUpFillsTheBiggestDiskAndNothingIsLost(GameTestHelper h) {
+        ItemStack small = disk(DiskTier.K16), mid = disk(DiskTier.K64), big = disk(DiskTier.K256);
+        fill(h, small, Items.STONE, 16_000);
+        fill(h, mid, Items.COBBLESTONE, 60_000);
+        DiskDriveBlockEntity be = drive(h, DRIVE, mid, small, big); // not in size order in the drive
+        DiskDriveBlockEntity.Moved moved = be.moveUp();
+        h.assertValueEqual(moved.items(), 76_000L, "everything moved");
+        h.assertValueEqual(stored(h, small), 0L, "16k empty");
+        h.assertValueEqual(stored(h, mid), 0L, "64k empty");
+        h.assertValueEqual(held(h, big, Items.STONE), 16_000L, "256k has the stone");
+        h.assertValueEqual(held(h, big, Items.COBBLESTONE), 60_000L, "and the cobblestone");
+        h.succeed();
+    }
+
+    @GameTest
+    public void moveUpMovesOnlyAsMuchAsFits(GameTestHelper h) {
+        ItemStack low = disk(DiskTier.K16), high = disk(DiskTier.K64);
+        fill(h, low, Items.STONE, 10_000);
+        fill(h, high, Items.COBBLESTONE, 60_000); // room for 4,000
+        DiskDriveBlockEntity be = drive(h, DRIVE, low, high);
+        h.assertValueEqual(be.moveUp().items(), 4_000L, "only what fits moved");
+        h.assertValueEqual(held(h, low, Items.STONE), 6_000L, "the rest stays on the 16k disk");
+        h.assertValueEqual(held(h, high, Items.STONE), 4_000L, "and the 64k disk is full");
+        h.assertValueEqual(stored(h, high), 64_000L, "exactly full, never over");
+        h.assertValueEqual(be.moveUp().items(), 0L, "pressed again, nothing more fits");
+        h.succeed();
+    }
+
+    @GameTest
+    public void moveUpLeavesDisksOfTheSameTierAndTheBiggestAlone(GameTestHelper h) {
+        ItemStack a = disk(DiskTier.K64), b = disk(DiskTier.K64);
+        fill(h, a, Items.STONE, 500);
+        DiskDriveBlockEntity be = drive(h, DRIVE, a, b);
+        h.assertValueEqual(be.moveUp().items(), 0L, "two disks of the same tier: nothing to move up");
+        h.assertValueEqual(held(h, a, Items.STONE), 500L, "the stone stays where it is");
+        // The biggest disk's own contents never go anywhere
+        ItemStack low = disk(DiskTier.K16), top = disk(DiskTier.K256);
+        fill(h, top, Items.DIAMOND, 700);
+        be.disks().setItem(0, low);
+        be.disks().setItem(1, top);
+        h.assertValueEqual(be.moveUp().items(), 0L, "a lower disk with nothing on it moves nothing");
+        h.assertValueEqual(held(h, top, Items.DIAMOND), 700L, "and the biggest disk keeps what it has");
+        h.succeed();
+    }
+
+    @GameTest
+    public void moveUpMovesFluidsToFluidDisksAndNeverToItemDisks(GameTestHelper h) {
+        ItemStack lowFluid = new ItemStack(ModItems.FLUID_DISKS.get(DiskTier.K16));
+        ItemStack highFluid = new ItemStack(ModItems.FLUID_DISKS.get(DiskTier.K64));
+        try (Transaction tx = Transaction.openOuter()) {
+            StorageDiskItem.fluids(h.getLevel().getServer(), lowFluid).insert(FluidVariant.of(Fluids.WATER), 5 * FluidConstants.BUCKET, tx);
+            tx.commit();
+        }
+        ItemStack lowItems = disk(DiskTier.K16), highItems = disk(DiskTier.K64);
+        fill(h, lowItems, Items.STONE, 30);
+        DiskDriveBlockEntity be = drive(h, DRIVE, lowFluid, highItems, lowItems, highFluid);
+        DiskDriveBlockEntity.Moved moved = be.moveUp();
+        h.assertValueEqual(moved.fluid(), 5 * FluidConstants.BUCKET, "5 buckets of water moved up");
+        h.assertValueEqual(moved.items(), 30L, "and 30 items");
+        h.assertValueEqual(StorageDiskItem.fluids(h.getLevel().getServer(), highFluid).amountOf(FluidVariant.of(Fluids.WATER)), 5 * FluidConstants.BUCKET, "the water is on the 64 bucket fluid disk");
+        h.assertValueEqual(stored(h, highItems), 30L, "the items are on the 64k item disk");
+        // Items alone never go onto a fluid disk, whatever its size
+        ItemStack onlyItems = disk(DiskTier.K16);
+        fill(h, onlyItems, Items.STONE, 30);
+        ItemStack bigFluid = new ItemStack(ModItems.FLUID_DISKS.get(DiskTier.NEXIUM));
+        DiskDriveBlockEntity second = drive(h, DRIVE.east(), onlyItems, bigFluid);
+        h.assertValueEqual(second.moveUp().items(), 0L, "an item disk beside only a bigger fluid disk moves nothing");
+        h.assertValueEqual(held(h, onlyItems, Items.STONE), 30L, "the items stay on the item disk");
+        h.succeed();
+    }
 }

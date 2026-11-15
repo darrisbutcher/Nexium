@@ -21,9 +21,9 @@ import org.jspecify.annotations.Nullable;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/** The Disk Drive's screen: its 8 disks, priority, filter, and Move to disks. */
+/** The Disk Drive's screen: its 8 disks, priority, filter, Move to disks and Move up (lower tier disks onto higher tier ones). */
 public class DiskDriveMenu extends BaseMenu {
-    public static final int BTN_MINUS_1 = 0, BTN_PLUS_1 = 1, BTN_MINUS_10 = 2, BTN_PLUS_10 = 3, BTN_MOVE = 4;
+    public static final int BTN_MINUS_1 = 0, BTN_PLUS_1 = 1, BTN_MINUS_10 = 2, BTN_PLUS_10 = 3, BTN_MOVE = 4, BTN_MOVE_UP = 5;
     public static final int FILTER_X = 88, FILTER_Y = 48, INVENTORY_Y = 139;
     private static final int PRIORITY_OFFSET = 1000;
 
@@ -83,6 +83,16 @@ public class DiskDriveMenu extends BaseMenu {
                     sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
                             ? Component.translatable("message.storagenexus.disk.nothing_moved")
                             : Component.translatable("message.storagenexus.disk.moved", f.format(moved.items()),
+                            f.format(moved.fluid() / FluidConstants.BUCKET)));
+                }
+            }
+            case BTN_MOVE_UP -> {
+                DiskDriveBlockEntity.Moved moved = be.moveUp();
+                if (player instanceof ServerPlayer sp) {
+                    NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
+                    sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
+                            ? Component.translatable("message.storagenexus.disk.nothing_moved_up")
+                            : Component.translatable("message.storagenexus.disk.moved_up", f.format(moved.items()),
                             f.format(moved.fluid() / FluidConstants.BUCKET)));
                 }
             }

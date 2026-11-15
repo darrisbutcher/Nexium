@@ -132,6 +132,10 @@ Digital storage for the network, counted like Refined Storage: a disk holds a nu
   (shift-click for steps of 10) and a filter slot for a Basic or Advanced Filter.
 * **Move to disks** (in the drive's screen) moves everything the network's chests and barrels hold onto the disks, as
   far as they have room. Drawers keep their items.
+* **Move up** (beside it) moves what the **lower tier disks in that drive** hold onto its **higher tier disks**: item disks onto
+  higher item disks and fluid disks onto higher fluid disks, never one kind onto the other. Each disk's contents go to the biggest
+  disk first and then the next biggest, as far as there is room, so swapping a 16k disk for a 64k one is one click; disks of the same
+  tier are left alone, and what does not fit stays where it was.
 * No power and no channels, like the rest of the network.
 
 ### Tablets

@@ -174,6 +174,41 @@ public class DiskDriveBlockEntity extends SyncedBlockEntity {
         return new Moved(items, fluid);
     }
 
+    /**
+     * Moves what the lower tier disks of this drive hold onto its higher tier disks, item disks to item disks and fluid disks to fluid
+     * disks, as far as the higher ones have room. Each disk's contents go to the biggest disk first, then the next biggest, so
+     * everything ends up as high as it fits; disks of the same tier are left alone.
+     */
+    public Moved moveUp() {
+        if (!(level instanceof ServerLevel server)) return new Moved(0, 0);
+        long items = moveUp(server, false, StorageDiskItem::items);
+        long fluid = moveUp(server, true, StorageDiskItem::fluids);
+        refreshUsage();
+        sync();
+        return new Moved(items, fluid);
+    }
+
+    private <T extends TransferVariant<?>> long moveUp(ServerLevel server, boolean fluid,
+                                                      java.util.function.BiFunction<net.minecraft.server.MinecraftServer, ItemStack, DiskContents<T>> contents) {
+        // The disks of this kind in the drive, smallest first
+        List<ItemStack> disks = new ArrayList<>();
+        for (int i = 0; i < SLOTS; i++) {
+            ItemStack s = this.disks.getItem(i);
+            if (s.getItem() instanceof StorageDiskItem d && d.isFluid() == fluid) disks.add(s);
+        }
+        disks.sort(java.util.Comparator.comparingLong(s -> ((StorageDiskItem) s.getItem()).capacity()));
+        long moved = 0;
+        for (int low = 0; low < disks.size(); low++) {
+            long lowCapacity = ((StorageDiskItem) disks.get(low).getItem()).capacity();
+            DiskContents<T> from = contents.apply(server.getServer(), disks.get(low));
+            for (int high = disks.size() - 1; high > low && !from.isEmpty(); high--) {
+                if (((StorageDiskItem) disks.get(high).getItem()).capacity() <= lowCapacity) continue;
+                moved += StorageUtil.move(from, contents.apply(server.getServer(), disks.get(high)), v -> true, Long.MAX_VALUE, null);
+            }
+        }
+        return moved;
+    }
+
     private static <T extends TransferVariant<?>> long move(ServerLevel level, List<StorageNetwork.Source<T>> sources, Storage<T> target) {
         long moved = 0;
         for (StorageNetwork.Source<T> s : sources) {
