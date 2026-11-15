@@ -123,14 +123,6 @@ public class BackpackClientTest implements FabricClientGameTest {
             });
             check(shown.equals(Backpacks.EQUIPPED + " 512 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:torch_stack_module nexusessentials:feeding_module nexusessentials:compacting_module true | true"),
                     "the client sees 512 torches in one slot, the diamonds, the four modules and Torch Stack on: " + shown);
-            // Switch Auto Torch, Feeding and Compacting on from inside the screen (none of them works while it is open)
-            for (int slot : new int[] {0, 2, 3}) {
-                check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "module " + slot + " starts off");
-                ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + slot));
-                ctx.waitTicks(10);
-                check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "its switch turns module " + slot + " on");
-            }
-            System.out.println("[nexus] backpack screen: " + ctx.takeScreenshot("nexus_backpack_screen"));
 
             // The Torch Stack switch: off, the 512 torches become stacks of 64 (nothing is lost); on again, they can be put back
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
@@ -152,6 +144,29 @@ public class BackpackClientTest implements FabricClientGameTest {
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().torchStack()), "the switch turns Torch Stack back on");
+
+            // Switch Auto Torch, Feeding and Compacting on from inside the screen: they work while it is open, on the slots shown
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getFoodData().setFoodLevel(10));
+            for (int slot : new int[] {0, 2, 3}) {
+                check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "module " + slot + " starts off");
+                ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + slot));
+                ctx.waitTicks(10);
+                check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).getMenu().getSlot(slot).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "its switch turns module " + slot + " on");
+            }
+            ctx.waitTicks(45);
+            String live = ctx.computeOnClient(mc -> {
+                BackpackMenu menu = ((BackpackScreen) mc.gui.screen()).getMenu();
+                int diamonds = 0, blocks = 0, bread = 0;
+                for (int i = 0; i < BackpackContents.SIZE; i++) {
+                    var stack = menu.getSlot(BackpackModules.SLOTS + i).getItem();
+                    if (stack.is(Items.DIAMOND)) diamonds += stack.getCount();
+                    if (stack.is(Items.DIAMOND_BLOCK)) blocks += stack.getCount();
+                    if (stack.is(Items.BREAD)) bread += stack.getCount();
+                }
+                return diamonds + " " + blocks + " " + (bread < 20);
+            });
+            check(live.equals("3 1 true"), "with the screen still open Compacting packed the 12 diamonds into a block (3 left) and Feeding ate some bread, both shown on the screen (diamonds, blocks, bread eaten): " + live);
+            System.out.println("[nexus] backpack screen, modules working while open: " + ctx.takeScreenshot("nexus_backpack_screen"));
 
             ctx.getInput().pressKey(NexusEssentialsClient.OPEN_BACKPACK);
             ctx.waitTicks(10);

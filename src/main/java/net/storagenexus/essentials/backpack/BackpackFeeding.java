@@ -19,7 +19,7 @@ import java.util.List;
  * The Feeding module, on the server. While a Backpack with the module in and on is worn, it eats for the player: once a
  * second it looks at how much hunger is missing and eats the food in the Backpack that restores the most without any of it
  * being wasted. Foods with side effects (rotten flesh, pufferfish, golden apples, chorus fruit and the like) are never eaten.
- * It does nothing in creative mode or while the Backpack's screen is open.
+ * It does nothing in creative mode, and works while the Backpack's screen is open too (the food on the screen is eaten).
  */
 public final class BackpackFeeding {
     /** The food bar's size: what is missing is this less the food level. */
@@ -79,7 +79,7 @@ public final class BackpackFeeding {
         int missing = FULL - player.getFoodData().getFoodLevel();
         if (missing <= 0) return false;
 
-        NonNullList<ItemStack> slots = BackpackContents.read(backpack);
+        NonNullList<ItemStack> slots = Backpacks.read(player, backpack);
         List<Food> foods = new ArrayList<>();
         for (int i = 0; i < slots.size(); i++) {
             FoodProperties food = safeFood(slots.get(i));
@@ -95,7 +95,7 @@ public final class BackpackFeeding {
             remainder = BackpackContents.insert(slots, remainder, BackpackModules.active(backpack, BackpackModuleType.TORCH_STACK));
             if (!remainder.isEmpty()) player.getInventory().placeItemBackInInventory(remainder, Prediction.PREDICTED);
         }
-        BackpackContents.write(backpack, slots);
+        Backpacks.write(player, backpack, slots);
         return true;
     }
 

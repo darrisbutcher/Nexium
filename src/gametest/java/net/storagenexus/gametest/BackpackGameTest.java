@@ -390,9 +390,9 @@ public class BackpackGameTest {
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, worn);
         h.assertTrue(AutoTorch.active(player), "worn: working");
         Backpacks.open(player, Backpacks.EQUIPPED);
-        h.assertTrue(!AutoTorch.active(player), "not while the backpack's screen is open");
+        h.assertTrue(AutoTorch.active(player), "with the backpack's screen open too");
         player.closeContainer();
-        h.assertTrue(AutoTorch.active(player), "and again once it is closed");
+        h.assertTrue(AutoTorch.active(player), "and once it is closed");
         h.succeed();
     }
 
@@ -668,10 +668,6 @@ public class BackpackGameTest {
         h.assertTrue(!BackpackFeeding.feed(player), "creative mode: nothing is eaten");
         player.setGameMode(GameType.SURVIVAL);
 
-        Backpacks.open(player, Backpacks.EQUIPPED);
-        h.assertTrue(!BackpackFeeding.feed(player), "while the backpack's screen is open: nothing is eaten");
-        player.closeContainer();
-
         ItemStack carried = ExtraSlots.of(player).backpack().copy();
         ExtraSlots.of(player).clearContent();
         player.getInventory().setItem(0, carried);
@@ -855,15 +851,11 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void compactingNeedsTheModuleOnTheBackpackWornAndTheScreenClosed(GameTestHelper h) {
+    public void compactingNeedsTheModuleOnAndTheBackpackWorn(GameTestHelper h) {
         ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_INGOT, 9));
         BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
         h.assertTrue(!BackpackCompacting.compactNow(player), "module off: nothing is packed");
         BackpackModules.toggle(ExtraSlots.of(player).backpack(), 0);
-
-        Backpacks.open(player, Backpacks.EQUIPPED);
-        h.assertTrue(!BackpackCompacting.compactNow(player), "while the backpack's screen is open: nothing is packed");
-        player.closeContainer();
 
         ItemStack carried = ExtraSlots.of(player).backpack().copy();
         ExtraSlots.of(player).clearContent();
@@ -898,6 +890,117 @@ public class BackpackGameTest {
         h.assertValueEqual(plain.get(0).getCount(), 64, "without it the first stack stops at 64");
         h.assertValueEqual(plain.get(1).getCount(), 64, "the next slot takes a stack of 64");
         h.assertValueEqual(tooMany.getCount(), 32, "and 32 of the 100 do not fit");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- the modules with the screen open
+
+    private static BackpackMenu openScreen(ServerPlayer player) {
+        Backpacks.open(player, Backpacks.EQUIPPED);
+        return (BackpackMenu) player.containerMenu;
+    }
+
+    /** How many of the item the open screen shows in the Backpack's slots. */
+    private static int onScreen(BackpackMenu menu, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack stack = menu.getSlot(TORCH_SLOT + i).getItem();
+            if (stack.is(item)) n += stack.getCount();
+        }
+        return n;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingPacksWhileTheScreenIsOpenAndItStaysPacked(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_INGOT, 9), new ItemStack(Items.GOLD_INGOT, 3));
+        BackpackMenu menu = openScreen(player);
+        h.assertTrue(BackpackCompacting.compactNow(player), "it packs with the screen open");
+        h.assertValueEqual(onScreen(menu, Items.IRON_BLOCK), 1, "the screen shows the iron block");
+        h.assertValueEqual(onScreen(menu, Items.IRON_INGOT), 0, "and no ingots");
+        h.assertValueEqual(onScreen(menu, Items.GOLD_INGOT), 3, "the gold is as it was");
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "the Backpack has the block saved");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 0, "and no ingots");
+        // The screen saves all of its slots on every change: the block must not be put back over by the old ingots
+        menu.getSlot(TORCH_SLOT + 20).set(new ItemStack(Items.APPLE));
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "still one iron block after the screen saves again");
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 0, "and still no ingots");
+        h.assertValueEqual(held(player, Items.APPLE), 1, "with the change that was made on the screen");
+        // Closing keeps it all
+        player.closeContainer();
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "closed: the block is kept");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void compactingTakesWhatYouJustPutInTheOpenScreen(GameTestHelper h) {
+        ServerPlayer player = compactingWith(h, new ItemStack(Items.IRON_INGOT, 5));
+        BackpackMenu menu = openScreen(player);
+        h.assertTrue(!BackpackCompacting.compactNow(player), "5 ingots do not make a block");
+        // Four more put in by hand on the screen
+        menu.getSlot(TORCH_SLOT + 7).set(new ItemStack(Items.IRON_INGOT, 4));
+        h.assertTrue(BackpackCompacting.compactNow(player), "with the 4 just put in there are 9, and they pack");
+        h.assertValueEqual(onScreen(menu, Items.IRON_BLOCK), 1, "an iron block on the screen");
+        h.assertValueEqual(onScreen(menu, Items.IRON_INGOT), 0, "all 9 ingots were used, wherever they were");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingEatsFromTheOpenScreenAndItStays(GameTestHelper h) {
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        fill(backpack, new ItemStack(Items.BREAD, 4));
+        ServerPlayer player = wearing(h, backpack);
+        player.getFoodData().setFoodLevel(5);
+        BackpackMenu menu = openScreen(player);
+        h.assertTrue(BackpackFeeding.feed(player), "it eats with the screen open");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 10, "bread restores 5");
+        h.assertValueEqual(onScreen(menu, Items.BREAD), 3, "the screen shows one bread less");
+        h.assertValueEqual(held(player, Items.BREAD), 3, "and the Backpack has 3 saved");
+        menu.getSlot(TORCH_SLOT + 20).set(new ItemStack(Items.APPLE));
+        h.assertValueEqual(held(player, Items.BREAD), 3, "still 3 after the screen saves again (the eaten one does not come back)");
+        h.succeed();
+    }
+
+    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 200)
+    public void autoTorchTakesTheTorchesFromTheOpenScreen(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ServerLevel level = h.getLevel();
+        BlockPos origin = h.absolutePos(CENTER);
+        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH, BackpackModuleType.TORCH_STACK);
+        storeTorches(backpack, 64);
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
+        h.startSequence()
+                .thenExecute(() -> forceChunks(level, origin, 20, true))
+                .thenWaitUntil(() -> h.assertTrue(chunksLoaded(level, origin, 20), "waiting for the chunks around the room"))
+                .thenExecute(() -> {
+                    room(level, origin, -14, 14, -14, 14);
+                    BackpackMenu menu = openScreen(player);
+                    h.assertTrue(AutoTorch.active(player), "working with the screen open");
+                    int placed = AutoTorch.sweepNow(player);
+                    forceChunks(level, origin, 20, false);
+                    h.assertTrue(placed >= 1, "a sweep placed torches with the screen open: " + placed);
+                    h.assertValueEqual(onScreen(menu, Items.TORCH), 64 - placed, "the screen shows the torches that were taken");
+                    h.assertValueEqual(held(player, Items.TORCH), 64 - placed, "and the Backpack has them taken in what is saved");
+                    menu.getSlot(TORCH_SLOT + 20).set(new ItemStack(Items.APPLE));
+                    h.assertValueEqual(held(player, Items.TORCH), 64 - placed, "still, after the screen saves again (they do not come back)");
+                })
+                .thenSucceed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aBackpackOpenFromTheInventoryDoesNotStopTheWornOne(GameTestHelper h) {
+        ItemStack worn = backpackWith(BackpackModuleType.COMPACTING);
+        fill(worn, new ItemStack(Items.IRON_INGOT, 9));
+        ServerPlayer player = wearing(h, worn);
+        ItemStack other = backpackWith();
+        fill(other, new ItemStack(Items.GOLD_INGOT, 9));
+        player.getInventory().setItem(12, other);
+        Backpacks.open(player, 12);
+        BackpackMenu menu = (BackpackMenu) player.containerMenu;
+        h.assertValueEqual(menu.source(), 12, "the other Backpack is the one open");
+        h.assertTrue(BackpackCompacting.compactNow(player), "the worn Backpack still packs");
+        h.assertValueEqual(held(player, Items.IRON_BLOCK), 1, "its ingots became a block");
+        h.assertValueEqual(onScreen(menu, Items.GOLD_INGOT), 9, "the Backpack on the screen is untouched");
+        h.assertValueEqual(onScreen(menu, Items.GOLD_BLOCK), 0, "no block in it");
         h.succeed();
     }
 }

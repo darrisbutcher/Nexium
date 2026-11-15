@@ -32,7 +32,8 @@ import java.util.UUID;
  * decides where, so they end up as far apart as they can be and still leave no dark spawnable block.
  *
  * <p>It does nothing in dimensions where light can't stop spawns (the Nether), in spectator and adventure mode, in spawn
- * protection, in chunks that aren't loaded or lit yet, or while the Backpack's screen is open.
+ * protection, or in chunks that aren't loaded or lit yet. It works while the Backpack's screen is open too (the torches on the
+ * screen are the ones placed).
  */
 public final class AutoTorch {
     /** Slices of the cube read each tick. */
@@ -62,7 +63,6 @@ public final class AutoTorch {
         return backpack.getItem() instanceof BackpackItem
                 && BackpackModules.active(backpack, BackpackModuleType.AUTO_TORCH)
                 && player.isAlive() && !player.isSpectator() && player.mayBuild()
-                && !(player.containerMenu instanceof BackpackMenu)
                 && player.level().dimensionType().monsterSpawnBlockLightLimit() < TorchGrid.TORCH_LIGHT - 1
                 && BackpackContents.count(backpack, Items.TORCH) > 0;
     }
@@ -176,7 +176,7 @@ public final class AutoTorch {
                 level.playSound(null, pos, torch.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 0.7F, 1.0F);
                 placed++;
             }
-            if (placed > 0) BackpackContents.take(backpack, Items.TORCH, placed);
+            if (placed > 0) Backpacks.take(player, backpack, Items.TORCH, placed);
             return placed;
         }
 

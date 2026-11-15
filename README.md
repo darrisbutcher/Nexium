@@ -328,19 +328,21 @@ vanilla. Endermen never pick up blocks.
   ground that is dark, and the torches are spaced as far apart as they can be and still leave no dark block (a torch
   stops spawns 13 blocks away, so on open ground they sit in a staggered grid about 19 blocks apart). It places up
   to 8 per sweep, takes no more than the Backpack holds, and does nothing in the Nether (light can't stop spawns
-  there), in adventure or spectator mode, or while the Backpack's screen is open.
+  there) or in adventure or spectator mode. It works while the Backpack's screen is open too: the torches on the screen are the
+  ones placed.
 * **Torch Stack Module** (4 torches around a chest, with iron ingots in the corners): torches stack to **512** in the
   Backpack's slots. Switch it off or take it out and torches over a normal stack go back to the Backpack's other free
   slots, then to your inventory.
 * **Feeding Module** (4 bread around a golden carrot, with iron ingots in the corners): eats for you. Once a second it
   checks how much of your hunger bar is missing and eats the food in the Backpack that restores the most without any of it
   being wasted. It never eats foods with side effects (rotten flesh, pufferfish, golden apples, chorus fruit and the like),
-  and does nothing in creative mode or while the Backpack's screen is open.
+  and does nothing in creative mode. It works while the Backpack's screen is open too.
 * **Compacting Module** (4 pistons around a crafting table, with iron ingots in the corners): packs what the Backpack
   holds into storage blocks once a second: 9 iron ingots into an iron block, 9 nuggets into an ingot, 9 wheat into a hay
   bale. It finds what packs into what from the crafting recipes, the way the Compacting Drawer does, and only uses packs that
   craft straight back, so nothing is lost or changed (sand never becomes sandstone) and modded blocks work too. The blocks
-  go in the Backpack's own free slots, and renamed or enchanted items are left alone.
+  go in the Backpack's own free slots, and renamed or enchanted items are left alone. It packs while the Backpack's screen is
+  open too: the blocks appear on the screen a moment after the last ingot goes in.
 
 ### Shulker box preview
 * A shulker box with something in it shows a **9 x 3 grid of what is inside** under its name, in slots the colour of the box, with

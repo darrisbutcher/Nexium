@@ -24,7 +24,7 @@ import java.util.function.Function;
  * Drawer finds its tiers ({@link CompactingRecipes}): only a pack that crafts straight back into the same items counts, so
  * nothing is lost or changed (sand never becomes sandstone), and modded blocks work too. The blocks go into the Backpack's
  * own free slots, and a pack that would not fit is left alone. Renamed, enchanted and other customised items are never
- * packed. It does nothing while the Backpack's screen is open.
+ * packed. It works while the Backpack's screen is open too, packing the slots on the screen as they are.
  */
 public final class BackpackCompacting {
     private static final int INTERVAL = 20;
@@ -52,9 +52,9 @@ public final class BackpackCompacting {
         ItemStack backpack = Backpacks.activeFor(player, BackpackModuleType.COMPACTING);
         if (backpack.isEmpty()) return false;
         ServerLevel level = player.level();
-        NonNullList<ItemStack> slots = BackpackContents.read(backpack);
+        NonNullList<ItemStack> slots = Backpacks.read(player, backpack);
         if (!compact(slots, item -> RULES.computeIfAbsent(item, i -> CompactingRecipes.packInto(level, i)))) return false;
-        BackpackContents.write(backpack, slots);
+        Backpacks.write(player, backpack, slots);
         return true;
     }
 

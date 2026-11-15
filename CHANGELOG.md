@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.21.20
+
+* **Backpack modules work while its screen is open**: the Compacting, Feeding and Auto Torch modules used to wait until you
+  closed the Backpack. Now they keep working with it open, on the slots you are looking at: Compacting packs the blocks on the
+  screen (9 ingots you just put in become a block a moment later), Feeding eats the food shown there, and Auto Torch takes the
+  torches from the screen. They used to wait because the open screen keeps its own copy of the slots and saves all of it on every
+  change, so anything a module saved behind its back would have been put back over; the modules now go through the open screen.
+  A Backpack opened from your inventory does not stop the worn one's modules, and is left alone.
+
 ## 1.21.19
 
 * **Sorting the Backpack**: press the Sort key (**O**, `Sort Inventory` under Nexium in Controls) with the mouse over the
