@@ -17,9 +17,9 @@ import net.storagenexus.registry.ModMenus;
 import net.storagenexus.util.BaseMenu;
 import net.storagenexus.util.SyncedBlockEntity;
 
-/** Upgrade slots for drawers, fluid drawers and tanks: four general ones plus the lock slot. */
+/** Upgrade slots for drawers, fluid drawers and tanks: four of them, right-aligned. */
 public class UpgradeMenu extends BaseMenu {
-    public static final int LOCK_SLOT_X = 8, SLOT_Y = 20, TEXT_Y = 42, INVENTORY_Y = 84;
+    public static final int SLOT_Y = 20, TEXT_Y = 42, INVENTORY_Y = 84;
 
     private final Upgradeable target;
     private final BlockEntity blockEntity;
@@ -38,14 +38,12 @@ public class UpgradeMenu extends BaseMenu {
         Container container = target != null ? new UpgradeContainer(target) : new SimpleContainer(Upgradeable.UPGRADE_SLOTS);
         for (int i = 0; i < Upgradeable.UPGRADE_SLOTS; i++) {
             final int slotIndex = i;
-            // General slots right-aligned; the lock slot on the far left
-            int x = i == Upgradeable.LOCK_SLOT ? LOCK_SLOT_X : 96 + i * 18;
-            addCustomSlot(new Slot(container, i, x, SLOT_Y) {
+            addCustomSlot(new Slot(container, i, 96 + i * 18, SLOT_Y) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return UpgradeMenu.this.target == null
-                            ? stack.getItem() instanceof UpgradeItem && Upgradeable.fitsSlot(stack, slotIndex)
-                            : UpgradeMenu.this.target.acceptsUpgrade(stack, slotIndex);
+                            ? stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade()
+                            : UpgradeMenu.this.target.acceptsUpgrade(stack);
                 }
 
                 @Override
@@ -100,7 +98,7 @@ public class UpgradeMenu extends BaseMenu {
      */
     @Override
     public void clicked(int slotIndex, int button, ContainerInput input, Player player) {
-        if (target != null && input == ContainerInput.PICKUP && slotIndex >= 0 && slotIndex < Upgradeable.LOCK_SLOT) {
+        if (target != null && input == ContainerInput.PICKUP && slotIndex >= 0 && slotIndex < Upgradeable.UPGRADE_SLOTS) {
             Slot slot = slots.get(slotIndex);
             ItemStack carried = getCarried();
             if (carried.getCount() > 1 && Upgradeable.isHigherCapacity(carried, slot.getItem())) {

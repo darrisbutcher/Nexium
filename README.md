@@ -52,8 +52,10 @@ fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headl
   reads their average. Fluid and Compacting Drawers do the same.
 * Right-click with an upgrade to install it; right-click the side or top with an empty hand to see or remove
   upgrades. Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32. A higher
-  capacity upgrade swaps out the weakest one. The Lock Upgrade locks the contents (padlock on the front) and the
-  Void Upgrade destroys overflow.
+  capacity upgrade swaps out the weakest one. The Void Upgrade destroys overflow. The **Drawer Key** (`SGS / GTG / SGS`:
+  sticks, gold nuggets, a tripwire hook) locks a drawer: right-click any drawer, compacting drawer or fluid drawer with it to lock it
+  and again to unlock it. It is never used up, any key fits any drawer, and a locked drawer keeps each slot reserved for its item
+  (padlock on the front). An older Lock Upgrade is a Drawer Key now: a drawer that held one stays locked and drops the key.
 * **Fluid Drawers** hold 32 buckets of one fluid. **Compacting Drawers** hold nuggets/ingots/blocks (any reversible
   9:1 or 4:1 recipe), 54 stacks of the largest form.
 * Breaking a drawer keeps its contents and upgrades in the item, like a shulker box.

@@ -14,6 +14,7 @@
       "net.storagenexus.gametest.client.ScrollTransferClientTest",
       "net.storagenexus.gametest.client.NetworkBusClientTest",
       "net.storagenexus.gametest.client.XpFarmClientTest",
+      "net.storagenexus.gametest.client.DrawerKeyClientTest",
       "net.storagenexus.gametest.client.OverclockClientTest",
       "net.storagenexus.gametest.client.TunnelScrollClientTest",
       "net.storagenexus.gametest.client.CapturedMobTooltipClientTest",
@@ -45,6 +46,7 @@
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
       "net.storagenexus.gametest.OverclockGameTest",
+      "net.storagenexus.gametest.DrawerKeyGameTest",
       "net.storagenexus.gametest.BackpackGameTest",
       "net.storagenexus.gametest.BackpackSortGameTest",
       "net.storagenexus.gametest.BigSpongesGameTest",

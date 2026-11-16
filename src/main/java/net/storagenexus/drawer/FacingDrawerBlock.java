@@ -112,6 +112,10 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         BlockEntity be = level.getBlockEntity(pos);
+        // The Drawer Key locks or unlocks the drawer, wherever on it you click
+        if (stack.getItem() instanceof net.storagenexus.upgrade.DrawerKeyItem && net.storagenexus.upgrade.DrawerKeyItem.toggle(level, pos, player)) {
+            return InteractionResult.SUCCESS;
+        }
         if (stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade() && be instanceof Upgradeable upgradeable) {
             if (!level.isClientSide()) {
                 Component name = stack.getHoverName();
