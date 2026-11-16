@@ -56,7 +56,8 @@ public final class ModItems {
     }
 
     public static final UpgradeItem VOID_UPGRADE = register("void_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.VOID), new Item.Properties());
-    public static final UpgradeItem LOCK_UPGRADE = register("lock_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.LOCK), new Item.Properties());
+    /** The Drawer Key. Its id is still lock_upgrade: the Lock Upgrade of older worlds is this item now. */
+    public static final net.storagenexus.upgrade.DrawerKeyItem DRAWER_KEY = register("lock_upgrade", net.storagenexus.upgrade.DrawerKeyItem::new, new Item.Properties());
     public static final UpgradeItem TRANSFER_SPEED_UPGRADE = register("transfer_speed_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.TRANSFER_SPEED), new Item.Properties());
     public static final UpgradeItem CONDUIT_SPEED_UPGRADE = register("conduit_speed_upgrade", p -> new UpgradeItem(p, UpgradeItem.Kind.CONDUIT_SPEED), new Item.Properties());
 

@@ -12,7 +12,8 @@
             "source": "block_entity",
             "include": [
               "storagenexus:compacting_contents",
-              "storagenexus:upgrades"
+              "storagenexus:upgrades",
+              "storagenexus:drawer_locked"
             ]
           }
         }

@@ -5,11 +5,11 @@ import net.minecraft.world.item.Item;
 
 public class UpgradeItem extends Item {
     public enum Kind {
-        CAPACITY, VOID, LOCK, TRANSFER_SPEED, CONDUIT_SPEED;
+        CAPACITY, VOID, TRANSFER_SPEED, CONDUIT_SPEED;
 
         /** Upgrades that go in drawer / tank upgrade slots. */
         public boolean isStorageUpgrade() {
-            return this == CAPACITY || this == VOID || this == LOCK;
+            return this == CAPACITY || this == VOID;
         }
     }
 

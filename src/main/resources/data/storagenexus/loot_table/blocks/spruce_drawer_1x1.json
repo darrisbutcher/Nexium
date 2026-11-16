@@ -12,7 +12,8 @@
             "source": "block_entity",
             "include": [
               "storagenexus:drawer_slots",
-              "storagenexus:upgrades"
+              "storagenexus:upgrades",
+              "storagenexus:drawer_locked"
             ]
           }
         }

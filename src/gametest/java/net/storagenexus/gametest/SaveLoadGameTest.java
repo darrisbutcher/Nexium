@@ -148,10 +148,10 @@ public class SaveLoadGameTest {
                 part(DrawerBlockEntity.class, "items", be -> insert(be.slot(0), Items.DIAMOND, 10)),
                 part(DrawerBlockEntity.class, "capacity upgrade", be -> upgrade(be, 0, ModItems.IRON_UPGRADE)),
                 // The locked item is only set when the lock goes on with something inside; empty it again so only the lock differs
-                part(DrawerBlockEntity.class, "locked item", be -> upgrade(be, Upgradeable.LOCK_SLOT, ModItems.LOCK_UPGRADE), be -> {
-                    upgrade(be, Upgradeable.LOCK_SLOT, null);
+                part(DrawerBlockEntity.class, "locked item", be -> be.setLocked(true), be -> {
+                    be.setLocked(false);
                     insert(be.slot(0), Items.DIAMOND, 10);
-                    upgrade(be, Upgradeable.LOCK_SLOT, ModItems.LOCK_UPGRADE);
+                    be.setLocked(true);
                     extract(be.slot(0), Items.DIAMOND, 10);
                 }))));
         cases.add(new Case("Drawer 2x2", drawer2x2, List.of(
@@ -353,7 +353,6 @@ public class SaveLoadGameTest {
     }
 
     private static void fluidLock(FluidDrawerBlockEntity be, boolean on) {
-        be.getUpgrades().set(Upgradeable.LOCK_SLOT, on ? new ItemStack(ModItems.LOCK_UPGRADE) : ItemStack.EMPTY);
-        be.onUpgradesChanged();
+        be.setLocked(on);
     }
 }

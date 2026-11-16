@@ -35,7 +35,7 @@ import java.util.List;
  * Stores everything as a count of the smallest form ("units"). Each tier shows
  * units / ratio. Holds 54 stacks of the largest form, times capacity upgrades.
  */
-public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer, ComparatorReadable {
+public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, net.storagenexus.upgrade.Lockable, ItemDrawer, ComparatorReadable {
     public static final int TIERS = 3;
 
     private final ItemVariant[] tiers = {ItemVariant.blank(), ItemVariant.blank(), ItemVariant.blank()};
@@ -45,6 +45,10 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     private final NonNullList<ItemStack> upgrades = NonNullList.withSize(UPGRADE_SLOTS, ItemStack.EMPTY);
     private int multiplier = 1;
     private boolean dirty;
+    /** Locked with a Drawer Key: it keeps its item set up even when empty. */
+    private boolean locked;
+    /** Keys an older save held as Lock Upgrades, to hand back (not saved). */
+    private int keysToReturn;
     private final CompactingStorage storage = new CompactingStorage();
 
     public CompactingDrawerBlockEntity(BlockPos pos, BlockState state) {
@@ -52,6 +56,7 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, CompactingDrawerBlockEntity be) {
+        if (be.keysToReturn > 0) be.returnKeys(level, pos);
         if (be.dirty && level.getGameTime() % 4 == 0) {
             be.dirty = false;
             be.sync();
@@ -71,7 +76,29 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
     public long amountOf(int i) { return i < tierCount && ratio[i] > 0 ? units / ratio[i] : 0; }
     public int tierCount() { return tierCount; }
 
-    private boolean isLocked() { return hasUpgrade(UpgradeItem.Kind.LOCK); }
+    @Override
+    public boolean isLocked() { return locked; }
+
+    @Override
+    public void setLocked(boolean on) {
+        if (on == locked) return;
+        locked = on;
+        contentsChanged();
+    }
+
+    @Override
+    public void restoreLegacyLock(int keys) {
+        locked = true;
+        keysToReturn += keys;
+    }
+
+    /** Hands back the keys an older save held as Lock Upgrades: dropped just above the drawer. */
+    private void returnKeys(Level level, BlockPos pos) {
+        net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                new ItemStack(net.storagenexus.registry.ModItems.DRAWER_KEY, keysToReturn));
+        keysToReturn = 0;
+        setChanged();
+    }
     private boolean isVoid() { return hasUpgrade(UpgradeItem.Kind.VOID); }
 
     /** How full the shared pool is, 0 to 1. */
@@ -298,6 +325,7 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         super.saveAdditional(output);
         output.store("contents", Contents.CODEC, contents());
         output.store("upgrades", ItemStack.OPTIONAL_CODEC.listOf(), new ArrayList<>(upgrades));
+        output.putBoolean("locked", locked);
     }
 
     @Override
@@ -309,9 +337,10 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
             List<Long> r = input.read("ratios", Codec.LONG.listOf()).orElse(List.of());
             loadContents(new Contents(t, r, input.getIntOr("tier_count", 0), input.getLongOr("units", 0L)));
         });
+        locked = input.getBooleanOr("locked", false);
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
-            for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
-            Upgradeable.moveLockToLockSlot(upgrades);
+            int keys = Upgradeable.loadSaved(list, upgrades);
+            if (keys > 0) restoreLegacyLock(keys);
         });
         multiplier = capacityMultiplier();
     }
@@ -323,6 +352,7 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         super.collectImplicitComponents(components);
         if (tierCount > 0) components.set(ModComponents.COMPACTING_CONTENTS, contents());
         collectUpgrades(components);
+        if (locked) components.set(ModComponents.DRAWER_LOCKED, true);
     }
 
     @Override
@@ -340,5 +370,6 @@ public class CompactingDrawerBlockEntity extends SyncedBlockEntity implements Up
         super.removeComponentsFromTag(output);
         output.discard("contents");
         output.discard("upgrades");
+        output.discard("locked");
     }
 }

@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.2
+
+* **Drawer Key**: the Lock Upgrade is now a **key**. Right-click a drawer, a compacting drawer or a fluid drawer with it to **lock** it, and
+  right-click again to **unlock** it. The key is **never used up**, any key fits any drawer, and it works wherever you click on the
+  drawer. A locked drawer is as before: each slot stays reserved for its item, even when empty, with the padlock mark top right on the
+  front; it keeps its lock when you pick it up. The upgrade screen has four slots now, with no lock slot. It has a new look, a gold key with
+  a purple gem.
+* **Old locks carry over**: a Lock Upgrade in your inventory or a chest is a Drawer Key now (same item), and a drawer that had one in its
+  lock slot stays locked and drops the key beside it the next time it is loaded.
+
 ## 1.22.1
 
 * **Item conduits reach every face**: an item conduit (or any other pipe that uses Fabric's item storage, such as a Network Bus or

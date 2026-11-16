@@ -33,7 +33,7 @@ import java.util.List;
  * Item drawer. A 1x1 holds 54 stacks; 1x2 and 2x2 split the same total across their slots
  * (27 and 13.5 stacks each). Capacity upgrades multiply that.
  */
-public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ItemDrawer, ComparatorReadable {
+public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, net.storagenexus.upgrade.Lockable, ItemDrawer, ComparatorReadable {
     public static final int BASE_STACKS = 54;
 
     private final int slotCount;
@@ -42,6 +42,10 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
     private final NonNullList<ItemStack> upgrades = NonNullList.withSize(UPGRADE_SLOTS, ItemStack.EMPTY);
     private int multiplier = 1;
     private boolean dirty;
+    /** Locked with a Drawer Key: each slot stays reserved for its item. */
+    private boolean locked;
+    /** Keys an older save held as Lock Upgrades, to hand back (not saved). */
+    private int keysToReturn;
 
     public DrawerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRAWER, pos, state);
@@ -52,6 +56,7 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, DrawerBlockEntity be) {
+        if (be.keysToReturn > 0) be.returnKeys(level, pos);
         if (be.dirty && level.getGameTime() % 4 == 0) {
             be.dirty = false;
             be.sync();
@@ -77,8 +82,32 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
         return hasUpgrade(UpgradeItem.Kind.VOID);
     }
 
+    @Override
     public boolean isLocked() {
-        return hasUpgrade(UpgradeItem.Kind.LOCK);
+        return locked;
+    }
+
+    @Override
+    public void setLocked(boolean on) {
+        if (on == locked) return;
+        locked = on;
+        for (DrawerSlot s : slots) s.locked = on ? s.variant : ItemVariant.blank();
+        contentsChanged();
+    }
+
+    @Override
+    public void restoreLegacyLock(int keys) {
+        locked = true;
+        keysToReturn += keys;
+        for (DrawerSlot s : slots) if (s.locked.isBlank()) s.locked = s.variant;
+    }
+
+    /** Hands back the keys an older save held as Lock Upgrades: dropped just above the drawer. */
+    private void returnKeys(Level level, BlockPos pos) {
+        net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                new ItemStack(net.storagenexus.registry.ModItems.DRAWER_KEY, keysToReturn));
+        keysToReturn = 0;
+        setChanged();
     }
 
     private static int maxStack(ItemVariant variant) {
@@ -200,11 +229,6 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
     @Override
     public void onUpgradesChanged() {
         multiplier = capacityMultiplier();
-        if (isLocked()) {
-            for (DrawerSlot s : slots) if (s.locked.isBlank()) s.locked = s.variant;
-        } else {
-            for (DrawerSlot s : slots) s.locked = ItemVariant.blank();
-        }
         contentsChanged();
     }
 
@@ -242,17 +266,20 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
         super.saveAdditional(output);
         output.store("slots", SlotData.CODEC.listOf(), slotData());
         output.store("upgrades", ItemStack.OPTIONAL_CODEC.listOf(), new ArrayList<>(upgrades));
+        output.putBoolean("locked", locked);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        locked = input.getBooleanOr("locked", false);
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
-            for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
-            Upgradeable.moveLockToLockSlot(upgrades);
+            int keys = Upgradeable.loadSaved(list, upgrades);
+            if (keys > 0) restoreLegacyLock(keys);
         });
         multiplier = capacityMultiplier();
         input.read("slots", SlotData.CODEC.listOf()).ifPresent(this::loadSlots);
+        if (locked) for (DrawerSlot s : slots) if (s.locked.isBlank()) s.locked = s.variant;
     }
 
     private List<SlotData> slotData() {
@@ -281,6 +308,7 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
             }
         }
         collectUpgrades(components);
+        if (locked) components.set(ModComponents.DRAWER_LOCKED, true);
     }
 
     @Override
@@ -298,5 +326,6 @@ public class DrawerBlockEntity extends SyncedBlockEntity implements Upgradeable,
         super.removeComponentsFromTag(output);
         output.discard("slots");
         output.discard("upgrades");
+        output.discard("locked");
     }
 }

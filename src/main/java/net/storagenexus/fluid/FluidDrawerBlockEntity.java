@@ -32,7 +32,7 @@ import java.util.List;
  * Fluid storage with upgrade slots. Fluid drawers hold 32 buckets per block (a 2x2 splits it
  * into 8 buckets per slot); the Fluid Tank is the same thing with one slot and no front.
  */
-public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, ComparatorReadable {
+public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgradeable, net.storagenexus.upgrade.Lockable, ComparatorReadable {
     public static final long BASE_CAPACITY = 32 * FluidConstants.BUCKET;
 
     private final int slotCount;
@@ -41,6 +41,10 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     private final NonNullList<ItemStack> upgrades = NonNullList.withSize(UPGRADE_SLOTS, ItemStack.EMPTY);
     private int multiplier = 1;
     private boolean dirty;
+    /** Locked with a Drawer Key: each tank stays reserved for its fluid. */
+    private boolean locked;
+    /** Keys an older save held as Lock Upgrades, to hand back (not saved). */
+    private int keysToReturn;
 
     public FluidDrawerBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.FLUID_DRAWER, pos, state, state.getBlock() instanceof FluidDrawerBlock f ? f.slots() : 1);
@@ -55,6 +59,7 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidDrawerBlockEntity be) {
+        if (be.keysToReturn > 0) be.returnKeys(level, pos);
         if (be.dirty && level.getGameTime() % 4 == 0) {
             be.dirty = false;
             be.sync();
@@ -65,7 +70,32 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     public int slotCount() { return slotCount; }
     public FluidSlot slot(int i) { return slots[i]; }
 
-    private boolean isLocked() { return hasUpgrade(UpgradeItem.Kind.LOCK); }
+    @Override
+    public boolean isLocked() { return locked; }
+
+    @Override
+    public void setLocked(boolean on) {
+        if (on == locked) return;
+        locked = on;
+        for (FluidSlot s : slots) s.locked = on ? s.variant : FluidVariant.blank();
+        dirty = true;
+        setChanged();
+    }
+
+    @Override
+    public void restoreLegacyLock(int keys) {
+        locked = true;
+        keysToReturn += keys;
+        for (FluidSlot s : slots) if (s.locked.isBlank()) s.locked = s.variant;
+    }
+
+    /** Hands back the keys an older save held as Lock Upgrades: dropped just above the drawer. */
+    private void returnKeys(Level level, BlockPos pos) {
+        net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                new ItemStack(net.storagenexus.registry.ModItems.DRAWER_KEY, keysToReturn));
+        keysToReturn = 0;
+        setChanged();
+    }
     private boolean isVoid() { return hasUpgrade(UpgradeItem.Kind.VOID); }
 
     /** Total storage before upgrades; the tank overrides this. */
@@ -127,7 +157,6 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
     @Override
     public void onUpgradesChanged() {
         multiplier = capacityMultiplier();
-        for (FluidSlot s : slots) s.locked = isLocked() ? s.variant : FluidVariant.blank();
         dirty = true;
         setChanged();
     }
@@ -168,17 +197,20 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
         super.saveAdditional(output);
         output.store("slots", SlotData.CODEC.listOf(), slotData());
         output.store("upgrades", ItemStack.OPTIONAL_CODEC.listOf(), new ArrayList<>(upgrades));
+        output.putBoolean("locked", locked);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        locked = input.getBooleanOr("locked", false);
         input.read("upgrades", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(list -> {
-            for (int i = 0; i < UPGRADE_SLOTS; i++) upgrades.set(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
-            Upgradeable.moveLockToLockSlot(upgrades);
+            int keys = Upgradeable.loadSaved(list, upgrades);
+            if (keys > 0) restoreLegacyLock(keys);
         });
         multiplier = capacityMultiplier();
         input.read("slots", SlotData.CODEC.listOf()).ifPresent(this::loadSlots);
+        if (locked) for (FluidSlot s : slots) if (s.locked.isBlank()) s.locked = s.variant;
     }
 
     private List<SlotData> slotData() {
@@ -207,6 +239,7 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
             }
         }
         collectUpgrades(components);
+        if (locked) components.set(ModComponents.DRAWER_LOCKED, true);
     }
 
     @Override
@@ -224,5 +257,6 @@ public class FluidDrawerBlockEntity extends SyncedBlockEntity implements Upgrade
         super.removeComponentsFromTag(output);
         output.discard("slots");
         output.discard("upgrades");
+        output.discard("locked");
     }
 }

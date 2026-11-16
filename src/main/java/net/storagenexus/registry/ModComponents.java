@@ -101,6 +101,10 @@ public final class ModComponents {
     public static final DataComponentType<ItemContainerContents> UPGRADES = register("upgrades",
             b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
 
+    /** A drawer locked with a Drawer Key stays locked in the dropped item. Only stored when it is locked. */
+    public static final DataComponentType<Boolean> DRAWER_LOCKED = register("drawer_locked",
+            b -> b.persistent(com.mojang.serialization.Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
     /** Item drawer slots. */
     public static final DataComponentType<List<DrawerBlockEntity.SlotData>> DRAWER_SLOTS = register("drawer_slots",
             b -> b.persistent(DrawerBlockEntity.SlotData.CODEC.listOf())

@@ -68,6 +68,13 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
         else itemModels.updateForTopItem(state.items[slot], stack, ItemDisplayContext.GUI, be.getLevel(), null, 0);
     }
 
+    /** The mark on a locked front: an item with the lock_icon model (the keyhole art), not the key itself. */
+    private static ItemStack lockIconStack() {
+        ItemStack stack = new ItemStack(net.minecraft.world.item.Items.STICK);
+        stack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL, net.storagenexus.StorageNexus.id("lock_icon"));
+        return stack;
+    }
+
     protected static float fraction(long amount, long capacity) {
         return capacity <= 0 ? 0 : (float) Math.min(1.0, (double) amount / capacity);
     }
@@ -85,9 +92,9 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
             state.fill[i] = -1;
         }
         fill(be, state);
-        state.locked = be instanceof Upgradeable u && u.hasUpgrade(UpgradeItem.Kind.LOCK);
+        state.locked = be instanceof net.storagenexus.upgrade.Lockable l && l.isLocked();
         if (state.locked) {
-            itemModels.updateForTopItem(state.lockIcon, new ItemStack(ModItems.LOCK_UPGRADE), ItemDisplayContext.GUI, be.getLevel(), null, 0);
+            itemModels.updateForTopItem(state.lockIcon, lockIconStack(), ItemDisplayContext.GUI, be.getLevel(), null, 0);
         } else {
             state.lockIcon.clear();
         }

@@ -12,9 +12,8 @@ import net.storagenexus.registry.ModComponents;
  * Capacity upgrades add together: no upgrade = x1, one iron = x2, iron + gold = x6.
  */
 public interface Upgradeable {
-    /** Four general upgrade slots, then one slot that only takes the Lock Upgrade. */
-    int UPGRADE_SLOTS = 5;
-    int LOCK_SLOT = 4;
+    /** Four upgrade slots. (Older saves had a fifth, just for the Lock Upgrade, which is the Drawer Key now.) */
+    int UPGRADE_SLOTS = 4;
 
     NonNullList<ItemStack> getUpgrades();
 
@@ -45,26 +44,21 @@ public interface Upgradeable {
         return true;
     }
 
-    /** Whether this upgrade may go in this particular slot: the Lock only in the lock slot. */
-    default boolean acceptsUpgrade(ItemStack stack, int slot) {
-        return acceptsUpgrade(stack) && fitsSlot(stack, slot);
-    }
-
-    static boolean fitsSlot(ItemStack stack, int slot) {
-        boolean lock = stack.getItem() instanceof UpgradeItem up && up.kind() == UpgradeItem.Kind.LOCK;
-        return lock == (slot == LOCK_SLOT);
-    }
-
-    /** Older saves kept the Lock in a general slot; move it to the lock slot. */
-    static void moveLockToLockSlot(NonNullList<ItemStack> upgrades) {
-        if (!upgrades.get(LOCK_SLOT).isEmpty()) return;
-        for (int i = 0; i < LOCK_SLOT; i++) {
-            if (upgrades.get(i).getItem() instanceof UpgradeItem up && up.kind() == UpgradeItem.Kind.LOCK) {
-                upgrades.set(LOCK_SLOT, upgrades.get(i));
-                upgrades.set(i, ItemStack.EMPTY);
-                return;
-            }
+    /**
+     * Fills {@code upgrades} from a saved list. Older saves kept a Lock Upgrade (now the Drawer Key) in the list, in the
+     * fifth slot or an older save's general one: it is not an upgrade any more, so it is left out, and counted so the
+     * drawer can stay locked and hand the key back. Returns how many keys there were.
+     */
+    static int loadSaved(java.util.List<ItemStack> saved, NonNullList<ItemStack> upgrades) {
+        int keys = 0;
+        for (int i = 0; i < upgrades.size(); i++) upgrades.set(i, ItemStack.EMPTY);
+        for (int i = 0; i < saved.size(); i++) {
+            ItemStack stack = saved.get(i);
+            if (stack.isEmpty()) continue;
+            if (stack.getItem() instanceof DrawerKeyItem) keys += stack.getCount();
+            else if (i < upgrades.size()) upgrades.set(i, stack);
         }
+        return keys;
     }
 
     default int capacityMultiplier() {
@@ -99,8 +93,11 @@ public interface Upgradeable {
     default void applyUpgrades(DataComponentGetter components) {
         ItemContainerContents contents = components.get(ModComponents.UPGRADES);
         if (contents != null) {
-            contents.copyInto(getUpgrades());
-            moveLockToLockSlot(getUpgrades());
+            int keys = loadSaved(contents.itemCopies().toList(), getUpgrades());
+            if (keys > 0 && this instanceof Lockable lockable) lockable.restoreLegacyLock(keys);
+        }
+        if (this instanceof Lockable lockable && Boolean.TRUE.equals(components.get(ModComponents.DRAWER_LOCKED))) {
+            lockable.setLocked(true);
         }
     }
 
@@ -109,7 +106,7 @@ public interface Upgradeable {
         if (!acceptsUpgrade(stack)) return false;
         NonNullList<ItemStack> list = getUpgrades();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isEmpty() && fitsSlot(stack, i)) {
+            if (list.get(i).isEmpty()) {
                 list.set(i, stack.copyWithCount(1));
                 stack.shrink(1);
                 onUpgradesChanged();
@@ -129,7 +126,7 @@ public interface Upgradeable {
         NonNullList<ItemStack> list = getUpgrades();
         int weakest = -1;
         int weakestMultiplier = held.multiplier();
-        for (int i = 0; i < LOCK_SLOT; i++) {
+        for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getItem() instanceof CapacityUpgradeItem cap && cap.multiplier() < weakestMultiplier) {
                 weakest = i;
                 weakestMultiplier = cap.multiplier();

@@ -17,7 +17,7 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 30, topPos + 24, palette().text(), false);
+        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, palette().text(), false);
         // Capacity with the upgrades that are in now: each section first, then the whole drawer
         int sections = menu.capacitySlots();
         String unit = menu.holdsFluid() ? "buckets" : "stacks";
@@ -28,13 +28,6 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
             line(g, Component.translatable("screen.storagenexus.upgrades.in_total." + unit, amount(menu.totalCapacity())), 2);
         } else {
             line(g, Component.translatable("screen.storagenexus.upgrades.total." + unit, amount(menu.totalCapacity())), 1);
-        }
-        // Faded Lock Upgrade in the empty lock slot, so it is clear what goes there
-        if (menu.getSlot(Upgradeable.LOCK_SLOT).getItem().isEmpty()) {
-            int x = leftPos + UpgradeMenu.LOCK_SLOT_X, y = topPos + UpgradeMenu.SLOT_Y;
-            g.item(new ItemStack(ModItems.LOCK_UPGRADE), x, y);
-            g.nextStratum(); // items draw in their own pass; make sure the fade lands on top
-            g.fill(x, y, x + 16, y + 16, 0xB0333333);
         }
     }
 
