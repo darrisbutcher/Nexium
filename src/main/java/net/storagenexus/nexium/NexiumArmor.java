@@ -23,7 +23,7 @@ import java.util.List;
  * Nexium armor's bonuses ({@link ArmorBonus}). Set bonuses need all four pieces; Night Vision only the helmet. Each is
  * on unless switched off in the armor menu; the setting is saved on the piece that carries the bonus.
  * <ul>
- *   <li>Nether-forged: Fire Resistance, Night Vision: Night Vision (both via {@link HeldEffects});</li>
+ *   <li>Nether-forged: Fire Resistance, Night Vision: Night Vision, Water Breathing: Water Breathing (all via {@link HeldEffects});</li>
  *   <li>No knockback: a +1 knockback resistance modifier on top of the armor's own 0.6;</li>
  *   <li>Miner's set: in the player's mining speed (see the Player mixin);</li>
  *   <li>Nexus restock: {@link NexusRestock}.</li>
@@ -99,6 +99,7 @@ public final class NexiumArmor {
         boolean alive = !player.isSpectator();
         HeldEffects.set(player, MobEffects.FIRE_RESISTANCE, 0, alive && active(player, ArmorBonus.NETHER_FORGED));
         HeldEffects.set(player, MobEffects.NIGHT_VISION, 0, alive && active(player, ArmorBonus.NIGHT_VISION));
+        HeldEffects.set(player, MobEffects.WATER_BREATHING, 0, alive && active(player, ArmorBonus.WATER_BREATHING));
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
             if (active(player, ArmorBonus.NO_KNOCKBACK)) {

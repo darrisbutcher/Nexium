@@ -54,6 +54,7 @@ public class ArmorGameTest {
         ServerPlayer player = wearing(h, true);
         h.assertTrue(infinite(player, MobEffects.FIRE_RESISTANCE), "Nether-forged: Fire Resistance");
         h.assertTrue(infinite(player, MobEffects.NIGHT_VISION), "the helmet: Night Vision");
+        h.assertTrue(infinite(player, MobEffects.WATER_BREATHING), "the full set: Water Breathing");
         h.assertTrue(player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) >= 1.0, "no knockback, got "
                 + player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
 
@@ -61,6 +62,7 @@ public class ArmorGameTest {
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
         NexiumArmor.update(player);
         h.assertFalse(player.hasEffect(MobEffects.FIRE_RESISTANCE), "no Fire Resistance without the boots");
+        h.assertFalse(player.hasEffect(MobEffects.WATER_BREATHING), "and no Water Breathing without the boots");
         h.assertTrue(player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) < 1.0, "knockback again (the armor's own 0.45)");
         h.assertTrue(infinite(player, MobEffects.NIGHT_VISION), "the helmet still gives Night Vision");
         h.assertFalse(NexiumArmor.available(player, ArmorBonus.MINERS_SET), "set bonuses need all four");
@@ -80,6 +82,17 @@ public class ArmorGameTest {
                 "saved on the helmet");
         NexiumArmor.toggle(player, ArmorBonus.NO_KNOCKBACK);
         h.assertTrue(player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) < 1.0, "knockback switched back on");
+        NexiumArmor.toggle(player, ArmorBonus.WATER_BREATHING);
+        h.assertFalse(player.hasEffect(MobEffects.WATER_BREATHING), "Water Breathing off");
+        h.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST).get(ModComponents.BONUSES_OFF).contains(ArmorBonus.WATER_BREATHING), "saved on the chestplate");
+        NexiumArmor.toggle(player, ArmorBonus.WATER_BREATHING);
+        h.assertTrue(infinite(player, MobEffects.WATER_BREATHING), "and on again");
+        // A potion's Water Breathing is never taken away
+        NexiumArmor.toggle(player, ArmorBonus.WATER_BREATHING);
+        player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 3600));
+        NexiumArmor.update(player);
+        h.assertTrue(player.hasEffect(MobEffects.WATER_BREATHING), "the potion's stays");
+        NexiumArmor.toggle(player, ArmorBonus.WATER_BREATHING);
         NexiumArmor.toggle(player, ArmorBonus.NETHER_FORGED);
         h.assertTrue(infinite(player, MobEffects.FIRE_RESISTANCE), "on again");
         // A potion's Fire Resistance is never taken away

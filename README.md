@@ -276,6 +276,7 @@ is placed as one and uses two slabs.
 | **Miner's set** | full set | No mining slowdown underwater or off the ground |
 | **No knockback** | full set | Hits and explosions don't push you back |
 | **Nexus restock** | full set, linked chestplate | Hotbar stacks top up from a storage network; you eat from it when hungry |
+| **Water breathing** | full set | Water Breathing: you can't drown |
 | **Night vision** | helmet | Night Vision |
 
 * **Armor menu**: press **G** with no AIOT or Nexium tool in hand, or click **Armor** in the tool menu. Each bonus has

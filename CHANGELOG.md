@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.5
+
+* **Water breathing**: the full Nexium set now also gives **Water Breathing**, like the helmet's Night Vision: an infinite effect with a steady
+  icon while all four pieces are worn, so you can't drown. It has its own on/off switch in the armor menu (G with no tool in hand), saved
+  on the chestplate like the other set bonuses. Like the other armor effects it is taken off when a piece comes off or it is switched off,
+  and a potion's or beacon's Water Breathing is never taken away.
+
 ## 1.22.4
 
 * **Placement straight across with a gap**: with the Diagonal Placement key held, aim at the **middle of a face** (the middle half of it each

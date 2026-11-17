@@ -6,7 +6,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
 /**
- * Effects Nexium gear gives while it is held or worn: Haste II from the tools, Fire Resistance and Night Vision from
+ * Effects Nexium gear gives while it is held or worn: Haste II from the tools, Fire Resistance, Night Vision and Water Breathing from
  * the armor. They are infinite, ambient and without particles, so the icon shows a steady infinity sign instead of
  * blinking. That combination is their signature: when the gear stops giving one, an infinite ambient effect at that
  * level is taken off, while a beacon's (never infinite), a potion's (never infinite) or a command's (never ambient)
