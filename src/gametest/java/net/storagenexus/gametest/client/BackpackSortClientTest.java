@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Sort key over a Backpack's screen in a real game: over its 36 slots it sorts only those (A to Z, torches merged to 512, the
+ * The Sort key over a Backpack's screen in a real game: over its 36 slots it sorts only those (A to Z, stacks merged to 1,024, the
  * shulker box last, the modules where they were); over a module slot it does nothing; over the inventory it sorts only the
  * inventory, and a Backpack opened from an inventory slot stays in that slot with the screen still open.
  */
 public class BackpackSortClientTest implements FabricClientGameTest {
-    private static final String SORTED = "apple x5, bread x20, cobblestone x64, cobblestone x30, diamond x12, ender_pearl x16, iron_pickaxe x1, torch x512, torch x88";
+    private static final String SORTED = "apple x5, bread x20, cobblestone x94, diamond x12, ender_pearl x16, iron_pickaxe x1, torch x600";
 
     @Override
     public void runTest(ClientGameTestContext ctx) {
@@ -44,7 +44,7 @@ public class BackpackSortClientTest implements FabricClientGameTest {
                 ExtraSlots.of(player).clearContent();
                 ItemStack worn = new ItemStack(ModItems.BACKPACK);
                 List<ItemStack> modules = new ArrayList<>();
-                modules.add(new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)));
+                modules.add(new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.RESTOCKING)));
                 ItemStack feeding = new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.FEEDING));
                 feeding.set(ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
                 modules.add(feeding);
@@ -92,17 +92,17 @@ public class BackpackSortClientTest implements FabricClientGameTest {
             press(ctx);
             ctx.waitTicks(4);
             String sorted = world.getServer().computeOnServer(server -> describe(BackpackContents.read(ExtraSlots.of(server.getPlayerList().getPlayers().get(0)).backpack())));
-            check(sorted.startsWith(SORTED + ", -") && sorted.endsWith(", shulker_box x1"), "the Backpack sorted A to Z, torches merged to 512, the shulker box last: " + sorted);
+            check(sorted.startsWith(SORTED + ", -") && sorted.endsWith(", shulker_box x1"), "the Backpack sorted A to Z, stacks merged to 1,024, the shulker box last: " + sorted);
             String after = state(world);
             check(inventoryPart(after).equals(inventoryPart(before)), "the inventory did not change: " + inventoryPart(after));
             check(modulePart(after).equals(modulePart(before)), "the modules did not move: " + modulePart(after));
             // The client sees the same thing
             String shown = ctx.computeOnClient(mc -> {
                 BackpackMenu menu = ((BackpackScreen) mc.gui.screen()).getMenu();
-                return menu.getSlot(BackpackModules.SLOTS).getItem().getHoverName().getString() + " / " + menu.getSlot(BackpackModules.SLOTS + 7).getItem().getCount()
-                        + " / " + menu.getSlot(BackpackModules.SLOTS + 8).getItem().getCount();
+                return menu.getSlot(BackpackModules.SLOTS).getItem().getHoverName().getString() + " / " + menu.getSlot(BackpackModules.SLOTS + 6).getItem().getCount()
+                        + " / " + menu.getSlot(BackpackModules.SLOTS + 7).getItem().getCount();
             });
-            check(shown.equals("Apple / 512 / 88"), "the open screen shows the sorted Backpack (first slot, then the torches): " + shown);
+            check(shown.equals("Apple / 600 / 0"), "the open screen shows the sorted Backpack (first slot, then the torches): " + shown);
             System.out.println("[nexus] backpack sorted: " + ctx.takeScreenshot("nexus_backpack_sorted"));
 
             // Over the inventory: only the inventory sorts, never the hotbar

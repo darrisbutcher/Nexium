@@ -73,14 +73,12 @@ public class BackpackSortGameTest {
         h.assertTrue(InventorySorter.sort(player, 1, false), "something was sorted");
         h.assertValueEqual(name(menu.getSlot(FIRST).getItem()), "applex3", "slot 0 in the open menu");
         h.assertValueEqual(name(menu.getSlot(FIRST + 1).getItem()), "breadx2", "slot 1");
-        h.assertValueEqual(name(menu.getSlot(FIRST + 2).getItem()), "stonex64", "stone merged into a full stack");
-        h.assertValueEqual(name(menu.getSlot(FIRST + 3).getItem()), "stonex16", "and the rest");
-        h.assertTrue(menu.getSlot(FIRST + 4).getItem().isEmpty(), "empty after the items");
+        h.assertValueEqual(name(menu.getSlot(FIRST + 2).getItem()), "stonex80", "stone merged into one stack (the Backpack stacks to 1,024)");
+        h.assertTrue(menu.getSlot(FIRST + 3).getItem().isEmpty(), "empty after the items");
         h.assertValueEqual(name(menu.getSlot(FIRST + 35).getItem()), "shulker_boxx1", "the shulker box in the last slot");
         // The same order is what is saved in the Backpack
         h.assertValueEqual(stored(backpack, 0), "applex3", "saved slot 0");
-        h.assertValueEqual(stored(backpack, 2), "stonex64", "saved slot 2");
-        h.assertValueEqual(stored(backpack, 3), "stonex16", "saved slot 3");
+        h.assertValueEqual(stored(backpack, 2), "stonex80", "saved slot 2");
         h.assertValueEqual(stored(backpack, 35), "shulker_boxx1", "saved last slot");
         // The module stayed where it was
         h.assertTrue(menu.getSlot(0).getItem().is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.FEEDING)), "the module is still in its slot");
@@ -108,23 +106,20 @@ public class BackpackSortGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void torchesMergeTo512WithTheModuleAnd64Without(GameTestHelper h) {
+    public void everyStackableItemMergesTo1024(GameTestHelper h) {
         ServerPlayer player = player(h);
-        BackpackMenu menu = openWorn(player, backpackWith(BackpackModuleType.TORCH_STACK));
-        menu.getSlot(FIRST + 2).set(new ItemStack(Items.TORCH, 300));
-        menu.getSlot(FIRST + 14).set(new ItemStack(Items.TORCH, 300));
-        menu.getSlot(FIRST + 30).set(new ItemStack(Items.TORCH, 100));
+        BackpackMenu menu = openWorn(player, backpackWith());
+        menu.getSlot(FIRST + 2).set(new ItemStack(Items.TORCH, 600));
+        menu.getSlot(FIRST + 14).set(new ItemStack(Items.TORCH, 600));
+        menu.getSlot(FIRST + 30).set(new ItemStack(Items.TORCH, 900));
+        menu.getSlot(FIRST + 31).set(new ItemStack(Items.ENDER_PEARL, 40));
+        menu.getSlot(FIRST + 32).set(new ItemStack(Items.ENDER_PEARL, 40));
         InventorySorter.sort(player, 1, false);
-        h.assertValueEqual(name(menu.getSlot(FIRST).getItem()), "torchx512", "700 torches make a stack of 512 with the module");
-        h.assertValueEqual(name(menu.getSlot(FIRST + 1).getItem()), "torchx188", "and the rest");
-        h.assertTrue(menu.getSlot(FIRST + 2).getItem().isEmpty(), "nothing else");
-
-        BackpackMenu without = openWorn(player, backpackWith());
-        without.getSlot(FIRST + 2).set(new ItemStack(Items.TORCH, 40));
-        without.getSlot(FIRST + 14).set(new ItemStack(Items.TORCH, 40));
-        InventorySorter.sort(player, 1, false);
-        h.assertValueEqual(name(without.getSlot(FIRST).getItem()), "torchx64", "without the module a stack is 64");
-        h.assertValueEqual(name(without.getSlot(FIRST + 1).getItem()), "torchx16", "and the rest");
+        h.assertValueEqual(name(menu.getSlot(FIRST).getItem()), "ender_pearlx80", "80 ender pearls make one stack, though they stack to 16 outside");
+        h.assertValueEqual(name(menu.getSlot(FIRST + 1).getItem()), "torchx1024", "2,100 torches make a stack of 1,024");
+        h.assertValueEqual(name(menu.getSlot(FIRST + 2).getItem()), "torchx1024", "another");
+        h.assertValueEqual(name(menu.getSlot(FIRST + 3).getItem()), "torchx52", "and the rest");
+        h.assertTrue(menu.getSlot(FIRST + 4).getItem().isEmpty(), "nothing else");
         h.succeed();
     }
 

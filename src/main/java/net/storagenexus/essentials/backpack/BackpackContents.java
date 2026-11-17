@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.storagenexus.essentials.registry.ModComponents;
 
 import java.util.ArrayList;
@@ -17,13 +16,13 @@ import java.util.List;
  * component so the contents travel with the item (dropped on death, kept with keepInventory, carried in chests).
  *
  * <p>Each stored slot is an item (with its components), a count and its slot number rather than a plain item stack,
- * because vanilla's stack codec stops at 99 and the Torch Stack module lets torches stack to {@value #TORCH_STACK_MAX}.
+ * because vanilla's stack codec stops at 99 and every stackable item stacks to {@value #STACK_MAX} in a Backpack.
  */
 public final class BackpackContents {
     /** Slots in a Backpack: the same as the player's inventory including the hotbar. */
     public static final int SIZE = 36;
-    /** How many torches fit in a slot while the Torch Stack module is in and on. */
-    public static final int TORCH_STACK_MAX = 512;
+    /** How many of a stackable item fit in a slot of a Backpack (items that do not stack, such as tools, still hold one). */
+    public static final int STACK_MAX = 1024;
 
     /** One occupied slot. */
     public record Entry(int slot, ItemVariant variant, int count) {
@@ -100,11 +99,11 @@ public final class BackpackContents {
 
     /**
      * Puts the stack into these slots: first on top of stacks of the same item, then into empty slots, as many as fit
-     * (torches to {@value #TORCH_STACK_MAX} when {@code torchStack}). Returns what did not fit.
+     * (up to {@value #STACK_MAX} for a stackable item). Returns what did not fit.
      */
-    public static ItemStack insert(List<ItemStack> slots, ItemStack stack, boolean torchStack) {
+    public static ItemStack insert(List<ItemStack> slots, ItemStack stack) {
         ItemStack left = stack.copy();
-        int max = maxStack(left, torchStack);
+        int max = maxStack(left);
         for (int i = 0; i < slots.size() && !left.isEmpty(); i++) {
             ItemStack there = slots.get(i);
             if (there.isEmpty() || !ItemStack.isSameItemSameComponents(there, left)) continue;
@@ -119,9 +118,9 @@ public final class BackpackContents {
         return left;
     }
 
-    /** How many of this stack fit in one slot: torches stack to {@link #TORCH_STACK_MAX} with the Torch Stack module on, everything else to its own limit. */
-    public static int maxStack(ItemStack stack, boolean torchStack) {
-        return torchStack && stack.is(Items.TORCH) ? TORCH_STACK_MAX : stack.getMaxStackSize();
+    /** How many of this stack fit in one slot: {@link #STACK_MAX} for anything that stacks, one for anything that does not. */
+    public static int maxStack(ItemStack stack) {
+        return stack.getMaxStackSize() > 1 ? STACK_MAX : 1;
     }
 
     private BackpackContents() {}

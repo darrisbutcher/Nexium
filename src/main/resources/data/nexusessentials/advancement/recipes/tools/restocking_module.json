@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "nexusessentials:torch_stack_module"
+        "recipes": "nexusessentials:restocking_module"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "nexusessentials:torch_stack_module"
+      "nexusessentials:restocking_module"
     ]
   }
 }

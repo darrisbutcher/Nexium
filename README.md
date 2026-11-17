@@ -93,7 +93,7 @@ on). What is inside stays inside.
 Press **O** (`Sort Inventory` under Nexium in Controls) with the mouse over a container's slots to sort that container,
 or over the main inventory to sort that: only the area under the mouse, never both, and never the hotbar. Chests,
 barrels, ender chests, shulker boxes, hoppers, dispensers, droppers, Nexium barrels and the **Backpack's 36 slots** sort (its
-module slots never do; torches merge to 512 while the Torch Stack module is on; a Backpack opened from an inventory slot stays in
+module slots never do; stacks merge to 1,024; a Backpack opened from an inventory slot stays in
 that slot when the inventory sorts). Stacks are merged first;
 shulker boxes and bundles go to the bottom-right slots. Everything sorts **A to Z** (there are no other orders). It works with
 the mouse over an item or an empty slot, and its key is separate from JEI's, REI's and EMI's (R shows recipes there as usual);
@@ -158,7 +158,7 @@ place it or right-click it to outline those chunks for a minute.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
   facade.
-* **Fluid Intake** pulls from the source blocks touching it. An **Infinite Lava Source** (obsidian, lava buckets and an
+* **Fluid Intake** pulls from the source blocks touching it, up to **8 buckets a second**, and holds **32 buckets**. An **Infinite Lava Source** (obsidian, lava buckets and an
   eye of ender) next to it gives endless lava.
 * **Basic Filter** (whitelist/blacklist) and **Advanced Filter** (by item tag).
 
@@ -337,9 +337,8 @@ vanilla. Endermen never pick up blocks.
   to 8 per sweep, takes no more than the Backpack holds, and does nothing in the Nether (light can't stop spawns
   there) or in adventure or spectator mode. It works while the Backpack's screen is open too: the torches on the screen are the
   ones placed.
-* **Torch Stack Module** (4 torches around a chest, with iron ingots in the corners): torches stack to **512** in the
-  Backpack's slots. Switch it off or take it out and torches over a normal stack go back to the Backpack's other free
-  slots, then to your inventory.
+* **Torch Stack Module** (retired): every stackable item stacks to **1,024** in the Backpack's slots now, with no module. The item
+  stays in the game so a Backpack that holds one still loads, but it does nothing, has no recipe and no longer fits a slot.
 * **Feeding Module** (4 bread around a golden carrot, with iron ingots in the corners): eats for you. Once a second it
   checks how much of your hunger bar is missing and eats the food in the Backpack that restores the most without any of it
   being wasted. It never eats foods with side effects (rotten flesh, pufferfish, golden apples, chorus fruit and the like),
@@ -350,6 +349,14 @@ vanilla. Endermen never pick up blocks.
   craft straight back, so nothing is lost or changed (sand never becomes sandstone) and modded blocks work too. The blocks
   go in the Backpack's own free slots, and renamed or enchanted items are left alone. It packs while the Backpack's screen is
   open too: the blocks appear on the screen a moment after the last ingot goes in.
+* **Restocking Module** (iron ingots in the corners, 2 hoppers, 2 chests and a diamond in the middle: `IHI / CDC / IHI`): tops up
+  what you are using. A stack in the hotbar or the offhand that is being used up (blocks you place, arrows you shoot) is refilled
+  to a full stack from the Backpack when it gets down to 8 (the same setting as the Nexus Restock armor bonus), or when the last
+  one is used. Only use counts: a stack you move or throw away whole is left alone, and it does nothing in creative mode. When the
+  Backpack has none of the item left but holds a **bigger form** of it, it unpacks just enough: Triple Compressed stone becomes
+  Double Compressed, then Compressed, then stone, an iron block becomes ingots, and what was not needed stays in the Backpack.
+  Which block unpacks into what comes from the crafting recipes, as for the Compacting Module (only packs that craft straight
+  back), and renamed or enchanted items are never unpacked. It works while the Backpack's screen is open too.
 
 ### Shulker box preview
 * A shulker box with something in it shows a **9 x 3 grid of what is inside** under its name, in slots the colour of the box, with

@@ -69,7 +69,9 @@ public class BackpackClientTest implements FabricClientGameTest {
                 ItemStack autoTorch = new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.AUTO_TORCH));
                 autoTorch.set(net.storagenexus.registry.ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
                 modules.add(autoTorch);
-                modules.add(new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)));
+                ItemStack restocking = new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.RESTOCKING));
+                restocking.set(net.storagenexus.registry.ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
+                modules.add(restocking);
                 // Feeding and Compacting start switched off too: Compacting would pack the 12 diamonds into a block before they are counted
                 for (BackpackModuleType type : List.of(BackpackModuleType.FEEDING, BackpackModuleType.COMPACTING)) {
                     ItemStack off = new ItemStack(ModItems.BACKPACK_MODULES.get(type));
@@ -80,12 +82,12 @@ public class BackpackClientTest implements FabricClientGameTest {
                 BackpackModules.setSlots(worn, modules);
                 List<ItemStack> contents = new ArrayList<>();
                 for (int i = 0; i < BackpackContents.SIZE; i++) contents.add(ItemStack.EMPTY);
-                contents.set(0, new ItemStack(Items.TORCH, 512));
+                contents.set(0, new ItemStack(Items.TORCH, 1024));
                 contents.set(1, new ItemStack(Items.DIAMOND, 12));
                 contents.set(2, new ItemStack(Items.IRON_PICKAXE));
                 contents.set(9, new ItemStack(Items.COBBLESTONE, 64));
                 contents.set(10, new ItemStack(Items.BREAD, 20));
-                contents.set(35, new ItemStack(Items.ENDER_PEARL, 16));
+                contents.set(35, new ItemStack(Items.ENDER_PEARL, 40));
                 BackpackContents.write(worn, contents);
                 ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, worn);
                 ExtraSlots.of(player).setItem(ExtraSlots.TRINKET, new ItemStack(ModItems.MAGNET));
@@ -119,31 +121,20 @@ public class BackpackClientTest implements FabricClientGameTest {
                 var torches = menu.getSlot(BackpackModules.SLOTS).getItem();
                 return menu.source() + " " + torches.getCount() + " " + torches.getItem() + " | " + menu.getSlot(BackpackModules.SLOTS + 1).getItem().getCount() + " | "
                         + menu.getSlot(0).getItem().getItem() + " " + menu.getSlot(1).getItem().getItem() + " " + menu.getSlot(2).getItem().getItem() + " " + menu.getSlot(3).getItem().getItem()
-                        + " " + menu.getSlot(4).getItem().isEmpty() + " | " + menu.torchStack();
+                        + " " + menu.getSlot(4).getItem().isEmpty();
             });
-            check(shown.equals(Backpacks.EQUIPPED + " 512 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:torch_stack_module nexusessentials:feeding_module nexusessentials:compacting_module true | true"),
-                    "the client sees 512 torches in one slot, the diamonds, the four modules and Torch Stack on: " + shown);
+            check(shown.equals(Backpacks.EQUIPPED + " 1024 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:restocking_module nexusessentials:feeding_module nexusessentials:compacting_module true"),
+                    "the client sees 1,024 torches in one slot, the diamonds and the four modules: " + shown);
+            System.out.println("[nexus] backpack with stacks of 1,024: " + ctx.takeScreenshot("nexus_backpack_stacks_1024"));
 
-            // The Torch Stack switch: off, the 512 torches become stacks of 64 (nothing is lost); on again, they can be put back
+            // The Restocking switch: starts off, the button turns it on, and off again
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(1).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "Restocking starts off");
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
             ctx.waitTicks(10);
-            String off = ctx.computeOnClient(mc -> {
-                BackpackMenu menu = ((BackpackScreen) mc.gui.screen()).getMenu();
-                int torches = 0, biggest = 0;
-                for (int i = 0; i < BackpackContents.SIZE; i++) {
-                    var stack = menu.getSlot(BackpackModules.SLOTS + i).getItem();
-                    if (stack.is(Items.TORCH)) {
-                        torches += stack.getCount();
-                        biggest = Math.max(biggest, stack.getCount());
-                    }
-                }
-                return torches + " " + biggest + " " + menu.torchStack();
-            });
-            check(off.equals("512 64 false"), "with Torch Stack off the 512 torches are stacks of 64, none lost (total, biggest, stacking): " + off);
-            System.out.println("[nexus] backpack, Torch Stack off: " + ctx.takeScreenshot("nexus_backpack_torch_stack_off"));
+            check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).getMenu().getSlot(1).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "its switch turns Restocking on");
             ctx.runOnClient(mc -> mc.gameMode.handleInventoryButtonClick(mc.player.containerMenu.containerId, BackpackMenu.BTN_TOGGLE_MODULE + 1));
             ctx.waitTicks(10);
-            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().torchStack()), "the switch turns Torch Stack back on");
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().getSlot(1).getItem().has(net.storagenexus.registry.ModComponents.MODULE_OFF)), "and off again");
 
             // Switch Auto Torch, Feeding and Compacting on from inside the screen: they work while it is open, on the slots shown
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getFoodData().setFoodLevel(10));

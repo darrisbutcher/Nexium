@@ -3,6 +3,20 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.3
+
+* **Restocking Module** (a new Backpack module; `IHI / CDC / IHI`: iron ingots, 2 hoppers, 2 chests, a diamond): a stack you are using up in
+  the **hotbar or the offhand** (blocks placed, arrows shot...) is topped up to a full stack from the Backpack when it gets down to **8**,
+  or refilled when the last one is used. Only use counts: a stack you move or throw away whole is left alone, and it does nothing in
+  creative mode. If the Backpack has none of the item left but holds a **bigger form** of it, it **unpacks** just enough: Triple Compressed
+  stone becomes Double Compressed, then Compressed, then stone (an iron block becomes ingots, and so on, from the crafting recipes, as
+  for the Compacting Module), and what was not needed stays in the Backpack. Renamed or enchanted items are never unpacked.
+* **Every stackable item stacks to 1,024 in the Backpack**, not only torches: cobblestone, ender pearls, anything that stacks at all. Tools and
+  other items that do not stack still hold one. Sorting merges to 1,024.
+* **Torch Stack Module retired**: with all items stacking to 1,024 it has nothing left to do. The item stays in the game so a Backpack or chest that
+  holds one still loads (nothing is lost), but it does nothing, has no recipe, is not in the creative tab and no longer fits a module slot.
+* **Fluid Intake** pulls **8 buckets a second** (it was 1) and holds **32 buckets** (it was 4).
+
 ## 1.22.2
 
 * **Drawer Key**: the Lock Upgrade is now a **key**. Right-click a drawer, a compacting drawer or a fluid drawer with it to **lock** it, and

@@ -46,6 +46,7 @@
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
       "net.storagenexus.gametest.OverclockGameTest",
+      "net.storagenexus.gametest.RestockingGameTest",
       "net.storagenexus.gametest.DrawerKeyGameTest",
       "net.storagenexus.gametest.BackpackGameTest",
       "net.storagenexus.gametest.BackpackSortGameTest",

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "H": "minecraft:hopper",
+    "C": "minecraft:chest",
+    "D": "minecraft:diamond"
+  },
+  "pattern": [
+    "IHI",
+    "CDC",
+    "IHI"
+  ],
+  "result": {
+    "id": "nexusessentials:restocking_module"
+  }
+}
