@@ -79,9 +79,38 @@ public class DiagonalPlacementGameTest {
         // The nearer edge wins: this is nearer the top than the right
         expect(h, c, Direction.NORTH, 0.8, 0.95, 0.0, c.offset(0, 1, -1), "closer to the top than the right");
         expect(h, c, Direction.NORTH, 0.97, 0.8, 0.0, c.offset(1, 0, -1), "closer to the right than the top");
-        // Dead centre or a tie still picks a side, always the same one
-        expect(h, c, Direction.NORTH, 0.5, 0.5, 0.0, c.offset(1, 0, -1), "the centre of a face picks east (X first)");
+        // A tie still picks a side, always the same one
         expect(h, c, Direction.NORTH, 0.75, 0.75, 0.0, c.offset(1, 0, -1), "a tie picks the X side");
+        h.succeed();
+    }
+
+    @GameTest
+    public void theMiddleOfAFaceIsStraightAcrossWithAOneBlockGap(GameTestHelper h) {
+        BlockPos c = new BlockPos(10, 20, 30);
+        expect(h, c, Direction.NORTH, 0.5, 0.5, 0.0, c.offset(0, 0, -2), "the centre of a north face: two out, no sideways step");
+        expect(h, c, Direction.SOUTH, 0.5, 0.5, 1.0, c.offset(0, 0, 2), "a south face");
+        expect(h, c, Direction.EAST, 1.0, 0.5, 0.5, c.offset(2, 0, 0), "an east face");
+        expect(h, c, Direction.WEST, 0.0, 0.5, 0.5, c.offset(-2, 0, 0), "a west face");
+        expect(h, c, Direction.UP, 0.5, 1.0, 0.5, c.offset(0, 2, 0), "a top face: two up");
+        expect(h, c, Direction.DOWN, 0.5, 0.0, 0.5, c.offset(0, -2, 0), "a bottom face: two down");
+        // The middle is the central half of the face each way: just inside is still the middle, the edge of that is not
+        expect(h, c, Direction.NORTH, 0.26, 0.74, 0.0, c.offset(0, 0, -2), "just inside the middle zone");
+        expect(h, c, Direction.NORTH, 0.74, 0.5, 0.0, c.offset(0, 0, -2), "just inside on the other side");
+        expect(h, c, Direction.NORTH, 0.8, 0.5, 0.0, c.offset(1, 0, -1), "past the middle zone it is diagonal again, toward the east edge");
+        expect(h, c, Direction.NORTH, 0.5, 0.2, 0.0, c.offset(0, -1, -1), "or toward the bottom edge");
+        h.succeed();
+    }
+
+    @GameTest
+    public void thePlanSaysWhichEdgeIsUsedOrThatItIsTheGap(GameTestHelper h) {
+        BlockPos c = new BlockPos(10, 20, 30);
+        DiagonalPlacement.Plan high = DiagonalPlacement.plan(c, Direction.NORTH, new Vec3(10.5, 20.9, 30.0));
+        h.assertTrue(high.edge() == Direction.UP && !high.gap(), "aiming high on a north face uses the top edge");
+        h.assertTrue(DiagonalPlacement.plan(c, Direction.NORTH, new Vec3(10.05, 20.5, 30.0)).edge() == Direction.WEST, "the left edge is west");
+        h.assertTrue(DiagonalPlacement.plan(c, Direction.UP, new Vec3(10.5, 21.0, 30.95)).edge() == Direction.SOUTH, "a top face aimed at its south side uses the south edge");
+        DiagonalPlacement.Plan middle = DiagonalPlacement.plan(c, Direction.EAST, new Vec3(11.0, 20.5, 30.5));
+        h.assertTrue(middle.gap() && middle.edge() == null, "the middle has no edge: it is the gap placement");
+        h.assertTrue(middle.spot().equals(c.east(2)), "and goes two out");
         h.succeed();
     }
 
@@ -101,6 +130,29 @@ public class DiagonalPlacementGameTest {
         h.assertTrue(place(h, player, Direction.NORTH, at(h, 0.05, 0.4, 0.0)), "the west edge places too");
         h.assertTrue(h.getBlockState(P.north().west()).is(Blocks.COBBLESTONE), "diagonally west and out");
         h.assertValueEqual(player.getMainHandItem().getCount(), 3, "another is used up");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aimedAtTheMiddleTheBlockGoesStraightAcrossWithAGap(GameTestHelper h) {
+        h.setBlock(P, Blocks.STONE);
+        ServerPlayer player = player(h, new ItemStack(Items.COBBLESTONE, 5));
+        h.assertTrue(place(h, player, Direction.NORTH, at(h, 0.5, 0.5, 0.0)), "it places");
+        h.assertTrue(h.getBlockState(P.north(2)).is(Blocks.COBBLESTONE), "the block is two out from the face, straight across");
+        h.assertTrue(h.getBlockState(P.north()).isAir(), "with the cell between left empty (the gap)");
+        h.assertTrue(h.getBlockState(P.north().above()).isAir() && h.getBlockState(P.north().west()).isAir(), "and nothing diagonal");
+        h.assertValueEqual(player.getMainHandItem().getCount(), 4, "one cobblestone is used up");
+        // The same on a top face
+        h.assertTrue(place(h, player, Direction.UP, at(h, 0.5, 1.0, 0.5)), "off a top face too");
+        h.assertTrue(h.getBlockState(P.above(2)).is(Blocks.COBBLESTONE) && h.getBlockState(P.above()).isAir(), "two up with a gap");
+        // A taken cell refuses, as for the diagonal
+        h.setBlock(P.east(2), Blocks.DIRT);
+        h.assertTrue(!place(h, player, Direction.EAST, at(h, 1.0, 0.5, 0.5)), "a taken cell refuses");
+        h.assertValueEqual(player.getMainHandItem().getCount(), 3, "and nothing more was used up");
+        // The gap may be anything: even a solid block between does not stop it
+        h.setBlock(P.west(), Blocks.STONE);
+        h.assertTrue(place(h, player, Direction.WEST, at(h, 0.0, 0.5, 0.5)), "a block in the gap does not matter");
+        h.assertTrue(h.getBlockState(P.west(2)).is(Blocks.COBBLESTONE), "it still goes two out");
         h.succeed();
     }
 

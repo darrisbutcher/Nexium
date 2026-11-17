@@ -5,12 +5,14 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.storagenexus.client.DiagonalPreview;
 import net.storagenexus.essentials.client.NexusEssentialsClient;
 
@@ -44,14 +46,18 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
                     player.level().setBlockAndUpdate(base[0].offset(x, y, z), Blocks.AIR.defaultBlockState());
                 }
                 for (int y = 0; y <= 2; y++) player.level().setBlockAndUpdate(base[0].offset(0, y, 4), Blocks.STONE.defaultBlockState());
+                // and a second column to the west, for the straight-across placement
+                for (int y = 0; y <= 2; y++) player.level().setBlockAndUpdate(base[0].offset(-2, y, 4), Blocks.STONE.defaultBlockState());
                 player.snapTo(base[0].getX() + 0.5, base[0].getY(), base[0].getZ() + 0.5, 0.0F, 0.0F);
                 player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 10));
                 player.getInventory().setSelectedSlot(0);
             });
             ctx.waitTicks(15);
 
-            // The crosshair is on the north face of the middle stone block, level with the eyes (the upper half of it)
+            // The crosshair is on the north face of the middle stone block, near the top of it (so the top edge decides)
             BlockPos aimed = base[0].offset(0, 1, 4);
+            ctx.runOnClient(mc -> mc.player.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(aimed.getX() + 0.5, aimed.getY() + 0.9, aimed.getZ())));
+            ctx.waitTicks(3);
             String looking = ctx.computeOnClient(mc -> mc.hitResult instanceof BlockHitResult b ? b.getBlockPos().toShortString() + " " + b.getDirection() : "nothing");
             check(looking.equals(aimed.toShortString() + " " + Direction.NORTH), "the crosshair is on the north face of the middle stone block: " + looking);
 
@@ -65,6 +71,7 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             String outlined = ctx.computeOnClient(mc -> DiagonalPreview.target() + " " + DiagonalPreview.placeable());
             check(outlined.equals(diagonal + " true"), "key held: the outline is on the diagonal cell and it is free (" + diagonal + " true): " + outlined);
+            check(ctx.computeOnClient(mc -> DiagonalPreview.edge() == Direction.UP && DiagonalPreview.face() == Direction.NORTH), "and the top edge of the aimed north face is the one marked");
             System.out.println("[nexus] diagonal preview: " + ctx.takeScreenshot("nexus_diagonal_preview_free"));
             ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
             ctx.waitTicks(12);
@@ -92,6 +99,29 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
                             + server.getPlayerList().getPlayers().get(0).getInventory().getItem(0).getCount());
             check(normalResult.equals("true 8"), "released: the block goes in the normal cell (placed, count): " + normalResult);
             System.out.println("[nexus] normal placement after: " + ctx.takeScreenshot("nexus_diagonal_then_normal"));
+
+            // Aimed at the middle of a face instead: straight across from it with a one block gap
+            BlockPos west = base[0].offset(-2, 1, 4);
+            ctx.runOnClient(mc -> mc.player.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(west.getX() + 0.5, west.getY() + 0.5, west.getZ())));
+            ctx.waitTicks(4);
+            String west_looking = ctx.computeOnClient(mc -> mc.hitResult instanceof BlockHitResult b ? b.getBlockPos().toShortString() + " " + b.getDirection() : "nothing");
+            check(west_looking.equals(west.toShortString() + " " + Direction.NORTH), "the crosshair is on the middle of the north face of the west stone block: " + west_looking);
+            ctx.getInput().holdKey(NexusEssentialsClient.DIAGONAL_PLACE);
+            ctx.waitTicks(3);
+            BlockPos across = west.north(2);
+            String gap = ctx.computeOnClient(mc -> DiagonalPreview.target() + " " + DiagonalPreview.placeable() + " " + DiagonalPreview.edge() + " " + DiagonalPreview.face());
+            check(gap.equals(across + " true null " + Direction.NORTH), "aimed at the middle: the outline is two out, straight across, with no edge and the face marked (" + across + " true null NORTH): " + gap);
+            System.out.println("[nexus] gap placement preview: " + ctx.takeScreenshot("nexus_gap_preview"));
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
+            ctx.waitTicks(12);
+            String gapResult = world.getServer().computeOnServer(server -> {
+                var level = server.getPlayerList().getPlayers().get(0).level();
+                return level.getBlockState(across).is(Blocks.COBBLESTONE) + " " + level.getBlockState(west.north()).isAir() + " "
+                        + server.getPlayerList().getPlayers().get(0).getInventory().getItem(0).getCount();
+            });
+            check(gapResult.equals("true true 7"), "held: the block is two out with the cell between empty, and one was used (placed, gap empty, count): " + gapResult);
+            System.out.println("[nexus] gap placement: " + ctx.takeScreenshot("nexus_gap_placement"));
+            ctx.getInput().releaseKey(NexusEssentialsClient.DIAGONAL_PLACE);
         }
     }
 
