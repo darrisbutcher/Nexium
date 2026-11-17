@@ -374,12 +374,21 @@ vanilla. Endermen never pick up blocks.
               [ NEW ]                        [ NEW ]
      [BLOCK]                                          [BLOCK]
   ```
+* **Aim at the middle of the face instead** (the middle half of it each way) and the block goes **straight across from it with a
+  one block gap**: two out from the face, nothing between, with no sideways step. Same key, the area you aim at decides.
+  ```
+  aiming at the middle of the face:
+
+  [BLOCK]    gap    [ NEW ]
+  ```
 * The new block touches the one you clicked only along an edge, and it **may float**, so staircases, roofs, diagonal lines and
   pillars need no support block first. It uses up the item like any placement (not in creative), follows the aimed half of a slab or
   stair and the face for logs, never replaces a block (tall grass and water it does, as in vanilla), and refuses where you may not
   build (adventure and spectator mode, spawn protection, out of reach, or where another mod's protection says no).
 * With the key held, a **white outline** shows the cell the block would go in before you click, and a **red** one where that cell is
-  already taken (so nothing would be placed); `diagonalPreview` (client) turns it off.
+  already taken (so nothing would be placed). On the block you aim at, the face is drawn in **zones** as in Tweakeroo: a **middle square**
+  (straight across, with the gap) and a **trapezoid toward each edge** (diagonal). The zone you are aiming at, and so the one used, is
+  **filled in gold**; the others are faint lines. `diagonalPreview` (client) turns it all off.
 * Without the key, right-click places the normal way. The block must be in your main hand or, failing that, your offhand.
 
 ### Free camera
@@ -715,7 +724,7 @@ server's file is the one that counts.
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
-| `diagonalPreview` | `true` | Client: outline the cell a diagonal placement would put the block in, while the Diagonal Placement key is held |
+| `diagonalPreview` | `true` | Client: outline the cell a diagonal or straight-across placement would put the block in, and mark the edge or face used, while the Diagonal Placement key is held |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or V; 0 keeps them up |

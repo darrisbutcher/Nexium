@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.4
+
+* **Placement straight across with a gap**: with the Diagonal Placement key held, aim at the **middle of a face** (the middle half of it each
+  way) and the block goes **straight across from that face with one block of gap**, two out from it and nothing between; aim nearer an edge
+  and it is diagonal as before. Same key: where you aim decides. It follows the same rules as the diagonal one (uses the item up, aimed
+  half of a slab, the face for logs, only into a free or replaceable cell, build protection).
+* **The preview shows what is used**: on the block you aim at, the face is drawn in **zones**, as Tweakeroo does: a **middle square**
+  (straight across with the gap) and a **trapezoid toward each edge** (diagonal). The zone you are aiming at is **filled in gold**, the
+  others are faint lines. The outline of the cell the block would go in (white, or red when taken) stays, and is more see-through now.
+  `diagonalPreview` (client) still turns it all off.
+
 ## 1.22.3
 
 * **Restocking Module** (a new Backpack module; `IHI / CDC / IHI`: iron ingots, 2 hoppers, 2 chests, a diamond): a stack you are using up in
