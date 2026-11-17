@@ -47,7 +47,7 @@ import java.util.List;
 
 /**
  * The Backpack: its slot above the magnet slot, what it holds (36 slots, counts above 99), its module slots and their
- * switches, the Torch Stack module (torches to 512 a slot, and what happens to the extra torches when it goes), and the
+ * switches, stacks of 1,024 (and the retired Torch Stack module still loading), and the
  * Auto Torch module (torches from the Backpack, spaced out so nothing hostile can spawn, even behind walls and in caves
  * nobody has seen), the Feeding module (eats only what fits the missing hunger, never foods with effects), the Compacting
  * module (packs storage blocks, only packs that craft straight back) and the recipes of the Backpack and every module.
@@ -82,7 +82,7 @@ public class BackpackGameTest {
         List<ItemStack> slots = new ArrayList<>();
         for (int i = 0; i < BackpackContents.SIZE; i++) slots.add(ItemStack.EMPTY);
         int slot = 0;
-        for (int left = count; left > 0; left -= BackpackContents.TORCH_STACK_MAX) slots.set(slot++, new ItemStack(Items.TORCH, Math.min(left, BackpackContents.TORCH_STACK_MAX)));
+        for (int left = count; left > 0; left -= BackpackContents.STACK_MAX) slots.set(slot++, new ItemStack(Items.TORCH, Math.min(left, BackpackContents.STACK_MAX)));
         BackpackContents.write(backpack, slots);
     }
 
@@ -152,7 +152,7 @@ public class BackpackGameTest {
     @GameTest(environment = EssentialsEnvironment.ID)
     public void theBackpackAndItsContentsSaveAndDropOnDeath(GameTestHelper h) throws ReflectiveOperationException {
         ServerPlayer player = player(h);
-        ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK, BackpackModuleType.AUTO_TORCH);
+        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH);
         storeTorches(backpack, 600);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
 
@@ -161,8 +161,8 @@ public class BackpackGameTest {
         ExtraSlots loaded = new ExtraSlots();
         loaded.load(TagValueInput.create(ProblemReporter.DISCARDING, h.getLevel().registryAccess(), output.buildResult()));
         h.assertTrue(loaded.backpack().is(ModItems.BACKPACK), "the backpack is saved with the player");
-        h.assertValueEqual(BackpackContents.count(loaded.backpack(), Items.TORCH), 600, "with its 600 torches (stacks of 512 and 88)");
-        h.assertTrue(BackpackModules.find(loaded.backpack(), BackpackModuleType.TORCH_STACK).is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "and its modules");
+        h.assertValueEqual(BackpackContents.count(loaded.backpack(), Items.TORCH), 600, "with its 600 torches (one stack)");
+        h.assertTrue(BackpackModules.find(loaded.backpack(), BackpackModuleType.AUTO_TORCH).is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.AUTO_TORCH)), "and its modules");
 
         var dropEquipment = Player.class.getDeclaredMethod("dropEquipment", ServerLevel.class);
         dropEquipment.setAccessible(true);
@@ -240,7 +240,8 @@ public class BackpackGameTest {
         h.assertTrue(menu.getSlot(TORCH_SLOT).mayPlace(module(BackpackModuleType.AUTO_TORCH)), "and as an item a module can be kept in a backpack slot");
         menu.getSlot(0).set(module(BackpackModuleType.AUTO_TORCH));
         h.assertTrue(!menu.getSlot(1).mayPlace(module(BackpackModuleType.AUTO_TORCH)), "a second Auto Torch module doesn't fit");
-        h.assertTrue(menu.getSlot(1).mayPlace(module(BackpackModuleType.TORCH_STACK)), "but a Torch Stack module does");
+        h.assertTrue(menu.getSlot(1).mayPlace(module(BackpackModuleType.RESTOCKING)), "but a Restocking module does");
+        h.assertTrue(!menu.getSlot(1).mayPlace(module(BackpackModuleType.TORCH_STACK)), "and the retired Torch Stack module does not");
 
         ItemStack backpack = ExtraSlots.of(player).backpack();
         h.assertTrue(BackpackModules.active(backpack, BackpackModuleType.AUTO_TORCH), "the module is installed and on");
@@ -266,91 +267,63 @@ public class BackpackGameTest {
         h.succeed();
     }
 
-    // ---------------------------------------------------------------- Torch Stack
+    // ---------------------------------------------------------------- Stacks of 1024
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void torchesStackTo512WithTheModule(GameTestHelper h) {
-        ServerPlayer player = player(h);
-        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpackWith(BackpackModuleType.TORCH_STACK));
-        BackpackMenu menu = openEquipped(player);
-        h.assertTrue(menu.torchStack(), "the module is in and on");
-        Slot slot = menu.getSlot(TORCH_SLOT);
-        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.TORCH)), 512, "a slot takes 512 torches");
-        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.COBBLESTONE)), 64, "but cobblestone still stacks to 64");
-        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.DIAMOND_SWORD)), 1, "and a sword to 1");
-
-        ItemStack torches = new ItemStack(Items.TORCH, 512);
-        slot.safeInsert(torches);
-        h.assertValueEqual(slot.getItem().getCount(), 512, "512 torches went into the slot");
-        h.assertTrue(torches.isEmpty(), "all of them");
-        h.assertValueEqual(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).getCount(), 512, "and are saved as 512");
-
-        // Shift-clicking a stack from the inventory tops it up, past 99
-        slot.set(new ItemStack(Items.TORCH, 500));
-        player.getInventory().setItem(0, new ItemStack(Items.TORCH, 64));
-        menu.quickMoveStack(player, menu.slots.size() - 9);
-        h.assertValueEqual(slot.getItem().getCount(), 512, "shift-click topped it up to 512");
-        h.assertTrue(player.getInventory().getItem(0).isEmpty(), "the other 52 went to another free slot of the backpack");
-        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 564, "564 torches in the backpack in all");
-        h.succeed();
-    }
-
-    @GameTest(environment = EssentialsEnvironment.ID)
-    public void torchesStackTo64WithoutTheModuleOrWithItOff(GameTestHelper h) {
+    public void everyStackableItemStacksTo1024(GameTestHelper h) {
         ServerPlayer player = player(h);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpackWith());
         BackpackMenu menu = openEquipped(player);
-        h.assertTrue(!menu.torchStack(), "no module: no stacking past 64");
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 64, "a slot takes 64 torches");
+        Slot slot = menu.getSlot(TORCH_SLOT);
+        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.TORCH)), 1024, "a slot takes 1,024 torches");
+        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.COBBLESTONE)), 1024, "and 1,024 cobblestone");
+        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.ENDER_PEARL)), 1024, "and 1,024 of an item that stacks to 16");
+        h.assertValueEqual(slot.getMaxStackSize(new ItemStack(Items.DIAMOND_SWORD)), 1, "but a sword still holds 1");
 
-        menu.getSlot(0).set(module(BackpackModuleType.TORCH_STACK));
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 512, "with the module, 512");
-        menu.clickMenuButton(player, BackpackMenu.BTN_TOGGLE_MODULE);
-        h.assertTrue(!menu.torchStack(), "the module switched off");
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getMaxStackSize(new ItemStack(Items.TORCH)), 64, "is back to 64");
+        ItemStack torches = new ItemStack(Items.TORCH, 1024);
+        slot.safeInsert(torches);
+        h.assertValueEqual(slot.getItem().getCount(), 1024, "1,024 torches went into the slot");
+        h.assertTrue(torches.isEmpty(), "all of them");
+        h.assertValueEqual(BackpackContents.read(ExtraSlots.of(player).backpack()).get(0).getCount(), 1024, "and are saved as 1,024");
+
+        // Shift-clicking a stack from the inventory tops it up, past 99
+        slot.set(new ItemStack(Items.COBBLESTONE, 1000));
+        player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+        menu.quickMoveStack(player, menu.slots.size() - 9);
+        h.assertValueEqual(slot.getItem().getCount(), 1024, "shift-click topped it up to 1,024");
+        h.assertTrue(player.getInventory().getItem(0).isEmpty(), "the other 40 went to another free slot of the backpack");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.COBBLESTONE), 1064, "1,064 cobblestone in the backpack in all");
         h.succeed();
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void takingTheModuleOutKeepsEveryTorch(GameTestHelper h) {
+    public void theRetiredTorchStackModuleDoesNothingAndStillLoads(GameTestHelper h) {
         ServerPlayer player = player(h);
+        // A backpack saved with the old module in it: it opens, keeps the module in its slot, and stacks as every backpack does
         ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK);
-        storeTorches(backpack, 512);
+        storeTorches(backpack, 600);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         BackpackMenu menu = openEquipped(player);
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 512, "the stack of 512 is there");
-
+        h.assertTrue(menu.getSlot(0).getItem().is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "the old module is still in its slot");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 600, "the 600 torches are one stack of 600");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT + 1).getItem().getCount(), 0, "nothing was split off");
+        h.assertTrue(BackpackModuleType.TORCH_STACK.retired(), "it is retired");
+        h.assertTrue(!BackpackModuleType.RESTOCKING.retired() && !BackpackModuleType.AUTO_TORCH.retired(), "the others are not");
+        h.assertTrue(!menu.getSlot(1).mayPlace(module(BackpackModuleType.TORCH_STACK)), "and it can't be put in a slot again");
+        h.assertTrue(!net.storagenexus.essentials.registry.ModItems.TAB_ORDER.contains(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "nor is it in the creative tab");
         menu.getSlot(0).set(ItemStack.EMPTY);
-        for (int i = 0; i < BackpackContents.SIZE; i++) {
-            ItemStack stack = menu.getSlot(TORCH_SLOT + i).getItem();
-            h.assertTrue(stack.getCount() <= stack.getMaxStackSize(), "slot " + i + " holds at most a normal stack, holds " + stack.getCount());
-        }
-        h.assertValueEqual(total(player, Items.TORCH), 512, "all 512 torches are still there, in the backpack or the inventory");
-        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 512, "here, in the backpack's other slots");
-
-        // Full backpack: the extra goes to the inventory
-        ItemStack full = backpackWith(BackpackModuleType.TORCH_STACK);
-        List<ItemStack> slots = new ArrayList<>();
-        slots.add(new ItemStack(Items.TORCH, 512));
-        for (int i = 1; i < BackpackContents.SIZE; i++) slots.add(new ItemStack(Items.COBBLESTONE, 64));
-        BackpackContents.write(full, slots);
-        player.getInventory().clearContent();
-        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, full);
-        BackpackMenu fullMenu = openEquipped(player);
-        fullMenu.getSlot(0).set(ItemStack.EMPTY);
-        h.assertValueEqual(fullMenu.getSlot(TORCH_SLOT).getItem().getCount(), 64, "the slot keeps 64");
-        h.assertValueEqual(total(player, Items.TORCH), 512, "and the other 448 went to the inventory");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.TORCH), 600, "taking it out loses nothing");
         h.succeed();
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
     public void theMenuHoldsStacksOverTheItemsOwnLimit(GameTestHelper h) {
         ServerPlayer player = player(h);
-        ItemStack backpack = backpackWith(BackpackModuleType.TORCH_STACK);
-        storeTorches(backpack, 512);
+        ItemStack backpack = backpackWith();
+        storeTorches(backpack, 1024);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         BackpackMenu menu = openEquipped(player);
-        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 512, "the server's menu holds 512");
+        h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getCount(), 1024, "the server's menu holds 1,024");
         h.assertValueEqual(menu.getSlot(TORCH_SLOT).getItem().getMaxStackSize(), 64, "of an item that stacks to 64");
         h.succeed();
     }
@@ -457,7 +430,7 @@ public class BackpackGameTest {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
         BlockPos origin = h.absolutePos(CENTER);
-        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH, BackpackModuleType.TORCH_STACK);
+        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH);
         storeTorches(backpack, 64);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         int[] placed = {0};
@@ -503,7 +476,7 @@ public class BackpackGameTest {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
         BlockPos origin = h.absolutePos(CENTER);
-        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH, BackpackModuleType.TORCH_STACK);
+        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH);
         storeTorches(backpack, 128);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         h.startSequence()
@@ -580,8 +553,10 @@ public class BackpackGameTest {
         h.assertTrue(craft(h, "LLLLCLLLL", java.util.Map.of('L', Items.LEATHER, 'C', Items.CHEST)).is(ModItems.BACKPACK), "8 leather around a chest make a Backpack");
         h.assertTrue(craft(h, "ITITLTITI", java.util.Map.of('I', Items.IRON_INGOT, 'T', Items.TORCH, 'L', Items.REDSTONE_LAMP))
                 .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.AUTO_TORCH)), "iron, 4 torches and a redstone lamp make the Auto Torch module");
-        h.assertTrue(craft(h, "ITITCTITI", java.util.Map.of('I', Items.IRON_INGOT, 'T', Items.TORCH, 'C', Items.CHEST))
-                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.TORCH_STACK)), "iron, 4 torches and a chest make the Torch Stack module");
+        h.assertTrue(craft(h, "ITITCTITI", java.util.Map.of('I', Items.IRON_INGOT, 'T', Items.TORCH, 'C', Items.CHEST)).isEmpty(),
+                "the retired Torch Stack module has no recipe any more");
+        h.assertTrue(craft(h, "IHICDCIHI", java.util.Map.of('I', Items.IRON_INGOT, 'H', Items.HOPPER, 'C', Items.CHEST, 'D', Items.DIAMOND))
+                .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.RESTOCKING)), "iron, 2 hoppers, 2 chests and a diamond make the Restocking module");
         h.assertTrue(craft(h, "IBIBGBIBI", java.util.Map.of('I', Items.IRON_INGOT, 'B', Items.BREAD, 'G', Items.GOLDEN_CARROT))
                 .is(ModItems.BACKPACK_MODULES.get(BackpackModuleType.FEEDING)), "iron, 4 bread and a golden carrot make the Feeding module");
         h.assertTrue(craft(h, "IPIPTPIPI", java.util.Map.of('I', Items.IRON_INGOT, 'P', Items.PISTON, 'T', Items.CRAFTING_TABLE))
@@ -900,21 +875,21 @@ public class BackpackGameTest {
         for (int i = 0; i < 3; i++) slots.add(ItemStack.EMPTY);
         slots.set(0, new ItemStack(Items.COBBLESTONE, 60));
         slots.set(1, new ItemStack(Items.DIRT, 64));
-        ItemStack left = BackpackContents.insert(slots, new ItemStack(Items.COBBLESTONE, 70), false);
-        h.assertValueEqual(slots.get(0).getCount(), 64, "the stack of cobblestone is topped up to 64");
-        h.assertValueEqual(slots.get(2).getCount(), 64, "the empty slot takes a full stack");
-        h.assertValueEqual(left.getCount(), 2, "and 2 do not fit anywhere");
+        ItemStack left = BackpackContents.insert(slots, new ItemStack(Items.COBBLESTONE, 2100));
+        h.assertValueEqual(slots.get(0).getCount(), 1024, "the stack of cobblestone is topped up to 1,024");
+        h.assertValueEqual(slots.get(2).getCount(), 1024, "the empty slot takes a full stack");
+        h.assertValueEqual(left.getCount(), 2100 - 964 - 1024, "and what is left does not fit anywhere");
         h.assertValueEqual(slots.get(1).getCount(), 64, "dirt is left alone");
 
-        List<ItemStack> torches = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 500), ItemStack.EMPTY));
-        h.assertTrue(BackpackContents.insert(torches, new ItemStack(Items.TORCH, 100), true).isEmpty(), "with Torch Stack 100 torches fit");
-        h.assertValueEqual(torches.get(0).getCount(), 512, "the first stack goes to 512");
-        h.assertValueEqual(torches.get(1).getCount(), 88, "and the rest goes in the next slot");
-        List<ItemStack> plain = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 60), ItemStack.EMPTY));
-        ItemStack tooMany = BackpackContents.insert(plain, new ItemStack(Items.TORCH, 100), false);
-        h.assertValueEqual(plain.get(0).getCount(), 64, "without it the first stack stops at 64");
-        h.assertValueEqual(plain.get(1).getCount(), 64, "the next slot takes a stack of 64");
-        h.assertValueEqual(tooMany.getCount(), 32, "and 32 of the 100 do not fit");
+        List<ItemStack> torches = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 1000), ItemStack.EMPTY));
+        h.assertTrue(BackpackContents.insert(torches, new ItemStack(Items.TORCH, 100)).isEmpty(), "100 more torches fit");
+        h.assertValueEqual(torches.get(0).getCount(), 1024, "the first stack goes to 1,024");
+        h.assertValueEqual(torches.get(1).getCount(), 76, "and the rest goes in the next slot");
+        List<ItemStack> two = new ArrayList<>(List.of(new ItemStack(Items.TORCH, 1000), ItemStack.EMPTY));
+        ItemStack tooMany = BackpackContents.insert(two, new ItemStack(Items.TORCH, 2000));
+        h.assertValueEqual(two.get(0).getCount(), 1024, "the first stack stops at 1,024");
+        h.assertValueEqual(two.get(1).getCount(), 1024, "the next slot takes 1,024");
+        h.assertValueEqual(tooMany.getCount(), 952, "and 952 of the 2,000 do not fit");
         h.succeed();
     }
 
@@ -990,7 +965,7 @@ public class BackpackGameTest {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
         BlockPos origin = h.absolutePos(CENTER);
-        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH, BackpackModuleType.TORCH_STACK);
+        ItemStack backpack = backpackWith(BackpackModuleType.AUTO_TORCH);
         storeTorches(backpack, 64);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpack);
         h.startSequence()

@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,9 +24,7 @@ import java.util.List;
  * ({@link Backpacks#EQUIPPED}) or the one in the inventory slot it was opened from, which is locked in place while the
  * screen is open.
  *
- * <p>While the Torch Stack module is in and on, torches stack to {@value BackpackContents#TORCH_STACK_MAX} in the
- * Backpack's slots. Switching it off or taking it out puts the torches over a normal stack back, in the Backpack
- * where they fit and otherwise in the inventory.
+ * <p>Every stackable item stacks to {@value BackpackContents#STACK_MAX} in the Backpack's slots.
  */
 public class BackpackMenu extends BaseMenu {
     /** Button id of the first module's on/off switch; module slot {@code n} is {@code BTN_TOGGLE_MODULE + n}. */
@@ -56,14 +53,14 @@ public class BackpackMenu extends BaseMenu {
     private final SimpleContainer contents = new SimpleContainer(BackpackContents.SIZE) {
         @Override
         public int getMaxStackSize() {
-            // The slots limit each stack (torches only go above 99 with the module); this keeps the container from clamping them
-            return BackpackContents.TORCH_STACK_MAX;
+            // The slots limit each stack; this keeps the container from clamping them
+            return BackpackContents.STACK_MAX;
         }
 
         @Override
         public int getMaxStackSize(ItemStack stack) {
             // The container clamps every stack it is given to this, not to the item's own limit
-            return BackpackContents.TORCH_STACK_MAX;
+            return BackpackContents.STACK_MAX;
         }
 
         @Override
@@ -91,7 +88,7 @@ public class BackpackMenu extends BaseMenu {
             addCustomSlot(new Slot(modules, i, MODULE_X, MODULE_Y + i * MODULE_ROW) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return stack.getItem() instanceof BackpackModuleItem module && !hasOtherOfType(module, getContainerSlot());
+                    return stack.getItem() instanceof BackpackModuleItem module && !module.type().retired() && !hasOtherOfType(module, getContainerSlot());
                 }
 
                 @Override
@@ -111,17 +108,16 @@ public class BackpackMenu extends BaseMenu {
 
                 @Override
                 public int getMaxStackSize() {
-                    return BackpackContents.TORCH_STACK_MAX;
+                    return BackpackContents.STACK_MAX;
                 }
 
                 @Override
                 public int getMaxStackSize(ItemStack stack) {
-                    return BackpackContents.maxStack(stack, torchStack());
+                    return BackpackContents.maxStack(stack);
                 }
             });
         }
         addPlayerSlots(inventory, GRID_X, INVENTORY_Y);
-        if (!player.level().isClientSide()) returnOverflow();
     }
 
     /** The Backpack at this source (or an empty stack): the worn one, or whatever sits in that inventory slot. */
@@ -172,20 +168,6 @@ public class BackpackMenu extends BaseMenu {
         return source;
     }
 
-    /** Whether torches stack to 512 here: the Torch Stack module is in one of the module slots and on. Works on both sides, from the module slots. */
-    public boolean torchStack() {
-        return moduleActive(BackpackModuleType.TORCH_STACK);
-    }
-
-    private boolean moduleActive(BackpackModuleType type) {
-        for (int i = 0; i < BackpackModules.SLOTS; i++) {
-            ItemStack module = modules.getItem(i);
-            if (module.getItem() instanceof BackpackModuleItem item && item.type() == type
-                    && !module.has(net.storagenexus.registry.ModComponents.MODULE_OFF)) return true;
-        }
-        return false;
-    }
-
     private boolean hasOtherOfType(BackpackModuleItem module, int exceptSlot) {
         for (int i = 0; i < BackpackModules.SLOTS; i++) {
             if (i != exceptSlot && modules.getItem(i).getItem() instanceof BackpackModuleItem other && other.type() == module.type()) return true;
@@ -213,40 +195,6 @@ public class BackpackMenu extends BaseMenu {
 
     private void onModulesChanged() {
         saveModules();
-        returnOverflow();
-    }
-
-    /**
-     * Without the Torch Stack module, no slot may hold more than a normal stack. What is over goes into the Backpack's
-     * other slots where it fits, and the rest into the player's inventory (or onto the ground).
-     */
-    private void returnOverflow() {
-        if (player.level().isClientSide() || torchStack()) return;
-        List<ItemStack> overflow = new ArrayList<>();
-        loading = true;
-        for (int i = 0; i < BackpackContents.SIZE; i++) {
-            ItemStack stack = contents.getItem(i);
-            if (stack.getCount() > stack.getMaxStackSize()) overflow.add(stack.split(stack.getCount() - stack.getMaxStackSize()));
-        }
-        for (ItemStack extra : overflow) {
-            // Into the Backpack's own stacks and empty slots first
-            for (int i = 0; i < BackpackContents.SIZE && !extra.isEmpty(); i++) {
-                ItemStack there = contents.getItem(i);
-                if (there.isEmpty()) {
-                    contents.setItem(i, extra.split(Math.min(extra.getCount(), extra.getMaxStackSize())));
-                } else if (ItemStack.isSameItemSameComponents(there, extra) && there.getCount() < there.getMaxStackSize()) {
-                    int moved = Math.min(extra.getCount(), there.getMaxStackSize() - there.getCount());
-                    there.grow(moved);
-                    extra.shrink(moved);
-                }
-            }
-            if (!extra.isEmpty()) player.getInventory().placeItemBackInInventory(extra, Prediction.PREDICTED);
-        }
-        loading = false;
-        if (!overflow.isEmpty()) {
-            saveContents();
-            broadcastChanges();
-        }
     }
 
     /** The slot index (in this menu) of the inventory slot the Backpack was opened from, or -1 if it is the worn one (or the offhand). */

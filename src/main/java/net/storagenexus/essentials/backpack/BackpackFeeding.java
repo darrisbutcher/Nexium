@@ -92,7 +92,7 @@ public final class BackpackFeeding {
         ItemStack eaten = slots.get(slot).split(1);
         ItemStack remainder = eaten.finishUsingItem(player.level(), player);
         if (!remainder.isEmpty()) {
-            remainder = BackpackContents.insert(slots, remainder, BackpackModules.active(backpack, BackpackModuleType.TORCH_STACK));
+            remainder = BackpackContents.insert(slots, remainder);
             if (!remainder.isEmpty()) player.getInventory().placeItemBackInInventory(remainder, Prediction.PREDICTED);
         }
         Backpacks.write(player, backpack, slots);

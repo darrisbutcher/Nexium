@@ -101,9 +101,9 @@
         "backpack",
         "backpack_modules",
         "auto_torch",
-        "torch_stack",
         "feeding",
         "compacting_module",
+        "restocking",
         "elytra"
       ]
     },
@@ -1186,16 +1186,20 @@
         "essentials.backpack_modules"
       ],
       "icon": "nexusessentials:auto_torch_module",
+      "items": [
+        "nexusessentials:torch_stack_module"
+      ],
       "aliases": [
         "Backpack modules",
-        "backpack module"
+        "backpack module",
+        "Torch Stack"
       ],
       "see": [
         "backpack",
         "auto_torch",
-        "torch_stack",
         "feeding",
-        "compacting_module"
+        "compacting_module",
+        "restocking"
       ]
     },
     "auto_torch": {
@@ -1216,29 +1220,7 @@
         "torch placement"
       ],
       "see": [
-        "backpack_modules",
-        "torch_stack"
-      ]
-    },
-    "torch_stack": {
-      "pages": [
-        "essentials.torch_stack"
-      ],
-      "icon": "nexusessentials:torch_stack_module",
-      "recipes": [
-        "torch_stack_module"
-      ],
-      "items": [
-        "nexusessentials:torch_stack_module"
-      ],
-      "aliases": [
-        "Torch stack",
-        "torch stack module",
-        "stack torches"
-      ],
-      "see": [
-        "backpack_modules",
-        "auto_torch"
+        "backpack_modules"
       ]
     },
     "feeding": {
@@ -1281,6 +1263,31 @@
       "see": [
         "backpack_modules",
         "compacting",
+        "backpack"
+      ]
+    },
+    "restocking": {
+      "pages": [
+        "essentials.restocking",
+        "essentials.restocking2"
+      ],
+      "icon": "nexusessentials:restocking_module",
+      "recipes": [
+        "restocking_module"
+      ],
+      "items": [
+        "nexusessentials:restocking_module"
+      ],
+      "aliases": [
+        "Restocking",
+        "restocking module",
+        "backpack restock",
+        "unpack blocks",
+        "refill hotbar"
+      ],
+      "see": [
+        "backpack_modules",
+        "compacting_module",
         "backpack"
       ]
     },

@@ -101,4 +101,27 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
         }
         return super.keyPressed(event);
     }
+
+    /**
+     * A count of 1,000 or more is four digits, wider than a slot: it is drawn smaller so it stays inside, like the three-digit ones.
+     * (Every other slot is drawn as usual.)
+     */
+    @Override
+    protected void extractSlot(GuiGraphicsExtractor g, net.minecraft.world.inventory.Slot slot, int mouseX, int mouseY) {
+        ItemStack stack = slot.getItem();
+        if (!menu.isStorageSlot(slot) || stack.getCount() < 1000) {
+            super.extractSlot(g, slot, mouseX, mouseY);
+            return;
+        }
+        int x = slot.x, y = slot.y;
+        g.item(stack, x, y, x + y * imageWidth);
+        g.itemDecorations(font, stack, x, y, "");
+        String count = Integer.toString(stack.getCount());
+        float scale = 0.7F;
+        g.pose().pushMatrix();
+        g.pose().translate(x + 17 - font.width(count) * scale, y + 10);
+        g.pose().scale(scale, scale);
+        g.text(font, Component.literal(count), 0, 0, 0xFFFFFFFF, true);
+        g.pose().popMatrix();
+    }
 }

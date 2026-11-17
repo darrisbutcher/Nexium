@@ -25,15 +25,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Takes one bucket per second from a touching source block (optionally only one chosen fluid).
+ * Takes up to {@value #BUCKETS_PER_SECOND} buckets per second from the touching source blocks (optionally only one chosen fluid).
  * Infinite water sources (two or more neighbouring water sources) and the Infinite Lava Source
  * are never used up; everything else is drained block by block.
  */
 public class FluidIntakeBlockEntity extends BlockEntity {
-    private static final long BUFFER = 4 * FluidConstants.BUCKET;
-    private static final int PULL_INTERVAL = 20;
-    /** The buffer holds 4 buckets and fills by one a second, so pushing every half second keeps up. */
-    private static final int PUSH_INTERVAL = 10;
+    /** The buffer holds {@value #BUFFER_BUCKETS} buckets. */
+    public static final int BUFFER_BUCKETS = 32;
+    /** Buckets taken a second: {@value #BUCKETS_PER_PULL} every {@value #PULL_INTERVAL} ticks. */
+    public static final int BUCKETS_PER_SECOND = 8;
+    private static final long BUFFER = BUFFER_BUCKETS * FluidConstants.BUCKET;
+    private static final int PULL_INTERVAL = 5;
+    private static final int BUCKETS_PER_PULL = BUCKETS_PER_SECOND * PULL_INTERVAL / 20;
+    /** Pushing as often as pulling keeps the buffer from filling up while something can take the fluid. */
+    private static final int PUSH_INTERVAL = 5;
 
     private int scanIndex;
     /** Only this fluid is taken; blank means anything. */
@@ -81,8 +86,16 @@ public class FluidIntakeBlockEntity extends BlockEntity {
         return out;
     }
 
+    /** Takes {@value #BUCKETS_PER_PULL} buckets, from as many of the touching sources as it takes (an infinite source gives them all). */
     private void pull(Level level) {
-        if (BUFFER - buffer.amount < FluidConstants.BUCKET) return;
+        for (int i = 0; i < BUCKETS_PER_PULL; i++) {
+            if (!pullBucket(level)) return;
+        }
+    }
+
+    /** Takes one bucket if the buffer has room for it and a touching source has one to give. */
+    private boolean pullBucket(Level level) {
+        if (BUFFER - buffer.amount < FluidConstants.BUCKET) return false;
         List<BlockPos> list = candidates();
         for (int i = 0; i < list.size(); i++) {
             BlockPos p = list.get((scanIndex + i) % list.size());
@@ -99,8 +112,9 @@ public class FluidIntakeBlockEntity extends BlockEntity {
             setChanged();
             if (!spring && !isInfiniteWater(level, p, fs)) level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
             scanIndex = (scanIndex + i + 1) % list.size();
-            return;
+            return true;
         }
+        return false;
     }
 
     private static boolean isInfiniteWater(Level level, BlockPos pos, FluidState fs) {

@@ -222,14 +222,13 @@ public class FeaturesGameTest {
         FluidIntakeBlockEntity be = h.getBlockEntity(pos, FluidIntakeBlockEntity.class);
         be.setFilter(FluidVariant.of(Fluids.LAVA));
         be.pullNow(h.getLevel());
-        h.assertTrue(be.bufferAmount() == FluidConstants.BUCKET, "one bucket taken");
+        h.assertTrue(be.bufferAmount() == 2 * FluidConstants.BUCKET, "two buckets taken a pull (8 a second, 4 pulls a second)");
         h.assertTrue(h.getBlockState(pos.west()).is(ModBlocks.LAVA_SPRING), "the lava source is never used up");
         h.assertTrue(h.getBlockState(pos.east()).is(Blocks.WATER), "water left alone by a lava filter");
+        for (int i = 0; i < 20; i++) be.pullNow(h.getLevel());
+        h.assertTrue(be.bufferAmount() == 32 * FluidConstants.BUCKET, "lava keeps coming, up to the 32 buckets it holds");
         be.pullNow(h.getLevel());
-        be.pullNow(h.getLevel());
-        be.pullNow(h.getLevel());
-        be.pullNow(h.getLevel());
-        h.assertTrue(be.bufferAmount() == 4 * FluidConstants.BUCKET, "lava keeps coming");
+        h.assertTrue(be.bufferAmount() == 32 * FluidConstants.BUCKET, "and no more than that");
         h.succeed();
     }
 

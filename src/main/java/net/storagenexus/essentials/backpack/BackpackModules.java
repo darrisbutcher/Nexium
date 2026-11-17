@@ -15,7 +15,7 @@ import java.util.List;
  * stays with it when it is taken out.
  */
 public final class BackpackModules {
-    /** Module slots in a Backpack: one for each of the four modules (Auto Torch, Torch Stack, Feeding, Compacting) and a spare. */
+    /** Module slots in a Backpack: one for each of the four modules (Auto Torch, Feeding, Compacting, Restocking) and a spare. */
     public static final int SLOTS = 5;
 
     /** The Backpack's module slots, always {@link #SLOTS} long (empty stacks for empty slots). */

@@ -92,7 +92,7 @@ public final class BackpackCompacting {
             List<ItemStack> trial = new ArrayList<>(slots.size());
             for (ItemStack stack : slots) trial.add(stack.copy());
             take(trial, item, blocks * pack.count());
-            if (!BackpackContents.insert(trial, new ItemStack(pack.into(), blocks), false).isEmpty()) continue;
+            if (!BackpackContents.insert(trial, new ItemStack(pack.into(), blocks)).isEmpty()) continue;
             for (int i = 0; i < slots.size(); i++) slots.set(i, trial.get(i));
             return true;
         }
