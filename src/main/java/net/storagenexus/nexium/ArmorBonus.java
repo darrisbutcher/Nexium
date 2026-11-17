@@ -21,7 +21,9 @@ public enum ArmorBonus implements StringRepresentable {
     /** Full set: no knockback. */
     NO_KNOCKBACK("no_knockback", EquipmentSlot.CHEST, true),
     /** The helmet alone: Night Vision. */
-    NIGHT_VISION("night_vision", EquipmentSlot.HEAD, false);
+    NIGHT_VISION("night_vision", EquipmentSlot.HEAD, false),
+    /** Full set: Water Breathing (no drowning). Last in the list so the ids sent over the wire of the others stay the same. */
+    WATER_BREATHING("water_breathing", EquipmentSlot.CHEST, true);
 
     public static final Codec<ArmorBonus> CODEC = StringRepresentable.fromEnum(ArmorBonus::values);
     public static final StreamCodec<ByteBuf, ArmorBonus> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Enum::ordinal);
