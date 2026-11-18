@@ -19,7 +19,8 @@
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",
-    "VillagerInvoker"
+    "VillagerInvoker",
+    "WolfAccess"
   ],
   "injectors": {
     "defaultRequire": 1

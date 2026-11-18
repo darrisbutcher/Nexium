@@ -29,31 +29,39 @@ public class DogModel extends WolfModel {
         this.realTail = tail.getChild("real_tail");
     }
 
+    /**
+     * A box with its place on the skin given in the wolf's 64x32 layout. The skin file itself is finer (256x128): texture
+     * coordinates are fractions of the whole picture, so the same layout just shows more detail.
+     */
+    private static CubeListBuilder box(CubeListBuilder b, int u, int v, float x, float y, float z, float w, float h, float d, CubeDeformation grow) {
+        return b.texOffs(u, v).addBox(x, y, z, w, h, d, grow);
+    }
+
     public static LayerDefinition createLayer(CubeDeformation grow) {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         PartDefinition head = root.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(-1.0F, 13.5F, -7.0F));
-        PartDefinition realHead = head.addOrReplaceChild("real_head", CubeListBuilder.create()
-                        .texOffs(0, 0).addBox(-2.0F, -3.0F, -2.0F, 6.0F, 6.0F, 4.0F, grow)
-                        // A shorter muzzle than a wolf's
-                        .texOffs(0, 10).addBox(-0.5F, -0.001F, -4.0F, 3.0F, 3.0F, 3.0F, grow),
+        PartDefinition realHead = head.addOrReplaceChild("real_head",
+                // The head, and a shorter muzzle than a wolf's
+                box(box(CubeListBuilder.create(), 0, 0, -2.0F, -3.0F, -2.0F, 6.0F, 6.0F, 4.0F, grow),
+                        0, 10, -0.5F, -0.001F, -4.0F, 3.0F, 3.0F, 3.0F, grow),
                 PartPose.ZERO);
         // Big upright ears, leaning out a little, with their own place on the texture
-        realHead.addOrReplaceChild("right_ear", CubeListBuilder.create().texOffs(44, 14).addBox(-1.5F, -4.0F, 0.0F, 3.0F, 4.0F, 1.0F, grow),
+        realHead.addOrReplaceChild("right_ear", box(CubeListBuilder.create(), 44, 14, -1.5F, -4.0F, 0.0F, 3.0F, 4.0F, 1.0F, grow),
                 PartPose.offsetAndRotation(-0.5F, -3.0F, 0.0F, 0.0F, 0.0F, -0.14F));
-        realHead.addOrReplaceChild("left_ear", CubeListBuilder.create().texOffs(44, 20).addBox(-1.5F, -4.0F, 0.0F, 3.0F, 4.0F, 1.0F, grow),
+        realHead.addOrReplaceChild("left_ear", box(CubeListBuilder.create(), 44, 20, -1.5F, -4.0F, 0.0F, 3.0F, 4.0F, 1.0F, grow),
                 PartPose.offsetAndRotation(2.5F, -3.0F, 0.0F, 0.0F, 0.0F, 0.14F));
-        root.addOrReplaceChild("body", CubeListBuilder.create().texOffs(18, 14).addBox(-3.0F, -2.0F, -3.0F, 6.0F, 9.0F, 6.0F, grow),
+        root.addOrReplaceChild("body", box(CubeListBuilder.create(), 18, 14, -3.0F, -2.0F, -3.0F, 6.0F, 9.0F, 6.0F, grow),
                 PartPose.offsetAndRotation(0.0F, 14.0F, 2.0F, (float) (Math.PI / 2), 0.0F, 0.0F));
-        root.addOrReplaceChild("upper_body", CubeListBuilder.create().texOffs(21, 0).addBox(-3.0F, -3.0F, -3.0F, 8.0F, 6.0F, 7.0F, grow),
+        root.addOrReplaceChild("upper_body", box(CubeListBuilder.create(), 21, 0, -3.0F, -3.0F, -3.0F, 8.0F, 6.0F, 7.0F, grow),
                 PartPose.offsetAndRotation(-1.0F, 14.0F, -3.0F, (float) (Math.PI / 2), 0.0F, 0.0F));
-        CubeListBuilder leg = CubeListBuilder.create().texOffs(0, 18).addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, grow);
+        CubeListBuilder leg = box(CubeListBuilder.create(), 0, 18, 0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, grow);
         root.addOrReplaceChild("right_hind_leg", leg, PartPose.offset(-2.5F, 16.0F, 7.0F));
         root.addOrReplaceChild("left_hind_leg", leg, PartPose.offset(0.5F, 16.0F, 7.0F));
         root.addOrReplaceChild("right_front_leg", leg, PartPose.offset(-2.5F, 16.0F, -4.0F));
         root.addOrReplaceChild("left_front_leg", leg, PartPose.offset(0.5F, 16.0F, -4.0F));
         PartDefinition tail = root.addOrReplaceChild("tail", CubeListBuilder.create(), PartPose.offsetAndRotation(-1.0F, 12.0F, 8.0F, 0.62831855F, 0.0F, 0.0F));
-        tail.addOrReplaceChild("real_tail", CubeListBuilder.create().texOffs(9, 18).addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, grow), PartPose.ZERO);
+        tail.addOrReplaceChild("real_tail", box(CubeListBuilder.create(), 9, 18, 0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, grow), PartPose.ZERO);
         return LayerDefinition.create(mesh, 64, 32);
     }
 

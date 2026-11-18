@@ -24,6 +24,13 @@ public class DogEntity extends Wolf {
         super(type, level);
     }
 
+    /** Zoe's collar is green, not a wolf's red. */
+    @Override
+    public void tame(Player player) {
+        super.tame(player);
+        ((net.nexium.essentials.mixin.WolfAccess) this).nexium$setCollarColor(net.minecraft.world.item.DyeColor.GREEN);
+    }
+
     @Override
     public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return super.isInvulnerableTo(level, source);
