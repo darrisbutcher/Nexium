@@ -64,13 +64,13 @@ public class DogModel extends WolfModel {
         for (int side = 0; side < 2; side++) {
             float x = side == 0 ? -1.9F : 1.9F;
             String name = side == 0 ? "right" : "left";
-            PartDefinition front = root.addOrReplaceChild(name + "_front_leg", box(CubeListBuilder.create(), 28, 16, -1.5F, 0.0F, -1.5F, 3, 5, 3, grow),
+            PartDefinition front = root.addOrReplaceChild(name + "_front_leg", box(CubeListBuilder.create(), 28, 16, -1.5F, 0.0F, -1.5F, 3, 4, 3, grow),
                     PartPose.offset(x, 18.0F, -4.5F));
-            front.addOrReplaceChild("paw", box(CubeListBuilder.create(), 46, 16, -1.5F, 5.0F, -2.5F, 3, 1, 4, grow), PartPose.ZERO);
+            front.addOrReplaceChild("paw", box(CubeListBuilder.create(), 46, 16, -1.5F, 4.0F, -2.5F, 3, 2, 4, grow), PartPose.ZERO);
             PartDefinition hind = root.addOrReplaceChild(name + "_hind_leg", box(CubeListBuilder.create(), 62, 16, -2.0F, -1.0F, -2.0F, 4, 4, 4, grow),
-                    PartPose.offset(x * 1.3F, 17.5F, 4.5F));
-            hind.addOrReplaceChild("lower", box(CubeListBuilder.create(), 78, 16, -1.5F, 3.0F, -1.5F, 3, 3, 3, grow), PartPose.ZERO);
-            hind.addOrReplaceChild("paw", box(CubeListBuilder.create(), 46, 16, -1.5F, 6.0F, -2.5F, 3, 1, 4, grow), PartPose.ZERO);
+                    PartPose.offset(x * 1.3F, 17.0F, 4.5F));
+            hind.addOrReplaceChild("lower", box(CubeListBuilder.create(), 78, 16, -1.5F, 3.0F, -1.5F, 3, 2, 3, grow), PartPose.ZERO);
+            hind.addOrReplaceChild("paw", box(CubeListBuilder.create(), 46, 16, -1.5F, 5.0F, -2.5F, 3, 2, 4, grow), PartPose.ZERO);
         }
 
         // The tail, in two pieces
