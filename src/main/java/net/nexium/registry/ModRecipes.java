@@ -1,0 +1,17 @@
+package net.nexium.registry;
+
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.nexium.StorageNexus;
+import net.nexium.aiot.AiotMergeRecipe;
+
+public final class ModRecipes {
+    /** {@code nexium:aiot_merge}: five tools into an AIOT, keeping their enchantments and durability. */
+    public static final RecipeSerializer<AiotMergeRecipe> AIOT_MERGE = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+            StorageNexus.id("aiot_merge"), AiotMergeRecipe.SERIALIZER);
+
+    public static void init() {}
+
+    private ModRecipes() {}
+}

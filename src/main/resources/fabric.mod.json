@@ -12,22 +12,22 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.storagenexus.StorageNexus"
+      "net.nexium.StorageNexus"
     ],
     "client": [
-      "net.storagenexus.client.StorageNexusClient"
+      "net.nexium.client.StorageNexusClient"
     ],
     "modmenu": [
-      "net.storagenexus.compat.modmenu.NexiumModMenu"
+      "net.nexium.compat.modmenu.NexiumModMenu"
     ],
     "jade": [
-      "net.storagenexus.compat.jade.NexusJadePlugin"
+      "net.nexium.compat.jade.NexusJadePlugin"
     ],
     "jei_mod_plugin": [
-      "net.storagenexus.compat.jei.StorageNexusJeiPlugin"
+      "net.nexium.compat.jei.StorageNexusJeiPlugin"
     ],
     "rei_client": [
-      "net.storagenexus.compat.rei.StorageNexusReiPlugin"
+      "net.nexium.compat.rei.StorageNexusReiPlugin"
     ]
   },
   "mixins": [
