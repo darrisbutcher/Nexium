@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.23.1
+
+* **Key Binds screen**: two key names were too long and ran under their button. "Sort Inventory (over a container or your inventory)" is now
+  "Sort Inventory" and "Cycle Villager Trades (in the trading screen)" is now "Cycle Villager Trades". The Codex's key page still says
+  where each one works.
+
 ## 1.23.0
 
 * **One mod id**: the two ids `storagenexus` and `nexusessentials` are now one, `nexium`. Every block, item, block entity, menu,
