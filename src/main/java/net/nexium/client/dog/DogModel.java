@@ -52,11 +52,14 @@ public class DogModel extends WolfModel {
         root.addOrReplaceChild("neck", box(CubeListBuilder.create(), 52, 0, -2.5F, -4.0F, -2.5F, 5, 5, 5, grow),
                 PartPose.offsetAndRotation(0.0F, 12.5F, -6.0F, 0.5F, 0.0F, 0.0F));
 
-        // The head: skull, a tapered muzzle with the nose, and the ears
+        // The head is rounder than a block: a skull with a narrower crown on top, a muzzle that narrows in two steps to the
+        // nose, and a chin under it. The nose and mouth are drawn on the muzzle's tip.
         PartDefinition head = root.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(0.0F, 9.6F, -8.2F));
-        head.addOrReplaceChild("skull", box(CubeListBuilder.create(), 74, 0, -3.5F, -3.0F, -3.0F, 7, 6, 6, grow), PartPose.ZERO);
-        head.addOrReplaceChild("muzzle", box(CubeListBuilder.create(), 100, 0, -2.0F, -0.3F, -7.0F, 4, 3, 4, grow), PartPose.ZERO);
-        head.addOrReplaceChild("nose", box(CubeListBuilder.create(), 116, 0, -1.0F, -0.6F, -7.8F, 2, 1, 1, grow), PartPose.ZERO);
+        head.addOrReplaceChild("skull", box(CubeListBuilder.create(), 0, 26, -3.5F, -2.5F, -3.0F, 7, 5, 6, grow), PartPose.ZERO);
+        head.addOrReplaceChild("crown", box(CubeListBuilder.create(), 26, 26, -2.5F, -3.5F, -2.5F, 5, 1, 5, grow), PartPose.ZERO);
+        head.addOrReplaceChild("muzzle", box(CubeListBuilder.create(), 46, 26, -2.0F, -0.3F, -6.0F, 4, 3, 3, grow), PartPose.ZERO);
+        head.addOrReplaceChild("muzzle_tip", box(CubeListBuilder.create(), 60, 26, -1.5F, 0.2F, -8.0F, 3, 2, 2, grow), PartPose.ZERO);
+        head.addOrReplaceChild("chin", box(CubeListBuilder.create(), 70, 26, -1.5F, 2.6F, -6.5F, 3, 1, 4, grow), PartPose.ZERO);
         addEar(head, "right_ear", -2.3F, -0.14F, false, grow);
         addEar(head, "left_ear", 2.3F, 0.14F, true, grow);
 
@@ -92,7 +95,7 @@ public class DogModel extends WolfModel {
             b = mirror ? mirrored(b, (int) p[0], 16, x0, y - h, -0.5F, w, h, 1, grow) : box(b, (int) p[0], 16, x0, y - h, -0.5F, w, h, 1, grow);
             y -= h;
         }
-        head.addOrReplaceChild(name, b, PartPose.offsetAndRotation(x, -2.7F, -0.8F, 0.1F, 0.0F, lean * 1.6F));
+        head.addOrReplaceChild(name, b, PartPose.offsetAndRotation(x, -3.2F, -0.8F, 0.1F, 0.0F, lean * 1.6F));
     }
 
     /** Lying down, front paws out in front and the head resting on them. */
