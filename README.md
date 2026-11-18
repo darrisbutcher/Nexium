@@ -651,6 +651,10 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   the energy it holds.
 * **Batteries** (iron, gold, diamond) hold 250,000, 1,000,000 and 10,000,000 NE. Six cells on the side show the charge and a
   comparator reads it. A broken Battery keeps its charge in the item.
+* **Power Meter** (`IGI / RCR / III`: iron ingots, glass, redstone, a comparator): put it against an Energy Conduit and right-click it
+  for a dashboard of that conduit's whole network: what it makes and uses, what is stored and how long it lasts, a minute of history,
+  and every generator, machine and battery on it with its rate. Each machine has a **priority** (High, Normal, Low: Low goes without
+  first when power runs short) and an **On/Off** switch, which set the conduit sides that feed it.
 * **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 200 NE/t at
   the default depth (1,800 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
   the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with
@@ -691,6 +695,14 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 * **Ice recipes**: 9 ice make packed ice and 9 packed ice make blue ice (vanilla); packed ice also crafts into 9 ice and
   blue ice into 9 packed ice.
 * **Soul sand to sand**: a Blast Furnace smelts soul sand into sand, with no experience, at an ore's speed (5 seconds).
+
+## Quests
+
+A quest book with six chapters (Storage, Power, Farms, Tools, Backpack, Nexium), opened with the **Quests** button at the top of the
+Codex or the *Open Quests* key (no key until you pick one). Each quest asks you to make or have an item and counts what you have
+already done (crafting statistics, or what you hold). A chapter opens once every quest of the one before it is done. Every quest gives
+random Nexium items (ingots, a Nexium block or a Nexium disk part; more rolls in later chapters). No recipe is ever locked. Progress is
+saved on the player. The quests are in `data/storagenexus/quests.json` in the mod.
 
 ## Settings
 

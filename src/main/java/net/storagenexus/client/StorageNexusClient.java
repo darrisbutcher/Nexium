@@ -104,6 +104,11 @@ public class StorageNexusClient implements ClientModInitializer {
             if (payload.open()) client.gui.setScreen(new net.storagenexus.client.screen.PowerMeterScreen(payload));
             else if (client.gui.screen() instanceof net.storagenexus.client.screen.PowerMeterScreen screen) screen.update(payload);
         });
+        ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.quest.QuestStatePayload.TYPE, (payload, context) -> {
+            var client = context.client();
+            if (payload.open()) client.gui.setScreen(new net.storagenexus.client.screen.QuestScreen(payload));
+            else if (client.gui.screen() instanceof net.storagenexus.client.screen.QuestScreen screen) screen.update(payload);
+        });
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {
                 menu.receiveSync(payload);

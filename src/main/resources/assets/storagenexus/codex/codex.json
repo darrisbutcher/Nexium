@@ -8,7 +8,8 @@
         "codex",
         "keys",
         "whats_new",
-        "settings"
+        "settings",
+        "quests"
       ]
     },
     {
@@ -231,10 +232,27 @@
       "icon": "minecraft:writable_book",
       "aliases": [
         "config file",
-        "nexusessentials.json"
+        "nexusessentials.json",
+        "config screen",
+        "Nexium Settings"
       ],
       "see": [
         "keys"
+      ]
+    },
+    "quests": {
+      "pages": [
+        "start.quests"
+      ],
+      "icon": "minecraft:written_book",
+      "aliases": [
+        "Quest book",
+        "Progression",
+        "Chapters"
+      ],
+      "see": [
+        "whats_new",
+        "settings"
       ]
     },
     "drawers": {
