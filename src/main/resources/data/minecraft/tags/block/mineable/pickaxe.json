@@ -50,6 +50,7 @@
     "storagenexus:freezer",
     "storagenexus:combustion_generator",
     "storagenexus:solar_panel",
+    "storagenexus:power_meter",
     "storagenexus:thermal_generator",
     "storagenexus:iron_battery",
     "storagenexus:gold_battery",

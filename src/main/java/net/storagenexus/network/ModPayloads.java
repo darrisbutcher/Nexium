@@ -22,6 +22,13 @@ import net.storagenexus.terminal.TerminalSyncPayload;
 public final class ModPayloads {
     public static void init() {
         PayloadTypeRegistry.clientboundPlay().register(TerminalSyncPayload.TYPE, TerminalSyncPayload.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(net.storagenexus.energy.PowerReportPayload.TYPE, net.storagenexus.energy.PowerReportPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.energy.PowerRequestPayload.TYPE, net.storagenexus.energy.PowerRequestPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(net.storagenexus.energy.PowerControlPayload.TYPE, net.storagenexus.energy.PowerControlPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(net.storagenexus.energy.PowerRequestPayload.TYPE,
+                (payload, context) -> net.storagenexus.energy.PowerMeter.refresh(context.player(), payload.meter()));
+        ServerPlayNetworking.registerGlobalReceiver(net.storagenexus.energy.PowerControlPayload.TYPE,
+                (payload, context) -> net.storagenexus.energy.PowerMeter.control(context.player(), payload.meter(), payload.machine(), payload.priority(), payload.paused()));
         PayloadTypeRegistry.serverboundPlay().register(TerminalActionPayload.TYPE, TerminalActionPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);

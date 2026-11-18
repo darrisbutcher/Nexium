@@ -39,6 +39,8 @@ public class SideConfig {
     public RedstoneControl redstone = RedstoneControl.ALWAYS;
     public int priority;
     public boolean roundRobin;
+    /** Switched off from the Power Meter: this side neither takes energy nor gives it, and keeps its other settings. */
+    public boolean paused;
     public ItemStack filter = ItemStack.EMPTY;
     public ItemStack upgrades = ItemStack.EMPTY;
     /** Not saved: round-robin position. */
@@ -54,7 +56,7 @@ public class SideConfig {
         return mode == Mode.INSERT ? channel : extractChannel;
     }
 
-    private record Data(int mode, int channel, int extractChannel, int redstone, int priority, boolean roundRobin, ItemStack filter, ItemStack upgrades) {}
+    private record Data(int mode, int channel, int extractChannel, int redstone, int priority, boolean roundRobin, ItemStack filter, ItemStack upgrades, boolean paused) {}
 
     private static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.INT.fieldOf("mode").forGetter(Data::mode),
@@ -65,7 +67,8 @@ public class SideConfig {
             Codec.INT.fieldOf("priority").forGetter(Data::priority),
             Codec.BOOL.fieldOf("round_robin").forGetter(Data::roundRobin),
             ItemStack.OPTIONAL_CODEC.fieldOf("filter").forGetter(Data::filter),
-            ItemStack.OPTIONAL_CODEC.fieldOf("upgrades").forGetter(Data::upgrades)
+            ItemStack.OPTIONAL_CODEC.fieldOf("upgrades").forGetter(Data::upgrades),
+            Codec.BOOL.optionalFieldOf("paused", false).forGetter(Data::paused)
     ).apply(i, Data::new));
 
     public static Codec<SideConfig> codec(ConduitType type) {
@@ -79,8 +82,9 @@ public class SideConfig {
             c.roundRobin = d.roundRobin();
             c.filter = d.filter();
             c.upgrades = d.upgrades();
+            c.paused = d.paused();
             return c;
-        }, c -> new Data(c.mode.ordinal(), c.channel, c.extractChannel, c.redstone.ordinal(), c.priority, c.roundRobin, c.filter, c.upgrades));
+        }, c -> new Data(c.mode.ordinal(), c.channel, c.extractChannel, c.redstone.ordinal(), c.priority, c.roundRobin, c.filter, c.upgrades, c.paused));
     }
 
     public int speedUpgrades() {

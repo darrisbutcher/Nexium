@@ -2162,7 +2162,8 @@
         "power.thermal",
         "power.reactor",
         "power.battery",
-        "power.conduit"
+        "power.conduit",
+        "power.meter"
       ],
       "icon": "storagenexus:combustion_generator",
       "recipes": [
@@ -2176,7 +2177,8 @@
         "gold_battery",
         "diamond_battery",
         "energy_conduit",
-        "ender_energy_conduit"
+        "ender_energy_conduit",
+        "power_meter"
       ],
       "items": [
         "storagenexus:combustion_generator",
@@ -2184,6 +2186,7 @@
         "storagenexus:energy_conduit",
         "storagenexus:ender_energy_conduit",
         "storagenexus:solar_panel",
+        "storagenexus:power_meter",
         "storagenexus:thermal_generator",
         "storagenexus:redstone_reactor",
         "storagenexus:redstone_fuel_rod",
@@ -2205,7 +2208,9 @@
         "Redstone Reactor",
         "Fuel Rod",
         "Battery",
-        "Batteries"
+        "Batteries",
+        "Power Meter",
+        "Power Dashboard"
       ],
       "see": [
         "farms",

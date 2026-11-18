@@ -22,5 +22,11 @@ public interface NexusEnergy {
 
     long stored();
 
+    /** Whether energy can be put in from outside (a generator's buffer says no). */
+    default boolean takesIn() { return true; }
+
+    /** Whether energy can be taken out from outside (a machine's buffer says no). */
+    default boolean givesOut() { return true; }
+
     long capacity();
 }

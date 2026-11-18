@@ -42,12 +42,14 @@
       "net.storagenexus.gametest.client.EnergyClientTest",
       "net.storagenexus.gametest.client.SortClientTest",
       "net.storagenexus.gametest.client.ConfigScreenClientTest",
+      "net.storagenexus.gametest.client.PowerMeterClientTest",
       "net.storagenexus.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
       "net.storagenexus.gametest.XpFarmGameTest",
       "net.storagenexus.gametest.OverclockGameTest",
       "net.storagenexus.gametest.StressGameTest",
+      "net.storagenexus.gametest.PowerMeterGameTest",
       "net.storagenexus.gametest.RestockingGameTest",
       "net.storagenexus.gametest.DrawerKeyGameTest",
       "net.storagenexus.gametest.BackpackGameTest",
