@@ -1,0 +1,539 @@
+package net.nexium.essentials.farm;
+
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.fabricmc.fabric.api.entity.FakePlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.nexium.essentials.capture.MobCapture;
+import net.nexium.essentials.registry.ModBlockEntities;
+import net.nexium.essentials.registry.ModComponents;
+
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
+
+/**
+ * The block entity of every {@link FarmKind} farm (the kind comes from its block): 27 output slots hoppers can only take
+ * from below, and an input slot for the kinds that have one (hoppers feed it from the top and sides). Every cycle it makes
+ * what its kind makes. A full output, a missing input or a redstone signal pauses the cycle. The progress is kept in the
+ * dropped item.
+ */
+public class FarmBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos>,
+        net.nexium.util.ComparatorReadable {
+    public static final int OUTPUT_SLOTS = 27;
+    public static final int INPUT_SLOT = OUTPUT_SLOTS;
+    public static final int SIZE = OUTPUT_SLOTS + 1;
+
+    private static final int[] OUTPUT = IntStream.range(0, OUTPUT_SLOTS).toArray();
+    private static final int[] INPUT = {INPUT_SLOT};
+    private static final int[] NO_SLOTS = new int[0];
+
+    /** Skull, ingot and shell odds are vanilla's plus Looting V: 2.5% + 5 x 1%, and 50% + 5 x 6.25%. */
+    private static final float SKULL_CHANCE = 0.075F, INGOT_CHANCE = 0.075F, SHELL_CHANCE = 0.8125F;
+    /** The Monster Farm's Totem of Undying: this often per cycle, not the evoker's every time. */
+    public static final float TOTEM_CHANCE = 0.02F;
+
+    private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private int progress;
+    /** Which of the farm's {@link FarmKind#modes()} it is on (the Generator). */
+    private int mode;
+    /** Cycles left on the bone meal in use (the Crop Farm runs twice as fast on it, the Moss Farm needs it). */
+    private int boostLeft;
+    /** Not saved; worked out again every tick. */
+    private boolean full, starved;
+    /** No energy for this tick's work (not saved; worked out again every tick). */
+    private boolean unpowered;
+    /** The Nexus Energy it runs on: ten seconds' worth, filled by Energy Conduits and generators beside it. */
+    private final net.nexium.energy.EnergyBuffer energy;
+    /** Not saved: items a cycle made that found no room. */
+    private int overflow;
+    /** The overclock level: 0 off, then 2x, 4x and 8x (see {@link Overclock}). */
+    private int overclock;
+
+    public FarmBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.FARM, pos, state);
+        FarmKind kind = state.getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.ZOMBIFIED_PIGLIN;
+        energy = net.nexium.energy.EnergyBuffer.machine(kind.energyPerTick() * ENERGY_TICKS, this::setChanged);
+    }
+
+    /** How many ticks of work a full energy buffer lasts. */
+    public static final long ENERGY_TICKS = 200;
+
+    public net.nexium.energy.EnergyBuffer energy() { return energy; }
+
+    /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
+    public int overclock() { return overclock; }
+
+    /** Sets the overclock level; the energy buffer is resized to hold ten seconds of work at the new speed. */
+    public void setOverclock(int level) {
+        overclock = Overclock.clamp(level);
+        energy.setCapacity(Overclock.capacity(kind().energyPerTick(), overclock));
+        setChanged();
+    }
+
+    /** Whether the farm is waiting for Nexus Energy. */
+    public boolean isUnpowered() { return unpowered; }
+
+    public FarmKind kind() {
+        return getBlockState().getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.ZOMBIFIED_PIGLIN;
+    }
+
+    // ---------------------------------------------------------------- working
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FarmBlockEntity farm) {
+        if (level instanceof ServerLevel serverLevel) farm.work(serverLevel);
+    }
+
+    private void work(ServerLevel level) {
+        FarmKind kind = kind();
+        boolean wasFull = full;
+        full = !hasRoom(kind);
+        // A comparator reads 15 while the farm is stopped for lack of room
+        if (full != wasFull) level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+        // Overclocked, it does as many ticks of work as the energy it holds can pay for, up to its setting
+        int run = Overclock.ticksOfWork(overclock, energy.stored(), kind.energyPerTick());
+        unpowered = run < 1;
+        // A farm saved by an older version may still hold an input item: it is dropped
+        if (!items.get(INPUT_SLOT).isEmpty()) {
+            ItemStack old = items.get(INPUT_SLOT);
+            items.set(INPUT_SLOT, ItemStack.EMPTY);
+            net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, old);
+            setChanged();
+        }
+        starved = false;
+        boostLeft = 0;
+        if (!full && !isPaused() && !unpowered) {
+            energy.use((long) kind.energyPerTick() * run);
+            progress += run;
+            if (progress >= cycleTicks()) {
+                // What went past the end of the cycle counts towards the next one
+                progress = Math.min(progress - cycleTicks(), run - 1);
+                cycle(level, kind, level.getRandom());
+            }
+            setChanged();
+        }
+    }
+
+    /** Runs one cycle now, whatever the progress (tests use it). Takes the input and makes the output. */
+    public void cycle(ServerLevel level, FarmKind kind, RandomSource random) {
+        switch (kind) {
+            case VILLAGER_BREEDER -> {
+                insert(baby(level));
+            }
+            case PIGLIN_BARTER -> {
+                LootParams params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
+                for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.PIGLIN_BARTERING).getRandomItems(params)) {
+                    insert(loot);
+                }
+            }
+            case ZOMBIFIED_PIGLIN -> {
+                // Gold nuggets 0-1 plus Looting V's 0-5, and the rare ingot
+                int nuggets = random.nextInt(2) + Math.round(5 * random.nextFloat());
+                if (nuggets > 0) insert(new ItemStack(Items.GOLD_NUGGET, nuggets));
+                if (random.nextFloat() < INGOT_CHANCE) insert(new ItemStack(Items.GOLD_INGOT));
+            }
+            case WITHER_SKELETON -> {
+                int coal = random.nextInt(2), bones = random.nextInt(3);
+                if (coal > 0) insert(new ItemStack(Items.COAL, coal));
+                if (bones > 0) insert(new ItemStack(Items.BONE, bones));
+                if (random.nextFloat() < SKULL_CHANCE) insert(new ItemStack(Items.WITHER_SKELETON_SKULL));
+            }
+            case SHULKER -> {
+                if (random.nextFloat() < SHELL_CHANCE) insert(new ItemStack(Items.SHULKER_SHELL));
+            }
+            case WITCH -> roll(level, EntityTypes.WITCH, null);
+            case SUGAR_CANE -> insert(new ItemStack(Items.SUGAR_CANE, 3));
+            case BAMBOO -> insert(new ItemStack(Items.BAMBOO, 4));
+            case NETHER_WART -> insert(new ItemStack(Items.NETHER_WART, 4));
+            case MONSTER -> {
+                // The monsters' loot, and the raiders'
+                roll(level, EntityTypes.ZOMBIE, null);
+                roll(level, EntityTypes.SKELETON, null);
+                roll(level, EntityTypes.SPIDER, null);
+                roll(level, EntityTypes.CREEPER, null);
+                roll(level, EntityTypes.PILLAGER, null);
+                roll(level, EntityTypes.VINDICATOR, null);
+                // An evoker always drops its totem; here it is a rare find instead
+                roll(level, EntityTypes.EVOKER, null, loot -> !loot.is(Items.TOTEM_OF_UNDYING));
+                if (random.nextFloat() < TOTEM_CHANCE) insert(new ItemStack(Items.TOTEM_OF_UNDYING));
+            }
+            case NETHER_MOB -> {
+                roll(level, EntityTypes.BLAZE, null);
+                roll(level, EntityTypes.GHAST, null);
+                roll(level, EntityTypes.MAGMA_CUBE, e -> ((net.minecraft.world.entity.monster.cubemob.AbstractCubeMob) e).setSize(2, true));
+            }
+            case OCEAN -> {
+                roll(level, EntityTypes.GUARDIAN, null);
+                roll(level, EntityTypes.DROWNED, null);
+                roll(level, EntityTypes.COD, null);
+            }
+            case SLIME -> roll(level, EntityTypes.SLIME, e -> ((net.minecraft.world.entity.monster.cubemob.AbstractCubeMob) e).setSize(1, true));
+            case LIVESTOCK -> {
+                roll(level, EntityTypes.COW, null);
+                roll(level, EntityTypes.SHEEP, e -> ((net.minecraft.world.entity.animal.sheep.Sheep) e).setColor(sheepColour(random)));
+                roll(level, EntityTypes.CHICKEN, null);
+                insert(new ItemStack(Items.EGG));
+                roll(level, EntityTypes.PIG, null);
+                roll(level, EntityTypes.RABBIT, null);
+            }
+            case CROP -> {
+                insert(new ItemStack(Items.WHEAT, 3));
+                insert(new ItemStack(Items.WHEAT_SEEDS, 1));
+                insert(new ItemStack(Items.CARROT, 3));
+                insert(new ItemStack(Items.POTATO, 3));
+                insert(new ItemStack(Items.BEETROOT, 3));
+                insert(new ItemStack(Items.BEETROOT_SEEDS, 1));
+            }
+            case GOURD -> {
+                insert(new ItemStack(Items.MELON_SLICE, 12));
+                insert(new ItemStack(Items.PUMPKIN, 3));
+                insert(new ItemStack(Items.CACTUS, 4));
+                insert(new ItemStack(Items.KELP, 6));
+            }
+            case GENERATOR -> {
+                switch (kind.modes().get(mode())) {
+                    case "cobblestone" -> insert(new ItemStack(Items.COBBLESTONE, 8));
+                    case "stone" -> insert(new ItemStack(Items.STONE, 8));
+                    case "gravel" -> insert(new ItemStack(Items.GRAVEL, 8));
+                    case "sand" -> insert(new ItemStack(Items.SAND, 8));
+                    case "clay" -> insert(new ItemStack(Items.CLAY, 4));
+                    case "basalt" -> insert(new ItemStack(Items.BASALT, 2));
+                    default -> insert(new ItemStack(Items.OBSIDIAN, 1)); // twice as long a cycle
+                }
+            }
+            case BEE -> {
+                insert(new ItemStack(Items.HONEYCOMB, 1 + random.nextInt(3)));
+                insert(new ItemStack(Items.HONEY_BOTTLE, 2));
+            }
+            case TREE -> {
+                String tree = kind.modes().get(mode());
+                net.minecraft.world.item.Item log = FarmKind.treeLog(tree);
+                if (log != null) {
+                    insert(new ItemStack(log, FarmKind.LOGS_PER_CYCLE));
+                } else {
+                    insert(new ItemStack(Items.CHORUS_FRUIT, FarmKind.CHORUS_FRUIT));
+                    if (random.nextFloat() < FarmKind.CHORUS_FLOWER_CHANCE) insert(new ItemStack(Items.CHORUS_FLOWER));
+                }
+            }
+            case FROGLIGHT -> {
+                insert(new ItemStack(Items.OCHRE_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
+                insert(new ItemStack(Items.VERDANT_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
+                insert(new ItemStack(Items.PEARLESCENT_FROGLIGHT, FarmKind.FROGLIGHTS_PER_COLOUR));
+            }
+            case MOSS -> {
+                insert(new ItemStack(Items.MOSS_BLOCK, 3));
+                insert(new ItemStack(Items.MOSS_CARPET, 2));
+                insert(new ItemStack(Items.PALE_MOSS_BLOCK, 3));
+                insert(new ItemStack(Items.PALE_MOSS_CARPET, 2));
+                insert(new ItemStack(Items.PALE_HANGING_MOSS, 2));
+                insert(new ItemStack(Items.RESIN_CLUMP, 6));
+                if (random.nextFloat() < 0.1F) insert(new ItemStack(random.nextBoolean() ? Items.AZALEA : Items.FLOWERING_AZALEA));
+            }
+        }
+    }
+
+    /**
+     * Rolls the loot table of one mob as if a player killed it (no Looting, and the drops that need a player kill included),
+     * into the output. {@code setup} gives the mob its size or colour first.
+     */
+    private void roll(ServerLevel level, EntityType<?> type, java.util.function.@org.jspecify.annotations.Nullable Consumer<Entity> setup) {
+        roll(level, type, setup, loot -> true);
+    }
+
+    /** The same, keeping only the drops that pass {@code keep}. */
+    private void roll(ServerLevel level, EntityType<?> type, java.util.function.@org.jspecify.annotations.Nullable Consumer<Entity> setup,
+                      java.util.function.Predicate<ItemStack> keep) {
+        Entity mob = type.create(level, EntitySpawnReason.SPAWNER);
+        if (!(mob instanceof LivingEntity)) return;
+        if (setup != null) setup.accept(mob);
+        mob.setPos(worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5);
+        var table = mob.getLootTable();
+        if (table.isEmpty()) return;
+        var killer = FakePlayer.get(level);
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.THIS_ENTITY, mob)
+                .withParameter(LootContextParams.ORIGIN, mob.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(killer))
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, killer)
+                .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, killer)
+                .withOptionalParameter(LootContextParams.LAST_DAMAGE_PLAYER, killer)
+                .create(LootContextParamSets.ENTITY);
+        for (ItemStack loot : level.getServer().reloadableRegistries().getLootTable(table.get()).getRandomItems(params)) {
+            if (keep.test(loot)) insert(loot);
+        }
+    }
+
+    /** A sheep colour at the natural spawn odds. */
+    private static DyeColor sheepColour(RandomSource random) {
+        int n = random.nextInt(10000);
+        if (n < 500) return DyeColor.BLACK;
+        if (n < 1000) return DyeColor.GRAY;
+        if (n < 1500) return DyeColor.LIGHT_GRAY;
+        if (n < 1800) return DyeColor.BROWN;
+        if (n < 1816) return DyeColor.PINK;
+        return DyeColor.WHITE;
+    }
+
+    /** A baby villager of the local kind (by biome), as a Captured Mob. */
+    private ItemStack baby(ServerLevel level) {
+        Villager villager = EntityTypes.VILLAGER.create(level, EntitySpawnReason.BREEDING);
+        if (villager == null) return ItemStack.EMPTY;
+        villager.setBaby(true);
+        villager.setVillagerData(villager.getVillagerData().withType(level.registryAccess(), VillagerType.byBiome(level.getBiome(worldPosition))));
+        return MobCapture.capture(villager);
+    }
+
+    /** Whether the output has the empty slots another cycle needs. */
+    private boolean hasRoom(FarmKind kind) {
+        int empty = 0;
+        for (int i = 0; i < OUTPUT_SLOTS; i++) if (items.get(i).isEmpty()) empty++;
+        return empty >= kind.slotsNeeded();
+    }
+
+    /**
+     * What a comparator reads: how full the 27 output slots are, as for a chest, and 15 as soon as there is no room for
+     * another cycle (which is when the farm stops).
+     */
+    @Override
+    public int comparatorSignal() {
+        return full ? 15 : net.nexium.util.ComparatorReadable.signal(outputFill(items, OUTPUT_SLOTS));
+    }
+
+    /** How full the first {@code slots} slots are, 0 to 1, each slot by its own stack size. */
+    public static double outputFill(java.util.List<ItemStack> items, int slots) {
+        double sum = 0;
+        for (int i = 0; i < slots; i++) {
+            ItemStack stack = items.get(i);
+            if (!stack.isEmpty()) sum += (double) stack.getCount() / stack.getMaxStackSize();
+        }
+        return sum / slots;
+    }
+
+    /** Whether the input slot holds what one cycle takes. */
+    private boolean hasInput(FarmKind kind) {
+        ItemStack stack = items.get(INPUT_SLOT);
+        return !stack.isEmpty() && kind.acceptsInput(stack) && stack.getCount() >= kind.inputPerCycle(stack);
+    }
+
+    private void insert(ItemStack stack) {
+        if (stack.isEmpty()) return;
+        for (int i = 0; i < OUTPUT_SLOTS && !stack.isEmpty(); i++) {
+            ItemStack s = items.get(i);
+            if (!s.isEmpty() && ItemStack.isSameItemSameComponents(s, stack)) {
+                int move = Math.min(stack.getCount(), s.getMaxStackSize() - s.getCount());
+                s.grow(move);
+                stack.shrink(move);
+            }
+        }
+        for (int i = 0; i < OUTPUT_SLOTS && !stack.isEmpty(); i++) {
+            if (items.get(i).isEmpty()) items.set(i, stack.split(stack.getMaxStackSize()));
+        }
+        // Never happens while each kind's slotsNeeded covers what a cycle makes; the tests watch this
+        overflow += stack.getCount();
+    }
+
+    /** How many items have not fitted the output since the farm was placed or loaded (always 0; for the tests). */
+    public int overflow() { return overflow; }
+
+    // ---------------------------------------------------------------- what the screen and tests read
+
+    /** Work towards the next cycle, 0 to 1. */
+    public float progressFraction() {
+        return Math.min(1.0F, (float) progress / cycleTicks());
+    }
+
+    /** Ticks per cycle on the current mode. */
+    public int cycleTicks() { return kind().cycleTicks(mode()); }
+
+    /** The mode, as an index into {@link FarmKind#modes()} (0 for farms without modes). */
+    public int mode() {
+        int n = kind().modes().size();
+        return n == 0 ? 0 : Math.floorMod(mode, n);
+    }
+
+    /** Steps to the next mode. */
+    public void cycleMode() {
+        int n = kind().modes().size();
+        if (n == 0) return;
+        mode = (mode() + 1) % n;
+        progress = Math.min(progress, Math.max(0, cycleTicks() - 1));
+        setChanged();
+    }
+
+    /** Steps back to the previous mode. */
+    public void previousMode() {
+        int n = kind().modes().size();
+        if (n == 0) return;
+        mode = Math.floorMod(mode() - 1, n);
+        progress = Math.min(progress, Math.max(0, cycleTicks() - 1));
+        setChanged();
+    }
+
+    public void setMode(int value) {
+        mode = value;
+        setChanged();
+    }
+
+    /** Cycles left on the bone meal in use. */
+    public int boostLeft() { return boostLeft; }
+
+    public int progress() { return progress; }
+    public boolean isFull() { return full; }
+    public boolean isStarved() { return starved; }
+
+    public void setProgress(int ticks) {
+        progress = Math.max(0, ticks);
+        setChanged();
+    }
+
+    /** A redstone signal stops the farm. */
+    public boolean isPaused() {
+        BlockState state = getBlockState();
+        return state.hasProperty(FarmBlock.POWERED) && state.getValue(FarmBlock.POWERED);
+    }
+
+    // ---------------------------------------------------------------- container
+
+    @Override
+    protected Component getDefaultName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    protected NonNullList<ItemStack> getItems() {
+        return items;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> items) {
+        this.items = items;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return SIZE;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return slot == INPUT_SLOT && kind().acceptsInput(stack);
+    }
+
+    /** Hoppers and pipes take the output from below, and feed the input slot from the top and sides. */
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        if (side == Direction.DOWN) return OUTPUT;
+        return kind().hasInput() ? INPUT : NO_SLOTS;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return side != Direction.DOWN && canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return side == Direction.DOWN && slot < OUTPUT_SLOTS;
+    }
+
+    @Override
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return new FarmMenu(containerId, inventory, this);
+    }
+
+    @Override
+    public BlockPos getScreenOpeningData(ServerPlayer player) {
+        return worldPosition;
+    }
+
+    // ---------------------------------------------------------------- saving, and keeping the progress in the item
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
+        output.putInt("progress", progress);
+        output.putInt("mode", mode);
+        output.putInt("overclock", overclock);
+        output.putInt("boost", boostLeft);
+        output.putLong("energy", energy.stored());
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, items);
+        progress = Math.max(0, input.getIntOr("progress", 0));
+        mode = Math.max(0, input.getIntOr("mode", 0));
+        boostLeft = Math.max(0, input.getIntOr("boost", 0));
+        overclock = Overclock.clamp(input.getIntOr("overclock", 0));
+        energy.setCapacity(Overclock.capacity(kind().energyPerTick(), overclock));
+        energy.set(input.getLongOr("energy", 0L));
+        // 1.19 Bee Farms kept honey in a tank: hand it back as bottles (a quarter bucket each)
+        long legacy = input.getLongOr("honey", 0L) / (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 4);
+        while (legacy > 0) {
+            int n = (int) Math.min(legacy, 16);
+            insert(new ItemStack(Items.HONEY_BOTTLE, n));
+            legacy -= n;
+        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (progress > 0) components.set(ModComponents.FARM_PROGRESS, progress);
+        if (mode() > 0) components.set(ModComponents.FARM_MODE, mode());
+        if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        Integer saved = components.get(ModComponents.FARM_PROGRESS);
+        if (saved != null) progress = Math.max(0, saved);
+        Integer savedMode = components.get(ModComponents.FARM_MODE);
+        if (savedMode != null) mode = Math.max(0, savedMode);
+        Integer savedOverclock = components.get(ModComponents.OVERCLOCK);
+        if (savedOverclock != null) setOverclock(savedOverclock);
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("progress");
+        output.discard("mode");
+        output.discard("overclock");
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:magnet"
+    },
+    "title": {
+      "translate": "advancement.nexium.magnet.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.magnet.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/root"
+}

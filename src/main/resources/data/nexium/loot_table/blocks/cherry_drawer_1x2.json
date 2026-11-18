@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nexium:cherry_drawer_1x2",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "nexium:drawer_slots",
+              "nexium:upgrades",
+              "nexium:drawer_locked"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "random_sequence": "nexium:blocks/cherry_drawer_1x2"
+}

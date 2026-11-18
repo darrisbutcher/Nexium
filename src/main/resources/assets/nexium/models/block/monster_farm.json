@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexium:block/monster_farm_top",
+    "bottom": "nexium:block/monster_farm_bottom",
+    "side": "nexium:block/monster_farm_side"
+  }
+}

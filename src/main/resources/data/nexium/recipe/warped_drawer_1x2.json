@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "PPP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:warped_planks",
+    "S": "minecraft:warped_slab"
+  },
+  "result": {
+    "id": "nexium:warped_drawer_1x2",
+    "count": 2
+  }
+}

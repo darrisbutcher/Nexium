@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GRG",
+    "RBR",
+    "GRG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "R": "minecraft:redstone_block",
+    "B": "nexium:iron_battery"
+  },
+  "result": {
+    "id": "nexium:gold_battery"
+  }
+}

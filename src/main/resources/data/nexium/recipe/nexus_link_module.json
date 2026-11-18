@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "E": "minecraft:ender_pearl",
+    "C": "nexium:dimensional_link_card"
+  },
+  "pattern": [
+    "IEI",
+    "ECE",
+    "IEI"
+  ],
+  "result": {
+    "id": "nexium:nexus_link_module"
+  }
+}

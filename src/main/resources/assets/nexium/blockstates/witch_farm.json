@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/witch_farm"
+    },
+    "powered=true": {
+      "model": "nexium:block/witch_farm"
+    }
+  }
+}

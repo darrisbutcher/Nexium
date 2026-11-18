@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_transmute",
+  "category": "equipment",
+  "input": "nexium:iron_builder",
+  "material": "minecraft:diamond",
+  "result": {
+    "id": "nexium:diamond_builder"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "nexium:block/compacting_drawer"
+    },
+    "facing=east": {
+      "model": "nexium:block/compacting_drawer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "nexium:block/compacting_drawer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nexium:block/compacting_drawer",
+      "y": 270
+    }
+  }
+}

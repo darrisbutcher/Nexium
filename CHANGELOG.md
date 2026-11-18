@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.23.0
+
+* **One mod id**: the two ids `storagenexus` and `nexusessentials` are now one, `nexium`. Every block, item, block entity, menu,
+  recipe, advancement, loot table, tag, translation key and resource now lives under `nexium:`, and the mod loads as one mod called
+  Nexium (nothing "provides" Nexus Essentials any more). **This is a clean break**: a world saved with an older version does not load
+  correctly, because its blocks and items have the old ids; no aliases or conversion are included. The settings file is now
+  `config/nexium.json`; an old `config/nexusessentials.json` is left alone and ignored, so settings start from the defaults. Key
+  binds that were saved are reset for the same reason. The jar was already called `nexium-<version>.jar`. The Java packages moved from `net.storagenexus` to `net.nexium` (and `maven_group` with them) and the classes named after the old mods were renamed (`StorageNexus` is `Nexium`, `NexusEssentials` is `NexiumEssentials`, and so on; the armor and tool code in `net.nexium.nexium` is now `net.nexium.gear`), which matters only to anyone building against or alongside the mod.
+* **Quest rewards**: every quest now gives a **random item from the mod** (any item shown in its creative tabs, each equally likely,
+  except the Codex, Captured Mob and spent fuel rods), one for each roll: one in the first two chapters, two in the next three, three in
+  the last.
+
 ## 1.22.6
 
 * **Settings screen**: all 56 settings of `config/nexusessentials.json` can now be changed in the game, on **Nexium Settings**: open it from

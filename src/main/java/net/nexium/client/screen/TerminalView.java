@@ -1,0 +1,391 @@
+package net.nexium.client.screen;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.nexium.client.compat.RecipeViewerSearch;
+import net.nexium.essentials.config.NexusConfig;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.nexium.terminal.TerminalActionPayload;
+import net.nexium.terminal.TerminalMenu;
+import net.nexium.terminal.TerminalSyncPayload;
+import net.nexium.util.Fmt;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
+
+/**
+ * The network grid shared by the Storage and Crafting Terminal screens: search, sort, scrolling,
+ * and fluids (first) and items in one list.
+ *
+ * Clicks: left takes a stack, right takes one, shift-click goes straight to your inventory.
+ * Holding items: left puts the whole stack in, right puts one in. An empty bucket on a fluid fills
+ * it; a filled bucket is poured in with left-click, or stored as an item with right-click.
+ * Search "@name" to filter by mod.
+ */
+final class TerminalView {
+    private enum Sort { COUNT, NAME, MOD }
+
+    /** One grid cell: a fluid or an item. */
+    private record Entry(TerminalSyncPayload.@Nullable FluidEntry fluid, TerminalSyncPayload.@Nullable ItemEntry item) {}
+
+    private static final float COUNT_SCALE = 0.5f;
+    private static final int COUNT_COLOR = 0xFFFFFFFF;
+    private static final int COUNT_BACKING = 0x99000000;
+
+    private final TerminalMenu menu;
+    private final Font font;
+    private EditBox search;
+    private Button sortButton, directionButton;
+    // Remembered for the rest of the session, so reopening a terminal keeps your sort. It starts on A to Z (names read
+    // A-Z when descending).
+    private static Sort sort = Sort.NAME;
+    private static boolean descending = true;
+    private int scroll;
+    /** True from a handled press on the grid until its release. */
+    private boolean ownsMouse;
+    private int seenRevision = -1;
+    private String lastQuery = "";
+    /** The search text both this terminal and the recipe viewer (JEI or REI) last agreed on. */
+    private String synced = "";
+    private final List<Entry> visible = new ArrayList<>();
+
+    TerminalView(TerminalMenu menu, Font font) {
+        this.menu = menu;
+        this.font = font;
+    }
+
+    private int rows() { return menu.rows(); }
+
+    void init(Consumer<AbstractWidget> add, int left, int top) {
+        String query = search == null ? "" : search.getValue();
+        search = new EditBox(font, 0, 0, 54, 11, Component.translatable("screen.nexium.search"));
+        search.setMaxLength(50);
+        search.setBordered(true);
+        search.setValue(query);
+        // Opening with an empty search takes the recipe viewer's, so both start the same
+        String viewer = syncing() ? RecipeViewerSearch.get() : null;
+        if (query.isEmpty() && viewer != null && !viewer.isBlank()) search.setValue(viewer);
+        synced = search.getValue();
+        add.accept(search);
+        sortButton = Button.builder(sortLabel(), b -> {
+            sort = Sort.values()[(sort.ordinal() + 1) % Sort.values().length];
+            b.setMessage(sortLabel());
+            refilter();
+        }).bounds(0, 0, 16, 13).build();
+        add.accept(sortButton);
+        directionButton = Button.builder(directionLabel(), b -> {
+            descending = !descending;
+            b.setMessage(directionLabel());
+            refilter();
+        }).bounds(0, 0, 16, 13).tooltip(Tooltip.create(Component.translatable("screen.nexium.sort_direction"))).build();
+        add.accept(directionButton);
+        reposition(left, top);
+        refilter();
+    }
+
+    /** Called when the screen moves (e.g. the recipe book opens). */
+    void reposition(int left, int top) {
+        search.setPosition(left + 100, top + 4);
+        directionButton.setPosition(left + 156, top + 3);
+        sortButton.setPosition(left + 174, top + 3);
+    }
+
+    private Component directionLabel() {
+        return Component.literal(descending ? "↓" : "↑");
+    }
+
+    private Component sortLabel() {
+        return Component.literal(switch (sort) { case COUNT -> "#"; case NAME -> "A"; case MOD -> "@"; });
+    }
+
+    // ---- Filtering ----------------------------------------------------------------------------
+
+    private void refilter() {
+        String q = search == null ? "" : search.getValue().toLowerCase(Locale.ROOT).trim();
+        lastQuery = q;
+        seenRevision = menu.clientRevision();
+        boolean mod = q.startsWith("@");
+        String term = mod ? q.substring(1) : q;
+
+        List<TerminalSyncPayload.FluidEntry> fluids = new ArrayList<>();
+        for (TerminalSyncPayload.FluidEntry e : menu.clientFluids()) {
+            String text = mod ? BuiltInRegistries.FLUID.getKey(e.fluid()).getNamespace()
+                    : fluidName(e.fluid()).getString().toLowerCase(Locale.ROOT);
+            if (term.isEmpty() || text.contains(term)) fluids.add(e);
+        }
+        List<TerminalSyncPayload.ItemEntry> items = new ArrayList<>();
+        for (TerminalSyncPayload.ItemEntry e : menu.clientItems()) {
+            String text = mod ? BuiltInRegistries.ITEM.getKey(e.stack().getItem()).getNamespace()
+                    : e.stack().getHoverName().getString().toLowerCase(Locale.ROOT);
+            if (term.isEmpty() || text.contains(term)) items.add(e);
+        }
+        Comparator<TerminalSyncPayload.FluidEntry> fluidOrder = Comparator.comparingLong(TerminalSyncPayload.FluidEntry::amount);
+        // Counts read biggest-first when descending; names and mods read A-Z when descending
+        Comparator<TerminalSyncPayload.ItemEntry> itemOrder = switch (sort) {
+            case COUNT -> Comparator.comparingLong(TerminalSyncPayload.ItemEntry::count);
+            case NAME -> Comparator.comparing((TerminalSyncPayload.ItemEntry e) -> e.stack().getHoverName().getString()).reversed();
+            case MOD -> Comparator.comparing((TerminalSyncPayload.ItemEntry e) -> BuiltInRegistries.ITEM.getKey(e.stack().getItem()).toString()).reversed();
+        };
+        fluids.sort(descending ? fluidOrder.reversed() : fluidOrder);
+        items.sort(descending ? itemOrder.reversed() : itemOrder);
+        visible.clear();
+        for (TerminalSyncPayload.FluidEntry f : fluids) visible.add(new Entry(f, null));
+        for (TerminalSyncPayload.ItemEntry i : items) visible.add(new Entry(null, i));
+        scroll = Math.min(scroll, maxScroll());
+    }
+
+    private int maxScroll() {
+        int rowsNeeded = (visible.size() + TerminalMenu.COLS - 1) / TerminalMenu.COLS;
+        return Math.max(0, rowsNeeded - rows());
+    }
+
+    private static Component fluidName(Fluid fluid) {
+        return FluidVariantAttributes.getName(FluidVariant.of(fluid));
+    }
+
+    void tick() {
+        syncWithRecipeViewer();
+        String q = search.getValue().toLowerCase(Locale.ROOT).trim();
+        if (menu.clientRevision() != seenRevision || !q.equals(lastQuery)) refilter();
+    }
+
+    private static boolean syncing() {
+        return NexusConfig.get().terminalSearchSync;
+    }
+
+    /**
+     * Keeps the terminal's search and the recipe viewer's the same: whichever changed since they last agreed is copied to
+     * the other (typing here wins if both changed in the same tick).
+     */
+    private void syncWithRecipeViewer() {
+        if (!syncing()) return;
+        String mine = search.getValue();
+        if (!mine.equals(synced)) {
+            RecipeViewerSearch.set(mine);
+            synced = mine;
+            return;
+        }
+        String theirs = RecipeViewerSearch.get();
+        if (theirs != null && !theirs.equals(synced)) {
+            search.setValue(theirs.length() > 50 ? theirs.substring(0, 50) : theirs);
+            synced = search.getValue();
+        }
+    }
+
+    /** The terminal's search text (for the client test). */
+    public String searchText() {
+        return search == null ? "" : search.getValue();
+    }
+
+    /** Types into the terminal's search (for the client test). */
+    public void setSearchText(String text) {
+        if (search != null) search.setValue(text);
+    }
+
+    /** The names in the grid, in the order shown (for the client test). */
+    public List<String> gridNames() {
+        List<String> names = new ArrayList<>();
+        for (Entry e : visible) {
+            names.add(e.item() != null ? e.item().stack().getHoverName().getString() : fluidName(e.fluid().fluid()).getString());
+        }
+        return names;
+    }
+
+    // ---- Rendering ------------------------------------------------------------------------------
+
+    /** Cell frames and the scrollbar. */
+    void extractBackground(GuiGraphicsExtractor g, int left, int top) {
+        int gx = left + TerminalMenu.GRID_X, gy = top + TerminalMenu.GRID_Y;
+        for (int r = 0; r < rows(); r++) {
+            for (int c = 0; c < TerminalMenu.COLS; c++) Palette.DARK.slot(g, gx + c * 18, gy + r * 18);
+        }
+        int sx = left + 175, sh = rows() * 18;
+        g.fill(sx, gy, sx + 12, gy + sh, Palette.DARK.slotFill());
+        int max = maxScroll();
+        int knob = max == 0 ? 0 : (sh - 15) * scroll / max;
+        g.fill(sx + 1, gy + knob, sx + 11, gy + knob + 15, max == 0 ? Palette.DARK.body() : Palette.DARK.slotLight());
+    }
+
+    /** The grid's contents, hover highlight and tooltips. */
+    void extractGrid(GuiGraphicsExtractor g, int left, int top, int mouseX, int mouseY) {
+        int gx = left + TerminalMenu.GRID_X, gy = top + TerminalMenu.GRID_Y;
+        int start = scroll * TerminalMenu.COLS;
+        int hovered = cellAt(left, top, mouseX, mouseY);
+        for (int i = 0; i < TerminalMenu.COLS * rows(); i++) {
+            int idx = start + i;
+            if (idx >= visible.size()) break;
+            int x = gx + (i % TerminalMenu.COLS) * 18, y = gy + (i / TerminalMenu.COLS) * 18;
+            Entry e = visible.get(idx);
+            if (e.fluid() != null) {
+                fluidIcon(g, e.fluid().fluid(), x, y);
+                count(g, Fmt.fluid(e.fluid().amount()), x, y);
+            } else if (e.item() != null) {
+                g.item(e.item().stack(), x, y);
+                g.itemDecorations(font, e.item().stack(), x, y); // durability bar; count drawn below
+                count(g, Fmt.compact(e.item().count()), x, y);
+            }
+            if (i == hovered) g.fill(x, y, x + 16, y + 16, 0x80FFFFFF);
+        }
+        if (!menu.clientOnline()) {
+            Component off = Component.translatable("message.nexium.network_offline").withStyle(ChatFormatting.RED);
+            g.text(font, off, gx + 81 - font.width(off) / 2, gy + rows() * 9 - 4, 0xFFFF5555, true);
+        }
+        Entry e = hovered < 0 ? null : entryAt(start + hovered);
+        if (e != null && menu.getCarried().isEmpty()) {
+            if (e.fluid() != null) {
+                g.setComponentTooltipForNextFrame(font, List.of(fluidName(e.fluid().fluid()),
+                        Component.literal(Fmt.toMb(e.fluid().amount()) + " mB").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+            } else if (e.item() != null) {
+                // The usual item tooltip plus the exact amount (the cell shows e.g. "3.5k")
+                ItemStack stack = e.item().stack();
+                List<Component> lines = new ArrayList<>(net.minecraft.client.gui.screens.Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
+                lines.add(Component.translatable("tooltip.nexium.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
+                        .withStyle(ChatFormatting.AQUA));
+                g.setTooltipForNextFrame(font, lines, stack.getTooltipImage(), mouseX, mouseY);
+            }
+        }
+    }
+
+    /** Half-size count in the cell's bottom-right corner, on a faint dark backing so it stays readable. */
+    private void count(GuiGraphicsExtractor g, String text, int x, int y) {
+        int w = font.width(text);
+        g.pose().pushMatrix();
+        g.pose().translate(x + 16, y + 16);
+        g.pose().scale(COUNT_SCALE, COUNT_SCALE);
+        int left = -w - 1, top = -font.lineHeight;
+        g.fill(left - 1, top, 0, 0, COUNT_BACKING);
+        g.text(font, text, left, top + 1, COUNT_COLOR, false);
+        g.pose().popMatrix();
+    }
+
+    private void fluidIcon(GuiGraphicsExtractor g, Fluid fluid, int x, int y) {
+        if (fluid.getBucket() != Items.AIR) {
+            g.item(new ItemStack(fluid.getBucket()), x, y);
+        } else {
+            int color = 0xFF000000 | FluidVariantRendering.getColor(FluidVariant.of(fluid));
+            g.fill(x + 1, y + 1, x + 15, y + 15, color);
+        }
+    }
+
+    // ---- Input ----------------------------------------------------------------------------------
+
+    private @Nullable Entry entryAt(int idx) {
+        return idx >= 0 && idx < visible.size() ? visible.get(idx) : null;
+    }
+
+    /** Index of the grid cell under the mouse, or -1. */
+    private int cellAt(int left, int top, double mx, double my) {
+        int gx = left + TerminalMenu.GRID_X, gy = top + TerminalMenu.GRID_Y;
+        if (mx < gx || my < gy) return -1;
+        int c = (int) (mx - gx) / 18, r = (int) (my - gy) / 18;
+        if (c >= TerminalMenu.COLS || r >= rows()) return -1;
+        return r * TerminalMenu.COLS + c;
+    }
+
+    private static void send(int action, ItemStack item, Fluid fluid) {
+        ClientPlayNetworking.send(new TerminalActionPayload(action, item, fluid));
+    }
+
+    /** True if the click was in the grid (and handled). */
+    boolean mouseClicked(MouseButtonEvent event, int left, int top) {
+        int cell = cellAt(left, top, event.x(), event.y());
+        if (cell < 0) return false;
+        ownsMouse = true;
+        Entry e = entryAt(scroll * TerminalMenu.COLS + cell);
+        // 26.x numbers mouse buttons the SDL way: left is 1 and right is 3 (not GLFW's 0 and 1)
+        boolean right = event.button() == InputConstants.MOUSE_BUTTON_RIGHT;
+        ItemStack carried = menu.getCarried();
+
+        if (!carried.isEmpty()) {
+            if (carried.is(Items.BUCKET) && e != null && e.fluid() != null) {
+                send(TerminalActionPayload.FILL_BUCKET, ItemStack.EMPTY, e.fluid().fluid());
+            } else if (!right && carried.getItem() instanceof BucketItem && !carried.is(Items.BUCKET)) {
+                send(TerminalActionPayload.EMPTY_BUCKET, ItemStack.EMPTY, Fluids.EMPTY);
+            } else {
+                send(right ? TerminalActionPayload.INSERT_ONE : TerminalActionPayload.INSERT_CARRIED, ItemStack.EMPTY, Fluids.EMPTY);
+            }
+            return true;
+        }
+        if (e == null || e.item() == null) return true;
+        ItemStack stack = e.item().stack();
+        int action = event.hasShiftDown() || Minecraft.getInstance().hasShiftDown() ? TerminalActionPayload.TAKE_TO_INVENTORY
+                : right ? TerminalActionPayload.TAKE_ONE : TerminalActionPayload.TAKE_STACK;
+        send(action, stack, Fluids.EMPTY);
+        return true;
+    }
+
+    /**
+     * The release and drag of a click on the grid belong to us: vanilla would otherwise treat the
+     * release as a click on no slot and send a stray inventory click to the server.
+     */
+    boolean mouseReleased() {
+        boolean mine = ownsMouse;
+        ownsMouse = false;
+        return mine;
+    }
+
+    boolean mouseDragged() {
+        return ownsMouse;
+    }
+
+    boolean mouseScrolled(double scrollY) {
+        if (scrollY == 0) return false;
+        scroll = Math.max(0, Math.min(maxScroll(), scroll - (int) Math.signum(scrollY)));
+        return true;
+    }
+
+    /**
+     * A right-click on the search box clears it (and puts the cursor back in it, ready to type). Returns the box if it
+     * did, so the screen can focus it, or null for any other click.
+     */
+    @Nullable EditBox clearSearchIfRightClicked(MouseButtonEvent event) {
+        if (event.button() != InputConstants.MOUSE_BUTTON_RIGHT || !search.isMouseOver(event.x(), event.y())) return null;
+        search.setValue("");
+        return search;
+    }
+
+    /** The search box's place on the screen: x, y, width, height in GUI pixels (for the client test). */
+    public int[] searchBounds() {
+        return new int[]{search.getX(), search.getY(), search.getWidth(), search.getHeight()};
+    }
+
+    /**
+     * Clicking anywhere but the search box takes the focus off it, so keys like E and Escape
+     * work again. Returns true if it did, so the screen can clear its own focus too.
+     */
+    boolean blurSearchIfClickedOutside(MouseButtonEvent event) {
+        if (!search.isFocused() || search.isMouseOver(event.x(), event.y())) return false;
+        search.setFocused(false);
+        return true;
+    }
+
+    /** Lets the search box keep typed keys (e.g. "e") from closing the screen. */
+    boolean searchConsumesKey(KeyEvent event) {
+        if (!search.isFocused()) return false;
+        if (event.isEscape()) return false; // Escape still closes the screen
+        return search.keyPressed(event) || search.canConsumeInput();
+    }
+}

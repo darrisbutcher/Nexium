@@ -1,0 +1,157 @@
+package net.nexium.drawer;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.nexium.upgrade.UpgradeItem;
+import net.nexium.upgrade.UpgradeMenu;
+import net.nexium.upgrade.Upgradeable;
+import net.nexium.util.ComparatorReadable;
+import net.nexium.util.KeepContents;
+import net.nexium.util.Menus;
+import net.nexium.util.StorageEvents;
+
+/**
+ * Base for every block with a drawer-style front: item drawers, the compacting drawer
+ * and fluid drawers. Handles facing, installing upgrades by right-clicking with them,
+ * and opening the upgrade slots (empty hand on the side or top, or sneaking).
+ */
+public abstract class FacingDrawerBlock extends BaseEntityBlock {
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+    protected FacingDrawerBlock(Properties properties) {
+        super(properties);
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    /** A comparator reads how full the drawer is. */
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof ComparatorReadable readable ? readable.comparatorSignal() : 0;
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (!oldState.is(state.getBlock())) StorageEvents.storageChanged();
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        StorageEvents.storageChanged();
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        KeepContents.dropInCreative(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    /** Number of front slots, used for hit testing. */
+    protected abstract int frontSlots(BlockState state);
+
+    /** Right-click on the front with an item (not an upgrade). */
+    protected abstract InteractionResult useFrontWithItem(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                                          Player player, InteractionHand hand, int slot, boolean doubleClick);
+
+    /** Right-click on the front with an empty hand. */
+    protected abstract InteractionResult useFrontEmpty(BlockState state, Level level, BlockPos pos, Player player,
+                                                       int slot, boolean doubleClick);
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                          InteractionHand hand, BlockHitResult hit) {
+        BlockEntity be = level.getBlockEntity(pos);
+        // The Drawer Key locks or unlocks the drawer, wherever on it you click
+        if (stack.getItem() instanceof net.nexium.upgrade.DrawerKeyItem && net.nexium.upgrade.DrawerKeyItem.toggle(level, pos, player)) {
+            return InteractionResult.SUCCESS;
+        }
+        if (stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade() && be instanceof Upgradeable upgradeable) {
+            if (!level.isClientSide()) {
+                Component name = stack.getHoverName();
+                ItemStack replaced;
+                if (upgradeable.tryInstall(stack)) {
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_installed", name));
+                } else if (!(replaced = upgradeable.tryReplaceCapacity(stack)).isEmpty()) {
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_replaced", replaced.getHoverName(), name));
+                    popResourceFromFace(level, pos, hit.getDirection(), replaced);
+                } else {
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_rejected"));
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        // Empty hand: only reaches useWithoutItem if we hand it on explicitly
+        if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND;
+        int slot = DrawerInteraction.hitSlot(state, hit, frontSlots(state));
+        if (slot < 0) return InteractionResult.PASS;
+        boolean dbl = !level.isClientSide() && DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
+        return useFrontWithItem(stack, state, level, pos, player, hand, slot, dbl);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        BlockEntity be = level.getBlockEntity(pos);
+        int slot = DrawerInteraction.hitSlot(state, hit, frontSlots(state));
+        // Upgrade slots: right-click the side or top, or sneak + right-click anywhere
+        if ((slot < 0 || player.isSecondaryUseActive()) && be instanceof Upgradeable upgradeable) {
+            if (player instanceof ServerPlayer sp) {
+                Menus.open(sp, getName(), pos, (id, inv, p) -> new UpgradeMenu(id, inv, upgradeable, be));
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if (slot < 0) return InteractionResult.PASS;
+        boolean dbl = !level.isClientSide() && DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
+        return useFrontEmpty(state, level, pos, player, slot, dbl);
+    }
+}

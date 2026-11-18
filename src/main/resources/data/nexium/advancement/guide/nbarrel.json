@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:netherite_barrel"
+    },
+    "title": {
+      "translate": "advancement.nexium.nbarrel.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.nbarrel.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/barrels"
+}

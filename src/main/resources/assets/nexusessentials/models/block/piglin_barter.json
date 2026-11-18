@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "top": "nexusessentials:block/piglin_barter_top",
-    "bottom": "nexusessentials:block/piglin_barter_bottom",
-    "side": "nexusessentials:block/piglin_barter_side"
-  }
-}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_clay"
+  ],
+  "result": {
+    "id": "minecraft:clay",
+    "count": 9
+  }
+}

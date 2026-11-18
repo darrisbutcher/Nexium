@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "nexium:block/dimensional_side",
+    "north": "nexium:block/dimensional_output_front",
+    "south": "nexium:block/dimensional_side",
+    "east": "nexium:block/dimensional_side",
+    "west": "nexium:block/dimensional_side",
+    "up": "nexium:block/dimensional_side",
+    "down": "nexium:block/dimensional_side"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "net.nexium.aiot.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
+  "mixins": [
+    "AnvilMenuMixin",
+    "GrindstoneMenuMixin",
+    "ItemStackBreakMixin",
+    "NexusLinkBlockMixin",
+    "PlayerMiningMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

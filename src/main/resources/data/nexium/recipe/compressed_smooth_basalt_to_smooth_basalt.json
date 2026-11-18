@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_smooth_basalt"
+  ],
+  "result": {
+    "id": "minecraft:smooth_basalt",
+    "count": 9
+  }
+}

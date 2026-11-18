@@ -37,7 +37,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 The jar ends up in `build/libs/nexium-<version>.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb). Config lives in
-`config/nexusessentials.json`.
+`config/nexium.json`.
 
 ## Storage
 
@@ -215,9 +215,9 @@ place it or right-click it to outline those chunks for a minute.
   hard as the block you mined, and never blocks with contents such as chests.
 * **Vein mining** (no module): mining any block, stone included, mines every block of the same kind touching it, up to
   the size set in the tool menu. Grasses, ferns, bushes, dead bushes, azaleas and leaf litter (the
-  `#storagenexus:vein_plants` tag) count as one kind, so a mixed patch clears in one swing, and cost no durability.
+  `#nexium:vein_plants` tag) count as one kind, so a mixed patch clears in one swing, and cost no durability.
   Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a
-  diamond-grade AIOT). A data pack can list blocks to leave out in `#storagenexus:vein_excluded` (empty by default).
+  diamond-grade AIOT). A data pack can list blocks to leave out in `#nexium:vein_excluded` (empty by default).
   **Hold the Vein Mine key** (**V**) while mining; without it, you mine one block.
 * **The old Vein Mining Module** is retired. It stays in the game only so that AIOTs and chests that hold one still load:
   it can't be crafted, right-clicking it gives back its materials (4 iron ingots, 4 lapis lazuli and a diamond), and so
@@ -514,7 +514,7 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
   creeper or a sheared sheep.
 * The Ender Dragon and the Wither can't be picked up, and only a pet's owner can pick it up. The **Warden** and the
   **Elder Guardian** cost **10 experience levels** (`bossPickUpLevels`; other mods' bosses in `#c:bosses` too, and a
-  data pack can add mobs to `#nexusessentials:pick_up_costs_levels`).
+  data pack can add mobs to `#nexium:pick_up_costs_levels`).
 
 ### Right-click harvest
 **Right-click a fully grown crop** (wheat, carrots, potatoes, beetroot, nether wart, cocoa) to harvest it: it drops as if
@@ -528,7 +528,7 @@ Touch still drops the block.
 
 ### Recipe tweaks
 Crafting and loot changes that need no setup. They add recipes (to the vanilla ones, never taking one away) under the
-`nexusessentials:tweaks/` ids, and a few vanilla ids make more; each new recipe unlocks in the recipe book when you hold what it uses.
+`nexium:tweaks/` ids, and a few vanilla ids make more; each new recipe unlocks in the recipe book when you hold what it uses.
 
 * **Bigger batches**: stairs make 8 (not 4), trapdoors 12 (not 2), wood and hyphae 4 (not 3), and 4 bricks make 4 brick blocks.
   Chiseled and cracked stone bricks count for stone brick stairs.
@@ -701,12 +701,12 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 A quest book with six chapters (Storage, Power, Farms, Tools, Backpack, Nexium), opened with the **Quests** button at the top of the
 Codex or the *Open Quests* key (no key until you pick one). Each quest asks you to make or have an item and counts what you have
 already done (crafting statistics, or what you hold). A chapter opens once every quest of the one before it is done. Every quest gives
-random Nexium items (ingots, a Nexium block or a Nexium disk part; more rolls in later chapters). No recipe is ever locked. Progress is
-saved on the player. The quests are in `data/storagenexus/quests.json` in the mod.
+a random item from the mod (more of them in later chapters). No recipe is ever locked. Progress is
+saved on the player. The quests are in `data/nexium/quests.json` in the mod.
 
 ## Settings
 
-`config/nexusessentials.json` is created on first launch. Every setting can also be changed in the game, on **Nexium Settings**:
+`config/nexium.json` is created on first launch. Every setting can also be changed in the game, on **Nexium Settings**:
 the **Settings** button in the Codex or the armor menu, **Mod Menu**'s Configure button, or the *Open Nexium Settings* key (unbound
 by default). They are grouped by feature, each has a Reset, and hovering one says what it does and its limits. Changes are saved as
 you make them and apply at once in a world you host. On a server, the server's file is the one that counts.

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:nexium_chestplate"
+    },
+    "title": {
+      "translate": "advancement.nexium.armor.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.armor.description"
+    },
+    "frame": "challenge",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/ingot"
+}

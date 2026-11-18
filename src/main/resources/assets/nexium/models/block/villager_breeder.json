@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexium:block/villager_breeder_top",
+    "bottom": "nexium:block/villager_breeder_bottom",
+    "side": "nexium:block/villager_breeder_side"
+  }
+}

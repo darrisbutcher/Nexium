@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "top": "storagenexus:block/power_meter_top",
-    "bottom": "storagenexus:block/power_meter_bottom",
-    "side": "storagenexus:block/power_meter_side"
-  }
-}

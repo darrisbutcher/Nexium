@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "PPP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:jungle_planks",
+    "S": "minecraft:jungle_slab"
+  },
+  "result": {
+    "id": "nexium:jungle_drawer_1x2",
+    "count": 2
+  }
+}

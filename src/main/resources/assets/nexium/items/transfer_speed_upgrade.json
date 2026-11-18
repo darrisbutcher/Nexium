@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexium:item/transfer_speed_upgrade"
+  }
+}

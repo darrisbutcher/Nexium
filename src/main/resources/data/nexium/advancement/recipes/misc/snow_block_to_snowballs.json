@@ -1,0 +1,25 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_it": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:snow_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_it"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexium:snow_block_to_snowballs"
+    ]
+  }
+}

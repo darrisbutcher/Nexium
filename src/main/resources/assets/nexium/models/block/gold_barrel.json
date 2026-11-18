@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexium:block/gold_barrel_top",
+    "side": "nexium:block/gold_barrel_side",
+    "bottom": "nexium:block/gold_barrel_bottom"
+  }
+}

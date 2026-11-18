@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:storage_connector"
+    },
+    "title": {
+      "translate": "advancement.nexium.connector.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.connector.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/root"
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/piglin_barter"
+    },
+    "powered=true": {
+      "model": "nexium:block/piglin_barter"
+    }
+  }
+}

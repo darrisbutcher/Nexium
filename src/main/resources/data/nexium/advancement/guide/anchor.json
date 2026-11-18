@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:dimensional_anchor"
+    },
+    "title": {
+      "translate": "advancement.nexium.anchor.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.anchor.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/connector"
+}

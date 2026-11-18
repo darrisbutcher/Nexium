@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_dripstone_block"
+  ],
+  "result": {
+    "id": "minecraft:dripstone_block",
+    "count": 9
+  }
+}

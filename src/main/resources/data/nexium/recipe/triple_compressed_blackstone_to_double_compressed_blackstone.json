@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:triple_compressed_blackstone"
+  ],
+  "result": {
+    "id": "nexium:double_compressed_blackstone",
+    "count": 9
+  }
+}

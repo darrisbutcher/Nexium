@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_dirt"
+  ],
+  "result": {
+    "id": "minecraft:dirt",
+    "count": 9
+  }
+}

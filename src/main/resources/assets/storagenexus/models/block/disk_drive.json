@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "storagenexus:block/disk_drive_front",
-    "side": "storagenexus:block/terminal_side",
-    "top": "storagenexus:block/terminal_top"
-  }
-}

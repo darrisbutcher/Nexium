@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:piston",
+    "T": "minecraft:crafting_table"
+  },
+  "pattern": [
+    "IPI",
+    "PTP",
+    "IPI"
+  ],
+  "result": {
+    "id": "nexium:compacting_module"
+  }
+}

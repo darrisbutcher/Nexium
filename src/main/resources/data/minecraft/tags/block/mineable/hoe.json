@@ -1,10 +1,10 @@
 {
   "values": [
-    "nexusessentials:large_sponge",
-    "nexusessentials:wet_large_sponge",
-    "nexusessentials:huge_sponge",
-    "nexusessentials:wet_huge_sponge",
-    "nexusessentials:giant_sponge",
-    "nexusessentials:wet_giant_sponge"
+    "nexium:large_sponge",
+    "nexium:wet_large_sponge",
+    "nexium:huge_sponge",
+    "nexium:wet_huge_sponge",
+    "nexium:giant_sponge",
+    "nexium:wet_giant_sponge"
   ]
 }

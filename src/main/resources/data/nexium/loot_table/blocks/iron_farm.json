@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexium:iron_farm_timers"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexium:iron_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexium:blocks/iron_farm"
+}

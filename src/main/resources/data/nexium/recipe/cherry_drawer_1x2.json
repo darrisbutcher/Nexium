@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "PPP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:cherry_planks",
+    "S": "minecraft:cherry_slab"
+  },
+  "result": {
+    "id": "nexium:cherry_drawer_1x2",
+    "count": 2
+  }
+}

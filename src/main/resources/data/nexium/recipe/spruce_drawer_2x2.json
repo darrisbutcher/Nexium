@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SPS",
+    "PPP",
+    "SPS"
+  ],
+  "key": {
+    "P": "minecraft:spruce_planks",
+    "S": "minecraft:spruce_slab"
+  },
+  "result": {
+    "id": "nexium:spruce_drawer_2x2",
+    "count": 4
+  }
+}

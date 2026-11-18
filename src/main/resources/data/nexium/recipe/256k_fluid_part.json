@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:64k_fluid_part",
+    "nexium:64k_fluid_part",
+    "nexium:64k_fluid_part",
+    "minecraft:diamond"
+  ],
+  "result": {
+    "id": "nexium:256k_fluid_part"
+  }
+}

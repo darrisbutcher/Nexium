@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:bread",
+    "G": "minecraft:golden_carrot"
+  },
+  "pattern": [
+    "IBI",
+    "BGB",
+    "IBI"
+  ],
+  "result": {
+    "id": "nexium:feeding_module"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:area_mining_module"
+    },
+    "title": {
+      "translate": "advancement.nexium.area.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.area.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/aiot"
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:emerald_capacity_upgrade",
+    "minecraft:netherite_ingot"
+  ],
+  "result": {
+    "id": "nexium:netherite_capacity_upgrade",
+    "count": 1
+  }
+}

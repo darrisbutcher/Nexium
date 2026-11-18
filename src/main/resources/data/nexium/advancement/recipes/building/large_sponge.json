@@ -1,0 +1,49 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_below": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:sponge"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_this": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexium:large_sponge"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_wet": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexium:wet_large_sponge"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_below",
+      "has_this",
+      "has_wet"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexium:large_sponge",
+      "nexium:large_sponge_to_sponge",
+      "nexium:dry_wet_large_sponge"
+    ]
+  }
+}

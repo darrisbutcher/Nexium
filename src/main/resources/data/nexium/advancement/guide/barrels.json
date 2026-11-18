@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:iron_barrel"
+    },
+    "title": {
+      "translate": "advancement.nexium.barrels.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.barrels.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/root"
+}

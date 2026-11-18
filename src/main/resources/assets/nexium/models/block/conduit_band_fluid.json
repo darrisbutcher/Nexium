@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "nexium:block/conduit_band_fluid",
+    "all": "nexium:block/conduit_band_fluid"
+  },
+  "elements": [
+    {
+      "from": [
+        6.3,
+        7.0,
+        6.3
+      ],
+      "to": [
+        9.7,
+        7.5,
+        9.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "down": {
+          "texture": "#all"
+        }
+      }
+    }
+  ]
+}

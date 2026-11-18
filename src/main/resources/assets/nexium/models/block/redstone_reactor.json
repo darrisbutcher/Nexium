@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexium:block/redstone_reactor_top",
+    "bottom": "nexium:block/redstone_reactor_bottom",
+    "side": "nexium:block/redstone_reactor_side"
+  }
+}

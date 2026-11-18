@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "S S",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:crimson_planks",
+    "S": "minecraft:crimson_slab"
+  },
+  "result": {
+    "id": "nexium:crimson_drawer_1x1",
+    "count": 1
+  }
+}

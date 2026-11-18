@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SPS",
+    "PPP",
+    "SPS"
+  ],
+  "key": {
+    "P": "minecraft:oak_planks",
+    "S": "minecraft:oak_slab"
+  },
+  "result": {
+    "id": "nexium:oak_drawer_2x2",
+    "count": 4
+  }
+}

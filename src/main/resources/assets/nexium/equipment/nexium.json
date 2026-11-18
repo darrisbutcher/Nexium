@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "nexium:nexium"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "nexium:nexium"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "nexium:nexium"
+      }
+    ]
+  }
+}

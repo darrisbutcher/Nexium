@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/moss_farm"
+    },
+    "powered=true": {
+      "model": "nexium:block/moss_farm"
+    }
+  }
+}

@@ -1,8 +1,0 @@
-{
-  "parent": "storagenexus:block/drawer_compacting_template",
-  "textures": {
-    "front": "minecraft:block/smooth_stone",
-    "side": "minecraft:block/smooth_stone",
-    "trim": "minecraft:block/iron_block"
-  }
-}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "nexium:block/disk_drive"
+    },
+    "facing=east": {
+      "model": "nexium:block/disk_drive",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "nexium:block/disk_drive",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nexium:block/disk_drive",
+      "y": 270
+    }
+  }
+}

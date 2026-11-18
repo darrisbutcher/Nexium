@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SPS",
+    "PPP",
+    "SPS"
+  ],
+  "key": {
+    "P": "minecraft:crimson_planks",
+    "S": "minecraft:crimson_slab"
+  },
+  "result": {
+    "id": "nexium:crimson_drawer_2x2",
+    "count": 4
+  }
+}

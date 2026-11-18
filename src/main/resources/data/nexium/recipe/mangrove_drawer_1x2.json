@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "PPP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:mangrove_planks",
+    "S": "minecraft:mangrove_slab"
+  },
+  "result": {
+    "id": "nexium:mangrove_drawer_1x2",
+    "count": 2
+  }
+}

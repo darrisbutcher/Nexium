@@ -1,0 +1,63 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_base": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:stone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_compressed": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexium:compressed_stone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_double": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexium:double_compressed_stone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_triple": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexium:triple_compressed_stone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_base",
+      "has_compressed",
+      "has_double",
+      "has_triple"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexium:compressed_stone",
+      "nexium:compressed_stone_to_stone",
+      "nexium:double_compressed_stone",
+      "nexium:double_compressed_stone_to_compressed_stone",
+      "nexium:triple_compressed_stone",
+      "nexium:triple_compressed_stone_to_double_compressed_stone"
+    ]
+  }
+}

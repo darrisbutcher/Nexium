@@ -1,8 +1,8 @@
 {
   "values": [
-    "storagenexus:nexium_block",
-    "nexusessentials:compressed_obsidian",
-    "nexusessentials:double_compressed_obsidian",
-    "nexusessentials:triple_compressed_obsidian"
+    "nexium:nexium_block",
+    "nexium:compressed_obsidian",
+    "nexium:double_compressed_obsidian",
+    "nexium:triple_compressed_obsidian"
   ]
 }

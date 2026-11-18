@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "dyed_freezer",
+  "result": {
+    "id": "nexium:freezer"
+  },
+  "target": "nexium:freezer"
+}

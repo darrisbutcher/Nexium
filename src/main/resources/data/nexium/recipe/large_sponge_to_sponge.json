@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:large_sponge"
+  ],
+  "result": {
+    "id": "minecraft:sponge",
+    "count": 9
+  }
+}
