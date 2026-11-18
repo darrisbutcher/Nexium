@@ -41,6 +41,7 @@ public class Nexium implements ModInitializer {
         ModComponents.init();
         ModBlocks.init();
         ModItems.init();
+        net.nexium.dog.ModDogs.init();
         ModRecipes.init();
         ModBlockEntities.init();
         ModMenus.init();

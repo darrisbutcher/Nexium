@@ -47,6 +47,7 @@
       "net.nexium.gametest.client.ConfigScreenClientTest",
       "net.nexium.gametest.client.PowerMeterClientTest",
       "net.nexium.gametest.client.QuestClientTest",
+      "net.nexium.gametest.client.DogClientTest",
       "net.nexium.gametest.client.RelogClientTest"
     ],
     "fabric-gametest": [
