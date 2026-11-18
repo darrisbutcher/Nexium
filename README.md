@@ -694,8 +694,10 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 
 ## Settings
 
-`config/nexusessentials.json` is created on first launch. Changes take effect after a restart. On a server, the
-server's file is the one that counts.
+`config/nexusessentials.json` is created on first launch. Every setting can also be changed in the game, on **Nexium Settings**:
+the **Settings** button in the Codex or the armor menu, **Mod Menu**'s Configure button, or the *Open Nexium Settings* key (unbound
+by default). They are grouped by feature, each has a Reset, and hovering one says what it does and its limits. Changes are saved as
+you make them and apply at once in a world you host. On a server, the server's file is the one that counts.
 
 | Setting | Default | What it does |
 |---|---|---|

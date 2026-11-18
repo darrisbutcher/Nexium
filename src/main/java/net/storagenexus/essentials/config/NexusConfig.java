@@ -196,6 +196,12 @@ public final class NexusConfig {
         instance = loaded == null ? new NexusConfig() : loaded;
         migrate(instance, loaded != null);
         instance.clamp();
+        save();
+    }
+
+    /** Writes the current settings to the file. The settings screen calls this when a setting changes. */
+    public static void save() {
+        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexusEssentials.NAMESPACE + ".json");
         try {
             Files.createDirectories(file.getParent());
             try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
@@ -207,40 +213,6 @@ public final class NexusConfig {
     }
 
     private void clamp() {
-        magnetMaxRange = Math.max(4, Math.min(64, magnetMaxRange));
-        bedrockBreakerSeconds = Math.max(1, Math.min(24 * 60 * 60, bedrockBreakerSeconds));
-        bossPickUpLevels = Math.max(0, Math.min(1000, bossPickUpLevels));
-        librarianVillagers = Math.max(1, Math.min(54, librarianVillagers));
-        ironFarmGolemTicks = Math.max(1, Math.min(24000, ironFarmGolemTicks));
-        villagerBreederTicks = Math.max(1, Math.min(1_000_000, villagerBreederTicks));
-        piglinBarterTicks = Math.max(1, Math.min(1_000_000, piglinBarterTicks));
-        zombifiedPiglinTicks = Math.max(1, Math.min(1_000_000, zombifiedPiglinTicks));
-        witherSkeletonTicks = Math.max(1, Math.min(1_000_000, witherSkeletonTicks));
-        witchFarmTicks = Math.max(1, Math.min(1_000_000, witchFarmTicks));
-        sugarCaneFarmTicks = Math.max(1, Math.min(1_000_000, sugarCaneFarmTicks));
-        bambooFarmTicks = Math.max(1, Math.min(1_000_000, bambooFarmTicks));
-        netherWartFarmTicks = Math.max(1, Math.min(1_000_000, netherWartFarmTicks));
-        monsterFarmTicks = Math.max(1, Math.min(1_000_000, monsterFarmTicks));
-        netherMobFarmTicks = Math.max(1, Math.min(1_000_000, netherMobFarmTicks));
-        oceanFarmTicks = Math.max(1, Math.min(1_000_000, oceanFarmTicks));
-        slimeFarmTicks = Math.max(1, Math.min(1_000_000, slimeFarmTicks));
-        livestockFarmTicks = Math.max(1, Math.min(1_000_000, livestockFarmTicks));
-        cropFarmTicks = Math.max(1, Math.min(1_000_000, cropFarmTicks));
-        gourdFarmTicks = Math.max(1, Math.min(1_000_000, gourdFarmTicks));
-        generatorFarmTicks = Math.max(1, Math.min(1_000_000, generatorFarmTicks));
-        beeFarmTicks = Math.max(1, Math.min(1_000_000, beeFarmTicks));
-        mossFarmTicks = Math.max(1, Math.min(1_000_000, mossFarmTicks));
-        froglightFarmTicks = Math.max(1, Math.min(1_000_000, froglightFarmTicks));
-        treeFarmTicks = Math.max(1, Math.min(1_000_000, treeFarmTicks));
-        shulkerFarmTicks = Math.max(1, Math.min(1_000_000, shulkerFarmTicks));
-        freezerIceTicks = Math.max(1, Math.min(1_000_000, freezerIceTicks));
-        freezerPackedIceTicks = Math.max(1, Math.min(1_000_000, freezerPackedIceTicks));
-        freezerBlueIceTicks = Math.max(1, Math.min(1_000_000, freezerBlueIceTicks));
-        aiotVeinMaxBlocks = Math.max(1, Math.min(512, aiotVeinMaxBlocks));
-        aiotHudSeconds = Math.max(0, Math.min(600, aiotHudSeconds));
-        harvestVeinMax = Math.max(1, Math.min(1024, harvestVeinMax));
-        aiotTunnelMaxLength = Math.max(1, Math.min(64, aiotTunnelMaxLength));
-        restockTopUpAt = Math.max(1, Math.min(63, restockTopUpAt));
-        restockEatWhenMissing = Math.max(1, Math.min(20, restockEatWhenMissing));
+        for (ConfigSchema.Entry e : ConfigSchema.ENTRIES) if (!e.isSwitch()) e.setInt(this, e.getInt(this));
     }
 }

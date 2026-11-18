@@ -58,6 +58,8 @@ dependencies {
     if (project.hasProperty("withJei")) localRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
 
     compileOnly "maven.modrinth:jade:${project.jade_version}"
+    // Mod Menu: its API is compiled against so the Mods list can open the settings screen; not needed to run the mod.
+    compileOnly "maven.modrinth:modmenu:${project.modmenu_version}"
     // `./gradlew runClientGameTest -PwithJade` runs the client test with Jade installed.
     if (project.hasProperty("withJade")) localRuntime "maven.modrinth:jade:${project.jade_version}"
 

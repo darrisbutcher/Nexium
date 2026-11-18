@@ -3,6 +3,21 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.6
+
+* **Settings screen**: all 56 settings of `config/nexusessentials.json` can now be changed in the game, on **Nexium Settings**: open it from
+  the **Settings** button in the Codex or in the armor menu, from **Mod Menu**'s Configure button (if you use it), or with the
+  *Open Nexium Settings* key (unbound until you pick one). They are grouped by feature (Mobs, Items and world, AIOT tools and screens,
+  Nexium armor, One-block farms, Freezer). A switch is an On/Off button; a number is a box held to its limits. Each setting has its own
+  **Reset**; **Reset page** and **Reset all** do a group or everything. Hover a setting for what it does, its limits and default, and whether
+  it is for your own game or for the world you host. Changed settings are gold, and changes are saved as you make them. Settings are read
+  as they are used, so they apply at once in a world you host; a dedicated server still uses its own file.
+* **Faster storage networks**: a scan of a storage network is now shared by every block on it (buses, terminals, emitters, intakes...) instead
+  of each block scanning on its own, and the cache holds many more networks. With 20 buses on one network at its size limit and storage changing
+  every tick, a tick's work dropped from 24.8 ms to 2.9 ms. Nothing changes in how networks behave.
+* **Stress tests** (not shipped in the mod, run in the build): 300 overclocked farms, a network at its size limit, 100 conduits with 20 machines
+  and 20 players with Restocking all stay far under 1% of a server tick, apart from the network case above, now 6%.
+
 ## 1.22.5
 
 * **Water breathing**: the full Nexium set now also gives **Water Breathing**, like the helmet's Night Vision: an infinite effect with a steady
