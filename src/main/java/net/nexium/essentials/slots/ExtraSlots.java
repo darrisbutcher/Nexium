@@ -33,11 +33,11 @@ public final class ExtraSlots extends SimpleContainer {
     /** The arrow slot holds one stack; every other slot holds one item. */
     public static final int ARROWS_MAX = 64;
 
-    private static final String TRINKET_KEY = "NexusEssentialsTrinket";
-    private static final String WINGS_KEY = "NexusEssentialsWings";
-    private static final String ARROWS_KEY = "NexusEssentialsArrows";
-    private static final String TOTEM_KEY = "NexusEssentialsTotem";
-    private static final String BACKPACK_KEY = "NexusEssentialsBackpack";
+    private static final String TRINKET_KEY = "NexiumEssentialsTrinket";
+    private static final String WINGS_KEY = "NexiumEssentialsWings";
+    private static final String ARROWS_KEY = "NexiumEssentialsArrows";
+    private static final String TOTEM_KEY = "NexiumEssentialsTotem";
+    private static final String BACKPACK_KEY = "NexiumEssentialsBackpack";
 
     /** Server only: the wings last sent to the players who can see the owner. */
     private ItemStack sentWings = ItemStack.EMPTY;

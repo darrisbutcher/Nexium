@@ -11,7 +11,7 @@ import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -25,15 +25,15 @@ import java.util.Map;
  */
 public final class NexiumMaterials {
     /** What repairs Nexium tools and armor at an anvil: the Nexium ingot. */
-    public static final TagKey<Item> TOOL_MATERIALS = TagKey.create(Registries.ITEM, StorageNexus.id("nexium_tool_materials"));
-    public static final TagKey<Item> REPAIRS_ARMOR = TagKey.create(Registries.ITEM, StorageNexus.id("repairs_nexium_armor"));
+    public static final TagKey<Item> TOOL_MATERIALS = TagKey.create(Registries.ITEM, Nexium.id("nexium_tool_materials"));
+    public static final TagKey<Item> REPAIRS_ARMOR = TagKey.create(Registries.ITEM, Nexium.id("repairs_nexium_armor"));
     /** Tools that give Haste II while held in the main hand (unless turned off in the tool menu). */
-    public static final TagKey<Item> GRANTS_HASTE = TagKey.create(Registries.ITEM, StorageNexus.id("grants_haste"));
+    public static final TagKey<Item> GRANTS_HASTE = TagKey.create(Registries.ITEM, Nexium.id("grants_haste"));
 
     /** Netherite's mining level and speed, 2,500 uses (netherite 2,031), +5 damage (netherite +4), enchantability 18. */
     public static final ToolMaterial TOOL = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2500, 9.0F, 5.0F, 18, TOOL_MATERIALS);
 
-    public static final ResourceKey<EquipmentAsset> EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, StorageNexus.id("nexium"));
+    public static final ResourceKey<EquipmentAsset> EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Nexium.id("nexium"));
 
     /**
      * Netherite plus one armor point per piece (4/9/7/4, 24 in all), 5 toughness per piece (20, the game's cap),

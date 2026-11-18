@@ -7,14 +7,14 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 
 /**
  * Client to server: a right-click with the Diagonal Placement key held, on this face of this block at this point, with the item
  * in this hand. The server places the block diagonally, see {@link DiagonalPlacement}.
  */
 public record DiagonalPlacePayload(BlockPos pos, Direction face, Vec3 hit, InteractionHand hand) implements CustomPacketPayload {
-    public static final Type<DiagonalPlacePayload> TYPE = new Type<>(NexusEssentials.id("diagonal_place"));
+    public static final Type<DiagonalPlacePayload> TYPE = new Type<>(NexiumEssentials.id("diagonal_place"));
     public static final StreamCodec<ByteBuf, DiagonalPlacePayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, DiagonalPlacePayload::pos,
             Direction.STREAM_CODEC, DiagonalPlacePayload::face,

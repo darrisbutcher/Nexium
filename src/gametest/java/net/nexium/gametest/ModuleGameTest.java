@@ -374,7 +374,7 @@ public class ModuleGameTest {
             config.aiotVeinMaxBlocks = max;
         }
         long micros = (System.nanoTime() - start) / 1000;
-        net.nexium.StorageNexus.LOG.info("Vein of 64 with a Nexus Link into 14 barrels: {} microseconds", micros);
+        net.nexium.Nexium.LOG.info("Vein of 64 with a Nexus Link into 14 barrels: {} microseconds", micros);
 
         int left = 0;
         for (int x = 0; x < 5; x++) for (int y = 2; y <= 5; y++) for (int z = 0; z < 5; z++) if (h.getBlockState(new BlockPos(x, y, z)).is(Blocks.COAL_ORE)) left++;
@@ -652,7 +652,7 @@ public class ModuleGameTest {
         // An item id that no longer exists would make the whole AIOT fail to load, so the id stays registered
         ItemStack old = oldAiot(h, 0, 1, 2);
         h.assertTrue(!old.isEmpty() && old.is(ModItems.AIOTS.get(AiotTier.DIAMOND)), "an AIOT saved with the Vein Mining Module still loads");
-        h.assertTrue(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.nexium.StorageNexus.id("vein_mining_module"))
+        h.assertTrue(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.nexium.Nexium.id("vein_mining_module"))
                 instanceof net.nexium.aiot.module.RetiredModuleItem, "the old id is the retired item");
         // But it is no module any more: no module type, no recipe, not in the creative tab
         h.assertValueEqual(ModuleType.values().length, 2, "two module types");

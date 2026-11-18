@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsList;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -22,7 +22,7 @@ public class KeyBindsClientTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext ctx) {
         ctx.getInput().resizeWindow(1280, 720);
-        KeyMapping magnet = NexusEssentialsClient.TOGGLE_MAGNET;
+        KeyMapping magnet = NexiumEssentialsClient.TOGGLE_MAGNET;
         ctx.runOnClient(mc -> {
             check(Arrays.asList(mc.options.keyMappings).contains(magnet), "the magnet key is in the game's key list");
             check(magnet.getDefaultKey().getValue() == InputConstants.KEY_M, "it defaults to M");

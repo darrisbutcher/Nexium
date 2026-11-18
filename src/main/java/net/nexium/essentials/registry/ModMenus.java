@@ -4,26 +4,26 @@ import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.assembler.FarmAssemblerMenu;
 import net.nexium.essentials.farm.FarmMenu;
 import net.nexium.essentials.ironfarm.IronFarmMenu;
 
 public final class ModMenus {
     public static final ExtendedMenuType<IronFarmMenu, BlockPos> IRON_FARM = Registry.register(BuiltInRegistries.MENU,
-            NexusEssentials.id("iron_farm"), new ExtendedMenuType<>(IronFarmMenu::new, BlockPos.STREAM_CODEC));
+            NexiumEssentials.id("iron_farm"), new ExtendedMenuType<>(IronFarmMenu::new, BlockPos.STREAM_CODEC));
 
     public static final ExtendedMenuType<net.nexium.essentials.xpfarm.XpFarmMenu, BlockPos> XP_FARM = Registry.register(BuiltInRegistries.MENU,
-            NexusEssentials.id("xp_farm"), new ExtendedMenuType<>(net.nexium.essentials.xpfarm.XpFarmMenu::new, BlockPos.STREAM_CODEC));
+            NexiumEssentials.id("xp_farm"), new ExtendedMenuType<>(net.nexium.essentials.xpfarm.XpFarmMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<FarmMenu, BlockPos> FARM = Registry.register(BuiltInRegistries.MENU,
-            NexusEssentials.id("farm"), new ExtendedMenuType<>(FarmMenu::new, BlockPos.STREAM_CODEC));
+            NexiumEssentials.id("farm"), new ExtendedMenuType<>(FarmMenu::new, BlockPos.STREAM_CODEC));
 
     public static final ExtendedMenuType<FarmAssemblerMenu, BlockPos> FARM_ASSEMBLER = Registry.register(BuiltInRegistries.MENU,
-            NexusEssentials.id("farm_assembler"), new ExtendedMenuType<>(FarmAssemblerMenu::new, BlockPos.STREAM_CODEC));
+            NexiumEssentials.id("farm_assembler"), new ExtendedMenuType<>(FarmAssemblerMenu::new, BlockPos.STREAM_CODEC));
 
     /** Opening data: {@code Backpacks.EQUIPPED}, or the inventory slot holding the Backpack. */
     public static final ExtendedMenuType<net.nexium.essentials.backpack.BackpackMenu, Integer> BACKPACK = Registry.register(BuiltInRegistries.MENU,
-            NexusEssentials.id("backpack"), new ExtendedMenuType<>(net.nexium.essentials.backpack.BackpackMenu::new, net.minecraft.network.codec.ByteBufCodecs.VAR_INT));
+            NexiumEssentials.id("backpack"), new ExtendedMenuType<>(net.nexium.essentials.backpack.BackpackMenu::new, net.minecraft.network.codec.ByteBufCodecs.VAR_INT));
 
     public static void init() {}
 

@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.block.Block;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.AiotItem;
 import net.nexium.aiot.AiotTier;
 import net.nexium.aiot.module.ModuleItem;
@@ -175,7 +175,7 @@ public final class ModItems {
         // Block items go after the loose items so the tab starts with drawers.
         List<Item> blockItems = new ArrayList<>();
         for (Map.Entry<String, Block> e : ModBlocks.WITH_ITEMS.entrySet()) {
-            ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, StorageNexus.id(e.getKey()));
+            ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Nexium.id(e.getKey()));
             BlockItem item = new BlockItem(e.getValue(), new Item.Properties().setId(key).useBlockDescriptionPrefix());
             Registry.register(BuiltInRegistries.ITEM, key, item);
             blockItems.add(item);
@@ -194,7 +194,7 @@ public final class ModItems {
     }
 
     private static <T extends Item> T register(String name, Function<Item.Properties, T> factory, Item.Properties props) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, StorageNexus.id(name));
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Nexium.id(name));
         T item = factory.apply(props.setId(key));
         Registry.register(BuiltInRegistries.ITEM, key, item);
         TAB_ORDER.add(item);

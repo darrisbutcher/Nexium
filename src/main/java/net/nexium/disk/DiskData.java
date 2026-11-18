@@ -8,7 +8,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public final class DiskData extends SavedData {
             diskCodec(FluidVariant.CODEC.orElse(FluidVariant.blank())).listOf().optionalFieldOf("fluids", List.of()).forGetter(d -> d.save(d.fluids))
     ).apply(i, DiskData::new));
 
-    public static final SavedDataType<DiskData> TYPE = new SavedDataType<>(StorageNexus.id("storage_disks"), DiskData::new, CODEC, null);
+    public static final SavedDataType<DiskData> TYPE = new SavedDataType<>(Nexium.id("storage_disks"), DiskData::new, CODEC, null);
 
     private final Map<UUID, DiskContents<ItemVariant>> items = new HashMap<>();
     private final Map<UUID, DiskContents<FluidVariant>> fluids = new HashMap<>();

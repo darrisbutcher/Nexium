@@ -13,7 +13,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.quest.QuestBook.Chapter;
 import net.nexium.quest.QuestBook.Quest;
 import net.nexium.registry.ModItems;
@@ -30,7 +30,7 @@ import java.util.Set;
  * nothing has to be repeated. Recipes are never locked by any of this.
  */
 public final class Quests {
-    private static final AttachmentType<List<String>> DONE = AttachmentRegistry.create(StorageNexus.id("quests_done"),
+    private static final AttachmentType<List<String>> DONE = AttachmentRegistry.create(Nexium.id("quests_done"),
             b -> b.persistent(Codec.STRING.listOf()).copyOnDeath());
 
     /** Items that make no sense as a gift. */

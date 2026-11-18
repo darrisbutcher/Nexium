@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.client.screen.ConduitConfigScreen;
 import net.nexium.conduit.SideConfig;
 import net.nexium.conduit.ConduitBundleBlockEntity;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
-    private static final RenderType MARKER = RenderTypes.entitySolid(StorageNexus.id("textures/misc/white.png"));
+    private static final RenderType MARKER = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
     /** Ring cross-section, just wider than an arm (6.75-9.25 px). */
     private static final float RING_MIN = 6.6f / 16, RING_MAX = 9.4f / 16;
     /** Distance from the block centre along the arm, per conduit type (px). */

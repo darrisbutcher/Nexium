@@ -15,7 +15,7 @@ import net.nexium.aiot.module.TunnelStepPayload;
 import net.nexium.aiot.module.VeinKeyPayload;
 import net.nexium.client.screen.ArmorMenuScreen;
 import net.nexium.client.screen.ToolMenuScreen;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.nexium.nexium.NexiumArmor;
 import net.nexium.registry.ModMenus;
 
@@ -26,11 +26,11 @@ import net.nexium.registry.ModMenus;
  */
 public final class ToolMenuClient {
     public static final KeyMapping TOOL_MENU = new KeyMapping("key.nexium.tool_menu",
-            InputConstants.KEY_G, NexusEssentialsClient.CATEGORY);
+            InputConstants.KEY_G, NexiumEssentialsClient.CATEGORY);
 
     /** Hold while mining with an AIOT to vein mine (no module needed). */
     public static final KeyMapping VEIN_MINE = new KeyMapping("key.nexium.vein_mine",
-            InputConstants.KEY_V, NexusEssentialsClient.CATEGORY);
+            InputConstants.KEY_V, NexiumEssentialsClient.CATEGORY);
     private static boolean veinSent;
 
     /**
@@ -38,11 +38,11 @@ public final class ToolMenuClient {
      * plain press only shows the readout. While it is held with an AIOT in hand the wheel does not change the hotbar slot.
      */
     public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.nexium.step_tunnel",
-            InputConstants.KEY_Z, NexusEssentialsClient.CATEGORY);
+            InputConstants.KEY_Z, NexiumEssentialsClient.CATEGORY);
 
     /** Press with an AIOT in hand to switch its 3x3 Mining Module on or off. */
     public static final KeyMapping TOGGLE_AREA = new KeyMapping("key.nexium.toggle_area",
-            InputConstants.KEY_X, NexusEssentialsClient.CATEGORY);
+            InputConstants.KEY_X, NexiumEssentialsClient.CATEGORY);
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(VEIN_MINE);

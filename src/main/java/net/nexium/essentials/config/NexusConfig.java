@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import net.fabricmc.loader.api.FabricLoader;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -184,13 +184,13 @@ public final class NexusConfig {
     }
 
     public static void load() {
-        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexusEssentials.NAMESPACE + ".json");
+        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexiumEssentials.NAMESPACE + ".json");
         NexusConfig loaded = null;
         if (Files.exists(file)) {
             try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 loaded = GSON.fromJson(reader, NexusConfig.class);
             } catch (IOException | JsonParseException e) {
-                NexusEssentials.LOG.error("Could not read {}, using the defaults", file, e);
+                NexiumEssentials.LOG.error("Could not read {}, using the defaults", file, e);
             }
         }
         instance = loaded == null ? new NexusConfig() : loaded;
@@ -201,14 +201,14 @@ public final class NexusConfig {
 
     /** Writes the current settings to the file. The settings screen calls this when a setting changes. */
     public static void save() {
-        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexusEssentials.NAMESPACE + ".json");
+        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexiumEssentials.NAMESPACE + ".json");
         try {
             Files.createDirectories(file.getParent());
             try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
                 GSON.toJson(instance, writer);
             }
         } catch (IOException e) {
-            NexusEssentials.LOG.warn("Could not write {}", file, e);
+            NexiumEssentials.LOG.warn("Could not write {}", file, e);
         }
     }
 

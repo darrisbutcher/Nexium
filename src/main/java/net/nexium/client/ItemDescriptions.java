@@ -7,7 +7,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.AiotItem;
 import net.nexium.drawer.DrawerBlock;
 import net.nexium.nexium.NexiumMaterials;
@@ -29,7 +29,7 @@ public final class ItemDescriptions {
     }
 
     private static void append(ItemStack stack, List<Component> lines) {
-        if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(StorageNexus.MOD_ID)) return;
+        if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(Nexium.MOD_ID)) return;
         String key;
         if (stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof DrawerBlock drawer) {
             key = "tooltip.nexium.drawer." + drawer.slots();

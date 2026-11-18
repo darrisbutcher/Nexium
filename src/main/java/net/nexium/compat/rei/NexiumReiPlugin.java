@@ -25,12 +25,12 @@ import java.util.Optional;
  * REI's "+" button on crafting recipes fills the Crafting Terminal's grid from the network, and its tooltip lists what is
  * missing; REI's search box and the terminals' stay the same. Only loaded when REI is installed.
  */
-public class StorageNexusReiPlugin implements REIClientPlugin {
+public class NexiumReiPlugin implements REIClientPlugin {
     private static final String CRAFTING_CATEGORY = "minecraft:plugins/crafting";
 
     @Override
     public void registerTransferHandlers(TransferHandlerRegistry registry) {
-        registry.register(StorageNexusReiPlugin::handle);
+        registry.register(NexiumReiPlugin::handle);
         RecipeViewerSearch.connect(() -> {
             TextField field = REIRuntime.getInstance().getSearchTextField();
             return field == null ? null : field.getText();

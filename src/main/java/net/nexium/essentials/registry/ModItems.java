@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.backpack.BackpackItem;
 import net.nexium.essentials.backpack.BackpackModuleItem;
 import net.nexium.essentials.backpack.BackpackModuleType;
@@ -88,7 +88,7 @@ public final class ModItems {
     }
 
     private static <T extends Item> T register(String name, Function<Item.Properties, T> factory, Item.Properties props) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, NexusEssentials.id(name));
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, NexiumEssentials.id(name));
         T item = factory.apply(props.setId(key));
         Registry.register(BuiltInRegistries.ITEM, key, item);
         return item;

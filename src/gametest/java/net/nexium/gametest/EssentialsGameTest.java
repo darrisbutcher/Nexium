@@ -716,7 +716,7 @@ public class EssentialsGameTest {
 
     /** The Essentials items are in the Nexium creative tabs (the magnet and elixir in Tools, the farms in Farms & Power), and not in vanilla's. */
     @GameTest(environment = EssentialsEnvironment.ID)
-    public void essentialsItemsAreInTheStorageNexusTab(GameTestHelper h) {
+    public void essentialsItemsAreInTheNexiumTab(GameTestHelper h) {
         CreativeModeTabs.tryRebuildTabContents(h.getLevel().enabledFeatures(), true, h.getLevel().registryAccess());
         List<ResourceKey<CreativeModeTab>> vanillaTabs = List.of(CreativeModeTabs.TOOLS_AND_UTILITIES,
                 CreativeModeTabs.FOOD_AND_DRINKS, CreativeModeTabs.FUNCTIONAL_BLOCKS);

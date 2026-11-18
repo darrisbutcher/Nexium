@@ -12,7 +12,7 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class AnchorRegistry extends SavedData {
      * Keeps an anchor's chunks loaded and ticking, and its dimension running, like a forced chunk. Not saved with the
      * world: {@link #reconcile} puts the tickets back when the server starts, so nothing stays loaded if the mod is removed.
      */
-    public static final TicketType TICKET = Registry.register(BuiltInRegistries.TICKET_TYPE, StorageNexus.id("dimensional_anchor"),
+    public static final TicketType TICKET = Registry.register(BuiltInRegistries.TICKET_TYPE, Nexium.id("dimensional_anchor"),
             new TicketType(TicketType.NO_TIMEOUT, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE));
     /**
      * One ticket on the chunk that holds the anchor: radius 3 puts that chunk at level 30 and the 8 around it at 31
@@ -55,7 +55,7 @@ public class AnchorRegistry extends SavedData {
             Entry.CODEC.listOf().xmap(list -> new AnchorRegistry(list, false), r -> List.copyOf(r.anchors.values())));
 
     public static final SavedDataType<AnchorRegistry> TYPE =
-            new SavedDataType<>(StorageNexus.id("anchors"), AnchorRegistry::new, CODEC, null);
+            new SavedDataType<>(Nexium.id("anchors"), AnchorRegistry::new, CODEC, null);
 
     private final Map<GlobalPos, Entry> anchors = new HashMap<>();
     /** False for a world whose anchors still hold vanilla forced chunks from before 1.1.4; {@link #reconcile} releases them once. */

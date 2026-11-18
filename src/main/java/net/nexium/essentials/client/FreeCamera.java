@@ -24,13 +24,13 @@ import org.jspecify.annotations.Nullable;
  */
 public final class FreeCamera {
     /** Switches the free camera on and off. K by default; change it under Controls > Key Binds. */
-    public static final KeyMapping TOGGLE = new KeyMapping("key.nexium.free_camera", InputConstants.KEY_K, NexusEssentialsClient.CATEGORY);
+    public static final KeyMapping TOGGLE = new KeyMapping("key.nexium.free_camera", InputConstants.KEY_K, NexiumEssentialsClient.CATEGORY);
 
     /**
      * Held with the scroll wheel while the camera is away, changes how fast it flies. Left Ctrl by default (the plain scroll wheel
      * does nothing then); change it under Controls > Key Binds.
      */
-    public static final KeyMapping SPEED_MODIFIER = new KeyMapping("key.nexium.free_camera_speed", InputConstants.KEY_LCONTROL, NexusEssentialsClient.CATEGORY);
+    public static final KeyMapping SPEED_MODIFIER = new KeyMapping("key.nexium.free_camera_speed", InputConstants.KEY_LCONTROL, NexiumEssentialsClient.CATEGORY);
 
     /** Blocks per tick at the start (10 a second), the slowest and the fastest the wheel can make it, and what sprint multiplies by. */
     private static final double START_SPEED = 0.5, MIN_SPEED = 0.05, MAX_SPEED = 5.0, SPRINT = 3.0;

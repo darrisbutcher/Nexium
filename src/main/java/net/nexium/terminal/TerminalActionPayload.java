@@ -7,7 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 /** Client -> server: a click in the terminal's item or fluid grid. */
 public record TerminalActionPayload(int action, ItemStack item, Fluid fluid) implements CustomPacketPayload {
@@ -20,7 +20,7 @@ public record TerminalActionPayload(int action, ItemStack item, Fluid fluid) imp
     public static final int EMPTY_BUCKET = 6;
     public static final int TAKE_ONE = 7;
 
-    public static final Type<TerminalActionPayload> TYPE = new Type<>(StorageNexus.id("terminal_action"));
+    public static final Type<TerminalActionPayload> TYPE = new Type<>(Nexium.id("terminal_action"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TerminalActionPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, TerminalActionPayload::action,

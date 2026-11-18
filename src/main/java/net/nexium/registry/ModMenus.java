@@ -7,7 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.ToolMenuMenu;
 import net.nexium.barrel.BarrelMenu;
 import net.nexium.conduit.ConduitConfigMenu;
@@ -65,7 +65,7 @@ public final class ModMenus {
             new ExtendedMenuType<>(FreezerMenu::new, BlockPos.STREAM_CODEC));
 
     private static <T extends AbstractContainerMenu, M extends MenuType<T>> M register(String name, M type) {
-        return Registry.register(BuiltInRegistries.MENU, StorageNexus.id(name), type);
+        return Registry.register(BuiltInRegistries.MENU, Nexium.id(name), type);
     }
 
     public static void init() {}

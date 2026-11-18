@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.drawer.DrawerInteraction;
 import net.nexium.registry.ModItems;
 import net.nexium.upgrade.UpgradeItem;
@@ -42,7 +42,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
     };
 
     /** Plain white texture tinted per vertex, for the fill bars. */
-    private static final RenderType BAR = RenderTypes.entitySolid(StorageNexus.id("textures/misc/white.png"));
+    private static final RenderType BAR = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
 
     protected final ItemModelResolver itemModels;
     protected final Font font;
@@ -71,7 +71,7 @@ public abstract class AbstractFrontRenderer<T extends BlockEntity> implements Bl
     /** The mark on a locked front: an item with the lock_icon model (the keyhole art), not the key itself. */
     private static ItemStack lockIconStack() {
         ItemStack stack = new ItemStack(net.minecraft.world.item.Items.STICK);
-        stack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL, net.nexium.StorageNexus.id("lock_icon"));
+        stack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL, net.nexium.Nexium.id("lock_icon"));
         return stack;
     }
 

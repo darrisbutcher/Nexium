@@ -3,12 +3,12 @@ package net.nexium.aiot;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 /** Client to server: the tool menu key was pressed; open the tool menu for the tool in the main hand. */
 public record ToolMenuPayload() implements CustomPacketPayload {
     public static final ToolMenuPayload INSTANCE = new ToolMenuPayload();
-    public static final Type<ToolMenuPayload> TYPE = new Type<>(StorageNexus.id("tool_menu"));
+    public static final Type<ToolMenuPayload> TYPE = new Type<>(Nexium.id("tool_menu"));
     public static final StreamCodec<ByteBuf, ToolMenuPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override

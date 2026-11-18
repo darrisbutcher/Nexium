@@ -5,7 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.conduit.ConduitBundleBlockEntity;
 import net.nexium.dimension.DimensionalAnchorBlockEntity;
 import net.nexium.dimension.DimensionalInputBlockEntity;
@@ -74,7 +74,7 @@ public final class ModBlockEntities {
             new BlockEntityType<>(FreezerBlockEntity::new, Set.of(ModBlocks.FREEZER)));
 
     private static <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType<T> type) {
-        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, StorageNexus.id(name), type);
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Nexium.id(name), type);
     }
 
     public static void init() {}

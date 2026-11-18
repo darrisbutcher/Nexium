@@ -10,7 +10,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.MiningMode;
 import net.nexium.drawer.CompactingDrawerBlockEntity;
 import net.nexium.drawer.DrawerBlockEntity;
@@ -133,7 +133,7 @@ public final class ModComponents {
             b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
-        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, StorageNexus.id(name),
+        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Nexium.id(name),
                 op.apply(DataComponentType.builder()).build());
     }
 

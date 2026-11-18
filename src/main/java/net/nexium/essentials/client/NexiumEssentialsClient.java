@@ -12,16 +12,16 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.essentials.placement.DiagonalPlacePayload;
 import net.nexium.essentials.registry.ModMenus;
 import net.nexium.essentials.registry.ModPayloads;
 import net.nexium.essentials.slots.ExtraSlots;
 
-/** Client side of the Essentials features, set up by {@link net.nexium.client.StorageNexusClient}. */
-public final class NexusEssentialsClient {
+/** Client side of the Essentials features, set up by {@link net.nexium.client.NexiumClient}. */
+public final class NexiumEssentialsClient {
     /** Key binds are listed under Nexium. */
-    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(StorageNexus.id("main"));
+    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Nexium.id("main"));
     /** Switches the magnet in the trinket slot on or off. M by default; change it under Controls > Key Binds. */
     public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexium.toggle_magnet",
             InputConstants.KEY_M, CATEGORY);
@@ -88,12 +88,12 @@ public final class NexusEssentialsClient {
 
         // A Captured Mob's age, owner, gear and status show while Shift is held (what it looks like is always shown), then
         // the hint on letting it out. It runs ahead of the other tooltip hooks, so those hints stay below it.
-        net.minecraft.resources.Identifier early = StorageNexus.id("captured_mob_details");
+        net.minecraft.resources.Identifier early = Nexium.id("captured_mob_details");
         ItemTooltipCallback.EVENT.addPhaseOrdering(early, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
         ItemTooltipCallback.EVENT.register(early, (stack, context, flag, lines) -> {
             net.nexium.essentials.capture.CapturedMob mob = stack.get(net.nexium.essentials.registry.ModComponents.CAPTURED_MOB);
             if (mob == null) return;
-            var details = net.nexium.essentials.capture.CapturedMobDetails.details(mob, NexusEssentialsClient::playerName);
+            var details = net.nexium.essentials.capture.CapturedMobDetails.details(mob, NexiumEssentialsClient::playerName);
             if (!details.isEmpty()) {
                 if (net.minecraft.client.Minecraft.getInstance().hasShiftDown()) lines.addAll(details);
                 else lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexium.captured_mob_shift")
@@ -113,5 +113,5 @@ public final class NexusEssentialsClient {
         });
     }
 
-    private NexusEssentialsClient() {}
+    private NexiumEssentialsClient() {}
 }

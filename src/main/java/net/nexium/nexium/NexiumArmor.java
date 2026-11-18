@@ -12,7 +12,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModItems;
 
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public final class NexiumArmor {
     private static final int CHECK_EVERY_TICKS = 5;
-    private static final net.minecraft.resources.Identifier NO_KNOCKBACK_ID = StorageNexus.id("nexium_no_knockback");
+    private static final net.minecraft.resources.Identifier NO_KNOCKBACK_ID = Nexium.id("nexium_no_knockback");
 
     public static void init() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {

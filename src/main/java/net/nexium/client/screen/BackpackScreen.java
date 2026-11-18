@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.essentials.backpack.BackpackModuleItem;
 import net.nexium.essentials.backpack.BackpackModules;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 
 /**
  * A Backpack's screen: its 36 slots top left, the player's inventory below, and on the right its module slots, each with
@@ -95,7 +95,7 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     @Override
     public boolean keyPressed(KeyEvent event) {
         // The same key closes it again
-        if (NexusEssentialsClient.OPEN_BACKPACK.matches(event)) {
+        if (NexiumEssentialsClient.OPEN_BACKPACK.matches(event)) {
             onClose();
             return true;
         }

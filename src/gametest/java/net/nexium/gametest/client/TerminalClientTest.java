@@ -175,7 +175,7 @@ public class TerminalClientTest implements FabricClientGameTest {
                 ctx.waitTicks(10);
                 String handler = ctx.computeOnClient(JeiCheck::pressPlus);
                 System.out.println("FILLGRID jei handler: " + handler);
-                if (!handler.contains("StorageNexusJeiPlugin")) throw new AssertionError("JEI did not use our transfer handler: " + handler);
+                if (!handler.contains("NexiumJeiPlugin")) throw new AssertionError("JEI did not use our transfer handler: " + handler);
                 ctx.waitTicks(10);
                 String grid2 = ctx.computeOnClient(mc -> ((TerminalMenu) mc.player.containerMenu).getResultSlot().getItem().toString());
                 System.out.println("FILLGRID after JEI +: result=" + grid2);

@@ -5,12 +5,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 
 public final class ModEffects {
     /** While active, bedrock can be mined with a diamond or netherite pickaxe. */
     public static final Holder<MobEffect> BEDROCK_BREAKER = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT,
-            NexusEssentials.id("bedrock_breaker"), new BedrockBreakerEffect());
+            NexiumEssentials.id("bedrock_breaker"), new BedrockBreakerEffect());
 
     public static void init() {}
 

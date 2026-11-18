@@ -8,7 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -76,7 +76,7 @@ public final class CompressedBlocks {
             Item[] items = new Item[LEVELS];
             for (int level = 1; level <= LEVELS; level++) {
                 String name = PREFIXES[level - 1] + base.id();
-                ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, NexusEssentials.id(name));
+                ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, NexiumEssentials.id(name));
                 BlockBehaviour.Properties props = BlockBehaviour.Properties.of()
                         .setId(blockKey)
                         .mapColor(base.block.defaultMapColor())
@@ -89,7 +89,7 @@ public final class CompressedBlocks {
                 Block block = new Block(props);
                 Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 
-                ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, NexusEssentials.id(name));
+                ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, NexiumEssentials.id(name));
                 Item item = new CompressedBlockItem(block, base, level, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix());
                 Registry.register(BuiltInRegistries.ITEM, itemKey, item);
                 blocks[level - 1] = block;

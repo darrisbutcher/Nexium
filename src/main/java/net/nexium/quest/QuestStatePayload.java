@@ -4,14 +4,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Server to client: how far the player is on every quest. {@code open} makes the client open the quest book. */
 public record QuestStatePayload(boolean open, List<Entry> entries) implements CustomPacketPayload {
-    public static final Type<QuestStatePayload> TYPE = new Type<>(StorageNexus.id("quest_state"));
+    public static final Type<QuestStatePayload> TYPE = new Type<>(Nexium.id("quest_state"));
 
     public record Entry(String key, int current, boolean done) {}
 

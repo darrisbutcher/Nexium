@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.config.NexusConfig;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public final class AncientDebrisLoot {
             if (!source.isBuiltin() || !NexusConfig.get().ancientDebrisDropsScrap) return null;
             if (!Blocks.ANCIENT_DEBRIS.getLootTable().map(key::equals).orElse(false)) return null;
             return LootTable.DIRECT_CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registries), readTable())
-                    .resultOrPartial(error -> NexusEssentials.LOG.error("Bad ancient debris loot table: {}", error))
+                    .resultOrPartial(error -> NexiumEssentials.LOG.error("Bad ancient debris loot table: {}", error))
                     .orElse(null);
         });
     }

@@ -2,7 +2,7 @@ package net.nexium.compat.jade;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.conduit.ConduitBundleBlockEntity;
 import net.nexium.conduit.ConduitType;
 import net.nexium.conduit.EnergyNetwork;
@@ -41,7 +41,7 @@ public class NexusJadePlugin implements IWailaPlugin {
     public enum NexusEnergyProvider implements IServerExtensionProvider<EnergyView.Data>, IClientExtensionProvider<EnergyView.Data, EnergyView> {
         INSTANCE;
 
-        private static final Identifier UID = StorageNexus.id("energy");
+        private static final Identifier UID = Nexium.id("energy");
 
         @Override
         public Identifier getUid() {

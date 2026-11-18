@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.assembler.FarmAssemblerBlock;
 import net.nexium.essentials.farm.FarmBlock;
 import net.nexium.essentials.farm.FarmKind;
@@ -45,7 +45,7 @@ public final class ModBlocks {
     }
 
     private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory, BlockBehaviour.Properties props) {
-        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, NexusEssentials.id(name));
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, NexiumEssentials.id(name));
         T block = factory.apply(props.setId(key));
         Registry.register(BuiltInRegistries.BLOCK, key, block);
         return block;

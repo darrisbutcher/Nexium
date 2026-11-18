@@ -7,7 +7,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class LinkRegistry extends SavedData {
     private static final Codec<LinkRegistry> CODEC = Entry.CODEC.listOf().xmap(LinkRegistry::new, LinkRegistry::toEntries);
 
     public static final SavedDataType<LinkRegistry> TYPE =
-            new SavedDataType<>(StorageNexus.id("links"), LinkRegistry::new, CODEC, null);
+            new SavedDataType<>(Nexium.id("links"), LinkRegistry::new, CODEC, null);
 
     private final Map<UUID, Link> links = new HashMap<>();
 

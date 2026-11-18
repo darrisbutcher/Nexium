@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.barrel.BarrelTier;
 import net.nexium.barrel.TieredBarrelBlock;
 import net.nexium.conduit.ConduitBundleBlock;
@@ -179,7 +179,7 @@ public final class ModBlocks {
 
     private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory,
                                                 BlockBehaviour.Properties props, boolean withItem) {
-        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, StorageNexus.id(name));
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Nexium.id(name));
         T block = factory.apply(props.setId(key));
         Registry.register(BuiltInRegistries.BLOCK, key, block);
         if (withItem) WITH_ITEMS.put(name, block);

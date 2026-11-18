@@ -2,7 +2,7 @@ package net.nexium.energy;
 
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.core.Direction;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -12,7 +12,7 @@ import org.jspecify.annotations.Nullable;
 public interface NexusEnergy {
     /** Looks up the energy holder of a block from one of its sides (null for "any side"). */
     BlockApiLookup<NexusEnergy, @Nullable Direction> SIDED =
-            BlockApiLookup.get(StorageNexus.id("energy"), NexusEnergy.class, Direction.class);
+            BlockApiLookup.get(Nexium.id("energy"), NexusEnergy.class, Direction.class);
 
     /** Puts in up to {@code max} NE and returns how much went in. With {@code simulate}, nothing changes. */
     long insert(long max, boolean simulate);

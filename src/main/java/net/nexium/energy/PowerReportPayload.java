@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.conduit.EnergyNetwork;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 
 /** Server to client: what a Power Meter shows. {@code open} makes the client open the screen, otherwise it updates the open one. A null report means no Energy Conduit beside the meter. */
 public record PowerReportPayload(BlockPos meter, boolean open, EnergyNetwork.Report report) implements CustomPacketPayload {
-    public static final Type<PowerReportPayload> TYPE = new Type<>(StorageNexus.id("power_report"));
+    public static final Type<PowerReportPayload> TYPE = new Type<>(Nexium.id("power_report"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PowerReportPayload> STREAM_CODEC = StreamCodec.of(PowerReportPayload::write, PowerReportPayload::read);
 
     private static void write(RegistryFriendlyByteBuf buf, PowerReportPayload p) {

@@ -20,7 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.client.compat.RecipeTransfer;
 import net.nexium.client.compat.RecipeViewerSearch;
 import net.nexium.registry.ModMenus;
@@ -36,10 +36,10 @@ import java.util.Optional;
  * nothing can fill; JEI's search box and the terminals' stay the same. Only loaded when JEI is installed.
  */
 @JeiPlugin
-public class StorageNexusJeiPlugin implements IModPlugin {
+public class NexiumJeiPlugin implements IModPlugin {
     @Override
     public Identifier getPluginUid() {
-        return StorageNexus.id("jei");
+        return Nexium.id("jei");
     }
 
     @Override

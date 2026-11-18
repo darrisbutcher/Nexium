@@ -16,7 +16,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.disk.DiskDriveBlock;
 import net.nexium.disk.DiskDriveBlockEntity;
 import net.nexium.disk.DiskTier;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * size's colour, and a light beside it, green with room, yellow over 75% full and red when full.
  */
 public class DiskDriveRenderer implements BlockEntityRenderer<DiskDriveBlockEntity, DiskDriveRenderer.State> {
-    private static final RenderType FLAT = RenderTypes.entitySolid(StorageNexus.id("textures/misc/white.png"));
+    private static final RenderType FLAT = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
     /** Label colours by size, as on the disk items. */
     private static final int[] TIER_COLORS = {0xFFD0773A, 0xFFF2C230, 0xFF4FD8E0, 0xFF3FD06A, 0xFF2CE59F};
     private static final int BODY = 0xFF8A8D95, BODY_EDGE = 0xFF5A5C63, GREEN = 0xFF5DFF6A, YELLOW = 0xFFFFD23A, RED = 0xFFFF4A3A;

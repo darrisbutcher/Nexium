@@ -10,7 +10,7 @@ import net.nexium.aiot.module.AiotMining;
 import net.nexium.aiot.module.NexusLink;
 import net.nexium.dimension.AnchorRegistry;
 import net.nexium.drawer.DrawerInteraction;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.network.ModPayloads;
 import net.nexium.network.StorageNetwork;
 import net.nexium.nexium.NexiumArmor;
@@ -27,7 +27,7 @@ import net.nexium.registry.ModTab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StorageNexus implements ModInitializer {
+public class Nexium implements ModInitializer {
     public static final String MOD_ID = "nexium";
     public static final Logger LOG = LoggerFactory.getLogger("Nexium");
     private static final String GUIDE_GIVEN_TAG = "nexium.guide_given";
@@ -56,8 +56,8 @@ public class StorageNexus implements ModInitializer {
         NexusLink.init();
         AiotMining.init();
         net.nexium.builder.BuilderService.init();
-        // The quality-of-life features that used to be the Nexus Essentials mod
-        NexusEssentials.init();
+        // The quality-of-life features that used to be the Essentials mod
+        NexiumEssentials.init();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> AnchorRegistry.get(server).reconcile(server));
         // Hand every player the guide once, the first time they join a world.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

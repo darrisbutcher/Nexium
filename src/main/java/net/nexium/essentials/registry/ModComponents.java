@@ -7,7 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.backpack.BackpackContents;
 import net.nexium.essentials.capture.CapturedMob;
 import net.nexium.essentials.ironfarm.IronFarmTimers;
@@ -52,7 +52,7 @@ public final class ModComponents {
             b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
-        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexusEssentials.id(name),
+        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexiumEssentials.id(name),
                 op.apply(DataComponentType.builder()).build());
     }
 

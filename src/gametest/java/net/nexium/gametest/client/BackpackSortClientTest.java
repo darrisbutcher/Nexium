@@ -14,7 +14,7 @@ import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.essentials.backpack.BackpackModuleType;
 import net.nexium.essentials.backpack.BackpackModules;
 import net.nexium.essentials.backpack.Backpacks;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.nexium.essentials.registry.ModItems;
 import net.nexium.essentials.slots.ExtraSlots;
 import net.nexium.registry.ModComponents;
@@ -73,7 +73,7 @@ public class BackpackSortClientTest implements FabricClientGameTest {
             ctx.waitTicks(20);
 
             // Open the worn Backpack with its key
-            ctx.getInput().pressKey(NexusEssentialsClient.OPEN_BACKPACK);
+            ctx.getInput().pressKey(NexiumEssentialsClient.OPEN_BACKPACK);
             ctx.waitTicks(15);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof BackpackScreen), "B opens the Backpack's screen");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());

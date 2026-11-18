@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public final class ModTab {
     }
 
     private static CreativeModeTab tab(String id, String title, int column, java.util.function.Supplier<ItemStack> icon, Group group) {
-        return Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, StorageNexus.id(id),
+        return Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, Nexium.id(id),
                 CreativeModeTab.builder(CreativeModeTab.Row.TOP, column)
                         .title(Component.translatable(title))
                         .icon(icon)

@@ -9,7 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.AiotEnchanting;
 import net.nexium.aiot.AiotItem;
 import net.nexium.aiot.MiningMode;
@@ -89,7 +89,7 @@ public final class AiotHud {
     }
 
     public static void init() {
-        HudElementRegistry.attachElementAfter(VanillaHudElements.HOTBAR, StorageNexus.id("aiot_hud"), AiotHud::draw);
+        HudElementRegistry.attachElementAfter(VanillaHudElements.HOTBAR, Nexium.id("aiot_hud"), AiotHud::draw);
         ClientTickEvents.END_CLIENT_TICK.register(AiotHud::tick);
     }
 

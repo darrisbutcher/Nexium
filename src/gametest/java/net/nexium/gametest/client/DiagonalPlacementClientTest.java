@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.client.DiagonalPreview;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 
 import java.util.Arrays;
 
@@ -28,8 +28,8 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
     public void runTest(ClientGameTestContext ctx) {
         ctx.getInput().resizeWindow(1280, 720);
         ctx.runOnClient(mc -> {
-            check(Arrays.asList(mc.options.keyMappings).contains(NexusEssentialsClient.DIAGONAL_PLACE), "the diagonal key is in the game's key list");
-            check(NexusEssentialsClient.DIAGONAL_PLACE.getDefaultKey().getValue() == InputConstants.KEY_LALT, "it defaults to Left Alt");
+            check(Arrays.asList(mc.options.keyMappings).contains(NexiumEssentialsClient.DIAGONAL_PLACE), "the diagonal key is in the game's key list");
+            check(NexiumEssentialsClient.DIAGONAL_PLACE.getDefaultKey().getValue() == InputConstants.KEY_LALT, "it defaults to Left Alt");
         });
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             world.getServer().runCommand("gamemode survival @a");
@@ -67,7 +67,7 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
             ctx.waitTicks(2);
             check(ctx.computeOnClient(mc -> DiagonalPreview.target() == null), "no outline while the key is up");
             System.out.println("[nexus] no outline: " + ctx.takeScreenshot("nexus_diagonal_preview_off"));
-            ctx.getInput().holdKey(NexusEssentialsClient.DIAGONAL_PLACE);
+            ctx.getInput().holdKey(NexiumEssentialsClient.DIAGONAL_PLACE);
             ctx.waitTicks(3);
             String outlined = ctx.computeOnClient(mc -> DiagonalPreview.target() + " " + DiagonalPreview.placeable());
             check(outlined.equals(diagonal + " true"), "key held: the outline is on the diagonal cell and it is free (" + diagonal + " true): " + outlined);
@@ -79,7 +79,7 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
             String taken = ctx.computeOnClient(mc -> DiagonalPreview.target() + " " + DiagonalPreview.placeable());
             check(taken.equals(diagonal + " false"), "once placed the same cell is outlined as taken (" + diagonal + " false): " + taken);
             System.out.println("[nexus] diagonal preview taken: " + ctx.takeScreenshot("nexus_diagonal_preview_taken"));
-            ctx.getInput().releaseKey(NexusEssentialsClient.DIAGONAL_PLACE);
+            ctx.getInput().releaseKey(NexiumEssentialsClient.DIAGONAL_PLACE);
             ctx.waitTicks(3);
             check(ctx.computeOnClient(mc -> DiagonalPreview.target() == null), "released: the outline is gone");
             String result = world.getServer().computeOnServer(server -> {
@@ -106,7 +106,7 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
             ctx.waitTicks(4);
             String west_looking = ctx.computeOnClient(mc -> mc.hitResult instanceof BlockHitResult b ? b.getBlockPos().toShortString() + " " + b.getDirection() : "nothing");
             check(west_looking.equals(west.toShortString() + " " + Direction.NORTH), "the crosshair is on the middle of the north face of the west stone block: " + west_looking);
-            ctx.getInput().holdKey(NexusEssentialsClient.DIAGONAL_PLACE);
+            ctx.getInput().holdKey(NexiumEssentialsClient.DIAGONAL_PLACE);
             ctx.waitTicks(3);
             BlockPos across = west.north(2);
             String gap = ctx.computeOnClient(mc -> DiagonalPreview.target() + " " + DiagonalPreview.placeable() + " " + DiagonalPreview.edge() + " " + DiagonalPreview.face());
@@ -121,7 +121,7 @@ public class DiagonalPlacementClientTest implements FabricClientGameTest {
             });
             check(gapResult.equals("true true 7"), "held: the block is two out with the cell between empty, and one was used (placed, gap empty, count): " + gapResult);
             System.out.println("[nexus] gap placement: " + ctx.takeScreenshot("nexus_gap_placement"));
-            ctx.getInput().releaseKey(NexusEssentialsClient.DIAGONAL_PLACE);
+            ctx.getInput().releaseKey(NexiumEssentialsClient.DIAGONAL_PLACE);
         }
     }
 

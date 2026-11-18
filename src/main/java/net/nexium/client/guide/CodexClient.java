@@ -12,14 +12,14 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 
 /**
  * The Codex lookup key (H by default; G is the tool menu): in any inventory, press it over an item to open that item's
  * page, and close the Codex to come back. Outside a screen it opens the Codex. Items with a page say so in their tooltip.
  */
 public final class CodexClient {
-    public static final KeyMapping LOOKUP = new KeyMapping("key.nexium.codex_lookup", InputConstants.KEY_H, NexusEssentialsClient.CATEGORY);
+    public static final KeyMapping LOOKUP = new KeyMapping("key.nexium.codex_lookup", InputConstants.KEY_H, NexiumEssentialsClient.CATEGORY);
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(LOOKUP);

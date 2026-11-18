@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.aiot.AiotItem;
 import net.nexium.essentials.config.NexusConfig;
 import org.jspecify.annotations.Nullable;
@@ -41,9 +41,9 @@ import java.util.List;
  */
 public final class AiotMining {
     /** Blocks vein mining leaves alone: empty by default, for data packs. */
-    public static final TagKey<Block> VEIN_EXCLUDED = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_excluded"));
+    public static final TagKey<Block> VEIN_EXCLUDED = TagKey.create(Registries.BLOCK, Nexium.id("vein_excluded"));
     /** Grasses, ferns, bushes and leaf litter: vein mined with any AIOT, and as one kind, so a mixed patch clears at once. */
-    public static final TagKey<Block> VEIN_PLANTS = TagKey.create(Registries.BLOCK, StorageNexus.id("vein_plants"));
+    public static final TagKey<Block> VEIN_PLANTS = TagKey.create(Registries.BLOCK, Nexium.id("vein_plants"));
 
     /** Set while mining the extra blocks, so they don't set off more of their own. */
     private static boolean busy;

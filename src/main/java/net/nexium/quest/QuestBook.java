@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +87,7 @@ public final class QuestBook {
                 out.add(new Chapter(chapterId, item(c.get("icon").getAsString()), c.get("tier").getAsInt(), List.copyOf(quests)));
             }
         } catch (IOException | JsonParseException | IllegalArgumentException | NullPointerException e) {
-            StorageNexus.LOG.error("Could not read the quests", e);
+            Nexium.LOG.error("Could not read the quests", e);
         }
         return List.copyOf(out);
     }

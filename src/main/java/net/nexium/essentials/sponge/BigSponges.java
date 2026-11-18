@@ -8,7 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.nexium.essentials.NexusEssentials;
+import net.nexium.essentials.NexiumEssentials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,8 +64,8 @@ public final class BigSponges {
             int i = size.ordinal();
             String dryName = size.id() + "_sponge";
             String wetName = "wet_" + dryName;
-            ResourceKey<Block> dryKey = ResourceKey.create(Registries.BLOCK, NexusEssentials.id(dryName));
-            ResourceKey<Block> wetKey = ResourceKey.create(Registries.BLOCK, NexusEssentials.id(wetName));
+            ResourceKey<Block> dryKey = ResourceKey.create(Registries.BLOCK, NexiumEssentials.id(dryName));
+            ResourceKey<Block> wetKey = ResourceKey.create(Registries.BLOCK, NexiumEssentials.id(wetName));
             // The wet block has to be known to the dry one, and the dry one to the wet: each looks the other up when it is needed
             DRY[i] = new BigSpongeBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPONGE).setId(dryKey), size.reach(), size.capacity(), () -> WET[size.ordinal()]);
             WET[i] = new BigWetSpongeBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.WET_SPONGE).setId(wetKey), () -> DRY[size.ordinal()]);
@@ -79,7 +79,7 @@ public final class BigSponges {
     }
 
     private static Item item(String name, Block block) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, NexusEssentials.id(name));
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, NexiumEssentials.id(name));
         Item item = new BigSpongeItem(block, new Item.Properties().setId(key).useBlockDescriptionPrefix());
         Registry.register(BuiltInRegistries.ITEM, key, item);
         return item;

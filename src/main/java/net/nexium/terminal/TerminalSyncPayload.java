@@ -7,7 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.network.StorageNetwork;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public record TerminalSyncPayload(boolean online, boolean first, boolean last, List<ItemEntry> items,
                                   List<FluidEntry> fluids, StorageNetwork.Usage usage) implements CustomPacketPayload {
-    public static final Type<TerminalSyncPayload> TYPE = new Type<>(StorageNexus.id("terminal_sync"));
+    public static final Type<TerminalSyncPayload> TYPE = new Type<>(Nexium.id("terminal_sync"));
 
     public record ItemEntry(ItemStack stack, long count) {
         public static final StreamCodec<RegistryFriendlyByteBuf, ItemEntry> STREAM_CODEC = StreamCodec.composite(

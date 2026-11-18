@@ -8,7 +8,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.nexium.drawer.DrawerClickPayload;
 import net.nexium.drawer.DrawerInteraction;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -36,7 +36,7 @@ import net.nexium.registry.ModMenus;
 import net.nexium.terminal.TerminalMenu;
 import net.nexium.terminal.TerminalSyncPayload;
 
-public class StorageNexusClient implements ClientModInitializer {
+public class NexiumClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         MenuScreens.register(ModMenus.UPGRADES, UpgradeScreen::new);
@@ -90,7 +90,7 @@ public class StorageNexusClient implements ClientModInitializer {
         net.nexium.client.screen.ConfigKey.init();
         ShiftTransferClient.init();
         ScrollTransferClient.init();
-        NexusEssentialsClient.init();
+        NexiumEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();
         DiagonalPreview.init();

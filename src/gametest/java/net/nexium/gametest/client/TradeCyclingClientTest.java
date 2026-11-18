@@ -17,7 +17,7 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.block.Blocks;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -50,8 +50,8 @@ public class TradeCyclingClientTest implements FabricClientGameTest {
     public void runTest(ClientGameTestContext ctx) {
         ctx.getInput().resizeWindow(1280, 720);
         ctx.runOnClient(mc -> {
-            check(Arrays.asList(mc.options.keyMappings).contains(NexusEssentialsClient.CYCLE_TRADES), "the Cycle Trades key is in the game's key list");
-            check(NexusEssentialsClient.CYCLE_TRADES.getDefaultKey().getValue() == InputConstants.KEY_C, "it defaults to C");
+            check(Arrays.asList(mc.options.keyMappings).contains(NexiumEssentialsClient.CYCLE_TRADES), "the Cycle Trades key is in the game's key list");
+            check(NexiumEssentialsClient.CYCLE_TRADES.getDefaultKey().getValue() == InputConstants.KEY_C, "it defaults to C");
         });
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             world.getServer().runCommand("gamemode survival @a");
@@ -81,7 +81,7 @@ public class TradeCyclingClientTest implements FabricClientGameTest {
             Set<String> seen = new HashSet<>();
             seen.add(offers(ctx));
             for (int i = 0; i < 12 && seen.size() < 2; i++) {
-                ctx.getInput().pressKey(NexusEssentialsClient.CYCLE_TRADES);
+                ctx.getInput().pressKey(NexiumEssentialsClient.CYCLE_TRADES);
                 ctx.waitTicks(8);
                 seen.add(offers(ctx));
             }
@@ -93,7 +93,7 @@ public class TradeCyclingClientTest implements FabricClientGameTest {
             world.getServer().runOnServer(server -> villager[0].getOffers().get(0).increaseUses());
             String before = world.getServer().computeOnServer(server -> serverOffers(villager[0]));
             for (int i = 0; i < 4; i++) {
-                ctx.getInput().pressKey(NexusEssentialsClient.CYCLE_TRADES);
+                ctx.getInput().pressKey(NexiumEssentialsClient.CYCLE_TRADES);
                 ctx.waitTicks(6);
             }
             String after = world.getServer().computeOnServer(server -> serverOffers(villager[0]));

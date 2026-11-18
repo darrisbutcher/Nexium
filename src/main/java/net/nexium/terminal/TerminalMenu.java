@@ -35,7 +35,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.network.StorageNetwork;
 import net.nexium.registry.ModMenus;
 import org.jetbrains.annotations.Nullable;
@@ -217,7 +217,7 @@ public class TerminalMenu extends AbstractCraftingMenu {
                 TerminalSyncPayload.ItemEntry.STREAM_CODEC.encode(scratch, e);
                 int size = scratch.writerIndex();
                 if (size > MAX_ENTRY_BYTES) {
-                    StorageNexus.LOG.warn("Not showing {} in a terminal: its data is {} bytes", e.stack().getItem(), size);
+                    Nexium.LOG.warn("Not showing {} in a terminal: its data is {} bytes", e.stack().getItem(), size);
                     continue;
                 }
                 if (!part.isEmpty() && partBytes + size > MAX_PART_BYTES) {

@@ -11,7 +11,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.nexium.sort.InventorySorter;
 import net.nexium.sort.InventorySorter.Region;
 import net.nexium.sort.SortPayload;
@@ -23,7 +23,7 @@ import net.nexium.sort.SortPayload;
  */
 public final class SortClient {
     public static final KeyMapping SORT = new KeyMapping("key.nexium.sort_inventory",
-            InputConstants.KEY_O, NexusEssentialsClient.CATEGORY);
+            InputConstants.KEY_O, NexiumEssentialsClient.CATEGORY);
 
     private SortClient() {}
 

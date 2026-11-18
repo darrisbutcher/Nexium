@@ -4,11 +4,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 
 /** Client to server: sort the open container, or the player's main inventory, A to Z. */
 public record SortPayload(int containerId, boolean player) implements CustomPacketPayload {
-    public static final Type<SortPayload> TYPE = new Type<>(StorageNexus.id("sort"));
+    public static final Type<SortPayload> TYPE = new Type<>(Nexium.id("sort"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SortPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, SortPayload::containerId,
             ByteBufCodecs.BOOL, SortPayload::player,

@@ -11,7 +11,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.nexium.essentials.config.NexusConfig;
 import net.nexium.essentials.placement.DiagonalPlacement;
 import org.jspecify.annotations.Nullable;
@@ -114,7 +114,7 @@ public final class DiagonalPreview {
         face = null;
         edge = null;
         if (client.player == null || client.level == null || client.gui.screen() != null || client.player.isSpectator()) return;
-        if (!NexusConfig.get().diagonalPreview || !NexusEssentialsClient.DIAGONAL_PLACE.isDown()) return;
+        if (!NexusConfig.get().diagonalPreview || !NexiumEssentialsClient.DIAGONAL_PLACE.isDown()) return;
         // The same hand the click would use: the main hand, or the offhand if the main hand holds no block
         if (!(client.player.getMainHandItem().getItem() instanceof BlockItem) && !(client.player.getOffhandItem().getItem() instanceof BlockItem)) return;
         if (!(client.hitResult instanceof BlockHitResult hit) || hit.getType() != HitResult.Type.BLOCK) return;

@@ -1,7 +1,7 @@
 package net.nexium.essentials;
 
 import net.minecraft.resources.Identifier;
-import net.nexium.StorageNexus;
+import net.nexium.Nexium;
 import net.nexium.essentials.capture.MobCapture;
 import net.nexium.essentials.config.NexusConfig;
 import net.nexium.essentials.elytra.ElytraEnchanting;
@@ -18,18 +18,13 @@ import net.nexium.essentials.slots.ExtraSlotEvents;
 import org.slf4j.Logger;
 
 /**
- * The quality-of-life features that used to be the separate Nexus Essentials mod, set up by {@link StorageNexus}.
- * <p>
- * Everything here keeps the {@value #NAMESPACE} namespace it had as its own mod (item, block, effect, component and
- * tag ids, lang keys, {@code config/nexium.json} and the player's saved slots), so worlds made with
- * Nexus Essentials load unchanged. fabric.mod.json lists the old mod id under "provides".
- * <p>
- * New Essentials content uses this namespace too (register it with {@link #id}), so every Essentials id stays
- * {@code nexium:}; only the storage features use {@code nexium:}.
+ * The quality-of-life features (magnet, backpack, farms, mob pick-up and so on), set up by {@link Nexium}. They share the
+ * {@value #NAMESPACE} namespace with the storage features, so every id, lang key and the config file
+ * ({@code config/nexium.json}) is under it.
  */
-public final class NexusEssentials {
+public final class NexiumEssentials {
     public static final String NAMESPACE = "nexium";
-    public static final Logger LOG = StorageNexus.LOG;
+    public static final Logger LOG = Nexium.LOG;
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(NAMESPACE, path);
@@ -62,5 +57,5 @@ public final class NexusEssentials {
         net.nexium.essentials.harvest.CropHarvest.init();
     }
 
-    private NexusEssentials() {}
+    private NexiumEssentials() {}
 }

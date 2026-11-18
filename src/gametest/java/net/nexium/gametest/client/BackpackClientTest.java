@@ -14,7 +14,7 @@ import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.essentials.backpack.BackpackModuleType;
 import net.nexium.essentials.backpack.BackpackModules;
 import net.nexium.essentials.backpack.Backpacks;
-import net.nexium.essentials.client.NexusEssentialsClient;
+import net.nexium.essentials.client.NexiumEssentialsClient;
 import net.nexium.essentials.registry.ModItems;
 import net.nexium.essentials.slots.ExtraSlotMenuSlot;
 import net.nexium.essentials.slots.ExtraSlots;
@@ -34,8 +34,8 @@ public class BackpackClientTest implements FabricClientGameTest {
     public void runTest(ClientGameTestContext ctx) {
         ctx.getInput().resizeWindow(1280, 720);
         ctx.runOnClient(mc -> {
-            check(Arrays.asList(mc.options.keyMappings).contains(NexusEssentialsClient.OPEN_BACKPACK), "the Open Backpack key is in the game's key list");
-            check(NexusEssentialsClient.OPEN_BACKPACK.getDefaultKey().getValue() == InputConstants.KEY_B, "it defaults to B");
+            check(Arrays.asList(mc.options.keyMappings).contains(NexiumEssentialsClient.OPEN_BACKPACK), "the Open Backpack key is in the game's key list");
+            check(NexiumEssentialsClient.OPEN_BACKPACK.getDefaultKey().getValue() == InputConstants.KEY_B, "it defaults to B");
         });
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             world.getServer().runCommand("gamemode survival @a");
@@ -113,7 +113,7 @@ public class BackpackClientTest implements FabricClientGameTest {
             ctx.waitTicks(5);
 
             // The key opens the worn backpack; the same key closes it
-            ctx.getInput().pressKey(NexusEssentialsClient.OPEN_BACKPACK);
+            ctx.getInput().pressKey(NexiumEssentialsClient.OPEN_BACKPACK);
             ctx.waitTicks(15);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof BackpackScreen), "B opens the backpack's screen");
             String shown = ctx.computeOnClient(mc -> {
@@ -159,7 +159,7 @@ public class BackpackClientTest implements FabricClientGameTest {
             check(live.equals("3 1 true"), "with the screen still open Compacting packed the 12 diamonds into a block (3 left) and Feeding ate some bread, both shown on the screen (diamonds, blocks, bread eaten): " + live);
             System.out.println("[nexus] backpack screen, modules working while open: " + ctx.takeScreenshot("nexus_backpack_screen"));
 
-            ctx.getInput().pressKey(NexusEssentialsClient.OPEN_BACKPACK);
+            ctx.getInput().pressKey(NexiumEssentialsClient.OPEN_BACKPACK);
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> mc.gui.screen() == null), "B closes it again");
 
