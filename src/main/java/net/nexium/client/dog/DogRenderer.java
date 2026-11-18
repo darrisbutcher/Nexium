@@ -15,6 +15,7 @@ public class DogRenderer extends AgeableMobRenderer<DogEntity, WolfRenderState, 
 
     public DogRenderer(EntityRendererProvider.Context context) {
         super(context, new DogModel(context.bakeLayer(DogModel.LAYER)), new DogModel(context.bakeLayer(DogModel.LAYER)), 0.5F);
+        addLayer(new DogArmorLayer(this, context.getModelSet()));
         addLayer(new DogCollarLayer(this));
     }
 

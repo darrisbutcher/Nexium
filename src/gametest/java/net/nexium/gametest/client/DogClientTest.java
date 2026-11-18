@@ -57,6 +57,28 @@ public class DogClientTest implements FabricClientGameTest {
             world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f 0 20", at[0], at[1], at[2] - 3.0));
             ctx.waitTicks(10);
             System.out.println("[nexus] dog lies front: " + ctx.takeScreenshot("nexus_dog_lie_front"));
+
+            // Armor: Wolf Armor, then the Nexium Dog Armor, standing from the side and lying down
+            world.getServer().runOnServer(server -> {
+                for (var e : server.overworld().getAllEntities()) if (e instanceof DogEntity d) {
+                    d.setOrderedToSit(false); d.setInSittingPose(false);
+                    d.setItemSlot(net.minecraft.world.entity.EquipmentSlot.BODY, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WOLF_ARMOR));
+                }
+            });
+            world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f 90 20", at[0] + 3.4, at[1], at[2]));
+            ctx.waitTicks(10);
+            System.out.println("[nexus] dog wolf armor: " + ctx.takeScreenshot("nexus_dog_armor_wolf"));
+            world.getServer().runOnServer(server -> {
+                for (var e : server.overworld().getAllEntities()) if (e instanceof DogEntity d)
+                    d.setItemSlot(net.minecraft.world.entity.EquipmentSlot.BODY, new net.minecraft.world.item.ItemStack(net.nexium.registry.ModItems.NEXIUM_DOG_ARMOR));
+            });
+            ctx.waitTicks(5);
+            System.out.println("[nexus] dog nexium armor: " + ctx.takeScreenshot("nexus_dog_armor_nexium"));
+            world.getServer().runOnServer(server -> {
+                for (var e : server.overworld().getAllEntities()) if (e instanceof DogEntity d) { d.setOrderedToSit(true); d.setInSittingPose(true); }
+            });
+            ctx.waitTicks(8);
+            System.out.println("[nexus] dog nexium armor lying: " + ctx.takeScreenshot("nexus_dog_armor_lying"));
         }
     }
 

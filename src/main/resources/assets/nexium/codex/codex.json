@@ -147,6 +147,7 @@
       "icon": "nexium:captured_mob",
       "topics": [
         "mobs",
+        "dog",
         "librarian",
         "piglins"
       ]
@@ -2234,6 +2235,30 @@
         "farms",
         "freezer",
         "conduits"
+      ]
+    },
+    "dog": {
+      "pages": [
+        "mobs.dog",
+        "mobs.dog2"
+      ],
+      "icon": "nexium:nexium_dog_armor",
+      "items": [
+        "nexium:nexium_dog_armor"
+      ],
+      "recipes": [
+        "dog_egg",
+        "nexium_dog_armor"
+      ],
+      "aliases": [
+        "Zoe",
+        "Dog",
+        "Dog Egg",
+        "Dog Armor",
+        "Nexium Dog Armor"
+      ],
+      "see": [
+        "mobs"
       ]
     }
   }

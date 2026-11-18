@@ -55,10 +55,16 @@ public class DogEntity extends Wolf {
         return true;
     }
 
+    /** There is only the one kind of dog, and it comes from the egg. */
+    @Override
+    public boolean canMate(net.minecraft.world.entity.animal.Animal other) {
+        return false;
+    }
+
     /** Wolf Armor and the Nexium Dog Armor both fit the dog's body slot. */
     @Override
     public boolean isEquippableInSlot(ItemStack stack, EquipmentSlot slot) {
-        if (slot == EquipmentSlot.BODY) return stack.is(Items.WOLF_ARMOR) || stack.is(ModDogs.NEXIUM_DOG_ARMOR);
+        if (slot == EquipmentSlot.BODY) return stack.is(Items.WOLF_ARMOR) || stack.is(net.nexium.registry.ModItems.NEXIUM_DOG_ARMOR);
         return super.isEquippableInSlot(stack, slot);
     }
 }

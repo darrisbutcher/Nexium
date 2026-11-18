@@ -23,7 +23,7 @@ public final class ModTab {
 
     private static final Set<String> TOOLS = Set.of("magnet", "bedrock_breaker_elixir", "elevator", "dimensional_anchor",
             "nexus_link_module", "area_mining_module", "nexium_ingot", "nexium_block", "nexium_sword", "nexium_pickaxe", "nexium_axe",
-            "nexium_shovel", "nexium_hoe", "nexium_spear", "nexium_helmet", "nexium_chestplate", "nexium_leggings", "nexium_boots");
+            "nexium_shovel", "nexium_hoe", "nexium_spear", "nexium_helmet", "nexium_chestplate", "nexium_leggings", "nexium_boots", "nexium_dog_armor");
 
     private static final Set<String> POWER = Set.of("freezer", "solar_panel", "thermal_generator", "combustion_generator",
             "iron_battery", "gold_battery", "diamond_battery", "redstone_reactor", "redstone_fuel_rod", "spent_fuel_rod",
@@ -54,6 +54,7 @@ public final class ModTab {
                         .icon(icon)
                         .displayItems((params, output) -> {
                             for (Item item : items(group)) output.accept(item);
+                            if (group == Group.TOOLS) output.accept(net.nexium.dog.ModDogs.zoeEgg());
                         })
                         .build());
     }

@@ -30,6 +30,10 @@ public class CapturedMobItem extends Item {
     public Component getName(ItemStack stack) {
         CapturedMob mob = stack.get(ModComponents.CAPTURED_MOB);
         if (mob == null) return super.getName(stack);
+        if (mob.type() == net.nexium.dog.ModDogs.DOG) {
+            return mob.customName().map(name -> (Component) Component.translatable("item.nexium.dog_egg.named", name))
+                    .orElseGet(() -> Component.translatable("item.nexium.dog_egg"));
+        }
         Component typeName = mob.type().getDescription();
         return mob.customName()
                 .map(name -> (Component) Component.translatable("item.nexium.captured_mob.named", name, typeName))

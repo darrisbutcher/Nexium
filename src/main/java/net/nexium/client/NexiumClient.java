@@ -41,6 +41,8 @@ public class NexiumClient implements ClientModInitializer {
     public void onInitializeClient() {
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(net.nexium.client.dog.DogModel.LAYER,
                 () -> net.nexium.client.dog.DogModel.createLayer(net.minecraft.client.model.geom.builders.CubeDeformation.NONE));
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(net.nexium.client.dog.DogModel.ARMOR_LAYER,
+                () -> net.nexium.client.dog.DogModel.createLayer(new net.minecraft.client.model.geom.builders.CubeDeformation(0.4F)));
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(net.nexium.dog.ModDogs.DOG, net.nexium.client.dog.DogRenderer::new);
         MenuScreens.register(ModMenus.UPGRADES, UpgradeScreen::new);
         MenuScreens.register(ModMenus.CONNECTOR, ConnectorScreen::new);

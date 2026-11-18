@@ -1,7 +1,19 @@
 # Changelog
 
-All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
+All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
+
+## 1.24.0
+
+* **Zoe, the dog**: a new follower that behaves like a tamed wolf, with her own model and skin (a black and white speckled
+  cattle dog with a green collar). She follows you, comes to you when you get far away, attacks what attacks you or what you
+  attack, and lies down when you right-click her to sit. **Nothing can kill her**: mobs, falls, fire, lava, drowning and
+  explosions do nothing (your own hits hurt but never kill; only the kill command and the void take her away). **Creepers run from
+  her and cannot blow up while she is near.**
+* **Dog Egg**: craft it from 5 bones and 4 leather (a Captured Mob called "Zoe's Egg"). Right-click a block to let her out, tame
+  and with a green collar; sneak + right-click her with an empty hand to put her back. She can wear **Wolf Armor** or the new
+  **Nexium Dog Armor** (6 Nexium Ingots, shaped like Wolf Armor), and her collar can be dyed like a wolf's. The Dog Egg and the
+  armor are in the Tools tab, and the Codex has a page on her.
 
 ## 1.23.1
 

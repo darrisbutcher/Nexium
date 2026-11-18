@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.wolf.Wolf;
-import net.minecraft.world.item.Item;
 import net.nexium.Nexium;
 
 /** The dog's entity type. */
@@ -21,8 +20,14 @@ public final class ModDogs {
                     .sized(0.6F, 0.85F).eyeHeight(0.68F).passengerAttachments(0.8375F).ridingOffset(-0.0625F).clientTrackingRange(10)
                     .build(DOG_KEY));
 
-    /** Placeholder until the Nexium Dog Armor item exists (set by the item registry). */
-    public static Item NEXIUM_DOG_ARMOR = net.minecraft.world.item.Items.AIR;
+    /** The egg that holds Zoe: a Captured Mob with a tame, named dog inside. The crafting recipe and the creative tab give this. */
+    public static net.minecraft.world.item.ItemStack zoeEgg() {
+        net.minecraft.nbt.CompoundTag data = new net.minecraft.nbt.CompoundTag();
+        data.putString("id", "nexium:dog");
+        data.putString("CustomName", "Zoe");
+        return net.nexium.essentials.capture.MobCapture.toItem(new net.nexium.essentials.capture.CapturedMob(DOG, data,
+                java.util.Optional.of(net.minecraft.network.chat.Component.literal("Zoe")), 40.0F, 40.0F, false));
+    }
 
     public static void init() {
         FabricDefaultAttributeRegistry.register(DOG, Wolf.createAttributes());

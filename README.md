@@ -517,6 +517,20 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
   **Elder Guardian** cost **10 experience levels** (`bossPickUpLevels`; other mods' bosses in `#c:bosses` too, and a
   data pack can add mobs to `#nexium:pick_up_costs_levels`).
 
+### Zoe, the dog
+A follower that behaves like a tamed wolf, with her own model and skin (a black and white speckled cattle dog with a green
+collar).
+* **Dog Egg**: craft it from **5 bones and 4 leather** (bones in the corners and the middle, leather between). It is a Captured
+  Mob called *Zoe's Egg*. **Right-click a block** to let her out, tame and with a green collar. **Sneak + right-click her with an
+  empty hand** to put her back in the egg.
+* She **follows you**, **comes to you** when you get far away, **attacks** what attacks you or what you attack, and **lies down**
+  when you right-click her to sit. Dye her collar as you would a wolf's.
+* **Nothing can kill her**: mobs, falls, fire, lava, drowning and explosions do nothing. Your own hits hurt her but never kill
+  her; only the kill command and the void take her away.
+* **Creepers run from her** (like from cats) and **cannot blow up** while she is within 8 blocks.
+* **Armor**: she can wear **Wolf Armor** or the **Nexium Dog Armor** (6 Nexium Ingots, shaped like Wolf Armor; the same
+  protection value of 20 for the body slot): right-click her with it, and shear it off. Both are in the Tools tab with the egg.
+
 ### Right-click harvest
 **Right-click a fully grown crop** (wheat, carrots, potatoes, beetroot, nether wart, cocoa) to harvest it: it drops as if
 broken, less the one seed it is replanted with. **Hold V** (the vein mining key) to harvest the

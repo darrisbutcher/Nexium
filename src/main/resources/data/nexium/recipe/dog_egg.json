@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BLB",
+    "LBL",
+    "BLB"
+  ],
+  "key": {
+    "B": "minecraft:bone",
+    "L": "minecraft:leather"
+  },
+  "result": {
+    "id": "nexium:captured_mob",
+    "count": 1,
+    "components": {
+      "nexium:captured_mob": {
+        "type": "nexium:dog",
+        "data": {
+          "id": "nexium:dog",
+          "CustomName": "Zoe"
+        },
+        "custom_name": "Zoe",
+        "health": 40.0,
+        "max_health": 40.0
+      },
+      "minecraft:item_model": "nexium:dog_egg",
+      "minecraft:enchantment_glint_override": true
+    }
+  }
+}
