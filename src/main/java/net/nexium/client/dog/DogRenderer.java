@@ -3,7 +3,6 @@ package net.nexium.client.dog;
 import net.minecraft.client.model.animal.wolf.WolfModel;
 import net.minecraft.client.renderer.entity.AgeableMobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.layers.WolfCollarLayer;
 import net.minecraft.client.renderer.entity.state.WolfRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -16,13 +15,20 @@ public class DogRenderer extends AgeableMobRenderer<DogEntity, WolfRenderState, 
 
     public DogRenderer(EntityRendererProvider.Context context) {
         super(context, new DogModel(context.bakeLayer(DogModel.LAYER)), new DogModel(context.bakeLayer(DogModel.LAYER)), 0.5F);
-        addLayer(new WolfCollarLayer(this));
+        addLayer(new DogCollarLayer(this));
     }
 
     @Override
     protected int getModelTint(WolfRenderState state) {
         float shade = state.wetShade;
         return shade == 1.0F ? -1 : ARGB.colorFromFloat(1.0F, shade, shade, shade);
+    }
+
+    /** A little smaller than the model's size, which was drawn for a stocky dog with tall ears. */
+    @Override
+    protected void scale(WolfRenderState state, com.mojang.blaze3d.vertex.PoseStack poseStack) {
+        super.scale(state, poseStack);
+        poseStack.scale(0.85F, 0.85F, 0.85F);
     }
 
     @Override
