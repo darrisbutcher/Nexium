@@ -1,8 +1,0 @@
-{
-  "parent": "storagenexus:block/drawer_1x1_template",
-  "textures": {
-    "front": "minecraft:block/dark_oak_planks",
-    "side": "minecraft:block/dark_oak_planks",
-    "trim": "minecraft:block/stripped_dark_oak_log"
-  }
-}

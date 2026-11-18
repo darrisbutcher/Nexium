@@ -51,7 +51,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     /** The mode's name on the button. */
     private void refreshModeButton() {
         var modes = menu.kind().modes();
-        modeButton.setMessage(Component.translatable("screen.nexusessentials.farm.mode." + menu.kind().id() + "." + modes.get(Math.floorMod(menu.mode(), modes.size()))));
+        modeButton.setMessage(Component.translatable("screen.nexium.farm.mode." + menu.kind().id() + "." + modes.get(Math.floorMod(menu.mode(), modes.size()))));
     }
 
     @Override
@@ -68,17 +68,17 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         Component status;
         int colour = BLOCKED;
         if (menu.paused()) {
-            status = Component.translatable("screen.nexusessentials.farm_paused");
+            status = Component.translatable("screen.nexium.farm_paused");
         } else if (menu.full()) {
-            status = Component.translatable("screen.nexusessentials.farm_full");
+            status = Component.translatable("screen.nexium.farm_full");
         } else if (menu.unpowered()) {
-            status = Component.translatable("screen.nexusessentials.no_power", menu.kind().energyPerTick());
+            status = Component.translatable("screen.nexium.no_power", menu.kind().energyPerTick());
         } else if (menu.starved()) {
-            status = Component.translatable("screen.nexusessentials." + menu.kind().lang("needs"));
+            status = Component.translatable("screen.nexium." + menu.kind().lang("needs"));
         } else {
             // Overclocked, the same work takes that many times fewer ticks
             int left = Math.round((1.0F - menu.progress()) * menu.cycleTicks() / Overclock.multiplier(menu.overclock()));
-            status = Component.translatable("screen.nexusessentials.farm_next", IronFarmItem.time(left));
+            status = Component.translatable("screen.nexium.farm_next", IronFarmItem.time(left));
             colour = MUTED;
         }
         g.text(font, status, kind0().hasInput() ? BAR_X : FarmMenu.INPUT_X, BAR_Y + BAR_H + 4, colour, false);
@@ -123,13 +123,13 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         int barW = kind.hasInput() ? BAR_W : BAR_W + BAR_X - FarmMenu.INPUT_X;
         if (isHovering(barX - 1, BAR_Y - 1, barW + 2, BAR_H + 2, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.nexusessentials.farm_progress", Math.round(menu.progress() * 100)),
-                    Component.translatable("tooltip.nexusessentials." + kind.lang("makes")).withStyle(ChatFormatting.GRAY),
-                    Component.translatable("tooltip.nexusessentials.farm_every", IronFarmItem.time(Math.max(1, menu.cycleTicks() / Overclock.multiplier(menu.overclock())))).withStyle(ChatFormatting.GRAY)
+                    Component.translatable("screen.nexium.farm_progress", Math.round(menu.progress() * 100)),
+                    Component.translatable("tooltip.nexium." + kind.lang("makes")).withStyle(ChatFormatting.GRAY),
+                    Component.translatable("tooltip.nexium.farm_every", IronFarmItem.time(Math.max(1, menu.cycleTicks() / Overclock.multiplier(menu.overclock())))).withStyle(ChatFormatting.GRAY)
             ), mouseX, mouseY);
         } else if (kind.hasInput() && hoveredSlot != null && hoveredSlot.index == FarmBlockEntity.INPUT_SLOT && !hoveredSlot.hasItem()) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("tooltip.nexusessentials." + kind.lang("input")).withStyle(ChatFormatting.GOLD)
+                    Component.translatable("tooltip.nexium." + kind.lang("input")).withStyle(ChatFormatting.GOLD)
             ), mouseX, mouseY);
         }
     }

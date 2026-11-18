@@ -85,13 +85,13 @@ public class StorageDiskItem extends Item {
             UUID id = disk.get(ModComponents.DISK_ID);
             DiskData data = DiskData.get(sp.level().getServer());
             if (id != null && !data.isEmpty(id)) {
-                sp.sendOverlayMessage(Component.translatable("message.storagenexus.disk.not_empty").withStyle(ChatFormatting.RED));
+                sp.sendOverlayMessage(Component.translatable("message.nexium.disk.not_empty").withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
             if (id != null) data.remove(id);
             player.setItemInHand(hand, new ItemStack(ModItems.DISK_CASING));
             sp.getInventory().placeItemBackInInventory(new ItemStack(part(tier, fluid)), false, Prediction.SERVER_ONLY);
-            sp.sendOverlayMessage(Component.translatable("message.storagenexus.disk.taken_apart"));
+            sp.sendOverlayMessage(Component.translatable("message.nexium.disk.taken_apart"));
         }
         return InteractionResult.SUCCESS;
     }
@@ -107,10 +107,10 @@ public class StorageDiskItem extends Item {
         DiskUsage usage = stack.getOrDefault(ModComponents.DISK_USAGE, DiskUsage.EMPTY);
         NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
         if (fluid) {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.disk.buckets",
+            tooltip.accept(Component.translatable("tooltip.nexium.disk.buckets",
                     f.format(usage.stored() / FluidConstants.BUCKET), f.format(tier.buckets()), usage.types()).withStyle(ChatFormatting.AQUA));
         } else {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.disk.items",
+            tooltip.accept(Component.translatable("tooltip.nexium.disk.items",
                     f.format(usage.stored()), f.format(tier.items()), usage.types()).withStyle(ChatFormatting.AQUA));
         }
     }

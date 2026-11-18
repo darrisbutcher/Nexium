@@ -1,0 +1,25 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_it": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:resin_bricks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_it"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexium:resin_bricks_to_resin_brick"
+    ]
+  }
+}

@@ -53,20 +53,20 @@ public class BigSpongesGameTest {
 
     @GameTest
     public void allSixAreThereNamedAndTagged(GameTestHelper h) {
-        TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse("nexusessentials:big_sponges"));
+        TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse("nexium:big_sponges"));
         com.google.gson.JsonObject lang = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(
-                BigSpongesGameTest.class.getResourceAsStream("/assets/nexusessentials/lang/en_us.json"), java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                BigSpongesGameTest.class.getResourceAsStream("/assets/nexium/lang/en_us.json"), java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
         for (BigSponges.Size size : BigSponges.Size.values()) {
             for (boolean wet : new boolean[]{false, true}) {
                 String name = (wet ? "wet_" : "") + size.id() + "_sponge";
-                Identifier id = Identifier.parse("nexusessentials:" + name);
+                Identifier id = Identifier.parse("nexium:" + name);
                 Block block = wet ? BigSponges.wetBlock(size) : BigSponges.block(size);
                 Item item = wet ? BigSponges.wetItem(size) : BigSponges.item(size);
                 h.assertTrue(BuiltInRegistries.BLOCK.getValue(id) == block, name + " is a registered block");
                 h.assertTrue(BuiltInRegistries.ITEM.getValue(id) == item, name + " is a registered item");
                 h.assertTrue(block.asItem() == item, name + "'s block gives its item");
                 h.assertTrue(item.builtInRegistryHolder().is(tag), name + " is in the big_sponges tag");
-                h.assertTrue(lang.has("block.nexusessentials." + name) && !lang.get("block.nexusessentials." + name).getAsString().isBlank(), name + " has a name");
+                h.assertTrue(lang.has("block.nexium." + name) && !lang.get("block.nexium." + name).getAsString().isBlank(), name + " has a name");
                 h.assertTrue(block.defaultBlockState().is(BlockTags.MINEABLE_WITH_HOE), name + " is mined with a hoe, like a sponge");
             }
         }
@@ -232,7 +232,7 @@ public class BigSpongesGameTest {
             ItemStack stack = new ItemStack(BigSponges.item(size));
             List<Component> lines = new ArrayList<>();
             stack.getItem().appendHoverText(stack, Item.TooltipContext.EMPTY, TooltipDisplay.DEFAULT, lines::add, TooltipFlag.NORMAL);
-            boolean said = lines.stream().anyMatch(l -> l.getContents() instanceof TranslatableContents t && t.getKey().equals("tooltip.nexusessentials.big_sponge")
+            boolean said = lines.stream().anyMatch(l -> l.getContents() instanceof TranslatableContents t && t.getKey().equals("tooltip.nexium.big_sponge")
                     && t.getArgs()[0].equals(size.reach()));
             h.assertTrue(said, size.id() + " says it reaches " + size.reach() + ": " + lines);
             h.assertValueEqual(((BigSpongeBlock) BigSponges.block(size)).reach(), size.reach(), "and the block agrees");

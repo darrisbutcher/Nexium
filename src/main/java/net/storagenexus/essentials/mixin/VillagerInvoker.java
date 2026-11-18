@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Villager.class)
 public interface VillagerInvoker {
     @Invoker("updateSpecialPrices")
-    void nexusessentials$updateSpecialPrices(Player player);
+    void nexium$updateSpecialPrices(Player player);
 }

@@ -33,7 +33,7 @@ public class FarmAssemblerBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer sp && level.getBlockEntity(pos) instanceof FarmAssemblerBlockEntity assembler) {
-            Menus.open(sp, Component.translatable("block.nexusessentials.farm_assembler"), pos,
+            Menus.open(sp, Component.translatable("block.nexium.farm_assembler"), pos,
                     (id, inventory, p) -> new FarmAssemblerMenu(id, inventory, assembler));
         }
         return InteractionResult.SUCCESS;

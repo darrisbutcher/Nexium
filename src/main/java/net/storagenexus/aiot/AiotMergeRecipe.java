@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import java.util.List;
 
 /**
- * Recipe type {@code storagenexus:aiot_merge}: a shapeless recipe (same JSON as {@code minecraft:crafting_shapeless})
+ * Recipe type {@code nexium:aiot_merge}: a shapeless recipe (same JSON as {@code minecraft:crafting_shapeless})
  * whose result keeps the ingredients' enchantments, durability and repair cost; see {@link AiotMerge}.
  * <p>
  * It is a {@link ShapelessRecipe}, so the recipe book, JEI and REI show it like any other shapeless recipe.

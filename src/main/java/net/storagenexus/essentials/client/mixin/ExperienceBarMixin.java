@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ExperienceBar.class)
 abstract class ExperienceBarMixin {
     @Inject(method = "extractBackground", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noBarBackgroundInFreeCamera(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void nexium$noBarBackgroundInFreeCamera(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (FreeCamera.active()) ci.cancel();
     }
 
     @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noExperienceInFreeCamera(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void nexium$noExperienceInFreeCamera(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (FreeCamera.active()) ci.cancel();
     }
 }

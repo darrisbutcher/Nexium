@@ -17,17 +17,17 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.storagenexus.upgrades"), leftPos + 8, topPos + 24, palette().text(), false);
+        g.text(font, Component.translatable("screen.nexium.upgrades"), leftPos + 8, topPos + 24, palette().text(), false);
         // Capacity with the upgrades that are in now: each section first, then the whole drawer
         int sections = menu.capacitySlots();
         String unit = menu.holdsFluid() ? "buckets" : "stacks";
-        line(g, Component.translatable("screen.storagenexus.upgrades.multiplier", menu.multiplier()), 0);
+        line(g, Component.translatable("screen.nexium.upgrades.multiplier", menu.multiplier()), 0);
         if (sections > 1) {
-            line(g, Component.translatable("screen.storagenexus.upgrades.per_section." + unit,
+            line(g, Component.translatable("screen.nexium.upgrades.per_section." + unit,
                     amount((double) menu.totalCapacity() / sections)), 1);
-            line(g, Component.translatable("screen.storagenexus.upgrades.in_total." + unit, amount(menu.totalCapacity())), 2);
+            line(g, Component.translatable("screen.nexium.upgrades.in_total." + unit, amount(menu.totalCapacity())), 2);
         } else {
-            line(g, Component.translatable("screen.storagenexus.upgrades.total." + unit, amount(menu.totalCapacity())), 1);
+            line(g, Component.translatable("screen.nexium.upgrades.total." + unit, amount(menu.totalCapacity())), 1);
         }
     }
 

@@ -37,12 +37,12 @@ public final class MagnetLogic {
     public static void toggle(ServerPlayer player) {
         ItemStack magnet = ExtraSlots.of(player).trinket();
         if (!(magnet.getItem() instanceof MagnetItem)) {
-            player.sendOverlayMessage(Component.translatable("message.nexusessentials.magnet_missing"));
+            player.sendOverlayMessage(Component.translatable("message.nexium.magnet_missing"));
             return;
         }
         boolean active = !MagnetItem.isActive(magnet);
         magnet.set(ModComponents.MAGNET_ACTIVE, active);
-        player.sendOverlayMessage(Component.translatable(active ? "message.nexusessentials.magnet_on" : "message.nexusessentials.magnet_off",
+        player.sendOverlayMessage(Component.translatable(active ? "message.nexium.magnet_on" : "message.nexium.magnet_off",
                 MagnetItem.range(magnet)));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS,
                 0.4F, active ? 1.2F : 0.8F);

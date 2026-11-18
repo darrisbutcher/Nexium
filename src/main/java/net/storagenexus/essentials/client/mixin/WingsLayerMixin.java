@@ -16,9 +16,9 @@ abstract class WingsLayerMixin {
     @ModifyExpressionValue(
             method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;chestEquipment:Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack nexusessentials$useWingsSlot(ItemStack chest, @Local(argsOnly = true) HumanoidRenderState state) {
+    private ItemStack nexium$useWingsSlot(ItemStack chest, @Local(argsOnly = true) HumanoidRenderState state) {
         if (ExtraSlots.isWings(chest) || !(state instanceof WingsRenderState wingsState)) return chest;
-        ItemStack wings = wingsState.nexusessentials$wings();
+        ItemStack wings = wingsState.nexium$wings();
         return wings.isEmpty() ? chest : wings;
     }
 }

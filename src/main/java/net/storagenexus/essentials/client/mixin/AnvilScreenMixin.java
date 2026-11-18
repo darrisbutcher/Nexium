@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(AnvilScreen.class)
 abstract class AnvilScreenMixin {
     @ModifyConstant(method = "extractLabels", constant = @Constant(intValue = 40))
-    private int storagenexus$noTooExpensive(int tooExpensive) {
+    private int nexium$noTooExpensive(int tooExpensive) {
         return NexusConfig.get().anvilNoCostLimit ? Integer.MAX_VALUE : tooExpensive;
     }
 }

@@ -71,7 +71,7 @@ public class CodexScreen extends Screen {
     private record Piece(Kind kind, int x, int y, int w, String text, int color, String link, ItemStack icon, GuideData.Recipe recipe) {}
 
     public CodexScreen(GuideData data, String topic, Screen parent) {
-        super(Component.translatable("screen.storagenexus.codex"));
+        super(Component.translatable("screen.nexium.codex"));
         this.data = data;
         this.parent = parent;
         List<CodexText.Phrase> all = new ArrayList<>();
@@ -196,23 +196,23 @@ public class CodexScreen extends Screen {
 
         int x = PAD + 22 + font.width(boldTitle()) + 10;
         back = addRenderableWidget(Button.builder(Component.literal("<"), b -> back()).bounds(x, PAD + 2, 18, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.codex.back"))).build());
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.codex.back"))).build());
         forward = addRenderableWidget(Button.builder(Component.literal(">"), b -> forward()).bounds(x + 20, PAD + 2, 18, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.codex.forward"))).build());
-        Component home = Component.translatable("screen.storagenexus.codex.home");
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.codex.forward"))).build());
+        Component home = Component.translatable("screen.nexium.codex.home");
         addRenderableWidget(Button.builder(home, b -> open(data.home())).bounds(x + 40, PAD + 2, font.width(home) + 14, 18).build());
-        Component settings = Component.translatable("screen.storagenexus.config.open");
+        Component settings = Component.translatable("screen.nexium.config.open");
         addRenderableWidget(Button.builder(settings, b -> minecraft.gui.setScreen(new net.storagenexus.client.screen.ConfigScreen(this)))
                 .bounds(x + 40 + font.width(home) + 18, PAD + 2, font.width(settings) + 14, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.config.open.tip"))).build());
-        Component quests = Component.translatable("screen.storagenexus.quests.open");
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.config.open.tip"))).build());
+        Component quests = Component.translatable("screen.nexium.quests.open");
         addRenderableWidget(Button.builder(quests, b -> ClientPlayNetworking.send(new net.storagenexus.quest.QuestRequestPayload(true)))
                 .bounds(x + 40 + font.width(home) + 18 + font.width(settings) + 18, PAD + 2, font.width(quests) + 14, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.quests.open.tip"))).build());
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.quests.open.tip"))).build());
 
         int searchWidth = Mth.clamp(width / 5, 80, 180);
-        search = new EditBox(font, width - PAD - 4 - searchWidth, PAD + 3, searchWidth, 16, Component.translatable("screen.storagenexus.codex.search"));
-        search.setHint(Component.translatable("screen.storagenexus.codex.search").withStyle(ChatFormatting.DARK_GRAY));
+        search = new EditBox(font, width - PAD - 4 - searchWidth, PAD + 3, searchWidth, 16, Component.translatable("screen.nexium.codex.search"));
+        search.setHint(Component.translatable("screen.nexium.codex.search").withStyle(ChatFormatting.DARK_GRAY));
         search.setMaxLength(50);
         search.setValue(query);
         search.setResponder(text -> {
@@ -252,12 +252,12 @@ public class CodexScreen extends Screen {
         sideRows.clear();
         String q = query.trim();
         if (!q.isEmpty()) {
-            sideRows.add(new SideRow(0, null, null, I18n.get("screen.storagenexus.codex.results"), ItemStack.EMPTY));
+            sideRows.add(new SideRow(0, null, null, I18n.get("screen.nexium.codex.results"), ItemStack.EMPTY));
             List<String> hits = new ArrayList<>();
             for (String id : data.topics().keySet()) if (CodexText.match(q, titles.get(id), bodies.get(id)) > 0) hits.add(id);
             hits.sort(Comparator.comparingInt((String id) -> -CodexText.match(q, titles.get(id), bodies.get(id))));
             for (String id : hits) sideRows.add(new SideRow(1, null, id, titles.get(id), icon(data.topic(id).icon())));
-            if (hits.isEmpty()) sideRows.add(new SideRow(1, null, null, I18n.get("screen.storagenexus.codex.nothing"), ItemStack.EMPTY));
+            if (hits.isEmpty()) sideRows.add(new SideRow(1, null, null, I18n.get("screen.nexium.codex.nothing"), ItemStack.EMPTY));
             return;
         }
         for (GuideData.Category c : data.categories()) {
@@ -325,7 +325,7 @@ public class CodexScreen extends Screen {
 
         if (!topic.recipes().isEmpty()) {
             y += 9;
-            out.add(new Piece(Kind.HEADING, 0, y, 0, I18n.get("screen.storagenexus.codex.recipes"), GOLD, null, null, null));
+            out.add(new Piece(Kind.HEADING, 0, y, 0, I18n.get("screen.nexium.codex.recipes"), GOLD, null, null, null));
             y += 14;
             int cardWidth = RecipePainter.GRID_WIDTH + 22 + NAME_WIDTH, perRow = Math.max(1, (width + 10) / (cardWidth + 10));
             for (int i = 0; i < topic.recipes().size(); i++) {
@@ -339,7 +339,7 @@ public class CodexScreen extends Screen {
 
         if (!topic.see().isEmpty()) {
             y += 6;
-            out.add(new Piece(Kind.HEADING, 0, y, 0, I18n.get("screen.storagenexus.codex.see_also"), GOLD, null, null, null));
+            out.add(new Piece(Kind.HEADING, 0, y, 0, I18n.get("screen.nexium.codex.see_also"), GOLD, null, null, null));
             y += 14;
             int x = 0;
             for (String id : topic.see()) {
@@ -393,11 +393,11 @@ public class CodexScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
-        g.item(icon("storagenexus:guide"), PAD + 2, PAD + 3);
+        g.item(icon("nexium:guide"), PAD + 2, PAD + 3);
         g.text(font, boldTitle(), PAD + 22, PAD + 7, GOLD, true);
         extractSidebar(g, mouseX, mouseY);
         extractPage(g, mouseX, mouseY);
-        Component tip = Component.translatable("screen.storagenexus.codex.tip", CodexClient.LOOKUP.getTranslatedKeyMessage());
+        Component tip = Component.translatable("screen.nexium.codex.tip", CodexClient.LOOKUP.getTranslatedKeyMessage());
         g.text(font, font.plainSubstrByWidth(tip.getString(), contentRight - contentLeft), contentLeft, areaBottom - 9, DIM, false);
     }
 
@@ -487,7 +487,7 @@ public class CodexScreen extends Screen {
         g.disableScissor();
         scrollbar(g, contentRight + 3, top, bottom, contentScroll, contentHeight, visible);
         if (hoveredLink != null) {
-            g.setTooltipForNextFrame(Component.translatable("screen.storagenexus.codex.open", titles.get(hoveredLink)), mouseX, mouseY);
+            g.setTooltipForNextFrame(Component.translatable("screen.nexium.codex.open", titles.get(hoveredLink)), mouseX, mouseY);
         }
     }
 

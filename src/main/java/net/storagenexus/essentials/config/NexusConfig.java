@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Settings in {@code config/nexusessentials.json}. The file is created with the defaults on first launch
+ * Settings in {@code config/nexium.json}. The file is created with the defaults on first launch
  * and rewritten on every launch so new settings show up. Changes take effect after a restart.
  */
 public final class NexusConfig {

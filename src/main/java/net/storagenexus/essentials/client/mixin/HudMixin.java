@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 abstract class HudMixin {
     @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"))
-    private void nexusessentials$noLevelNumberInFreeCamera(GuiGraphicsExtractor graphics, Font font, int level, Operation<Void> original) {
+    private void nexium$noLevelNumberInFreeCamera(GuiGraphicsExtractor graphics, Font font, int level, Operation<Void> original) {
         if (!FreeCamera.active()) original.call(graphics, font, level);
     }
 }

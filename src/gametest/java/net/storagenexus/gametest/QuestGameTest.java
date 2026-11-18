@@ -26,7 +26,7 @@ import java.util.Set;
 /** The quest system: its data is complete, chapters open one after another, progress counts what the player already has, and rewards are Nexium items. */
 public class QuestGameTest {
     private static JsonObject lang() {
-        return new Gson().fromJson(new InputStreamReader(QuestGameTest.class.getResourceAsStream("/assets/storagenexus/lang/en_us.json"), StandardCharsets.UTF_8), JsonObject.class);
+        return new Gson().fromJson(new InputStreamReader(QuestGameTest.class.getResourceAsStream("/assets/nexium/lang/en_us.json"), StandardCharsets.UTF_8), JsonObject.class);
     }
 
     @GameTest
@@ -82,22 +82,34 @@ public class QuestGameTest {
     }
 
     @GameTest(maxTicks = 40)
-    public void rewardsAreRandomNexiumItems(GameTestHelper h) {
+    public void rewardsAreRandomItemsFromTheMod(GameTestHelper h) {
         ServerPlayer player = h.makeMockServerPlayerInLevel();
         Chapter c = QuestBook.chapters().getFirst();
         Quest q = c.quests().getFirst();
         player.getInventory().clearContent();
         player.getInventory().add(new ItemStack(q.item(), q.count()));
         Quests.check(player);
-        Set<Item> allowed = Set.of(ModItems.NEXIUM_INGOT, ModItems.NEXIUM_BLOCK,
-                ModItems.STORAGE_PARTS.get(net.storagenexus.disk.DiskTier.NEXIUM), ModItems.FLUID_PARTS.get(net.storagenexus.disk.DiskTier.NEXIUM));
+        Set<Item> allowed = new java.util.HashSet<>(Quests.rewardPool());
         int rewards = 0;
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.isEmpty() || stack.getItem() == q.item()) continue;
-            h.assertTrue(allowed.contains(stack.getItem()), "only Nexium items are given, found " + stack);
+            h.assertTrue(allowed.contains(stack.getItem()), "only items from the mod are given, found " + stack);
             rewards += stack.getCount();
         }
         h.assertTrue(rewards >= c.tier(), "at least one item per roll was given: " + rewards);
+        h.succeed();
+    }
+
+    @GameTest
+    public void theRewardPoolIsTheModsItemsWithoutTheOddOnes(GameTestHelper h) {
+        List<Item> pool = Quests.rewardPool();
+        h.assertTrue(pool.size() > 150, "a big pool: " + pool.size());
+        for (Item item : pool) {
+            var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
+            h.assertTrue(id.getNamespace().equals("nexium"), "only the mod's own items: " + id);
+            h.assertTrue(!java.util.Set.of("guide", "captured_mob", "spent_fuel_rod").contains(id.getPath()), "not " + id);
+        }
+        h.assertTrue(pool.contains(ModItems.NEXIUM_INGOT) && pool.contains(ModItems.NEXIUM_BLOCK), "Nexium items are among them");
         h.succeed();
     }
 

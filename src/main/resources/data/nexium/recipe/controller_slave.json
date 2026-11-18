@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "CDC",
+    "SGS"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "C": "minecraft:comparator",
+    "D": "#nexium:drawers",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "nexium:controller_slave",
+    "count": 1
+  }
+}

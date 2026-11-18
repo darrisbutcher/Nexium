@@ -19,7 +19,7 @@ abstract class LivingEntityMixin {
      */
     @WrapOperation(method = "checkTotemDeathProtection", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/LivingEntity;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack nexusessentials$totemSlot(LivingEntity self, InteractionHand hand, Operation<ItemStack> original) {
+    private ItemStack nexium$totemSlot(LivingEntity self, InteractionHand hand, Operation<ItemStack> original) {
         ItemStack inHand = original.call(self, hand);
         if (hand == InteractionHand.OFF_HAND && self instanceof Player player && !ExtraSlots.isTotem(inHand)) {
             ItemStack totem = ExtraSlots.of(player).totem();

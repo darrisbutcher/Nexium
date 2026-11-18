@@ -10,8 +10,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 /**
- * Modules installed in a Backpack: kept in its {@code nexusessentials:backpack_modules} component, {@link #SLOTS} slots,
- * one module of each type at most. Each module carries its own on/off switch ({@code storagenexus:module_off}), which
+ * Modules installed in a Backpack: kept in its {@code nexium:backpack_modules} component, {@link #SLOTS} slots,
+ * one module of each type at most. Each module carries its own on/off switch ({@code nexium:module_off}), which
  * stays with it when it is taken out.
  */
 public final class BackpackModules {

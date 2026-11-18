@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(Player.class)
 abstract class PlayerMiningMixin {
     @ModifyReturnValue(method = "getDestroySpeed", at = @At("RETURN"))
-    private float storagenexus$minersSet(float speed) {
+    private float nexium$minersSet(float speed) {
         Player player = (Player) (Object) this;
         if (!NexiumArmor.active(player, ArmorBonus.MINERS_SET)) return speed;
         if (player.isEyeInFluid(FluidTags.WATER)) {

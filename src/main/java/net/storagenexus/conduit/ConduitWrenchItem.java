@@ -34,7 +34,7 @@ public class ConduitWrenchItem extends Item {
 
         Direction side = targetSide(context, ConduitBundleBlock.mask(level.getBlockState(pos)));
         if (player.isSecondaryUseActive()) {
-            Menus.open((ServerPlayer) player, Component.translatable("screen.storagenexus.conduit_config"),
+            Menus.open((ServerPlayer) player, Component.translatable("screen.nexium.conduit_config"),
                     new ConduitConfigMenu.OpenData(pos, side.get3DDataValue()),
                     (id, inv, p) -> new ConduitConfigMenu(id, inv, be, side.get3DDataValue()));
             return InteractionResult.SUCCESS;
@@ -49,10 +49,10 @@ public class ConduitWrenchItem extends Item {
             SideConfig cfg = be.config(t, side);
             cfg.mode = cfg.mode.next();
             be.changed();
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.conduit_mode",
-                    Component.translatable("conduit.storagenexus." + t.key()),
-                    Component.translatable("direction.storagenexus." + side.getSerializedName()),
-                    Component.translatable("mode.storagenexus." + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))));
+            player.sendOverlayMessage(Component.translatable("message.nexium.conduit_mode",
+                    Component.translatable("conduit.nexium." + t.key()),
+                    Component.translatable("direction.nexium." + side.getSerializedName()),
+                    Component.translatable("mode.nexium." + cfg.mode.name().toLowerCase(java.util.Locale.ROOT))));
             break;
         }
         return InteractionResult.SUCCESS;

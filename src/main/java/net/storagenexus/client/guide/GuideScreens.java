@@ -17,8 +17,8 @@ import java.io.Reader;
 
 /** Opens the Nexium Codex, and finds the topic for an item (the lookup key and tooltips use it). */
 public final class GuideScreens {
-    private static final Identifier CODEX = Identifier.fromNamespaceAndPath("storagenexus", "codex/codex.json");
-    private static final Identifier RECIPES = Identifier.fromNamespaceAndPath("storagenexus", "guide/recipes.json");
+    private static final Identifier CODEX = Identifier.fromNamespaceAndPath("nexium", "codex/codex.json");
+    private static final Identifier RECIPES = Identifier.fromNamespaceAndPath("nexium", "guide/recipes.json");
     private static GuideData cached;
 
     /** Opens the Codex where it was last left (the guide item, and the lookup key out of a screen). */

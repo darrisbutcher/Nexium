@@ -37,7 +37,7 @@ public class ModuleItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         if (type != ModuleType.NEXUS_LINK) return InteractionResult.PASS;
-        return linkTo(context, link -> context.getItemInHand().set(ModComponents.TERMINAL_LINK, link), "message.storagenexus.nexus_link.linked")
+        return linkTo(context, link -> context.getItemInHand().set(ModComponents.TERMINAL_LINK, link), "message.nexium.nexus_link.linked")
                 ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
@@ -70,11 +70,11 @@ public class ModuleItem extends Item {
         if (type == ModuleType.NEXUS_LINK) {
             GlobalPos link = stack.get(ModComponents.TERMINAL_LINK);
             tooltip.accept(link == null
-                    ? Component.translatable("tooltip.storagenexus.nexus_link.unlinked").withStyle(ChatFormatting.RED)
-                    : Component.translatable("tooltip.storagenexus.nexus_link.linked", describe(link)).withStyle(ChatFormatting.AQUA));
+                    ? Component.translatable("tooltip.nexium.nexus_link.unlinked").withStyle(ChatFormatting.RED)
+                    : Component.translatable("tooltip.nexium.nexus_link.linked", describe(link)).withStyle(ChatFormatting.AQUA));
         }
         if (stack.has(ModComponents.MODULE_OFF)) {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.module_off").withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.accept(Component.translatable("tooltip.nexium.module_off").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }

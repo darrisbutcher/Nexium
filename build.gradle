@@ -31,7 +31,7 @@ repositories {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/storagenexus.accesswidener")
+    accessWidenerPath = file("src/main/resources/nexium.accesswidener")
 }
 
 // In-game tests live in src/gametest (their own small mod, never in the release jar).
@@ -39,7 +39,7 @@ loom {
 fabricApi {
     configureTests {
         createSourceSet = true
-        modId = "storagenexus-gametest"
+        modId = "nexium-gametest"
         enableGameTests = true
         enableClientGameTests = true
     }

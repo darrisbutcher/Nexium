@@ -69,7 +69,7 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             boolean dbl = DrawerInteraction.isDoubleClick(player, pos, level.getGameTime());
             int moved = dbl ? be.insertAllFromInventory(player) : be.insertFromHand(stack);
             if (moved == 0 && !dbl) {
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.no_matching_drawer"));
+                player.sendOverlayMessage(Component.translatable("message.nexium.no_matching_drawer"));
             }
         }
         return InteractionResult.SUCCESS;
@@ -81,12 +81,12 @@ public class DrawerControllerBlock extends BaseEntityBlock {
             if (player.isSecondaryUseActive()) {
                 // Sneak + right-click: show (or hide) the reach outline
                 boolean showing = level instanceof ServerLevel server && be.toggleRangeDisplay(server);
-                player.sendOverlayMessage(Component.translatable(showing ? "message.storagenexus.controller_info"
-                        : "message.storagenexus.controller_info_hidden", be.drawerCount(), DrawerControllerBlockEntity.RANGE));
+                player.sendOverlayMessage(Component.translatable(showing ? "message.nexium.controller_info"
+                        : "message.nexium.controller_info_hidden", be.drawerCount(), DrawerControllerBlockEntity.RANGE));
             } else if (DrawerInteraction.isDoubleClick(player, pos, level.getGameTime())) {
                 be.insertAllFromInventory(player);
             } else {
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.controller_count",
+                player.sendOverlayMessage(Component.translatable("message.nexium.controller_count",
                         be.drawerCount(), DrawerControllerBlockEntity.RANGE));
             }
         }

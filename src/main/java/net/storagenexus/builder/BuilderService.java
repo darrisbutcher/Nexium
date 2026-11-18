@@ -82,7 +82,7 @@ public final class BuilderService {
                 }
                 if (taken < plan.perBlock()) {
                     if (taken > 0) player.getInventory().placeItemBackInInventory(new ItemStack(plan.item(), taken), false, Prediction.SERVER_ONLY);
-                    player.sendOverlayMessage(Component.translatable("message.storagenexus.builder.out_of", new ItemStack(plan.item()).getHoverName()));
+                    player.sendOverlayMessage(Component.translatable("message.nexium.builder.out_of", new ItemStack(plan.item()).getHoverName()));
                     break;
                 }
             }

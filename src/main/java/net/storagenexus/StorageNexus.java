@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StorageNexus implements ModInitializer {
-    public static final String MOD_ID = "storagenexus";
+    public static final String MOD_ID = "nexium";
     public static final Logger LOG = LoggerFactory.getLogger("Nexium");
-    private static final String GUIDE_GIVEN_TAG = "storagenexus.guide_given";
+    private static final String GUIDE_GIVEN_TAG = "nexium.guide_given";
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);

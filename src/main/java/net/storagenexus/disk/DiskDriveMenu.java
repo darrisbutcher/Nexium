@@ -81,8 +81,8 @@ public class DiskDriveMenu extends BaseMenu {
                 if (player instanceof ServerPlayer sp) {
                     NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
                     sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
-                            ? Component.translatable("message.storagenexus.disk.nothing_moved")
-                            : Component.translatable("message.storagenexus.disk.moved", f.format(moved.items()),
+                            ? Component.translatable("message.nexium.disk.nothing_moved")
+                            : Component.translatable("message.nexium.disk.moved", f.format(moved.items()),
                             f.format(moved.fluid() / FluidConstants.BUCKET)));
                 }
             }
@@ -91,8 +91,8 @@ public class DiskDriveMenu extends BaseMenu {
                 if (player instanceof ServerPlayer sp) {
                     NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
                     sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
-                            ? Component.translatable("message.storagenexus.disk.nothing_moved_up")
-                            : Component.translatable("message.storagenexus.disk.moved_up", f.format(moved.items()),
+                            ? Component.translatable("message.nexium.disk.nothing_moved_up")
+                            : Component.translatable("message.nexium.disk.moved_up", f.format(moved.items()),
                             f.format(moved.fluid() / FluidConstants.BUCKET)));
                 }
             }

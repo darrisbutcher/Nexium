@@ -116,16 +116,16 @@ public class BuilderMenu extends BaseMenu {
         ItemStack builder = tool();
         if (!(builder.getItem() instanceof BuilderItem)) return true;
         switch (id) {
-            case BTN_MODE -> serverPlayer.sendOverlayMessage(Component.translatable("message.storagenexus.builder.mode",
-                    Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.cycleMode(builder).name().toLowerCase())));
-            case BTN_PLANE -> serverPlayer.sendOverlayMessage(Component.translatable("message.storagenexus.builder.plane",
-                    Component.translatable("screen.storagenexus.builder.plane." + BuilderSettings.cyclePlane(builder).name().toLowerCase())));
-            case BTN_SIZE -> serverPlayer.sendOverlayMessage(Component.translatable("message.storagenexus.builder.size",
+            case BTN_MODE -> serverPlayer.sendOverlayMessage(Component.translatable("message.nexium.builder.mode",
+                    Component.translatable("screen.nexium.builder.mode." + BuilderSettings.cycleMode(builder).name().toLowerCase())));
+            case BTN_PLANE -> serverPlayer.sendOverlayMessage(Component.translatable("message.nexium.builder.plane",
+                    Component.translatable("screen.nexium.builder.plane." + BuilderSettings.cyclePlane(builder).name().toLowerCase())));
+            case BTN_SIZE -> serverPlayer.sendOverlayMessage(Component.translatable("message.nexium.builder.size",
                     BuilderSettings.cycleSize(builder)));
             case BTN_UNDO -> {
                 int undone = BuilderService.undo(serverPlayer);
-                serverPlayer.sendOverlayMessage(undone < 0 ? Component.translatable("message.storagenexus.builder.nothing_to_undo")
-                        : Component.translatable("message.storagenexus.builder.undone", undone));
+                serverPlayer.sendOverlayMessage(undone < 0 ? Component.translatable("message.nexium.builder.nothing_to_undo")
+                        : Component.translatable("message.nexium.builder.undone", undone));
             }
             case BTN_MODULE -> {
                 ItemStack installed = BuilderSettings.module(builder);
@@ -135,8 +135,8 @@ public class BuilderMenu extends BaseMenu {
                 else installed.set(ModComponents.MODULE_OFF, Unit.INSTANCE);
                 BuilderSettings.setModule(builder, installed);
                 loadModule();
-                serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.storagenexus.tool_menu.module_on"
-                        : "message.storagenexus.tool_menu.module_off", installed.getHoverName()));
+                serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.tool_menu.module_on"
+                        : "message.nexium.tool_menu.module_off", installed.getHoverName()));
             }
             default -> {}
         }

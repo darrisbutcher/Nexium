@@ -30,7 +30,7 @@ public class ElevatorScreen extends Screen {
     private final Floor[] shown = new Floor[ROWS];
 
     public ElevatorScreen(ElevatorOpenPayload data) {
-        super(Component.translatable("block.storagenexus.elevator"));
+        super(Component.translatable("block.nexium.elevator"));
         this.data = data;
         // Highest floor first, like looking at the buttons in a lift
         this.floors = data.floors().reversed();
@@ -41,12 +41,12 @@ public class ElevatorScreen extends Screen {
         panelHeight = TOP + ROWS * ROW + 8;
         left = (width - WIDTH) / 2;
         top = (height - panelHeight) / 2;
-        nameBox = new EditBox(font, left + 8, top + 22, WIDTH - 16 - 48, 14, Component.translatable("screen.storagenexus.elevator.name"));
+        nameBox = new EditBox(font, left + 8, top + 22, WIDTH - 16 - 48, 14, Component.translatable("screen.nexium.elevator.name"));
         nameBox.setMaxLength(ElevatorBlockEntity.MAX_NAME);
         nameBox.setValue(data.ownName());
-        nameBox.setHint(Component.translatable("screen.storagenexus.elevator.name_hint"));
+        nameBox.setHint(Component.translatable("screen.nexium.elevator.name_hint"));
         addRenderableWidget(nameBox);
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.elevator.rename"), b -> rename())
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.elevator.rename"), b -> rename())
                 .bounds(left + WIDTH - 8 - 44, top + 21, 44, 16).build());
         for (int i = 0; i < ROWS; i++) {
             final int row = i;
@@ -64,7 +64,7 @@ public class ElevatorScreen extends Screen {
             Floor f = floors.get(i);
             if (f.y() != data.pos().getY()) continue;
             String shownName = name.isEmpty()
-                    ? Component.translatable("screen.storagenexus.elevator.floor", floors.size() - i).getString() : name;
+                    ? Component.translatable("screen.nexium.elevator.floor", floors.size() - i).getString() : name;
             floors.set(i, new Floor(f.y(), shownName, f.blocked()));
         }
         refresh();
@@ -91,10 +91,10 @@ public class ElevatorScreen extends Screen {
             if (f == null) continue;
             boolean here = f.y() == data.pos().getY();
             Component label = Component.literal(f.name()).append(Component.literal("  y " + f.y()).withStyle(ChatFormatting.GRAY));
-            if (here) label = Component.translatable("screen.storagenexus.elevator.here", label).withStyle(ChatFormatting.GREEN);
+            if (here) label = Component.translatable("screen.nexium.elevator.here", label).withStyle(ChatFormatting.GREEN);
             b.setMessage(label);
             b.active = !here && !f.blocked();
-            b.setTooltip(f.blocked() ? Tooltip.create(Component.translatable("screen.storagenexus.elevator.blocked")) : null);
+            b.setTooltip(f.blocked() ? Tooltip.create(Component.translatable("screen.nexium.elevator.blocked")) : null);
         }
     }
 
@@ -118,10 +118,10 @@ public class ElevatorScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
         g.text(font, title, left + 8, top + 8, Palette.DARK.text(), false);
-        Component count = Component.translatable("screen.storagenexus.elevator.count", floors.size());
+        Component count = Component.translatable("screen.nexium.elevator.count", floors.size());
         g.text(font, count, left + WIDTH - 8 - font.width(count), top + 8, 0xFFA0A0A0, false);
         if (floors.size() > ROWS) {
-            Component range = Component.translatable("screen.storagenexus.elevator.scroll");
+            Component range = Component.translatable("screen.nexium.elevator.scroll");
             g.text(font, range, left + 8, top + TOP - 10, 0xFF808080, false);
         }
     }

@@ -18,9 +18,9 @@ public class XpFarmItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.xp_farm_rate", XpFarmBlockEntity.XP_PER_TICK * 20,
+        tooltip.accept(Component.translatable("tooltip.nexium.xp_farm_rate", XpFarmBlockEntity.XP_PER_TICK * 20,
                 XpFarmBlockEntity.ENERGY_PER_TICK).withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.xp_farm_cap", XpFarmBlockEntity.CAP_LEVELS).withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.xp_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.xp_farm_cap", XpFarmBlockEntity.CAP_LEVELS).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.xp_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

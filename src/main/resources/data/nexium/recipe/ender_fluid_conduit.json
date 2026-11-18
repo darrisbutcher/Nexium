@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CPC",
+    "CCC"
+  ],
+  "key": {
+    "C": "nexium:fluid_conduit",
+    "P": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "nexium:ender_fluid_conduit",
+    "count": 8
+  }
+}

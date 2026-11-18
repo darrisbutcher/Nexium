@@ -49,7 +49,7 @@ public class FluidIntakeBlock extends BaseEntityBlock {
         if (fluid == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
         if (!level.isClientSide()) {
             be.setFilter(fluid);
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.intake_filter_set",
+            player.sendOverlayMessage(Component.translatable("message.nexium.intake_filter_set",
                     net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes.getName(fluid)));
         }
         return InteractionResult.SUCCESS;
@@ -60,11 +60,11 @@ public class FluidIntakeBlock extends BaseEntityBlock {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof FluidIntakeBlockEntity be) {
             if (player.isSecondaryUseActive()) {
                 be.setFilter(FluidVariant.blank());
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.intake_filter_cleared"));
+                player.sendOverlayMessage(Component.translatable("message.nexium.intake_filter_cleared"));
             } else {
-                Component filter = be.filter().isBlank() ? Component.translatable("message.storagenexus.intake_any")
+                Component filter = be.filter().isBlank() ? Component.translatable("message.nexium.intake_any")
                         : net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes.getName(be.filter());
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.intake_status", Fmt.fluid(be.bufferAmount()), filter));
+                player.sendOverlayMessage(Component.translatable("message.nexium.intake_status", Fmt.fluid(be.bufferAmount()), filter));
             }
         }
         return InteractionResult.SUCCESS;

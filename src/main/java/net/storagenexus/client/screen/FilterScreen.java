@@ -28,8 +28,8 @@ public class FilterScreen extends BaseScreen<FilterMenu> {
     }
 
     private void updateLabels() {
-        whitelist.setMessage(Component.translatable(menu.whitelist() ? "screen.storagenexus.whitelist" : "screen.storagenexus.blacklist"));
-        components.setMessage(Component.translatable(menu.matchComponents() ? "screen.storagenexus.match_exact" : "screen.storagenexus.match_item"));
+        whitelist.setMessage(Component.translatable(menu.whitelist() ? "screen.nexium.whitelist" : "screen.nexium.blacklist"));
+        components.setMessage(Component.translatable(menu.matchComponents() ? "screen.nexium.match_exact" : "screen.nexium.match_item"));
     }
 
     @Override

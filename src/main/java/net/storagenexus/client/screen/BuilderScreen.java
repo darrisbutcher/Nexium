@@ -59,28 +59,28 @@ public class BuilderScreen extends BaseScreen<BuilderMenu> {
     private void refresh() {
         ItemStack builder = menu.tool();
         if (!(builder.getItem() instanceof BuilderItem item)) return;
-        set(modeButton, true, Component.translatable("screen.storagenexus.builder.mode",
-                Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.mode(builder).name().toLowerCase())),
-                Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.mode(builder).name().toLowerCase() + ".tooltip"));
-        set(planeButton, true, Component.translatable("screen.storagenexus.builder.plane",
-                Component.translatable("screen.storagenexus.builder.plane." + BuilderSettings.plane(builder).name().toLowerCase())),
-                Component.translatable("screen.storagenexus.builder.plane.tooltip"));
-        set(sizeButton, true, Component.translatable("screen.storagenexus.builder.size", BuilderSettings.size(builder), item.tier().maxBlocks()),
-                Component.translatable("screen.storagenexus.builder.size.tooltip"));
+        set(modeButton, true, Component.translatable("screen.nexium.builder.mode",
+                Component.translatable("screen.nexium.builder.mode." + BuilderSettings.mode(builder).name().toLowerCase())),
+                Component.translatable("screen.nexium.builder.mode." + BuilderSettings.mode(builder).name().toLowerCase() + ".tooltip"));
+        set(planeButton, true, Component.translatable("screen.nexium.builder.plane",
+                Component.translatable("screen.nexium.builder.plane." + BuilderSettings.plane(builder).name().toLowerCase())),
+                Component.translatable("screen.nexium.builder.plane.tooltip"));
+        set(sizeButton, true, Component.translatable("screen.nexium.builder.size", BuilderSettings.size(builder), item.tier().maxBlocks()),
+                Component.translatable("screen.nexium.builder.size.tooltip"));
         int left = menu.undoLeft();
-        set(undoButton, left > 0, Component.translatable("screen.storagenexus.builder.undo", left),
-                Component.translatable(left > 0 ? "screen.storagenexus.builder.undo.tooltip" : "screen.storagenexus.builder.undo.none"));
+        set(undoButton, left > 0, Component.translatable("screen.nexium.builder.undo", left),
+                Component.translatable(left > 0 ? "screen.nexium.builder.undo.tooltip" : "screen.nexium.builder.undo.none"));
         ItemStack module = menu.getSlot(0).getItem();
         if (module.getItem() instanceof ModuleItem) {
             boolean on = !module.has(ModComponents.MODULE_OFF);
             GlobalPos link = module.get(ModComponents.TERMINAL_LINK);
-            set(moduleButton, true, Component.translatable(on ? "screen.storagenexus.tool_menu.module_on" : "screen.storagenexus.tool_menu.module_off",
-                    module.getHoverName()), Component.empty().append(Component.translatable("screen.storagenexus.builder.module.tooltip"))
-                    .append("\n").append(link == null ? Component.translatable("tooltip.storagenexus.nexus_link.unlinked")
-                            : Component.translatable("tooltip.storagenexus.nexus_link.linked", ModuleItem.describe(link))));
+            set(moduleButton, true, Component.translatable(on ? "screen.nexium.tool_menu.module_on" : "screen.nexium.tool_menu.module_off",
+                    module.getHoverName()), Component.empty().append(Component.translatable("screen.nexium.builder.module.tooltip"))
+                    .append("\n").append(link == null ? Component.translatable("tooltip.nexium.nexus_link.unlinked")
+                            : Component.translatable("tooltip.nexium.nexus_link.linked", ModuleItem.describe(link))));
         } else {
-            set(moduleButton, false, Component.translatable("screen.storagenexus.builder.module_empty"),
-                    Component.translatable("screen.storagenexus.builder.module_empty.tooltip"));
+            set(moduleButton, false, Component.translatable("screen.nexium.builder.module_empty"),
+                    Component.translatable("screen.nexium.builder.module_empty.tooltip"));
         }
     }
 
@@ -100,9 +100,9 @@ public class BuilderScreen extends BaseScreen<BuilderMenu> {
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         palette().slot(g, leftPos + 8, topPos + 5);
         g.item(menu.tool(), leftPos + 8, topPos + 5);
-        g.text(font, Component.translatable("screen.storagenexus.tool_menu.modules"), leftPos + 8,
+        g.text(font, Component.translatable("screen.nexium.tool_menu.modules"), leftPos + 8,
                 topPos + BuilderMenu.MODULE_SLOT_Y - 12, palette().text(), false);
-        var lines = font.split(Component.translatable("screen.storagenexus.builder.note"), 160);
+        var lines = font.split(Component.translatable("screen.nexium.builder.note"), 160);
         for (int i = 0; i < lines.size() && i < 2; i++) {
             g.text(font, lines.get(i), leftPos + 8, topPos + BuilderMenu.NOTE_Y + i * 9, palette().text(), false);
         }

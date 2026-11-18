@@ -76,7 +76,7 @@ public enum AssemblyTarget {
             for (IronFarmRecipe.Part part : IronFarmRecipe.Part.values()) {
                 list.add(new Requirement(part.displayName(), part.needed, s -> IronFarmRecipe.partOf(s) == part, part.icon, part.isMob()));
             }
-            list.add(new Requirement(Component.translatable("message.nexusessentials.iron_farm_part.smooth_stone"), IronFarmRecipe.FILLER_AMOUNT,
+            list.add(new Requirement(Component.translatable("message.nexium.iron_farm_part.smooth_stone"), IronFarmRecipe.FILLER_AMOUNT,
                     IronFarmRecipe::isFiller, Items.SMOOTH_STONE, false));
         } else if (this == XP_FARM) {
             list.add(new Requirement(Component.translatable("item.minecraft.experience_bottle"), XP_FARM_BOTTLES,
@@ -105,19 +105,19 @@ public enum AssemblyTarget {
     }
 
     public Component displayName() {
-        if (this == LIBRARIAN) return Component.translatable("screen.nexusessentials.assembler.librarian");
+        if (this == LIBRARIAN) return Component.translatable("screen.nexium.assembler.librarian");
         return icon().getHoverName();
     }
 
     /** The shorter name the screen's list shows. */
     public Component shortName() {
-        return Component.translatable("screen.nexusessentials.assembler.short." + id());
+        return Component.translatable("screen.nexium.assembler.short." + id());
     }
 
     /** One line on what it does. */
     public Component makes() {
-        if (kind != null) return Component.translatable("tooltip.nexusessentials." + kind.lang("makes"));
-        return Component.translatable("screen.nexusessentials.assembler.makes." + id());
+        if (kind != null) return Component.translatable("tooltip.nexium." + kind.lang("makes"));
+        return Component.translatable("screen.nexium.assembler.makes." + id());
     }
 
     /** Makes the finished thing; empty if it can't be made right now (a Master Librarian needs a villager to spawn). */

@@ -60,7 +60,7 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
                             MODULE_BUTTON_WIDTH, 16).build());
         }
         // To the armor menu, when wearing Nexium armor
-        armorButton = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.tool_menu.armor"), b -> {
+        armorButton = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.tool_menu.armor"), b -> {
             minecraft.player.closeContainer();
             minecraft.gui.setScreen(new ArmorMenuScreen());
         }).bounds(leftPos + imageWidth - 8 - 44, topPos + 5, 44, 16).build());
@@ -82,19 +82,19 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         MiningMode mode = tool.get(ModComponents.MINING_MODE);
         if (AiotEnchanting.canSwap(tool) && mode != null && minecraft.level != null) {
             var enchantment = minecraft.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(mode.enchantment());
-            set(modeButton, true, Component.translatable("screen.storagenexus.tool_menu.mode",
-                    Enchantment.getFullname(enchantment, AiotEnchanting.activeLevel(tool, mode))), "screen.storagenexus.tool_menu.mode.tooltip");
+            set(modeButton, true, Component.translatable("screen.nexium.tool_menu.mode",
+                    Enchantment.getFullname(enchantment, AiotEnchanting.activeLevel(tool, mode))), "screen.nexium.tool_menu.mode.tooltip");
         } else {
-            set(modeButton, false, Component.translatable("screen.storagenexus.tool_menu.mode.none"), "screen.storagenexus.tool_menu.mode.none.tooltip");
+            set(modeButton, false, Component.translatable("screen.nexium.tool_menu.mode.none"), "screen.nexium.tool_menu.mode.none.tooltip");
         }
         if (tool.is(NexiumMaterials.GRANTS_HASTE)) {
             set(hasteButton, true, Component.translatable(tool.has(ModComponents.HASTE_OFF)
-                    ? "screen.storagenexus.tool_menu.haste_off" : "screen.storagenexus.tool_menu.haste_on"), "screen.storagenexus.tool_menu.haste.tooltip");
+                    ? "screen.nexium.tool_menu.haste_off" : "screen.nexium.tool_menu.haste_on"), "screen.nexium.tool_menu.haste.tooltip");
         } else {
-            set(hasteButton, false, Component.translatable("screen.storagenexus.tool_menu.haste_none"), "screen.storagenexus.tool_menu.haste_none.tooltip");
+            set(hasteButton, false, Component.translatable("screen.nexium.tool_menu.haste_none"), "screen.nexium.tool_menu.haste_none.tooltip");
         }
         armorButton.visible = NexiumArmor.piecesWorn(minecraft.player) > 0;
-        hints.set(armorButton, Component.translatable("screen.storagenexus.tool_menu.armor.tooltip"));
+        hints.set(armorButton, Component.translatable("screen.nexium.tool_menu.armor.tooltip"));
         boolean aiot = tool.getItem() instanceof AiotItem;
         veinButton.visible = aiot;
         tunnelButton.visible = aiot;
@@ -103,34 +103,34 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
             if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.AREA_MINING) area = menu.getSlot(i).getItem();
         }
         if (area.isEmpty()) {
-            set(tunnelButton, false, Component.translatable("screen.storagenexus.tool_menu.tunnel_none"), "screen.storagenexus.tool_menu.tunnel_none.tooltip");
+            set(tunnelButton, false, Component.translatable("screen.nexium.tool_menu.tunnel_none"), "screen.nexium.tool_menu.tunnel_none.tooltip");
         } else {
             int length = Math.max(1, Math.min(menu.tunnelMax(), area.getOrDefault(ModComponents.TUNNEL_LENGTH, 1)));
-            set(tunnelButton, true, Component.translatable(length == 1 ? "screen.storagenexus.tool_menu.tunnel_off"
-                    : "screen.storagenexus.tool_menu.tunnel_length", length), "screen.storagenexus.tool_menu.tunnel.tooltip");
+            set(tunnelButton, true, Component.translatable(length == 1 ? "screen.nexium.tool_menu.tunnel_off"
+                    : "screen.nexium.tool_menu.tunnel_length", length), "screen.nexium.tool_menu.tunnel.tooltip");
         }
         int max = menu.veinMax(); // the server's limit, synced with the menu
         int size = Math.max(1, Math.min(max, tool.getOrDefault(ModComponents.VEIN_SIZE, max)));
-        set(veinButton, aiot, Component.translatable("screen.storagenexus.tool_menu.vein_size", size),
-                "screen.storagenexus.tool_menu.vein_size.tooltip");
+        set(veinButton, aiot, Component.translatable("screen.nexium.tool_menu.vein_size", size),
+                "screen.nexium.tool_menu.vein_size.tooltip");
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             Button button = moduleButtons[i];
             button.visible = aiot;
             ItemStack module = menu.getSlot(i).getItem();
             if (!(module.getItem() instanceof ModuleItem item)) {
-                set(button, false, Component.translatable("screen.storagenexus.tool_menu.module_empty"), "screen.storagenexus.tool_menu.module_empty.tooltip");
+                set(button, false, Component.translatable("screen.nexium.tool_menu.module_empty"), "screen.nexium.tool_menu.module_empty.tooltip");
                 continue;
             }
             boolean on = !module.has(ModComponents.MODULE_OFF);
             button.active = true;
-            button.setMessage(Component.translatable(on ? "screen.storagenexus.tool_menu.module_on" : "screen.storagenexus.tool_menu.module_off",
+            button.setMessage(Component.translatable(on ? "screen.nexium.tool_menu.module_on" : "screen.nexium.tool_menu.module_off",
                     module.getHoverName()));
-            Component tip = Component.translatable("item.storagenexus." + item.type().id() + "_module.desc");
+            Component tip = Component.translatable("item.nexium." + item.type().id() + "_module.desc");
             if (item.type() == ModuleType.NEXUS_LINK) {
                 GlobalPos link = module.get(ModComponents.TERMINAL_LINK);
                 tip = Component.empty().append(tip).append("\n").append(link == null
-                        ? Component.translatable("tooltip.storagenexus.nexus_link.unlinked")
-                        : Component.translatable("tooltip.storagenexus.nexus_link.linked", ModuleItem.describe(link)));
+                        ? Component.translatable("tooltip.nexium.nexus_link.unlinked")
+                        : Component.translatable("tooltip.nexium.nexus_link.linked", ModuleItem.describe(link)));
             }
             hints.set(button, tip);
         }
@@ -154,7 +154,7 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         palette().slot(g, leftPos + 8, topPos + 5);
         g.item(menu.tool(), leftPos + 8, topPos + 5);
         Component modules = Component.translatable(menu.tool().getItem() instanceof AiotItem
-                ? "screen.storagenexus.tool_menu.modules" : "screen.storagenexus.tool_menu.modules_aiot_only");
+                ? "screen.nexium.tool_menu.modules" : "screen.nexium.tool_menu.modules_aiot_only");
         g.text(font, modules, leftPos + 8, topPos + MODULES_LABEL_Y, palette().text(), false);
         // Outline the tool's own hotbar slot: it stays put while the menu is open
         int x = leftPos + 8 + menu.toolSlot() * 18, y = topPos + ToolMenuMenu.INVENTORY_Y + 58;

@@ -19,7 +19,7 @@ import net.storagenexus.essentials.client.NexusEssentialsClient;
  * page, and close the Codex to come back. Outside a screen it opens the Codex. Items with a page say so in their tooltip.
  */
 public final class CodexClient {
-    public static final KeyMapping LOOKUP = new KeyMapping("key.storagenexus.codex_lookup", InputConstants.KEY_H, NexusEssentialsClient.CATEGORY);
+    public static final KeyMapping LOOKUP = new KeyMapping("key.nexium.codex_lookup", InputConstants.KEY_H, NexusEssentialsClient.CATEGORY);
 
     public static void init() {
         KeyMappingHelper.registerKeyMapping(LOOKUP);
@@ -38,7 +38,7 @@ public final class CodexClient {
         });
         ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> {
             if (GuideScreens.topicFor(stack) != null) {
-                lines.add(Component.translatable("tooltip.storagenexus.codex", LOOKUP.getTranslatedKeyMessage()).withStyle(ChatFormatting.DARK_GRAY));
+                lines.add(Component.translatable("tooltip.nexium.codex", LOOKUP.getTranslatedKeyMessage()).withStyle(ChatFormatting.DARK_GRAY));
             }
         });
     }

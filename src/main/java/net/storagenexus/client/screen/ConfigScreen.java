@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Nexium settings screen: every setting in {@code config/nexusessentials.json}, grouped by feature. A switch is a
+ * The Nexium settings screen: every setting in {@code config/nexium.json}, grouped by feature. A switch is a
  * button, a number is a box (clamped to its limits when you leave it), and each setting has its own Reset beside it;
  * "Reset page" and "Reset all" put a whole group or everything back. Changes are saved as they are made. Hover a setting
  * for what it does, its default and whether it is for your own game or for the world you host.
@@ -50,7 +50,7 @@ public class ConfigScreen extends Screen {
     }
 
     public ConfigScreen(Screen parent) {
-        super(Component.translatable("screen.storagenexus.config"));
+        super(Component.translatable("screen.nexium.config"));
         this.parent = parent;
         this.group = lastGroup;
     }
@@ -90,20 +90,20 @@ public class ConfigScreen extends Screen {
         groupButtons.clear();
         int y = TOP;
         for (String id : ConfigSchema.GROUPS) {
-            Button b = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.group." + id),
+            Button b = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.group." + id),
                     button -> showGroup(id)).bounds(PAD, y, SIDE, 20).build());
             groupButtons.add(b);
             y += 22;
         }
         int bottom = height - PAD - 20;
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.done"), b -> onClose())
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.done"), b -> onClose())
                 .bounds(PAD, bottom, SIDE, 20).build());
-        resetPage = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.reset_page"), b -> resetPage())
+        resetPage = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.reset_page"), b -> resetPage())
                 .bounds(PAD, bottom - 44, SIDE, 20)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.config.reset_page.tip"))).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.reset_all"), b -> resetAll())
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.config.reset_page.tip"))).build());
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.reset_all"), b -> resetAll())
                 .bounds(PAD, bottom - 22, SIDE, 20)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.config.reset_all.tip"))).build());
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.config.reset_all.tip"))).build());
         rebuildRows();
     }
 
@@ -141,11 +141,11 @@ public class ConfigScreen extends Screen {
                 });
                 addRenderableWidget(row.box);
             }
-            row.reset = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.reset"), b -> {
+            row.reset = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.reset"), b -> {
                 entry.reset(NexusConfig.get());
                 changed();
             }).bounds(0, 0, RESET, 18)
-                    .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.config.reset.tip"))).build());
+                    .tooltip(Tooltip.create(Component.translatable("screen.nexium.config.reset.tip"))).build());
             rows.add(row);
         }
         firstRow = Mth.clamp(firstRow, 0, Math.max(0, rows.size() - visibleRows()));
@@ -181,7 +181,7 @@ public class ConfigScreen extends Screen {
             if (row.toggle != null) {
                 row.toggle.setPosition(controlX, y);
                 row.toggle.visible = shown;
-                row.toggle.setMessage(Component.translatable(e.getBoolean(config) ? "screen.storagenexus.config.on" : "screen.storagenexus.config.off"));
+                row.toggle.setMessage(Component.translatable(e.getBoolean(config) ? "screen.nexium.config.on" : "screen.nexium.config.off"));
             }
             if (row.box != null) {
                 row.box.setPosition(controlX, y);
@@ -246,7 +246,7 @@ public class ConfigScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
         g.text(font, title.copy().withStyle(net.minecraft.ChatFormatting.BOLD), PAD + 2, 12, GOLD, false);
-        g.text(font, Component.translatable("screen.storagenexus.config.group." + group), listLeft, 12, TEXT, false);
+        g.text(font, Component.translatable("screen.nexium.config.group." + group), listLeft, 12, TEXT, false);
         NexusConfig config = NexusConfig.get();
         int visible = visibleRows();
         int labelRight = listRight - RESET - 4 - CONTROL - 6;
@@ -269,7 +269,7 @@ public class ConfigScreen extends Screen {
             g.fill(width - PAD - 6, trackTop, width - PAD - 3, trackTop + trackHeight, 0xFF2A2A36);
             g.fill(width - PAD - 6, thumbY, width - PAD - 3, thumbY + thumb, 0xFF8C8CAA);
         }
-        List<FormattedCharSequence> note = font.split(Component.translatable("screen.storagenexus.config.note"), listRight - listLeft);
+        List<FormattedCharSequence> note = font.split(Component.translatable("screen.nexium.config.note"), listRight - listLeft);
         for (int i = 0; i < note.size() && i < 2; i++) g.text(font, note.get(i), listLeft, height - BOTTOM_NOTE + i * 10, DIM, false);
         if (hovered != null && !(hovered.reset.isHovered())) drawTooltip(g, hovered, mouseX, mouseY);
     }
@@ -280,16 +280,16 @@ public class ConfigScreen extends Screen {
         lines.add(Component.translatable(e.nameKey()).withStyle(net.minecraft.ChatFormatting.GOLD));
         lines.add(Component.translatable(e.tipKey()));
         NexusConfig defaults = new NexusConfig();
-        Component applies = Component.translatable(e.clientSide() ? "screen.storagenexus.config.client" : "screen.storagenexus.config.server");
+        Component applies = Component.translatable(e.clientSide() ? "screen.nexium.config.client" : "screen.nexium.config.server");
         if (e.isSwitch()) {
-            lines.add(Component.translatable("screen.storagenexus.config.default",
-                    Component.translatable(e.getBoolean(defaults) ? "screen.storagenexus.config.on" : "screen.storagenexus.config.off"))
+            lines.add(Component.translatable("screen.nexium.config.default",
+                    Component.translatable(e.getBoolean(defaults) ? "screen.nexium.config.on" : "screen.nexium.config.off"))
                     .withStyle(net.minecraft.ChatFormatting.GRAY));
         } else {
-            lines.add(Component.translatable("screen.storagenexus.config.range", e.min(), e.max(), e.getInt(defaults))
+            lines.add(Component.translatable("screen.nexium.config.range", e.min(), e.max(), e.getInt(defaults))
                     .withStyle(net.minecraft.ChatFormatting.GRAY));
         }
-        lines.add(Component.translatable("screen.storagenexus.config.applies", applies).withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
+        lines.add(Component.translatable("screen.nexium.config.applies", applies).withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
         List<FormattedCharSequence> wrapped = new ArrayList<>();
         int wrap = Math.min(220, Math.max(120, width / 2));
         for (Component line : lines) wrapped.addAll(font.split(line, wrap));

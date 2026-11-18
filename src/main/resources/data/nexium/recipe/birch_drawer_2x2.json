@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SPS",
+    "PPP",
+    "SPS"
+  ],
+  "key": {
+    "P": "minecraft:birch_planks",
+    "S": "minecraft:birch_slab"
+  },
+  "result": {
+    "id": "nexium:birch_drawer_2x2",
+    "count": 4
+  }
+}

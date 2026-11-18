@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:16k_storage_part",
+    "nexium:16k_storage_part",
+    "nexium:16k_storage_part",
+    "minecraft:gold_ingot"
+  ],
+  "result": {
+    "id": "nexium:64k_storage_part"
+  }
+}

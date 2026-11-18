@@ -147,7 +147,7 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
             int thumbY = top + (maxScroll() == 0 ? 0 : (height - thumb) * listScroll / maxScroll());
             g.fill(bx, thumbY, bx + 3, thumbY + thumb, SCROLLBAR);
         }
-        button(g, leftPos + LIST_X, topPos + ADD_Y, LIST_W, Component.translatable("screen.nexusessentials.assembler.add"), true,
+        button(g, leftPos + LIST_X, topPos + ADD_Y, LIST_W, Component.translatable("screen.nexium.assembler.add"), true,
                 inside(mouseX, mouseY, leftPos + LIST_X, topPos + ADD_Y, LIST_W, BUTTON_H));
 
         // The chosen one: what it is, and what it needs
@@ -156,7 +156,7 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
         g.text(font, chosen.displayName(), rx + 20, topPos + HEADER_Y + 4, TEXT, true);
         g.text(font, font.plainSubstrByWidth(chosen.makes().getString(), rw), rx, topPos + MAKES_Y, MUTED, false);
         boolean canBuild = menu.complete() && !menu.outputFull();
-        button(g, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, Component.translatable("screen.nexusessentials.assembler.build"), canBuild,
+        button(g, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, Component.translatable("screen.nexium.assembler.build"), canBuild,
                 canBuild && inside(mouseX, mouseY, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, BUTTON_H));
 
         List<Requirement> reqs = chosen.requirements();
@@ -190,15 +190,15 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
         for (AssemblyTarget t : AssemblyTarget.values()) {
             if (rowShowing(t) && inside(mouseX, mouseY, lx + 1, rowTop(t), rowWidth(), LIST_ROW)) {
                 List<Component> lines = new ArrayList<>(List.of(t.displayName().copy().withStyle(ChatFormatting.WHITE), t.makes().copy().withStyle(ChatFormatting.GRAY)));
-                if (t != chosen) lines.add(Component.translatable("screen.nexusessentials.assembler.switch").withStyle(ChatFormatting.DARK_GRAY));
+                if (t != chosen) lines.add(Component.translatable("screen.nexium.assembler.switch").withStyle(ChatFormatting.DARK_GRAY));
                 g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
                 return;
             }
         }
         if (inside(mouseX, mouseY, lx, topPos + ADD_Y, LIST_W, BUTTON_H)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.nexusessentials.assembler.add_tip").withStyle(ChatFormatting.GRAY),
-                    Component.translatable("screen.nexusessentials.assembler.add_tip2").withStyle(ChatFormatting.DARK_GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.assembler.add_tip").withStyle(ChatFormatting.GRAY),
+                    Component.translatable("screen.nexium.assembler.add_tip2").withStyle(ChatFormatting.DARK_GRAY)), mouseX, mouseY);
             return;
         }
         if (inside(mouseX, mouseY, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, BUTTON_H)) {
@@ -210,10 +210,10 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
             if (inside(mouseX, mouseY, leftPos + RIGHT_X, topPos + ROWS_Y + i * ROW_H, RIGHT_W, ROW_H)) {
                 List<Component> lines = new ArrayList<>();
                 lines.add(reqs.get(i).name().copy().withStyle(ChatFormatting.WHITE));
-                if (reqs.get(i).mob()) lines.add(Component.translatable("screen.nexusessentials.assembler.mob").withStyle(ChatFormatting.GRAY));
+                if (reqs.get(i).mob()) lines.add(Component.translatable("screen.nexium.assembler.mob").withStyle(ChatFormatting.GRAY));
                 int missing = menu.needed(i) - menu.count(i);
-                lines.add(missing > 0 ? Component.translatable("screen.nexusessentials.assembler.still", String.format("%,d", missing)).withStyle(ChatFormatting.YELLOW)
-                        : Component.translatable("screen.nexusessentials.assembler.done").withStyle(ChatFormatting.GREEN));
+                lines.add(missing > 0 ? Component.translatable("screen.nexium.assembler.still", String.format("%,d", missing)).withStyle(ChatFormatting.YELLOW)
+                        : Component.translatable("screen.nexium.assembler.done").withStyle(ChatFormatting.GREEN));
                 g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
                 return;
             }
@@ -223,11 +223,11 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
     private List<Component> buildTip(AssemblyTarget chosen) {
         List<Component> lines = new ArrayList<>();
         if (menu.outputFull()) {
-            lines.add(Component.translatable("screen.nexusessentials.assembler.take_first").withStyle(ChatFormatting.RED));
+            lines.add(Component.translatable("screen.nexium.assembler.take_first").withStyle(ChatFormatting.RED));
         } else if (menu.complete()) {
-            lines.add(Component.translatable("screen.nexusessentials.assembler.ready", chosen.displayName()).withStyle(ChatFormatting.GREEN));
+            lines.add(Component.translatable("screen.nexium.assembler.ready", chosen.displayName()).withStyle(ChatFormatting.GREEN));
         } else {
-            lines.add(Component.translatable("screen.nexusessentials.assembler.needs").withStyle(ChatFormatting.YELLOW));
+            lines.add(Component.translatable("screen.nexium.assembler.needs").withStyle(ChatFormatting.YELLOW));
             List<Requirement> reqs = chosen.requirements();
             for (int i = 0; i < reqs.size(); i++) {
                 int missing = menu.needed(i) - menu.count(i);

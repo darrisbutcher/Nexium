@@ -27,7 +27,7 @@ abstract class InventoryMenuMixin extends AbstractCraftingMenu {
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void nexusessentials$addExtraSlots(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {
+    private void nexium$addExtraSlots(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {
         ExtraSlots slots = ExtraSlots.of(owner);
         addSlot(new ExtraSlotMenuSlot(slots, owner, ExtraSlots.TRINKET, 77, 26));
         addSlot(new ExtraSlotMenuSlot(slots, owner, ExtraSlots.WINGS, 77, 44));
@@ -39,7 +39,7 @@ abstract class InventoryMenuMixin extends AbstractCraftingMenu {
     }
 
     @Inject(method = "quickMoveStack", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$quickMoveToExtraSlots(Player player, int slotIndex, CallbackInfoReturnable<ItemStack> cir) {
+    private void nexium$quickMoveToExtraSlots(Player player, int slotIndex, CallbackInfoReturnable<ItemStack> cir) {
         // Only from the main inventory, the hotbar and the offhand (9-45)
         if (slotIndex < InventoryMenu.INV_SLOT_START || slotIndex > InventoryMenu.SHIELD_SLOT) return;
         Slot from = slots.get(slotIndex);

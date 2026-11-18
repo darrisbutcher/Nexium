@@ -39,7 +39,7 @@ public class PowerMeterScreen extends Screen {
     private final Endpoint[] shown = new Endpoint[ROWS];
 
     public PowerMeterScreen(PowerReportPayload data) {
-        super(Component.translatable("block.storagenexus.power_meter"));
+        super(Component.translatable("block.nexium.power_meter"));
         this.meter = data.meter();
         this.report = data.report();
     }
@@ -86,10 +86,10 @@ public class PowerMeterScreen extends Screen {
             int y = top + 40 + i * ROW;
             priority[i] = addRenderableWidget(Button.builder(Component.empty(), b -> cyclePriority(shown[row]))
                     .bounds(left + PANEL_W - 104, y, 52, 18)
-                    .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.power.priority.tip"))).build());
+                    .tooltip(Tooltip.create(Component.translatable("screen.nexium.power.priority.tip"))).build());
             power[i] = addRenderableWidget(Button.builder(Component.empty(), b -> togglePower(shown[row]))
                     .bounds(left + PANEL_W - 50, y, 40, 18)
-                    .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.power.switch.tip"))).build());
+                    .tooltip(Tooltip.create(Component.translatable("screen.nexium.power.switch.tip"))).build());
         }
         refresh();
     }
@@ -114,10 +114,10 @@ public class PowerMeterScreen extends Screen {
             priority[i].visible = power[i].visible = e != null;
             if (e == null) continue;
             priority[i].active = e.role() == EnergyNetwork.Role.CONSUMER;
-            priority[i].setMessage(Component.translatable(e.role() != EnergyNetwork.Role.CONSUMER ? "screen.storagenexus.power.priority.none"
-                    : e.priority() > 0 ? "screen.storagenexus.power.priority.high"
-                    : e.priority() < 0 ? "screen.storagenexus.power.priority.low" : "screen.storagenexus.power.priority.normal"));
-            power[i].setMessage(Component.translatable(e.paused() ? "screen.storagenexus.power.off" : "screen.storagenexus.power.on")
+            priority[i].setMessage(Component.translatable(e.role() != EnergyNetwork.Role.CONSUMER ? "screen.nexium.power.priority.none"
+                    : e.priority() > 0 ? "screen.nexium.power.priority.high"
+                    : e.priority() < 0 ? "screen.nexium.power.priority.low" : "screen.nexium.power.priority.normal"));
+            power[i].setMessage(Component.translatable(e.paused() ? "screen.nexium.power.off" : "screen.nexium.power.on")
                     .withStyle(e.paused() ? ChatFormatting.RED : ChatFormatting.GREEN));
         }
     }
@@ -159,46 +159,46 @@ public class PowerMeterScreen extends Screen {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
         g.text(font, title.copy().withStyle(ChatFormatting.BOLD), left + 8, top + 8, GOLD, false);
         if (report == null) {
-            g.centeredText(font, Component.translatable("screen.storagenexus.power.none"), left + PANEL_W / 2, top + panelH / 2, DIM);
+            g.centeredText(font, Component.translatable("screen.nexium.power.none"), left + PANEL_W / 2, top + panelH / 2, DIM);
             return;
         }
         EnergyNetwork.Report r = report;
         int x = left + 8, y = top + 28;
         // Status
-        Component status = r.deficit() ? Component.translatable("screen.storagenexus.power.deficit").withStyle(ChatFormatting.RED)
-                : r.produced() >= r.used() ? Component.translatable("screen.storagenexus.power.ok").withStyle(ChatFormatting.GREEN)
-                : Component.translatable("screen.storagenexus.power.draining").withStyle(ChatFormatting.GOLD);
+        Component status = r.deficit() ? Component.translatable("screen.nexium.power.deficit").withStyle(ChatFormatting.RED)
+                : r.produced() >= r.used() ? Component.translatable("screen.nexium.power.ok").withStyle(ChatFormatting.GREEN)
+                : Component.translatable("screen.nexium.power.draining").withStyle(ChatFormatting.GOLD);
         g.text(font, status, x, y, TEXT, false);
         y += 14;
-        g.text(font, Component.translatable("screen.storagenexus.power.making", rate(r.produced())), x, y, GREEN, false);
+        g.text(font, Component.translatable("screen.nexium.power.making", rate(r.produced())), x, y, GREEN, false);
         y += 11;
-        g.text(font, Component.translatable("screen.storagenexus.power.using", rate(r.used())), x, y, ORANGE, false);
+        g.text(font, Component.translatable("screen.nexium.power.using", rate(r.used())), x, y, ORANGE, false);
         y += 11;
         float net = r.produced() - r.used();
-        g.text(font, Component.translatable("screen.storagenexus.power.net", (net >= 0 ? "+" : "-") + rate(Math.abs(net))), x, y, net >= 0 ? GREEN : RED, false);
+        g.text(font, Component.translatable("screen.nexium.power.net", (net >= 0 ? "+" : "-") + rate(Math.abs(net))), x, y, net >= 0 ? GREEN : RED, false);
         y += 16;
         // Stored: the pool and the batteries together
         long stored = r.stored() + r.batteryStored(), capacity = Math.max(1, r.capacity() + r.batteryCapacity());
-        g.text(font, Component.translatable("screen.storagenexus.power.stored", compact(stored), compact(capacity)), x, y, TEXT, false);
+        g.text(font, Component.translatable("screen.nexium.power.stored", compact(stored), compact(capacity)), x, y, TEXT, false);
         y += 11;
         g.fill(x, y, x + 130, y + 8, BAR_BG);
         g.fill(x, y, x + (int) (130L * stored / capacity), y + 8, 0xFF3FB8FF);
         y += 12;
-        Component left_ = r.secondsLeft() >= 0 ? Component.translatable("screen.storagenexus.power.lasts", duration(r.secondsLeft()))
-                : net > 0.01f ? Component.translatable("screen.storagenexus.power.charging") : Component.translatable("screen.storagenexus.power.steady");
+        Component left_ = r.secondsLeft() >= 0 ? Component.translatable("screen.nexium.power.lasts", duration(r.secondsLeft()))
+                : net > 0.01f ? Component.translatable("screen.nexium.power.charging") : Component.translatable("screen.nexium.power.steady");
         g.text(font, left_, x, y, DIM, false);
         y += 16;
         // A minute of history: green is made, orange is used
-        g.text(font, Component.translatable("screen.storagenexus.power.history"), x, y, DIM, false);
-        int keyX = x + font.width(Component.translatable("screen.storagenexus.power.history")) + 6;
-        g.text(font, Component.translatable("screen.storagenexus.power.history.made"), keyX, y, GREEN, false);
-        g.text(font, Component.translatable("screen.storagenexus.power.history.used"), keyX + font.width(Component.translatable("screen.storagenexus.power.history.made")) + 4, y, ORANGE, false);
+        g.text(font, Component.translatable("screen.nexium.power.history"), x, y, DIM, false);
+        int keyX = x + font.width(Component.translatable("screen.nexium.power.history")) + 6;
+        g.text(font, Component.translatable("screen.nexium.power.history.made"), keyX, y, GREEN, false);
+        g.text(font, Component.translatable("screen.nexium.power.history.used"), keyX + font.width(Component.translatable("screen.nexium.power.history.made")) + 4, y, ORANGE, false);
         y += 11;
         drawGraph(g, x, y, 130, 46, r);
 
         // Column heads of the list
         int listX = left + 150;
-        g.text(font, Component.translatable("screen.storagenexus.power.blocks", r.endpoints().size()), listX, top + 28, DIM, false);
+        g.text(font, Component.translatable("screen.nexium.power.blocks", r.endpoints().size()), listX, top + 28, DIM, false);
         for (int i = 0; i < ROWS; i++) {
             Endpoint e = shown[i];
             if (e == null) continue;
@@ -216,7 +216,7 @@ public class PowerMeterScreen extends Screen {
             };
             int color = e.paused() ? DIM : e.role() == EnergyNetwork.Role.PRODUCER ? GREEN : e.role() == EnergyNetwork.Role.CONSUMER ? ORANGE : 0xFF3FB8FF;
             g.text(font, rateText, listX + 20, ry + 11, color, false);
-            Component roleName = Component.translatable("screen.storagenexus.power.role." + e.role().name().toLowerCase(Locale.ROOT));
+            Component roleName = Component.translatable("screen.nexium.power.role." + e.role().name().toLowerCase(Locale.ROOT));
             g.text(font, roleName, listX + 20 + font.width(rateText) + 6, ry + 11, DIM, false);
         }
         if (r.endpoints().size() > ROWS) {

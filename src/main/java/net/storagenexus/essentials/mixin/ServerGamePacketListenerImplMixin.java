@@ -24,7 +24,7 @@ abstract class ServerGamePacketListenerImplMixin {
     @Inject(method = "handleSetCreativeModeSlot", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/protocol/game/ServerboundSetCreativeModeSlotPacket;itemStack()Lnet/minecraft/world/item/ItemStack;"),
             cancellable = true)
-    private void nexusessentials$acceptExtraSlots(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
+    private void nexium$acceptExtraSlots(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
         int index = packet.slotNum();
         if (index < ExtraSlots.MENU_TRINKET || index > ExtraSlots.MENU_BACKPACK) return;
         ci.cancel();

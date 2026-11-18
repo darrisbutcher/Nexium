@@ -49,10 +49,10 @@ public class FilterItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         FilterData d = data(stack);
-        tooltip.accept(Component.translatable(d.whitelist() ? "tooltip.storagenexus.whitelist" : "tooltip.storagenexus.blacklist")
+        tooltip.accept(Component.translatable(d.whitelist() ? "tooltip.nexium.whitelist" : "tooltip.nexium.blacklist")
                 .withStyle(d.whitelist() ? ChatFormatting.GREEN : ChatFormatting.RED));
-        if (advanced) tooltip.accept(Component.translatable("tooltip.storagenexus.tag_mode").withStyle(ChatFormatting.GOLD));
-        else if (d.matchComponents()) tooltip.accept(Component.translatable("tooltip.storagenexus.match_components").withStyle(ChatFormatting.GRAY));
+        if (advanced) tooltip.accept(Component.translatable("tooltip.nexium.tag_mode").withStyle(ChatFormatting.GOLD));
+        else if (d.matchComponents()) tooltip.accept(Component.translatable("tooltip.nexium.match_components").withStyle(ChatFormatting.GRAY));
         for (ItemStack s : d.entries()) {
             if (!s.isEmpty()) tooltip.accept(Component.literal(" - ").append(s.getHoverName()).withStyle(ChatFormatting.DARK_GRAY));
         }

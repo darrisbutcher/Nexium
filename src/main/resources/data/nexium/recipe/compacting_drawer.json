@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "PDP",
+    "SIS"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "P": "minecraft:piston",
+    "D": "#nexium:drawers",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "nexium:compacting_drawer",
+    "count": 1
+  }
+}

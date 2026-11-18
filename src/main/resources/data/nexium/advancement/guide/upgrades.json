@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:diamond_capacity_upgrade"
+    },
+    "title": {
+      "translate": "advancement.nexium.upgrades.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.upgrades.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/drawers"
+}

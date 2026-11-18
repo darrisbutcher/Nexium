@@ -38,7 +38,7 @@ public final class ModItems {
     /** Worn in the backpack slot above the trinket slot; 36 slots and module slots. */
     public static final BackpackItem BACKPACK = register("backpack", BackpackItem::new, new Item.Properties().stacksTo(1));
 
-    /** Backpack modules, one per type: {@code nexusessentials:<type>_module}. */
+    /** Backpack modules, one per type: {@code nexium:<type>_module}. */
     public static final Map<BackpackModuleType, BackpackModuleItem> BACKPACK_MODULES = new EnumMap<>(BackpackModuleType.class);
 
     static {

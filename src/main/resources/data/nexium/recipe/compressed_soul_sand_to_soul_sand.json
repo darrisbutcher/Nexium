@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_soul_sand"
+  ],
+  "result": {
+    "id": "minecraft:soul_sand",
+    "count": 9
+  }
+}

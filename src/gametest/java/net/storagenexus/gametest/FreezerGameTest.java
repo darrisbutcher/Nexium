@@ -244,7 +244,7 @@ public class FreezerGameTest {
     @GameTest
     public void soulSandSmeltsToSandInABlastFurnaceWithNoXp(GameTestHelper h) {
         var recipe = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
-                .filter(r -> r.id().identifier().toString().equals("storagenexus:sand_from_soul_sand")).findFirst();
+                .filter(r -> r.id().identifier().toString().equals("nexium:sand_from_soul_sand")).findFirst();
         h.assertTrue(recipe.isPresent(), "the recipe exists");
         var value = (net.minecraft.world.item.crafting.BlastingRecipe) recipe.get().value();
         h.assertValueEqual(value.experience(), 0.0F, "no experience");

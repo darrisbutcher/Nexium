@@ -64,11 +64,11 @@ public final class ConfigSchema {
         }
 
         public String nameKey() {
-            return "config.storagenexus." + field;
+            return "config.nexium." + field;
         }
 
         public String tipKey() {
-            return "config.storagenexus." + field + ".tip";
+            return "config.nexium." + field + ".tip";
         }
     }
 

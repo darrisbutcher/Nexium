@@ -6,7 +6,7 @@ package net.storagenexus.gametest;
  * test's drops.
  */
 final class EssentialsEnvironment {
-    static final String ID = "storagenexus:essentials";
+    static final String ID = "nexium:essentials";
 
     private EssentialsEnvironment() {}
 }

@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The quests, read from {@code data/storagenexus/quests.json} in the mod: chapters in order, each a list of quests with a goal.
+ * The quests, read from {@code data/nexium/quests.json} in the mod: chapters in order, each a list of quests with a goal.
  * Both the server (which checks the goals) and the client (which draws the book) read the same file. A chapter is open once every
  * quest of the one before it is done. Names and descriptions come from the language file:
- * {@code quest.storagenexus.<chapter>.<quest>} and {@code .desc}.
+ * {@code quest.nexium.<chapter>.<quest>} and {@code .desc}.
  */
 public final class QuestBook {
     /** Make something (the crafting statistic, or having it counts) or use it (placing a block counts). */
@@ -32,7 +32,7 @@ public final class QuestBook {
         }
 
         public String nameKey() {
-            return "quest.storagenexus." + chapter + "." + id;
+            return "quest.nexium." + chapter + "." + id;
         }
 
         public String descKey() {
@@ -43,7 +43,7 @@ public final class QuestBook {
     /** {@code tier} is how many random Nexium items finishing a quest of this chapter gives. */
     public record Chapter(String id, Item icon, int tier, List<Quest> quests) {
         public String nameKey() {
-            return "quest.storagenexus.chapter." + id;
+            return "quest.nexium.chapter." + id;
         }
 
         public String descKey() {
@@ -72,7 +72,7 @@ public final class QuestBook {
 
     private static List<Chapter> load() {
         List<Chapter> out = new ArrayList<>();
-        try (InputStream in = QuestBook.class.getResourceAsStream("/data/storagenexus/quests.json")) {
+        try (InputStream in = QuestBook.class.getResourceAsStream("/data/nexium/quests.json")) {
             if (in == null) throw new IOException("quests.json is missing");
             JsonObject root = new Gson().fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), JsonObject.class);
             for (var ce : root.getAsJsonArray("chapters")) {

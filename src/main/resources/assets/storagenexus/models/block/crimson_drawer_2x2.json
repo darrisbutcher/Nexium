@@ -1,8 +1,0 @@
-{
-  "parent": "storagenexus:block/drawer_2x2_template",
-  "textures": {
-    "front": "minecraft:block/crimson_planks",
-    "side": "minecraft:block/crimson_planks",
-    "trim": "minecraft:block/stripped_crimson_stem"
-  }
-}

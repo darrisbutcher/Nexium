@@ -20,14 +20,14 @@ public final class OverclockUi {
 
     /** "OC off", "OC x2", "OC x4" or "OC x8". */
     public static Component label(int level) {
-        return level <= 0 ? Component.translatable("screen.nexusessentials.overclock.off")
-                : Component.translatable("screen.nexusessentials.overclock.on", Overclock.multiplier(level));
+        return level <= 0 ? Component.translatable("screen.nexium.overclock.off")
+                : Component.translatable("screen.nexium.overclock.on", Overclock.multiplier(level));
     }
 
     /** Refreshes the label and the tooltip, which says what the machine draws at this level. */
     public static void refresh(Button button, int level, int energyPerTick) {
         button.setMessage(label(level));
-        button.setTooltip(Tooltip.create(Component.translatable("screen.nexusessentials.overclock.tip",
+        button.setTooltip(Tooltip.create(Component.translatable("screen.nexium.overclock.tip",
                 Overclock.multiplier(level), (long) energyPerTick * Overclock.multiplier(level))));
     }
 

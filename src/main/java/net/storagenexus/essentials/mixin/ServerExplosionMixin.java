@@ -22,7 +22,7 @@ abstract class ServerExplosionMixin {
     private @Nullable Entity source;
 
     @Inject(method = "shouldAffectBlocklikeEntities", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$spareDecorations(CallbackInfoReturnable<Boolean> cir) {
+    private void nexium$spareDecorations(CallbackInfoReturnable<Boolean> cir) {
         if (MobGriefing.sparesDecorations(source)) cir.setReturnValue(false);
     }
 }

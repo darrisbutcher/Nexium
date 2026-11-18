@@ -14,8 +14,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Modules installed in an AIOT. They live in the AIOT's {@code storagenexus:modules} component (one slot per module
- * type, so {@link #SLOTS} slots), and each module item carries its own on/off switch ({@code storagenexus:module_off})
+ * Modules installed in an AIOT. They live in the AIOT's {@code nexium:modules} component (one slot per module
+ * type, so {@link #SLOTS} slots), and each module item carries its own on/off switch ({@code nexium:module_off})
  * and, for the Nexus Link, its terminal link. Taking a module out keeps both.
  *
  * <p>AIOTs saved when there were three module types (the Vein Mining Module has been retired, see

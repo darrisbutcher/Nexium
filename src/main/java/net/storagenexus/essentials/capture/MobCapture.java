@@ -42,8 +42,8 @@ import java.util.List;
 /**
  * Sneak + right-click a mob with an empty main hand to pick it up as an item that keeps everything about it
  * (health, name, equipment, villager trades, owner, horse stats...). The Ender Dragon and the Wither can't be
- * picked up (entity type tag {@code nexusessentials:cannot_be_picked_up}); the other bosses, the Warden and the Elder
- * Guardian, cost experience levels ({@code nexusessentials:pick_up_costs_levels}, {@code bossPickUpLevels}).
+ * picked up (entity type tag {@code nexium:cannot_be_picked_up}); the other bosses, the Warden and the Elder
+ * Guardian, cost experience levels ({@code nexium:pick_up_costs_levels}, {@code bossPickUpLevels}).
  */
 public final class MobCapture {
     private static final List<MemoryModuleType<net.minecraft.core.GlobalPos>> VILLAGER_POIS = List.of(
@@ -86,7 +86,7 @@ public final class MobCapture {
         if (!(player.level() instanceof ServerLevel level)) return InteractionResult.SUCCESS;
         Mob mob = (Mob) entity;
         if (!player.mayBuild() || level.getServer().isUnderSpawnProtection(level, mob.blockPosition(), player)) {
-            player.sendOverlayMessage(Component.translatable("message.nexusessentials.capture_not_here"));
+            player.sendOverlayMessage(Component.translatable("message.nexium.capture_not_here"));
             return InteractionResult.FAIL;
         }
 
@@ -94,7 +94,7 @@ public final class MobCapture {
         int cost = levelCost(mob);
         if (cost > 0 && !player.hasInfiniteMaterials()) {
             if (player.experienceLevel < cost) {
-                player.sendOverlayMessage(Component.translatable("message.nexusessentials.capture_needs_levels", cost).withStyle(net.minecraft.ChatFormatting.RED));
+                player.sendOverlayMessage(Component.translatable("message.nexium.capture_needs_levels", cost).withStyle(net.minecraft.ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
             player.giveExperienceLevels(-cost);
@@ -146,7 +146,7 @@ public final class MobCapture {
     /** Puts the mob back into the world at {@code pos}. False if it can't be let out here (a monster on Peaceful, for instance). */
     public static boolean release(ServerLevel level, CapturedMob captured, Vec3 pos, float yaw, @Nullable Player player) {
         if (!captured.type().canSpawn(level)) {
-            if (player != null) player.sendOverlayMessage(Component.translatable("message.nexusessentials.release_peaceful"));
+            if (player != null) player.sendOverlayMessage(Component.translatable("message.nexium.release_peaceful"));
             return false;
         }
         Entity entity = EntityType.loadEntityRecursive(captured.data().copy(), level, new EntitySpawnRequest(EntitySpawnReason.SPAWN_ITEM_USE, false), e -> {
@@ -154,7 +154,7 @@ public final class MobCapture {
             return e;
         });
         if (entity == null) {
-            if (player != null) player.sendOverlayMessage(Component.translatable("message.nexusessentials.release_failed"));
+            if (player != null) player.sendOverlayMessage(Component.translatable("message.nexium.release_failed"));
             return false;
         }
         // Creative players don't use up the item, so the same mob can be let out twice

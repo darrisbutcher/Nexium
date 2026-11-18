@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/tree_farm"
+    },
+    "powered=true": {
+      "model": "nexium:block/tree_farm"
+    }
+  }
+}

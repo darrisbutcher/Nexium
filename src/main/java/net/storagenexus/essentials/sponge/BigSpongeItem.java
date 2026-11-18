@@ -20,9 +20,9 @@ public class BigSpongeItem extends BlockItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, display, tooltip, flag);
         if (getBlock() instanceof BigSpongeBlock sponge) {
-            tooltip.accept(Component.translatable("tooltip.nexusessentials.big_sponge", sponge.reach(), String.format("%,d", sponge.capacity())).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltip.nexium.big_sponge", sponge.reach(), String.format("%,d", sponge.capacity())).withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.accept(Component.translatable("tooltip.nexusessentials.big_sponge_wet").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltip.nexium.big_sponge_wet").withStyle(ChatFormatting.GRAY));
         }
     }
 }

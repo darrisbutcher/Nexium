@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:double_compressed_calcite"
+  ],
+  "result": {
+    "id": "nexium:compressed_calcite",
+    "count": 9
+  }
+}

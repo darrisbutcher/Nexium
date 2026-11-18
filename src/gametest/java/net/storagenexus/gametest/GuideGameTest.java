@@ -38,7 +38,7 @@ public class GuideGameTest {
     }
 
     private static GuideData data() {
-        return GuideData.parse(json("/assets/storagenexus/codex/codex.json"), json("/assets/storagenexus/guide/recipes.json"));
+        return GuideData.parse(json("/assets/nexium/codex/codex.json"), json("/assets/nexium/guide/recipes.json"));
     }
 
     private static boolean exists(String path) {
@@ -48,7 +48,7 @@ public class GuideGameTest {
     @GameTest
     public void everyTopicHasItsText(GameTestHelper h) {
         GuideData data = data();
-        JsonObject lang = json("/assets/storagenexus/lang/en_us.json");
+        JsonObject lang = json("/assets/nexium/lang/en_us.json");
         h.assertTrue(data.categories().size() == 11, "the Codex has 11 categories, found " + data.categories().size());
         java.util.Set<String> listed = new java.util.HashSet<>();
         for (GuideData.Category category : data.categories()) {
@@ -72,20 +72,20 @@ public class GuideGameTest {
             for (String ref : topic.items()) requireItem(h, ref, "topic " + topic.id());
         }
         for (String key : lang.keySet()) {
-            // page keys are guide.storagenexus.<chapter>.<page>; recipe names, notes and one-word UI strings are not pages
-            if (!key.startsWith("guide.storagenexus.") || key.startsWith("guide.storagenexus.recipe.") || key.startsWith("guide.storagenexus.note.")
-                    || key.substring("guide.storagenexus.".length()).split("\\.").length != 2) continue;
+            // page keys are guide.nexium.<chapter>.<page>; recipe names, notes and one-word UI strings are not pages
+            if (!key.startsWith("guide.nexium.") || key.startsWith("guide.nexium.recipe.") || key.startsWith("guide.nexium.note.")
+                    || key.substring("guide.nexium.".length()).split("\\.").length != 2) continue;
             h.assertTrue(usedPages.contains(key), key + " is shown in a Codex topic");
         }
         for (GuideData.Recipe recipe : data.recipes().values()) {
             requireText(h, lang, recipe.nameKey());
             if (recipe.note() != null) requireText(h, lang, recipe.noteKey());
         }
-        for (String key : List.of("screen.storagenexus.codex", "screen.storagenexus.codex.search", "screen.storagenexus.codex.tip",
-                "screen.storagenexus.codex.see_also", "screen.storagenexus.codex.recipes", "key.storagenexus.codex_lookup", "tooltip.storagenexus.codex")) {
+        for (String key : List.of("screen.nexium.codex", "screen.nexium.codex.search", "screen.nexium.codex.tip",
+                "screen.nexium.codex.see_also", "screen.nexium.codex.recipes", "key.nexium.codex_lookup", "tooltip.nexium.codex")) {
             requireText(h, lang, key);
         }
-        h.assertTrue(exists("/assets/storagenexus/textures/item/guide.png"), "the guide item has its own icon");
+        h.assertTrue(exists("/assets/nexium/textures/item/guide.png"), "the guide item has its own icon");
         h.succeed();
     }
 
@@ -96,7 +96,7 @@ public class GuideGameTest {
         List<String> missing = new ArrayList<>();
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier id = BuiltInRegistries.ITEM.getKey(item);
-            if (!id.getNamespace().equals("storagenexus") && !id.getNamespace().equals("nexusessentials")) continue;
+            if (!id.getNamespace().equals("nexium") && !id.getNamespace().equals("nexium")) continue;
             boolean found = false;
             for (GuideData.Topic topic : data.topics().values()) {
                 for (String ref : topic.items()) found |= refers(ref, item);
@@ -174,7 +174,7 @@ public class GuideGameTest {
                     }
                 }
                 case SHAPELESS -> {
-                    h.assertTrue(type.equals("minecraft:crafting_shapeless") || type.equals("storagenexus:aiot_merge")
+                    h.assertTrue(type.equals("minecraft:crafting_shapeless") || type.equals("nexium:aiot_merge")
                                     || type.equals("minecraft:crafting_transmute"),
                             card.id() + " is shapeless but " + verify + " is " + type);
                     List<String> wanted = new ArrayList<>();

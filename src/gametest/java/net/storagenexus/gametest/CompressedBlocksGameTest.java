@@ -49,18 +49,18 @@ public class CompressedBlocksGameTest {
     @GameTest
     public void allEightySevenAreThereWithTheirNames(GameTestHelper h) {
         JsonObject lang = JsonParser.parseReader(new InputStreamReader(
-                CompressedBlocksGameTest.class.getResourceAsStream("/assets/nexusessentials/lang/en_us.json"), StandardCharsets.UTF_8)).getAsJsonObject();
-        TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse("nexusessentials:compressed_blocks"));
+                CompressedBlocksGameTest.class.getResourceAsStream("/assets/nexium/lang/en_us.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse("nexium:compressed_blocks"));
         int count = 0;
         for (CompressedBlocks.Base base : CompressedBlocks.Base.values()) {
             for (int level = 1; level <= CompressedBlocks.LEVELS; level++) {
                 String name = LEVEL_NAMES[level - 1] + base.id();
-                Identifier id = Identifier.parse("nexusessentials:" + name);
+                Identifier id = Identifier.parse("nexium:" + name);
                 h.assertTrue(BuiltInRegistries.BLOCK.getValue(id) == CompressedBlocks.block(base, level), name + " is a registered block");
                 h.assertTrue(BuiltInRegistries.ITEM.getValue(id) == CompressedBlocks.item(base, level), name + " is a registered item");
                 h.assertTrue(CompressedBlocks.block(base, level).asItem() == CompressedBlocks.item(base, level), name + "'s block gives its item");
                 h.assertTrue(CompressedBlocks.item(base, level).builtInRegistryHolder().is(tag), name + " is in the compressed_blocks tag");
-                h.assertTrue(lang.has("block.nexusessentials." + name) && !lang.get("block.nexusessentials." + name).getAsString().isBlank(), name + " has a name");
+                h.assertTrue(lang.has("block.nexium." + name) && !lang.get("block.nexium." + name).getAsString().isBlank(), name + " has a name");
                 count++;
             }
         }
@@ -133,7 +133,7 @@ public class CompressedBlocksGameTest {
             List<Component> lines = new ArrayList<>();
             ((CompressedBlockItem) stack.getItem()).appendHoverText(stack, Item.TooltipContext.EMPTY, TooltipDisplay.DEFAULT, lines::add, TooltipFlag.NORMAL);
             String expected = level == 1 ? "9" : level == 2 ? "81" : "729";
-            h.assertTrue(lines.stream().anyMatch(l -> l.getContents() instanceof TranslatableContents t && t.getKey().equals("tooltip.nexusessentials.compressed")
+            h.assertTrue(lines.stream().anyMatch(l -> l.getContents() instanceof TranslatableContents t && t.getKey().equals("tooltip.nexium.compressed")
                             && t.getArgs()[0].equals(expected)), "level " + level + " says it stands for " + expected + ": " + lines);
             h.assertValueEqual(((CompressedBlockItem) stack.getItem()).standsFor(), Integer.parseInt(expected), "and standsFor() agrees");
         }

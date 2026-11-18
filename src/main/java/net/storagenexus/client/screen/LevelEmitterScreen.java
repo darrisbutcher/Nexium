@@ -40,7 +40,7 @@ public class LevelEmitterScreen extends BaseScreen<LevelEmitterMenu> {
     }
 
     private Component modeLabel() {
-        return Component.translatable(menu.below() ? "screen.storagenexus.emitter_below" : "screen.storagenexus.emitter_atleast");
+        return Component.translatable(menu.below() ? "screen.nexium.emitter_below" : "screen.nexium.emitter_atleast");
     }
 
     @Override
@@ -54,10 +54,10 @@ public class LevelEmitterScreen extends BaseScreen<LevelEmitterMenu> {
         Component amount = Component.literal(String.format(Locale.ROOT, "%,d", menu.amount()));
         g.text(font, amount, leftPos + 88 - font.width(amount) / 2, topPos + 60, palette().text(), false);
         Component line = menu.item().isEmpty()
-                ? Component.translatable("screen.storagenexus.emitter_pick")
+                ? Component.translatable("screen.nexium.emitter_pick")
                 : Component.translatable(net.storagenexus.util.FluidItems.fluidIn(menu.item()) != null
-                        ? "screen.storagenexus.emitter_now_buckets" : "screen.storagenexus.emitter_now", String.format(Locale.ROOT, "%,d", menu.now()),
-                        Component.translatable(menu.powered() ? "screen.storagenexus.emitter_on" : "screen.storagenexus.emitter_off"));
+                        ? "screen.nexium.emitter_now_buckets" : "screen.nexium.emitter_now", String.format(Locale.ROOT, "%,d", menu.now()),
+                        Component.translatable(menu.powered() ? "screen.nexium.emitter_on" : "screen.nexium.emitter_off"));
         g.text(font, line, leftPos + 8, topPos + 88, palette().text(), false);
     }
 }

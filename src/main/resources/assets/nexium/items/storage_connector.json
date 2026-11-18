@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexium:block/storage_connector_item"
+  }
+}

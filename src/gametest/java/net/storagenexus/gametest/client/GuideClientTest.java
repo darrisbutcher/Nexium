@@ -90,14 +90,14 @@ public class GuideClientTest implements FabricClientGameTest {
             ctx.waitTicks(3);
 
             // Items find their pages (vanilla items don't)
-            check("freezer".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:freezer")))), "the Freezer's page");
-            check("drawers".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:oak_drawer_1x1")))), "a drawer's page");
-            check("aiot".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("storagenexus:diamond_aiot")))), "an AIOT's page");
+            check("freezer".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("nexium:freezer")))), "the Freezer's page");
+            check("drawers".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("nexium:oak_drawer_1x1")))), "a drawer's page");
+            check("aiot".equals(ctx.computeOnClient(mc -> GuideScreens.topicFor(stack("nexium:diamond_aiot")))), "an AIOT's page");
             check(ctx.computeOnClient(mc -> GuideScreens.topicFor(new ItemStack(Items.DIAMOND))) == null, "a diamond has no page");
 
             // The lookup key over an item in the inventory opens its page; Escape comes back to the inventory
             world.getServer().runCommand("clear @a");
-            world.getServer().runCommand("give @a storagenexus:freezer");
+            world.getServer().runCommand("give @a nexium:freezer");
             ctx.waitTicks(5);
             ctx.setScreen(() -> new InventoryScreen(ctx.computeOnClient(mc -> mc.player)));
             ctx.waitTicks(5);

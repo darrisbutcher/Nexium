@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:compressed_magma_block"
+  ],
+  "result": {
+    "id": "minecraft:magma_block",
+    "count": 9
+  }
+}

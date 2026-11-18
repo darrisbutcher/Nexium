@@ -24,7 +24,7 @@ abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMe
     }
 
     @Inject(method = "extractBackground", at = @At("TAIL"))
-    private void nexusessentials$drawExtraSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+    private void nexium$drawExtraSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 76, topPos + 7, 18, 18);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 76, topPos + 25, 18, 18);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + 76, topPos + 43, 18, 18);

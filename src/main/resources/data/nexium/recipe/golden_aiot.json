@@ -1,0 +1,14 @@
+{
+  "type": "nexium:aiot_merge",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:golden_pickaxe",
+    "minecraft:golden_axe",
+    "minecraft:golden_shovel",
+    "minecraft:golden_hoe",
+    "minecraft:golden_sword"
+  ],
+  "result": {
+    "id": "nexium:golden_aiot"
+  }
+}

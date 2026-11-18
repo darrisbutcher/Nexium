@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(GrindstoneMenu.class)
 abstract class GrindstoneMenuMixin {
     @ModifyReturnValue(method = "removeNonCursesFrom", at = @At("RETURN"))
-    private ItemStack storagenexus$removeInactiveEnchantments(ItemStack result) {
+    private ItemStack nexium$removeInactiveEnchantments(ItemStack result) {
         result.remove(ModComponents.INACTIVE_ENCHANTMENTS);
         result.remove(ModComponents.MINING_MODE);
         return result;

@@ -30,7 +30,7 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
     @Override
     protected void init() {
         super.init();
-        collect = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.furnace.collect", menu.experience()), b -> {
+        collect = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.furnace.collect", menu.experience()), b -> {
             if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, NexusFurnaceMenu.BTN_COLLECT);
         }).bounds(leftPos + 88, topPos + 3, 80, 12).build());
     }
@@ -41,7 +41,7 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
     protected void containerTick() {
         super.containerTick();
         if (collect != null) {
-            collect.setMessage(Component.translatable("screen.storagenexus.furnace.collect", menu.experience()));
+            collect.setMessage(Component.translatable("screen.nexium.furnace.collect", menu.experience()));
             collect.active = menu.experience() > 0;
         }
     }
@@ -58,18 +58,18 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
         int colour = MUTED;
         int working = menu.working(), wanting = menu.wanting();
         if (wanting == 0) {
-            status = Component.translatable("screen.storagenexus.furnace.idle");
+            status = Component.translatable("screen.nexium.furnace.idle");
         } else if (working == 0) {
-            status = Component.translatable("screen.storagenexus.furnace.no_power", NexusFurnaceBlockEntity.ENERGY_PER_SLOT);
+            status = Component.translatable("screen.nexium.furnace.no_power", NexusFurnaceBlockEntity.ENERGY_PER_SLOT);
             colour = WARN;
         } else if (working < wanting) {
-            status = Component.translatable("screen.storagenexus.furnace.low_power", working, wanting);
+            status = Component.translatable("screen.nexium.furnace.low_power", working, wanting);
             colour = WARN;
         } else {
-            status = Component.translatable("screen.storagenexus.furnace.working", working, working * NexusFurnaceBlockEntity.ENERGY_PER_SLOT);
+            status = Component.translatable("screen.nexium.furnace.working", working, working * NexusFurnaceBlockEntity.ENERGY_PER_SLOT);
         }
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 4, colour, false);
-        g.text(font, Component.translatable("screen.storagenexus.furnace.energy", number(menu.energy()), number(NexusFurnaceBlockEntity.CAPACITY)),
+        g.text(font, Component.translatable("screen.nexium.furnace.energy", number(menu.energy()), number(NexusFurnaceBlockEntity.CAPACITY)),
                 BAR_X, BAR_Y + BAR_H + 15, MUTED, false);
     }
 
@@ -111,8 +111,8 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.furnace.energy", number(menu.energy()), number(NexusFurnaceBlockEntity.CAPACITY)),
-                    Component.translatable("screen.storagenexus.furnace.tip", NexusFurnaceBlockEntity.ENERGY_PER_SLOT,
+                    Component.translatable("screen.nexium.furnace.energy", number(menu.energy()), number(NexusFurnaceBlockEntity.CAPACITY)),
+                    Component.translatable("screen.nexium.furnace.tip", NexusFurnaceBlockEntity.ENERGY_PER_SLOT,
                             NexusFurnaceBlockEntity.COOK_TICKS / 20.0).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
     }

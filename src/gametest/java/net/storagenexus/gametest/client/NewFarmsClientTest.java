@@ -63,7 +63,7 @@ public class NewFarmsClientTest implements FabricClientGameTest {
                 assembler.accept(new ItemStack(Items.SOUL_SAND, 16));
                 assembler.accept(new ItemStack(Items.LAVA_BUCKET, 2));
                 for (int i = 0; i < 6; i++) assembler.accept(new ItemStack(Items.NETHERRACK, 64));
-                Menus.open(player, net.minecraft.network.chat.Component.translatable("block.nexusessentials.farm_assembler"), pos,
+                Menus.open(player, net.minecraft.network.chat.Component.translatable("block.nexium.farm_assembler"), pos,
                         (id, inventory, p) -> new FarmAssemblerMenu(id, inventory, assembler));
             });
             ctx.waitTicks(10);

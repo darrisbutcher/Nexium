@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:triple_compressed_netherrack"
+  ],
+  "result": {
+    "id": "nexium:double_compressed_netherrack",
+    "count": 9
+  }
+}

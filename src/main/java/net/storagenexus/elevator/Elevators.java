@@ -47,7 +47,7 @@ public final class Elevators {
             cursor.setY(y);
             if (!isElevator(level, cursor)) continue;
             String name = level.getBlockEntity(cursor) instanceof ElevatorBlockEntity be ? be.floorName() : "";
-            if (name.isEmpty()) name = Component.translatable("screen.storagenexus.elevator.floor", floors.size() + 1).getString();
+            if (name.isEmpty()) name = Component.translatable("screen.nexium.elevator.floor", floors.size() + 1).getString();
             floors.add(new Floor(y, name, !hasRoom(level, cursor)));
         }
         return floors;
@@ -73,7 +73,7 @@ public final class Elevators {
         BlockPos target = new BlockPos(pos.getX(), y, pos.getZ());
         if (!isElevator(level, target)) return false;
         if (!hasRoom(level, target)) {
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.elevator.blocked").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.elevator.blocked").withStyle(ChatFormatting.RED));
             return false;
         }
         level.playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 0.8F, 1.2F);

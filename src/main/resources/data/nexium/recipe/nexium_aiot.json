@@ -1,0 +1,14 @@
+{
+  "type": "nexium:aiot_merge",
+  "category": "equipment",
+  "ingredients": [
+    "nexium:nexium_pickaxe",
+    "nexium:nexium_axe",
+    "nexium:nexium_shovel",
+    "nexium:nexium_hoe",
+    "nexium:nexium_sword"
+  ],
+  "result": {
+    "id": "nexium:nexium_aiot"
+  }
+}

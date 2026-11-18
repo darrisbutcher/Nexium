@@ -19,12 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MouseHandler.class)
 abstract class MouseHandlerMixin {
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
-    private void storagenexus$tunnelScroll(long window, double xOffset, double yOffset, CallbackInfo ci) {
+    private void nexium$tunnelScroll(long window, double xOffset, double yOffset, CallbackInfo ci) {
         if (FreeCamera.scroll(yOffset) || ToolMenuClient.tunnelScroll(yOffset)) ci.cancel();
     }
 
     @WrapOperation(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"))
-    private void storagenexus$freeCameraLook(LocalPlayer player, double yaw, double pitch, Operation<Void> original) {
+    private void nexium$freeCameraLook(LocalPlayer player, double yaw, double pitch, Operation<Void> original) {
         Entity camera = FreeCamera.camera();
         if (camera != null) camera.turn(yaw, pitch);
         else original.call(player, yaw, pitch);

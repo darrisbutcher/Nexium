@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.At;
 abstract class NexusLinkBlockMixin {
     @WrapWithCondition(method = "playerDestroy",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;dropResources(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;)V"))
-    private boolean storagenexus$nexusLink(BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity,
+    private boolean nexium$nexusLink(BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity,
                                            @Nullable Entity breaker, ItemStack tool) {
         // false: the Nexus Link took the drops, so vanilla's drop call is skipped
         return !(level instanceof ServerLevel serverLevel && breaker instanceof ServerPlayer player

@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 @Mixin(ItemStack.class)
 abstract class ItemStackBreakMixin {
     @Inject(method = "applyDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
-    private void storagenexus$dropModules(int damage, ServerPlayer player, Consumer<ItemStack> onBreak, CallbackInfo ci) {
+    private void nexium$dropModules(int damage, ServerPlayer player, Consumer<ItemStack> onBreak, CallbackInfo ci) {
         ItemStack self = (ItemStack) (Object) this;
         if (player == null || !self.has(ModComponents.MODULES)) return; // an AIOT, or a Construction Builder
         for (ItemStack module : AiotModules.stored(self)) {

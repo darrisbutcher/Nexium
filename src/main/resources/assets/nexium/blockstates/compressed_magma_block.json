@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nexium:block/compressed_magma_block"
+    }
+  }
+}

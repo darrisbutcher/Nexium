@@ -40,7 +40,7 @@ public class StorageTabletItem extends Item {
         if (!level.isClientSide()) {
             GlobalPos link = GlobalPos.of(level.dimension(), context.getClickedPos().immutable());
             context.getItemInHand().set(ModComponents.TERMINAL_LINK, link);
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_linked", describe(link)));
+            player.sendOverlayMessage(Component.translatable("message.nexium.tablet_linked", describe(link)));
         }
         return InteractionResult.SUCCESS;
     }
@@ -51,7 +51,7 @@ public class StorageTabletItem extends Item {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         GlobalPos link = stack.get(ModComponents.TERMINAL_LINK);
         if (link == null) {
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_unlinked").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.tablet_unlinked").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
         MinecraftServer server = level.getServer();
@@ -66,7 +66,7 @@ public class StorageTabletItem extends Item {
             return InteractionResult.FAIL;
         }
         if (!(target.getBlockState(pos).getBlock() instanceof TerminalBlock)) {
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.tablet_terminal_missing").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.tablet_terminal_missing").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
         TerminalBlock.open((ServerPlayer) player, target, pos, true,
@@ -84,7 +84,7 @@ public class StorageTabletItem extends Item {
     }
 
     private static void offline(Player player) {
-        player.sendOverlayMessage(Component.translatable("message.storagenexus.network_offline").withStyle(ChatFormatting.RED));
+        player.sendOverlayMessage(Component.translatable("message.nexium.network_offline").withStyle(ChatFormatting.RED));
     }
 
     private static Component describe(GlobalPos link) {
@@ -97,9 +97,9 @@ public class StorageTabletItem extends Item {
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         GlobalPos link = stack.get(ModComponents.TERMINAL_LINK);
         if (link == null) {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.tablet_unlinked").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltip.nexium.tablet_unlinked").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.tablet_linked", describe(link)).withStyle(ChatFormatting.AQUA));
+            tooltip.accept(Component.translatable("tooltip.nexium.tablet_linked", describe(link)).withStyle(ChatFormatting.AQUA));
         }
     }
 }

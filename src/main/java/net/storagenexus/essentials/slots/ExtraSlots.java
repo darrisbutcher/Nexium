@@ -47,7 +47,7 @@ public final class ExtraSlots extends SimpleContainer {
     }
 
     public static ExtraSlots of(Player player) {
-        return ((ExtraSlotsHolder) player).nexusessentials$extraSlots();
+        return ((ExtraSlotsHolder) player).nexium$extraSlots();
     }
 
     public ItemStack trinket() {

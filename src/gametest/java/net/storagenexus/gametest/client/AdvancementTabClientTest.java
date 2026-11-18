@@ -17,11 +17,11 @@ public class AdvancementTabClientTest implements FabricClientGameTest {
         ctx.getInput().resizeWindow(1280, 720);
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             ctx.waitTicks(40);
-            Identifier rootId = Identifier.fromNamespaceAndPath("storagenexus", "guide/root");
+            Identifier rootId = Identifier.fromNamespaceAndPath("nexium", "guide/root");
             long done = ctx.computeOnClient(mc -> {
                 var advancements = mc.player.connection.getAdvancements();
                 return advancements.progress().entrySet().stream()
-                        .filter(e -> e.getKey().id().getNamespace().equals("storagenexus")
+                        .filter(e -> e.getKey().id().getNamespace().equals("nexium")
                                 && e.getKey().id().getPath().startsWith("guide/") && e.getValue().isDone())
                         .count();
             });

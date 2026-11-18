@@ -38,7 +38,7 @@ public class CompressedBlockItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, display, tooltip, flag);
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.compressed", String.format("%,d", standsFor()), base.block().getName())
+        tooltip.accept(Component.translatable("tooltip.nexium.compressed", String.format("%,d", standsFor()), base.block().getName())
                 .withStyle(ChatFormatting.GRAY));
     }
 }

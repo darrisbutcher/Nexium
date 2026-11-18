@@ -58,7 +58,7 @@ public class StorageNexusReiPlugin implements REIClientPlugin {
         if (!missing.isEmpty()) {
             List<EntryIngredient> missingEntries = new ArrayList<>();
             for (int i : missing) missingEntries.add(context.getDisplay().getInputEntries().get(i));
-            return TransferHandler.Result.createFailed(Component.translatable("screen.storagenexus.missing_ingredients")).tooltipMissing(missingEntries);
+            return TransferHandler.Result.createFailed(Component.translatable("screen.nexium.missing_ingredients")).tooltipMissing(missingEntries);
         }
         if (context.isActuallyCrafting()) {
             RecipeTransfer.fill(ResourceKey.create(Registries.RECIPE, id.get()), context.isStackedCrafting());

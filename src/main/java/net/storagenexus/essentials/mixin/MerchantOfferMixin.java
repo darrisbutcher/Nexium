@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MerchantOffer.class)
 abstract class MerchantOfferMixin {
     @Inject(method = "isOutOfStock", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$neverOutOfStock(CallbackInfoReturnable<Boolean> cir) {
+    private void nexium$neverOutOfStock(CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(false);
     }
 }

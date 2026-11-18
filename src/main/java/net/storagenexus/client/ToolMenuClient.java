@@ -25,11 +25,11 @@ import net.storagenexus.registry.ModMenus;
  * armor, it opens the armor menu.
  */
 public final class ToolMenuClient {
-    public static final KeyMapping TOOL_MENU = new KeyMapping("key.storagenexus.tool_menu",
+    public static final KeyMapping TOOL_MENU = new KeyMapping("key.nexium.tool_menu",
             InputConstants.KEY_G, NexusEssentialsClient.CATEGORY);
 
     /** Hold while mining with an AIOT to vein mine (no module needed). */
-    public static final KeyMapping VEIN_MINE = new KeyMapping("key.storagenexus.vein_mine",
+    public static final KeyMapping VEIN_MINE = new KeyMapping("key.nexium.vein_mine",
             InputConstants.KEY_V, NexusEssentialsClient.CATEGORY);
     private static boolean veinSent;
 
@@ -37,11 +37,11 @@ public final class ToolMenuClient {
      * Hold with an AIOT in hand and scroll the wheel to move its tunnel length up or down (off, 2, 3, 8, 16, 24, 32); a
      * plain press only shows the readout. While it is held with an AIOT in hand the wheel does not change the hotbar slot.
      */
-    public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.storagenexus.step_tunnel",
+    public static final KeyMapping STEP_TUNNEL = new KeyMapping("key.nexium.step_tunnel",
             InputConstants.KEY_Z, NexusEssentialsClient.CATEGORY);
 
     /** Press with an AIOT in hand to switch its 3x3 Mining Module on or off. */
-    public static final KeyMapping TOGGLE_AREA = new KeyMapping("key.storagenexus.toggle_area",
+    public static final KeyMapping TOGGLE_AREA = new KeyMapping("key.nexium.toggle_area",
             InputConstants.KEY_X, NexusEssentialsClient.CATEGORY);
 
     public static void init() {
@@ -75,7 +75,7 @@ public final class ToolMenuClient {
                 } else if (NexiumArmor.piecesWorn(client.player) > 0) {
                     client.gui.setScreen(new ArmorMenuScreen());
                 } else {
-                    client.player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.hold_tool")
+                    client.player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.hold_tool")
                             .withStyle(ChatFormatting.GRAY));
                 }
             }

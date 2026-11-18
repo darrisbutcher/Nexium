@@ -74,7 +74,7 @@ public final class ModItems {
     public static final FilterItem BASIC_FILTER = register("basic_filter", p -> new FilterItem(p, false), new Item.Properties().stacksTo(1));
     public static final FilterItem ADVANCED_FILTER = register("advanced_filter", p -> new FilterItem(p, true), new Item.Properties().stacksTo(1));
 
-    /** All-in-one tools, one per material: {@code storagenexus:<tier>_aiot}. */
+    /** All-in-one tools, one per material: {@code nexium:<tier>_aiot}. */
     public static final Map<AiotTier, AiotItem> AIOTS = new EnumMap<>(AiotTier.class);
 
     static {
@@ -83,7 +83,7 @@ public final class ModItems {
         }
     }
 
-    /** AIOT modules, one per type: {@code storagenexus:<type>_module}. */
+    /** AIOT modules, one per type: {@code nexium:<type>_module}. */
     public static final Map<ModuleType, ModuleItem> MODULES = new EnumMap<>(ModuleType.class);
 
     static {
@@ -118,7 +118,7 @@ public final class ModItems {
         }
     }
 
-    /** Construction Builders, one per tier: {@code storagenexus:<tier>_builder}. */
+    /** Construction Builders, one per tier: {@code nexium:<tier>_builder}. */
     public static final Map<net.storagenexus.builder.BuilderTier, net.storagenexus.builder.BuilderItem> BUILDERS =
             new EnumMap<>(net.storagenexus.builder.BuilderTier.class);
 

@@ -29,13 +29,13 @@ public class DimensionalScreen extends BaseScreen<DimensionalMenu> {
     @Override
     protected void init() {
         super.init();
-        nameBox = new EditBox(font, leftPos + 8, topPos + 18, 112, 12, Component.translatable("screen.storagenexus.link_name"));
+        nameBox = new EditBox(font, leftPos + 8, topPos + 18, 112, 12, Component.translatable("screen.nexium.link_name"));
         nameBox.setMaxLength(32);
         nameBox.setValue(menu.name());
-        nameBox.setHint(Component.translatable("screen.storagenexus.not_linked"));
+        nameBox.setHint(Component.translatable("screen.nexium.not_linked"));
         nameBox.setEditable(!menu.name().isEmpty());
         addRenderableWidget(nameBox);
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.rename"), b -> {
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.rename"), b -> {
             String name = nameBox.getValue().trim();
             if (!name.isEmpty() && !name.equals(menu.name())) {
                 ClientPlayNetworking.send(new RenameLinkPayload(menu.pos(), name));
@@ -61,7 +61,7 @@ public class DimensionalScreen extends BaseScreen<DimensionalMenu> {
     private Component sideInfo(Direction d) {
         return Component.empty().append(NeighbourNames.sideName(d)).append(": ")
                 .append(NeighbourNames.describe(menu.pos(), d))
-                .append(Component.translatable(sideOn(d) ? "screen.storagenexus.side_on" : "screen.storagenexus.side_off"));
+                .append(Component.translatable(sideOn(d) ? "screen.nexium.side_on" : "screen.nexium.side_off"));
     }
 
     private void updateSideButtons() {
@@ -83,16 +83,16 @@ public class DimensionalScreen extends BaseScreen<DimensionalMenu> {
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         if (menu.isInput()) {
-            g.text(font, Component.translatable("screen.storagenexus.buffer"), leftPos + 8, topPos + 40, palette().text(), false);
-            g.text(font, Component.translatable("screen.storagenexus.outputs"), leftPos + 8, topPos + 58, palette().text(), false);
+            g.text(font, Component.translatable("screen.nexium.buffer"), leftPos + 8, topPos + 40, palette().text(), false);
+            g.text(font, Component.translatable("screen.nexium.outputs"), leftPos + 8, topPos + 58, palette().text(), false);
             g.text(font, menu.statusA() + "/" + menu.statusB(), leftPos + 8, topPos + 68, palette().text(), false);
-            g.text(font, Component.translatable("screen.storagenexus.speed"), leftPos + 136, topPos + 62, palette().text(), false);
+            g.text(font, Component.translatable("screen.nexium.speed"), leftPos + 136, topPos + 62, palette().text(), false);
         } else {
-            Component status = menu.statusB() == 0 ? Component.translatable("screen.storagenexus.not_linked")
-                    : Component.translatable(menu.statusA() == 1 ? "screen.storagenexus.input_online" : "screen.storagenexus.input_offline");
-            g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 58, palette().text(), false);
+            Component status = menu.statusB() == 0 ? Component.translatable("screen.nexium.not_linked")
+                    : Component.translatable(menu.statusA() == 1 ? "screen.nexium.input_online" : "screen.nexium.input_offline");
+            g.text(font, Component.translatable("screen.nexium.filter"), leftPos + 118, topPos + 58, palette().text(), false);
             // The hovered side's neighbour, else a reminder of what the buttons do
-            Component info = Component.translatable("screen.storagenexus.sides_hint");
+            Component info = Component.translatable("screen.nexium.sides_hint");
             for (Direction d : Direction.values()) {
                 Button b = sideButtons[d.get3DDataValue()];
                 if (b != null && b.isHovered()) info = sideInfo(d);

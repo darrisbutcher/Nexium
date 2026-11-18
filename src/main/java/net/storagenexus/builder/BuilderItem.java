@@ -57,7 +57,7 @@ public class BuilderItem extends Item {
             ItemStack module = BuilderSettings.module(builder);
             if (!(module.getItem() instanceof ModuleItem item) || item.type() != net.storagenexus.aiot.module.ModuleType.NEXUS_LINK) {
                 if (!context.getLevel().isClientSide() && context.getPlayer() != null) {
-                    context.getPlayer().sendOverlayMessage(Component.translatable("message.storagenexus.builder.needs_link").withStyle(ChatFormatting.RED));
+                    context.getPlayer().sendOverlayMessage(Component.translatable("message.nexium.builder.needs_link").withStyle(ChatFormatting.RED));
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -65,7 +65,7 @@ public class BuilderItem extends Item {
                 ItemStack relinked = module.copy();
                 relinked.set(net.storagenexus.registry.ModComponents.TERMINAL_LINK, link);
                 BuilderSettings.setModule(builder, relinked);
-            }, "message.storagenexus.nexus_link.linked");
+            }, "message.nexium.nexus_link.linked");
             return InteractionResult.SUCCESS;
         }
         if (context.getLevel() instanceof ServerLevel level && context.getPlayer() instanceof ServerPlayer player) {
@@ -77,18 +77,18 @@ public class BuilderItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.storagenexus.builder.blocks", BuilderSettings.size(stack), tier.maxBlocks())
+        tooltip.accept(Component.translatable("tooltip.nexium.builder.blocks", BuilderSettings.size(stack), tier.maxBlocks())
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.storagenexus.builder.mode",
-                Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.mode(stack).name().toLowerCase()),
-                Component.translatable("screen.storagenexus.builder.plane." + BuilderSettings.plane(stack).name().toLowerCase()))
+        tooltip.accept(Component.translatable("tooltip.nexium.builder.mode",
+                Component.translatable("screen.nexium.builder.mode." + BuilderSettings.mode(stack).name().toLowerCase()),
+                Component.translatable("screen.nexium.builder.plane." + BuilderSettings.plane(stack).name().toLowerCase()))
                 .withStyle(ChatFormatting.GRAY));
         ItemStack module = BuilderSettings.module(stack);
         if (!module.isEmpty()) {
             GlobalPos link = BuilderSettings.activeLink(stack);
             tooltip.accept(link != null
-                    ? Component.translatable("tooltip.storagenexus.builder.link", ModuleItem.describe(link)).withStyle(ChatFormatting.AQUA)
-                    : Component.translatable("tooltip.storagenexus.builder.link_off").withStyle(ChatFormatting.DARK_GRAY));
+                    ? Component.translatable("tooltip.nexium.builder.link", ModuleItem.describe(link)).withStyle(ChatFormatting.AQUA)
+                    : Component.translatable("tooltip.nexium.builder.link_off").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

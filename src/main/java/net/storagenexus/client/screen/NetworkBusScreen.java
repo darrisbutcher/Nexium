@@ -48,7 +48,7 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
     private Component modeLabel() {
         BlockState s = state();
         boolean export = s != null && s.getBlock() instanceof NetworkBusBlock && s.getValue(NetworkBusBlock.EXPORT);
-        return Component.translatable(export ? "screen.storagenexus.bus_export" : "screen.storagenexus.bus_import");
+        return Component.translatable(export ? "screen.nexium.bus_export" : "screen.nexium.bus_import");
     }
 
     /** The side the bus faces now, or null before the block is known. */
@@ -67,7 +67,7 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
             Component initial = Component.literal(name.getString().substring(0, 1));
             faceButtons[i].setMessage(side == facing ? initial.copy().withStyle(ChatFormatting.BOLD, ChatFormatting.YELLOW) : initial);
             faceButtons[i].active = workable;
-            Component what = workable || side == facing ? NeighbourNames.describe(menu.pos(), side) : Component.translatable("screen.storagenexus.bus_nothing_to_work_with");
+            Component what = workable || side == facing ? NeighbourNames.describe(menu.pos(), side) : Component.translatable("screen.nexium.bus_nothing_to_work_with");
             faceButtons[i].setTooltip(Tooltip.create(Component.empty().append(name).append(": ").append(what)));
         }
     }
@@ -96,7 +96,7 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
         if (s != null && s.getBlock() instanceof NetworkBusBlock) {
             Direction facing = s.getValue(NetworkBusBlock.FACING);
             Component name = NeighbourNames.describe(menu.pos(), facing);
-            g.text(font, Component.translatable("screen.storagenexus.bus_target", name), leftPos + 8, topPos + 38, palette().text(), false);
+            g.text(font, Component.translatable("screen.nexium.bus_target", name), leftPos + 8, topPos + 38, palette().text(), false);
             // A frame round the button of the side it faces now
             int x = leftPos + FACE_X + facing.get3DDataValue() * (FACE_W + FACE_GAP) - 1, y = topPos + FACE_Y - 1;
             int w = FACE_W + 2, h = FACE_H + 2;
@@ -105,6 +105,6 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
             g.fill(x, y, x + 1, y + h, SELECTED);
             g.fill(x + w - 1, y, x + w, y + h, SELECTED);
         }
-        g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 118, topPos + 24, palette().text(), false);
+        g.text(font, Component.translatable("screen.nexium.filter"), leftPos + 118, topPos + 24, palette().text(), false);
     }
 }

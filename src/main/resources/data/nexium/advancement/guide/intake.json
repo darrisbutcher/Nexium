@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:fluid_intake"
+    },
+    "title": {
+      "translate": "advancement.nexium.intake.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.intake.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/conduit"
+}

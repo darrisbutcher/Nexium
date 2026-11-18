@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 public final class Librarian {
     /** Marks the Captured Mob item the Assembler makes, so it can't be fed back in as one of the villagers a recipe wants. */
-    private static final String MARKER = "storagenexus_librarian";
+    private static final String MARKER = "nexium_librarian";
     private static final int MAX_USES = 12;
     private static final int XP = 15;
 

@@ -47,7 +47,7 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
 
     /** The mode button's label, for the client test too. */
     public static Component modeLabel(FreezerMode mode) {
-        return Component.translatable("screen.storagenexus.freezer.mode." + mode.key());
+        return Component.translatable("screen.nexium.freezer.mode." + mode.key());
     }
 
     @Override
@@ -64,17 +64,17 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         Component status;
         int colour = BLOCKED;
         if (menu.paused()) {
-            status = Component.translatable("screen.storagenexus.freezer.paused");
+            status = Component.translatable("screen.nexium.freezer.paused");
         } else if (menu.full()) {
-            status = Component.translatable("screen.storagenexus.freezer.full");
+            status = Component.translatable("screen.nexium.freezer.full");
         } else if (menu.unpowered()) {
-            status = Component.translatable("screen.nexusessentials.no_power", net.storagenexus.freezer.FreezerBlockEntity.ENERGY_PER_TICK);
+            status = Component.translatable("screen.nexium.no_power", net.storagenexus.freezer.FreezerBlockEntity.ENERGY_PER_TICK);
         } else if (menu.dry()) {
-            status = Component.translatable("screen.storagenexus.freezer.dry");
+            status = Component.translatable("screen.nexium.freezer.dry");
         } else {
             // Overclocked, the same work takes that many times fewer ticks
             int left = Math.round((1.0F - menu.progress()) * menu.mode().ticks() / net.storagenexus.essentials.farm.Overclock.multiplier(menu.overclock()));
-            status = Component.translatable("screen.storagenexus.freezer.next", IronFarmItem.time(left));
+            status = Component.translatable("screen.nexium.freezer.next", IronFarmItem.time(left));
             colour = MUTED;
         }
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 4, colour, false);
@@ -114,14 +114,14 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(TANK_X, TANK_Y, TANK_W, TANK_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.freezer.water", menu.waterMilli()),
-                    Component.translatable("screen.storagenexus.freezer.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.freezer.water", menu.waterMilli()),
+                    Component.translatable("screen.nexium.freezer.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BTN_X, BTN_Y, BTN_W, BTN_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.freezer.mode.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.freezer.mode.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X - 1, BAR_Y - 1, BAR_W + 2, BAR_H + 2, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.freezer.progress", Math.round(menu.progress() * 100))), mouseX, mouseY);
+                    Component.translatable("screen.nexium.freezer.progress", Math.round(menu.progress() * 100))), mouseX, mouseY);
         }
     }
 

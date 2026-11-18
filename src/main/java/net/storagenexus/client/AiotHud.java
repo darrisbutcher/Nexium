@@ -51,13 +51,13 @@ public final class AiotHud {
         List<Line> out = new ArrayList<>();
         if (tool.getItem() instanceof BuilderItem builder) {
             // The Construction Builder: mode and plane, batch size, and its Nexus Link
-            out.add(new Line(Component.translatable("hud.storagenexus.builder.mode",
-                    Component.translatable("screen.storagenexus.builder.mode." + BuilderSettings.mode(tool).name().toLowerCase()),
-                    Component.translatable("screen.storagenexus.builder.plane." + BuilderSettings.plane(tool).name().toLowerCase())), MODE));
-            out.add(new Line(Component.translatable("hud.storagenexus.builder.size", BuilderSettings.size(tool), builder.tier().maxBlocks()), ON));
+            out.add(new Line(Component.translatable("hud.nexium.builder.mode",
+                    Component.translatable("screen.nexium.builder.mode." + BuilderSettings.mode(tool).name().toLowerCase()),
+                    Component.translatable("screen.nexium.builder.plane." + BuilderSettings.plane(tool).name().toLowerCase())), MODE));
+            out.add(new Line(Component.translatable("hud.nexium.builder.size", BuilderSettings.size(tool), builder.tier().maxBlocks()), ON));
             if (!BuilderSettings.module(tool).isEmpty()) {
                 boolean on = BuilderSettings.activeLink(tool) != null;
-                out.add(new Line(Component.translatable(on ? "hud.storagenexus.aiot.link_on" : "hud.storagenexus.aiot.link_off"), on ? ON : OFF));
+                out.add(new Line(Component.translatable(on ? "hud.nexium.aiot.link_on" : "hud.nexium.aiot.link_off"), on ? ON : OFF));
             }
             return out;
         }
@@ -69,20 +69,20 @@ public final class AiotHud {
         }
         if (!AiotModules.find(tool, ModuleType.AREA_MINING).isEmpty()) {
             if (!AiotModules.active(tool, ModuleType.AREA_MINING)) {
-                out.add(new Line(Component.translatable("hud.storagenexus.aiot.area_off"), OFF));
+                out.add(new Line(Component.translatable("hud.nexium.aiot.area_off"), OFF));
             } else {
                 int length = AiotModules.tunnelLength(tool);
-                out.add(new Line(length > 1 ? Component.translatable("hud.storagenexus.aiot.tunnel", length)
-                        : Component.translatable("hud.storagenexus.aiot.area_on"), ON));
+                out.add(new Line(length > 1 ? Component.translatable("hud.nexium.aiot.tunnel", length)
+                        : Component.translatable("hud.nexium.aiot.area_on"), ON));
             }
         }
         if (NexusConfig.get().aiotVeinMining) {
-            out.add(new Line(Component.translatable("hud.storagenexus.aiot.vein", AiotModules.veinSize(tool),
+            out.add(new Line(Component.translatable("hud.nexium.aiot.vein", AiotModules.veinSize(tool),
                     ToolMenuClient.VEIN_MINE.getTranslatedKeyMessage()), ON));
         }
         if (!AiotModules.find(tool, ModuleType.NEXUS_LINK).isEmpty()) {
             out.add(new Line(Component.translatable(AiotModules.activeLink(tool) != null
-                    ? "hud.storagenexus.aiot.link_on" : "hud.storagenexus.aiot.link_off"),
+                    ? "hud.nexium.aiot.link_on" : "hud.nexium.aiot.link_off"),
                     AiotModules.activeLink(tool) != null ? ON : OFF));
         }
         return out;

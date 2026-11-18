@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nexium:block/combustion_generator"
+    },
+    "lit=true": {
+      "model": "nexium:block/combustion_generator"
+    }
+  }
+}

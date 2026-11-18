@@ -35,13 +35,13 @@ public class CombustionGeneratorScreen extends AbstractContainerScreen<Combustio
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
-        g.text(font, Component.translatable("screen.storagenexus.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
+        g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
                 BAR_X, BAR_Y + BAR_H + 4, TEXT, false);
         Component status = menu.burn() > 0
-                ? Component.translatable("screen.storagenexus.generator.making", CombustionGeneratorBlockEntity.OUTPUT)
+                ? Component.translatable("screen.nexium.generator.making", CombustionGeneratorBlockEntity.OUTPUT)
                 : menu.energy() >= CombustionGeneratorBlockEntity.CAPACITY
-                ? Component.translatable("screen.storagenexus.generator.full")
-                : Component.translatable("screen.storagenexus.generator.no_fuel");
+                ? Component.translatable("screen.nexium.generator.full")
+                : Component.translatable("screen.nexium.generator.no_fuel");
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 16, MUTED, false);
     }
 
@@ -82,8 +82,8 @@ public class CombustionGeneratorScreen extends AbstractContainerScreen<Combustio
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
-                    Component.translatable("screen.storagenexus.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
+                    Component.translatable("screen.nexium.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
     }
 

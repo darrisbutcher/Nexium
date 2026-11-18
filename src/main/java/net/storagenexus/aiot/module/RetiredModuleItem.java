@@ -54,7 +54,7 @@ public class RetiredModuleItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.storagenexus.retired_module").withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.storagenexus.retired_module.use").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.retired_module").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.retired_module.use").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

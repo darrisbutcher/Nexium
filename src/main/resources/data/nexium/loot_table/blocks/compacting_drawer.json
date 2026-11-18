@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nexium:compacting_drawer",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "nexium:compacting_contents",
+              "nexium:upgrades",
+              "nexium:drawer_locked"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "random_sequence": "nexium:blocks/compacting_drawer"
+}

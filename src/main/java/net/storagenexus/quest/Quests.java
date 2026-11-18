@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * The quest system on the server: which quests a player has finished (saved on the player, kept through death), checking
- * the goals once a second, and the rewards: a few random Nexium items for each quest. A chapter is open once every quest of
+ * the goals once a second, and the rewards: a few random items from the mod for each quest. A chapter is open once every quest of
  * the one before it is done. Quests count what the player has already done (the game's own statistics, or what they hold), so
  * nothing has to be repeated. Recipes are never locked by any of this.
  */
@@ -33,12 +33,25 @@ public final class Quests {
     private static final AttachmentType<List<String>> DONE = AttachmentRegistry.create(StorageNexus.id("quests_done"),
             b -> b.persistent(Codec.STRING.listOf()).copyOnDeath());
 
-    /** Random Nexium rewards and how likely each is. */
-    private record Prize(Item item, int weight, int min, int max) {}
+    /** Items that make no sense as a gift. */
+    private static final java.util.Set<String> NOT_REWARDS = java.util.Set.of("guide", "captured_mob", "spent_fuel_rod");
 
-    private static List<Prize> prizes() {
-        return List.of(new Prize(ModItems.NEXIUM_INGOT, 8, 1, 3), new Prize(ModItems.STORAGE_PARTS.get(net.storagenexus.disk.DiskTier.NEXIUM), 2, 1, 1),
-                new Prize(ModItems.FLUID_PARTS.get(net.storagenexus.disk.DiskTier.NEXIUM), 2, 1, 1), new Prize(ModItems.NEXIUM_BLOCK, 1, 1, 1));
+    private static List<Item> pool;
+
+    /** Every item the mod shows in its creative tabs (so not the retired ones), less the few that are not gifts. */
+    public static synchronized List<Item> rewardPool() {
+        if (pool == null) {
+            List<Item> out = new ArrayList<>();
+            for (Item item : ModItems.TAB_ORDER) add(out, item);
+            for (Item item : net.storagenexus.essentials.registry.ModItems.TAB_ORDER) add(out, item);
+            pool = List.copyOf(out);
+        }
+        return pool;
+    }
+
+    private static void add(List<Item> out, Item item) {
+        var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
+        if (!NOT_REWARDS.contains(id.getPath()) && !out.contains(item)) out.add(item);
     }
 
     public static void init() {
@@ -97,7 +110,7 @@ public final class Quests {
                 }
                 boolean complete = chapter.quests().stream().allMatch(q -> done.contains(q.key()));
                 if (complete && !wasComplete) {
-                    player.sendSystemMessage(Component.translatable("quest.storagenexus.chapter_completed", Component.translatable(chapter.nameKey())));
+                    player.sendSystemMessage(Component.translatable("quest.nexium.chapter_completed", Component.translatable(chapter.nameKey())));
                 }
             }
         }
@@ -105,7 +118,7 @@ public final class Quests {
         return finished;
     }
 
-    /** Gives the random Nexium items for a finished quest and says so in chat. */
+    /** Gives the random items for a finished quest and says so in chat. */
     private static void reward(ServerPlayer player, Chapter chapter, Quest quest) {
         RandomSource random = player.getRandom();
         List<ItemStack> given = new ArrayList<>();
@@ -128,20 +141,14 @@ public final class Quests {
             ItemStack toGive = stack.copy();
             if (!player.getInventory().add(toGive)) player.spawnAtLocation(player.level(), toGive);
         }
-        player.sendSystemMessage(Component.translatable("quest.storagenexus.completed", Component.translatable(quest.nameKey())));
-        player.sendSystemMessage(Component.translatable("quest.storagenexus.reward", list));
+        player.sendSystemMessage(Component.translatable("quest.nexium.completed", Component.translatable(quest.nameKey())));
+        player.sendSystemMessage(Component.translatable("quest.nexium.reward", list));
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6F, 1.2F);
     }
 
     private static ItemStack roll(RandomSource random) {
-        List<Prize> prizes = prizes();
-        int total = prizes.stream().mapToInt(Prize::weight).sum();
-        int pick = random.nextInt(total);
-        for (Prize p : prizes) {
-            pick -= p.weight();
-            if (pick < 0) return new ItemStack(p.item(), p.min() + random.nextInt(p.max() - p.min() + 1));
-        }
-        return new ItemStack(ModItems.NEXIUM_INGOT);
+        List<Item> items = rewardPool();
+        return new ItemStack(items.get(random.nextInt(items.size())));
     }
 
     /** Sends the player the state of the whole book. {@code open} makes the client open the screen. */

@@ -138,8 +138,8 @@ public final class NexusLink {
     }
 
     private static void report(ServerPlayer player, @Nullable StorageNetwork network, boolean leftOver) {
-        if (network == null) message(player, "message.storagenexus.nexus_link.offline");
-        else if (leftOver) message(player, "message.storagenexus.nexus_link.full");
+        if (network == null) message(player, "message.nexium.nexus_link.offline");
+        else if (leftOver) message(player, "message.nexium.nexus_link.full");
     }
 
     /** Puts the amount into the network; returns how much did not fit. */

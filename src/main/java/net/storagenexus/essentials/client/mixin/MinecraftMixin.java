@@ -12,22 +12,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 abstract class MinecraftMixin {
     @Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noAttackWhileFreeCamera(CallbackInfoReturnable<Boolean> cir) {
+    private void nexium$noAttackWhileFreeCamera(CallbackInfoReturnable<Boolean> cir) {
         if (FreeCamera.active()) cir.setReturnValue(false);
     }
 
     @Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noBreakingWhileFreeCamera(boolean down, CallbackInfo ci) {
+    private void nexium$noBreakingWhileFreeCamera(boolean down, CallbackInfo ci) {
         if (FreeCamera.active()) ci.cancel();
     }
 
     @Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noUseWhileFreeCamera(CallbackInfo ci) {
+    private void nexium$noUseWhileFreeCamera(CallbackInfo ci) {
         if (FreeCamera.active()) ci.cancel();
     }
 
     @Inject(method = "pickBlockOrEntity", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$noPickWhileFreeCamera(CallbackInfo ci) {
+    private void nexium$noPickWhileFreeCamera(CallbackInfo ci) {
         if (FreeCamera.active()) ci.cancel();
     }
 }

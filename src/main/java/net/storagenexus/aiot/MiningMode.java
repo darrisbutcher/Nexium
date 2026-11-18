@@ -11,7 +11,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 /**
  * Which of Silk Touch and Fortune an AIOT that holds both is using. Stored on the AIOT (component
- * {@code storagenexus:mining_mode}) only while it holds both, and the item model picks the gem colour from it:
+ * {@code nexium:mining_mode}) only while it holds both, and the item model picks the gem colour from it:
  * blue for Silk Touch, green for Fortune.
  */
 public enum MiningMode implements StringRepresentable {

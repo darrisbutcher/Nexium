@@ -1,0 +1,280 @@
+{
+  "chapters": [
+    {
+      "id": "storage",
+      "icon": "nexium:storage_connector",
+      "tier": 1,
+      "quests": [
+        {
+          "id": "connector",
+          "goal": "get",
+          "item": "nexium:storage_connector",
+          "count": 1
+        },
+        {
+          "id": "drawer",
+          "goal": "get",
+          "item": "nexium:oak_drawer_1x1",
+          "count": 1
+        },
+        {
+          "id": "terminal",
+          "goal": "get",
+          "item": "nexium:crafting_terminal",
+          "count": 1
+        },
+        {
+          "id": "bus",
+          "goal": "get",
+          "item": "nexium:import_export_bus",
+          "count": 1
+        },
+        {
+          "id": "drive",
+          "goal": "get",
+          "item": "nexium:disk_drive",
+          "count": 1
+        },
+        {
+          "id": "disk",
+          "goal": "get",
+          "item": "nexium:16k_storage_disk",
+          "count": 1
+        },
+        {
+          "id": "controller",
+          "goal": "get",
+          "item": "nexium:drawer_controller",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "power",
+      "icon": "nexium:combustion_generator",
+      "tier": 1,
+      "quests": [
+        {
+          "id": "generator",
+          "goal": "get",
+          "item": "nexium:combustion_generator",
+          "count": 1
+        },
+        {
+          "id": "conduit",
+          "goal": "get",
+          "item": "nexium:energy_conduit",
+          "count": 4
+        },
+        {
+          "id": "wrench",
+          "goal": "get",
+          "item": "nexium:conduit_wrench",
+          "count": 1
+        },
+        {
+          "id": "solar",
+          "goal": "get",
+          "item": "nexium:solar_panel",
+          "count": 1
+        },
+        {
+          "id": "battery",
+          "goal": "get",
+          "item": "nexium:iron_battery",
+          "count": 1
+        },
+        {
+          "id": "meter",
+          "goal": "get",
+          "item": "nexium:power_meter",
+          "count": 1
+        },
+        {
+          "id": "furnace",
+          "goal": "get",
+          "item": "nexium:nexus_furnace",
+          "count": 1
+        },
+        {
+          "id": "reactor",
+          "goal": "get",
+          "item": "nexium:redstone_reactor",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "farms",
+      "icon": "nexium:farm_assembler",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "assembler",
+          "goal": "get",
+          "item": "nexium:farm_assembler",
+          "count": 1
+        },
+        {
+          "id": "sugar_cane",
+          "goal": "get",
+          "item": "nexium:sugar_cane_farm",
+          "count": 1
+        },
+        {
+          "id": "iron",
+          "goal": "get",
+          "item": "nexium:iron_farm",
+          "count": 1
+        },
+        {
+          "id": "crop",
+          "goal": "get",
+          "item": "nexium:crop_farm",
+          "count": 1
+        },
+        {
+          "id": "monster",
+          "goal": "get",
+          "item": "nexium:monster_farm",
+          "count": 1
+        },
+        {
+          "id": "xp",
+          "goal": "get",
+          "item": "nexium:xp_farm",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "icon": "nexium:diamond_aiot",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "magnet",
+          "goal": "get",
+          "item": "nexium:magnet",
+          "count": 1
+        },
+        {
+          "id": "stone_aiot",
+          "goal": "get",
+          "item": "nexium:stone_aiot",
+          "count": 1
+        },
+        {
+          "id": "diamond_aiot",
+          "goal": "get",
+          "item": "nexium:diamond_aiot",
+          "count": 1
+        },
+        {
+          "id": "area",
+          "goal": "get",
+          "item": "nexium:area_mining_module",
+          "count": 1
+        },
+        {
+          "id": "link",
+          "goal": "get",
+          "item": "nexium:nexus_link_module",
+          "count": 1
+        },
+        {
+          "id": "builder",
+          "goal": "get",
+          "item": "nexium:iron_builder",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "backpack",
+      "icon": "nexium:backpack",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "backpack",
+          "goal": "get",
+          "item": "nexium:backpack",
+          "count": 1
+        },
+        {
+          "id": "torch",
+          "goal": "get",
+          "item": "nexium:auto_torch_module",
+          "count": 1
+        },
+        {
+          "id": "feeding",
+          "goal": "get",
+          "item": "nexium:feeding_module",
+          "count": 1
+        },
+        {
+          "id": "compacting",
+          "goal": "get",
+          "item": "nexium:compacting_module",
+          "count": 1
+        },
+        {
+          "id": "restocking",
+          "goal": "get",
+          "item": "nexium:restocking_module",
+          "count": 1
+        },
+        {
+          "id": "compressed",
+          "goal": "get",
+          "item": "nexium:triple_compressed_stone",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "nexium",
+      "icon": "nexium:nexium_ingot",
+      "tier": 3,
+      "quests": [
+        {
+          "id": "ingots",
+          "goal": "get",
+          "item": "nexium:nexium_ingot",
+          "count": 9
+        },
+        {
+          "id": "block",
+          "goal": "get",
+          "item": "nexium:nexium_block",
+          "count": 1
+        },
+        {
+          "id": "aiot",
+          "goal": "get",
+          "item": "nexium:nexium_aiot",
+          "count": 1
+        },
+        {
+          "id": "builder",
+          "goal": "get",
+          "item": "nexium:nexium_builder",
+          "count": 1
+        },
+        {
+          "id": "disk",
+          "goal": "get",
+          "item": "nexium:nexium_storage_disk",
+          "count": 1
+        },
+        {
+          "id": "chestplate",
+          "goal": "get",
+          "item": "nexium:nexium_chestplate",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

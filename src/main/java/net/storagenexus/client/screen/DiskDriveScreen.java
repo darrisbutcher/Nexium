@@ -37,14 +37,14 @@ public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
                 .bounds(leftPos + 88, topPos + 28, 18, 14).build());
         plus = addRenderableWidget(Button.builder(Component.literal("+"), b -> click(shift() ? DiskDriveMenu.BTN_PLUS_10 : DiskDriveMenu.BTN_PLUS_1))
                 .bounds(leftPos + 150, topPos + 28, 18, 14).build());
-        move = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.disk_drive.move"), b -> click(DiskDriveMenu.BTN_MOVE))
+        move = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.disk_drive.move"), b -> click(DiskDriveMenu.BTN_MOVE))
                 .bounds(leftPos + 8, topPos + 104, 79, 16).build());
-        moveUp = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.disk_drive.up"), b -> click(DiskDriveMenu.BTN_MOVE_UP))
+        moveUp = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.disk_drive.up"), b -> click(DiskDriveMenu.BTN_MOVE_UP))
                 .bounds(leftPos + 89, topPos + 104, 79, 16).build());
-        hints.set(minus, Component.translatable("screen.storagenexus.disk_drive.priority.tooltip"));
-        hints.set(plus, Component.translatable("screen.storagenexus.disk_drive.priority.tooltip"));
-        hints.set(move, Component.translatable("screen.storagenexus.disk_drive.move.tooltip"));
-        hints.set(moveUp, Component.translatable("screen.storagenexus.disk_drive.up.tooltip"));
+        hints.set(minus, Component.translatable("screen.nexium.disk_drive.priority.tooltip"));
+        hints.set(plus, Component.translatable("screen.nexium.disk_drive.priority.tooltip"));
+        hints.set(move, Component.translatable("screen.nexium.disk_drive.move.tooltip"));
+        hints.set(moveUp, Component.translatable("screen.nexium.disk_drive.up.tooltip"));
     }
 
     private static boolean shift() {
@@ -82,15 +82,15 @@ public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
                 itemCap += d.capacity();
             }
         }
-        g.text(font, Component.translatable("screen.storagenexus.priority"), leftPos + 88, topPos + 18, text, false);
+        g.text(font, Component.translatable("screen.nexium.priority"), leftPos + 88, topPos + 18, text, false);
         String p = Integer.toString(menu.priority());
         g.text(font, p, leftPos + 128 - font.width(p) / 2, topPos + 31, 0xFFFFFFFF, true);
-        g.text(font, Component.translatable("screen.storagenexus.filter"), leftPos + 108, topPos + 52, text, false);
+        g.text(font, Component.translatable("screen.nexium.filter"), leftPos + 108, topPos + 52, text, false);
         NumberFormat nf = NumberFormat.getIntegerInstance(Locale.ROOT);
-        g.text(font, Component.translatable("screen.storagenexus.disk_drive.items", nf.format(items), nf.format(itemCap)),
+        g.text(font, Component.translatable("screen.nexium.disk_drive.items", nf.format(items), nf.format(itemCap)),
                 leftPos + 8, topPos + 68, text, false);
         bar(g, leftPos + 8, topPos + 78, itemCap == 0 ? 0 : (float) items / itemCap, 0xFF5DC8FF);
-        g.text(font, Component.translatable("screen.storagenexus.disk_drive.fluids", nf.format(fluid / FluidConstants.BUCKET),
+        g.text(font, Component.translatable("screen.nexium.disk_drive.fluids", nf.format(fluid / FluidConstants.BUCKET),
                 nf.format(fluidCap / FluidConstants.BUCKET)), leftPos + 8, topPos + 86, text, false);
         bar(g, leftPos + 8, topPos + 96, fluidCap == 0 ? 0 : (float) fluid / fluidCap, 0xFF2F6FE0);
     }

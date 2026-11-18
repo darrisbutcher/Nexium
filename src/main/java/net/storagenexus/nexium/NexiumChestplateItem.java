@@ -26,7 +26,7 @@ public class NexiumChestplateItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         return ModuleItem.linkTo(context, link -> context.getItemInHand().set(ModComponents.TERMINAL_LINK, link),
-                "message.storagenexus.nexus_restock.linked") ? InteractionResult.SUCCESS : InteractionResult.PASS;
+                "message.nexium.nexus_restock.linked") ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class NexiumChestplateItem extends Item {
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         GlobalPos link = stack.get(ModComponents.TERMINAL_LINK);
         tooltip.accept(link == null
-                ? Component.translatable("tooltip.storagenexus.nexus_restock.unlinked").withStyle(ChatFormatting.DARK_GRAY)
-                : Component.translatable("tooltip.storagenexus.nexus_restock.linked", ModuleItem.describe(link)).withStyle(ChatFormatting.AQUA));
+                ? Component.translatable("tooltip.nexium.nexus_restock.unlinked").withStyle(ChatFormatting.DARK_GRAY)
+                : Component.translatable("tooltip.nexium.nexus_restock.linked", ModuleItem.describe(link)).withStyle(ChatFormatting.AQUA));
     }
 }

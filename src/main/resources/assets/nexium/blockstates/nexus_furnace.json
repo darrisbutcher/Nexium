@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nexium:block/nexus_furnace"
+    },
+    "lit=true": {
+      "model": "nexium:block/nexus_furnace"
+    }
+  }
+}

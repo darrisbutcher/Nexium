@@ -62,7 +62,7 @@ public final class Backpacks {
     public static void openEquipped(ServerPlayer player) {
         if (player.isSpectator()) return;
         if (!ExtraSlots.isBackpack(ExtraSlots.of(player).backpack())) {
-            player.sendOverlayMessage(Component.translatable("message.nexusessentials.backpack_missing").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.backpack_missing").withStyle(ChatFormatting.RED));
             return;
         }
         open(player, EQUIPPED);

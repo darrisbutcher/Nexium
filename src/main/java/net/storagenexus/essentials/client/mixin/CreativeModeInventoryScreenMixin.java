@@ -43,17 +43,17 @@ abstract class CreativeModeInventoryScreenMixin extends AbstractContainerScreen<
     }
 
     @ModifyArg(method = "selectTab", at = @At(value = "INVOKE", target = SLOT_WRAPPER_INIT), index = 2)
-    private int nexusessentials$extraSlotX(Slot target, int index, int x, int y) {
+    private int nexium$extraSlotX(Slot target, int index, int x, int y) {
         return target instanceof ExtraSlotMenuSlot slot ? X[slot.getContainerSlot()] : x;
     }
 
     @ModifyArg(method = "selectTab", at = @At(value = "INVOKE", target = SLOT_WRAPPER_INIT), index = 3)
-    private int nexusessentials$extraSlotY(Slot target, int index, int x, int y) {
+    private int nexium$extraSlotY(Slot target, int index, int x, int y) {
         return target instanceof ExtraSlotMenuSlot slot ? Y[slot.getContainerSlot()] : y;
     }
 
     @Inject(method = "extractBackground", at = @At("TAIL"))
-    private void nexusessentials$drawExtraSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+    private void nexium$drawExtraSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (selectedTab.getType() != CreativeModeTab.Type.INVENTORY) return;
         for (int i = 0; i < Y.length; i++) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + X[i] - 1, topPos + Y[i] - 1, 18, 18);
     }

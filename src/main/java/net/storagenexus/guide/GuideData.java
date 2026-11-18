@@ -12,9 +12,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The Nexium Codex: its categories and topics ({@code assets/storagenexus/codex/codex.json}) and the recipe cards topics show
- * ({@code assets/storagenexus/guide/recipes.json}). Text is not in here: a topic is made of text pages, and every page is a
- * lang key ({@code guide.storagenexus.<page>}) whose first line is its heading, so wording lives in the lang file like
+ * The Nexium Codex: its categories and topics ({@code assets/nexium/codex/codex.json}) and the recipe cards topics show
+ * ({@code assets/nexium/guide/recipes.json}). Text is not in here: a topic is made of text pages, and every page is a
+ * lang key ({@code guide.nexium.<page>}) whose first line is its heading, so wording lives in the lang file like
  * everything else. The first page's heading is the topic's title.
  */
 public record GuideData(List<Category> categories, Map<String, Topic> topics, Map<String, Recipe> recipes) {
@@ -22,19 +22,19 @@ public record GuideData(List<Category> categories, Map<String, Topic> topics, Ma
     /** A group in the Codex's sidebar. A topic may sit in more than one category. */
     public record Category(String id, String icon, List<String> topics) {
         public String titleKey() {
-            return "codex.storagenexus.category." + id;
+            return "codex.nexium.category." + id;
         }
     }
 
     /**
-     * One page of the Codex. {@code pages} are lang keys without the {@code guide.storagenexus.} prefix; {@code items} are
+     * One page of the Codex. {@code pages} are lang keys without the {@code guide.nexium.} prefix; {@code items} are
      * the items (or {@code #tags}) whose lookup key opens this topic, besides {@code icon}; {@code aliases} are other words
      * that link here from other topics' text, besides the title; {@code see} are the "See also" topics.
      */
     public record Topic(String id, List<String> pages, String icon, List<String> recipes, List<String> items,
                         List<String> aliases, List<String> see) {
         public static String pageKey(String page) {
-            return "guide.storagenexus." + page;
+            return "guide.nexium." + page;
         }
 
         /** The lang key of the first page, whose heading is the topic's title. */
@@ -63,11 +63,11 @@ public record GuideData(List<Category> categories, Map<String, Topic> topics, Ma
         }
 
         public String nameKey() {
-            return "guide.storagenexus.recipe." + id;
+            return "guide.nexium.recipe." + id;
         }
 
         public String noteKey() {
-            return "guide.storagenexus.note." + note;
+            return "guide.nexium.note." + note;
         }
     }
 

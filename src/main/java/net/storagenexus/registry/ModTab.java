@@ -58,12 +58,12 @@ public final class ModTab {
                         .build());
     }
 
-    /** Storage: the original tab, so its id stays {@code storagenexus:main}. */
-    public static final CreativeModeTab TAB = tab("main", "itemGroup.storagenexus", 0,
+    /** Storage: the original tab, so its id stays {@code nexium:main}. */
+    public static final CreativeModeTab TAB = tab("main", "itemGroup.nexium", 0,
             () -> new ItemStack(ModBlocks.DRAWER_CONTROLLER), Group.STORAGE);
-    public static final CreativeModeTab TOOLS_TAB = tab("tools", "itemGroup.storagenexus.tools", 1,
+    public static final CreativeModeTab TOOLS_TAB = tab("tools", "itemGroup.nexium.tools", 1,
             () -> new ItemStack(ModItems.AIOTS.get(net.storagenexus.aiot.AiotTier.NEXIUM)), Group.TOOLS);
-    public static final CreativeModeTab FARMS_TAB = tab("farms_power", "itemGroup.storagenexus.farms_power", 2,
+    public static final CreativeModeTab FARMS_TAB = tab("farms_power", "itemGroup.nexium.farms_power", 2,
             () -> new ItemStack(ModBlocks.REDSTONE_REACTOR), Group.FARMS_AND_POWER);
 
     public static void init() {}

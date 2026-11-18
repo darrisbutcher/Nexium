@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockBehaviour.class)
 abstract class BlockBehaviourMixin {
     @Inject(method = "getDestroyProgress", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$bedrockBreaker(BlockState state, Player player, BlockGetter level, BlockPos pos, CallbackInfoReturnable<Float> cir) {
+    private void nexium$bedrockBreaker(BlockState state, Player player, BlockGetter level, BlockPos pos, CallbackInfoReturnable<Float> cir) {
         if (BedrockBreaking.applies(state, player)) cir.setReturnValue(BedrockBreaking.destroyProgress(player));
     }
 }

@@ -635,14 +635,14 @@ public class ModuleGameTest {
     private static ItemStack oldAiot(GameTestHelper h, int veinSlot, int areaSlot, int linkSlot) {
         var ops = h.getLevel().registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE);
         net.minecraft.nbt.CompoundTag aiot = new net.minecraft.nbt.CompoundTag();
-        aiot.putString("id", "storagenexus:diamond_aiot");
+        aiot.putString("id", "nexium:diamond_aiot");
         aiot.putInt("count", 1);
         net.minecraft.nbt.ListTag modules = new net.minecraft.nbt.ListTag();
-        modules.add(slotTag(veinSlot, "storagenexus:vein_mining_module"));
-        modules.add(slotTag(areaSlot, "storagenexus:area_mining_module"));
-        modules.add(slotTag(linkSlot, "storagenexus:nexus_link_module"));
+        modules.add(slotTag(veinSlot, "nexium:vein_mining_module"));
+        modules.add(slotTag(areaSlot, "nexium:area_mining_module"));
+        modules.add(slotTag(linkSlot, "nexium:nexus_link_module"));
         net.minecraft.nbt.CompoundTag components = new net.minecraft.nbt.CompoundTag();
-        components.put("storagenexus:modules", modules);
+        components.put("nexium:modules", modules);
         aiot.put("components", components);
         return ItemStack.CODEC.parse(ops, aiot).result().orElse(ItemStack.EMPTY);
     }

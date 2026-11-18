@@ -47,7 +47,7 @@ public class DimensionalAnchorBlock extends BaseEntityBlock {
             be.activate();
             if (placer instanceof Player p && level instanceof ServerLevel server) {
                 be.toggleDisplay(server);
-                p.sendOverlayMessage(Component.translatable("message.storagenexus.anchor_shown"));
+                p.sendOverlayMessage(Component.translatable("message.nexium.anchor_shown"));
             }
         }
     }
@@ -56,7 +56,7 @@ public class DimensionalAnchorBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level instanceof ServerLevel server && level.getBlockEntity(pos) instanceof DimensionalAnchorBlockEntity be) {
             player.sendOverlayMessage(Component.translatable(be.toggleDisplay(server)
-                    ? "message.storagenexus.anchor_shown" : "message.storagenexus.anchor_hidden"));
+                    ? "message.nexium.anchor_shown" : "message.nexium.anchor_hidden"));
         }
         return InteractionResult.SUCCESS;
     }

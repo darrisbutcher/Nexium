@@ -33,7 +33,7 @@ public class ArmorMenuScreen extends Screen {
     private final SideHints hints = new SideHints();
 
     public ArmorMenuScreen() {
-        super(Component.translatable("screen.storagenexus.armor_menu"));
+        super(Component.translatable("screen.nexium.armor_menu"));
     }
 
     @Override
@@ -46,12 +46,12 @@ public class ArmorMenuScreen extends Screen {
                             b -> ClientPlayNetworking.send(new ArmorBonusPayload(bonus)))
                     .bounds(left + 8, top + TOP + bonus.ordinal() * ROW, WIDTH - 16, 18).build());
         }
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.open"),
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.config.open"),
                         b -> minecraft.gui.setScreen(new ConfigScreen(this)))
                 .bounds(left + 8, top + TOP + ArmorBonus.values().length * ROW + 4, WIDTH - 16, 18)
-                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.storagenexus.config.open.tip"))).build());
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.nexium.config.open.tip"))).build());
         // To the tool menu, when holding a tool it is for
-        toolsButton = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.armor_menu.tools"), b -> {
+        toolsButton = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.armor_menu.tools"), b -> {
             onClose();
             ClientPlayNetworking.send(ToolMenuPayload.INSTANCE);
         }).bounds(left + WIDTH - 8 - 44, top + 5, 44, 16).build());
@@ -67,26 +67,26 @@ public class ArmorMenuScreen extends Screen {
         Player player = minecraft.player;
         if (player == null) return;
         toolsButton.visible = ToolMenu.appliesTo(player.getMainHandItem());
-        hints.set(toolsButton, Component.translatable("screen.storagenexus.armor_menu.tools.tooltip"));
+        hints.set(toolsButton, Component.translatable("screen.nexium.armor_menu.tools.tooltip"));
         for (ArmorBonus bonus : ArmorBonus.values()) {
             Button button = buttons[bonus.ordinal()];
-            Component name = Component.translatable("armor_bonus.storagenexus." + bonus.id());
-            Component hint = Component.translatable("armor_bonus.storagenexus." + bonus.id() + ".desc");
+            Component name = Component.translatable("armor_bonus.nexium." + bonus.id());
+            Component hint = Component.translatable("armor_bonus.nexium." + bonus.id() + ".desc");
             if (!NexiumArmor.available(player, bonus)) {
                 button.active = false;
                 button.setMessage(Component.translatable(bonus.needsFullSet()
-                        ? "screen.storagenexus.armor_menu.needs_set" : "screen.storagenexus.armor_menu.needs_helmet", name));
+                        ? "screen.nexium.armor_menu.needs_set" : "screen.nexium.armor_menu.needs_helmet", name));
             } else {
                 button.active = true;
                 button.setMessage(Component.translatable(NexiumArmor.switchedOn(player, bonus)
-                        ? "screen.storagenexus.armor_menu.on" : "screen.storagenexus.armor_menu.off", name));
+                        ? "screen.nexium.armor_menu.on" : "screen.nexium.armor_menu.off", name));
             }
             if (bonus == ArmorBonus.NEXUS_RESTOCK) {
                 GlobalPos link = player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.NEXIUM_CHESTPLATE)
                         ? player.getItemBySlot(EquipmentSlot.CHEST).get(ModComponents.TERMINAL_LINK) : null;
                 hint = Component.empty().append(hint).append("\n").append(link == null
-                        ? Component.translatable("tooltip.storagenexus.nexus_restock.unlinked")
-                        : Component.translatable("tooltip.storagenexus.nexus_restock.linked", ModuleItem.describe(link)));
+                        ? Component.translatable("tooltip.nexium.nexus_restock.unlinked")
+                        : Component.translatable("tooltip.nexium.nexus_restock.linked", ModuleItem.describe(link)));
             }
             hints.set(button, hint);
         }
@@ -106,7 +106,7 @@ public class ArmorMenuScreen extends Screen {
         g.item(new ItemStack(ModItems.NEXIUM_CHESTPLATE), left + 8, top + 7);
         g.text(font, title, left + 30, top + 8, Palette.DARK.text(), false);
         int worn = player == null ? 0 : NexiumArmor.piecesWorn(player);
-        g.text(font, Component.translatable("screen.storagenexus.armor_menu.pieces", worn), left + 30, top + 18, 0xFFA0A0A0, false);
+        g.text(font, Component.translatable("screen.nexium.armor_menu.pieces", worn), left + 30, top + 18, 0xFFA0A0A0, false);
         hints.render(g, left, left + WIDTH, mouseX, mouseY);
     }
 

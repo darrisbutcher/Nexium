@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexium:farm_progress"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexium:wither_skeleton_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexium:blocks/wither_skeleton_farm"
+}

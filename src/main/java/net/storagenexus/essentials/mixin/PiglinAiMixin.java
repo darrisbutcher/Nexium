@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PiglinAi.class)
 abstract class PiglinAiMixin {
     @Inject(method = "isWearingSafeArmor", at = @At("RETURN"), cancellable = true)
-    private static void nexusessentials$netheriteCountsAsGold(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    private static void nexium$netheriteCountsAsGold(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() || !NexusConfig.get().netheriteArmorCalmsPiglins) return;
         for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR) {
             if (entity.getItemBySlot(slot).is(ModTags.CALMS_PIGLINS)) {

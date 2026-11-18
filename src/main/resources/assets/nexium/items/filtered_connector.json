@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexium:block/filtered_connector_item"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:double_compressed_tuff"
+  ],
+  "result": {
+    "id": "nexium:compressed_tuff",
+    "count": 9
+  }
+}

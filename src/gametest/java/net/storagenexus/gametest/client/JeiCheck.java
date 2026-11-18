@@ -21,7 +21,7 @@ public class JeiCheck implements IModPlugin {
 
     @Override
     public Identifier getPluginUid() {
-        return Identifier.fromNamespaceAndPath("storagenexus-gametest", "jei_check");
+        return Identifier.fromNamespaceAndPath("nexium-gametest", "jei_check");
     }
 
     @Override

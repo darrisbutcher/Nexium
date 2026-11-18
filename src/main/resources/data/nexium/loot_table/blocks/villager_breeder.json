@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexium:farm_progress"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexium:villager_breeder"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexium:blocks/villager_breeder"
+}

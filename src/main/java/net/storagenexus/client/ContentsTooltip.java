@@ -35,7 +35,7 @@ public final class ContentsTooltip {
                 if (!s.variant().isBlank()) {
                     lines.add(line(Fmt.compact(s.amount()), s.variant().toStack().getHoverName()));
                 } else if (!s.locked().isBlank()) {
-                    lines.add(Component.translatable("tooltip.storagenexus.contents_locked", s.locked().toStack().getHoverName())
+                    lines.add(Component.translatable("tooltip.nexium.contents_locked", s.locked().toStack().getHoverName())
                             .withStyle(ChatFormatting.GRAY));
                 }
             }
@@ -55,7 +55,7 @@ public final class ContentsTooltip {
                 if (!s.variant().isBlank()) {
                     lines.add(line(Fmt.fluid(s.amount()), FluidVariantAttributes.getName(s.variant())));
                 } else if (!s.locked().isBlank()) {
-                    lines.add(Component.translatable("tooltip.storagenexus.contents_locked", FluidVariantAttributes.getName(s.locked()))
+                    lines.add(Component.translatable("tooltip.nexium.contents_locked", FluidVariantAttributes.getName(s.locked()))
                             .withStyle(ChatFormatting.GRAY));
                 }
             }
@@ -63,7 +63,7 @@ public final class ContentsTooltip {
 
         Long charge = stack.get(ModComponents.BATTERY_CHARGE);
         if (charge != null) {
-            lines.add(Component.translatable("tooltip.storagenexus.battery.charge", String.format("%,d", charge)).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.translatable("tooltip.nexium.battery.charge", String.format("%,d", charge)).withStyle(ChatFormatting.GRAY));
         }
 
         ItemContainerContents upgrades = stack.get(ModComponents.UPGRADES);
@@ -80,7 +80,7 @@ public final class ContentsTooltip {
     }
 
     private static Component line(String amount, Component name) {
-        return Component.translatable("tooltip.storagenexus.contents", amount, name).withStyle(ChatFormatting.GRAY);
+        return Component.translatable("tooltip.nexium.contents", amount, name).withStyle(ChatFormatting.GRAY);
     }
 
     private ContentsTooltip() {}

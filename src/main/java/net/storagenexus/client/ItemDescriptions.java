@@ -32,17 +32,17 @@ public final class ItemDescriptions {
         if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(StorageNexus.MOD_ID)) return;
         String key;
         if (stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof DrawerBlock drawer) {
-            key = "tooltip.storagenexus.drawer." + drawer.slots();
+            key = "tooltip.nexium.drawer." + drawer.slots();
         } else if (stack.getItem() instanceof AiotItem) {
-            key = "tooltip.storagenexus.aiot"; // the same for every material
+            key = "tooltip.nexium.aiot"; // the same for every material
         } else if (stack.getItem() instanceof net.storagenexus.disk.StorageDiskItem disk) {
-            key = disk.isFluid() ? "tooltip.storagenexus.fluid_disk" : "tooltip.storagenexus.storage_disk"; // every size
+            key = disk.isFluid() ? "tooltip.nexium.fluid_disk" : "tooltip.nexium.storage_disk"; // every size
         } else if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().endsWith("_storage_part")) {
-            key = "tooltip.storagenexus.storage_part";
+            key = "tooltip.nexium.storage_part";
         } else if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().endsWith("_fluid_part")) {
-            key = "tooltip.storagenexus.fluid_part";
+            key = "tooltip.nexium.fluid_part";
         } else if (stack.getItem() instanceof net.storagenexus.builder.BuilderItem) {
-            key = "tooltip.storagenexus.builder"; // the same for every tier
+            key = "tooltip.nexium.builder"; // the same for every tier
         } else {
             key = stack.getItem().getDescriptionId() + ".desc";
         }
@@ -55,8 +55,8 @@ public final class ItemDescriptions {
         // Nexium mining tools: whether their Haste II is on
         if (stack.is(NexiumMaterials.GRANTS_HASTE)) {
             lines.add(stack.has(ModComponents.HASTE_OFF)
-                    ? Component.translatable("tooltip.storagenexus.haste_off").withStyle(ChatFormatting.DARK_GRAY)
-                    : Component.translatable("tooltip.storagenexus.haste_on").withStyle(ChatFormatting.BLUE));
+                    ? Component.translatable("tooltip.nexium.haste_off").withStyle(ChatFormatting.DARK_GRAY)
+                    : Component.translatable("tooltip.nexium.haste_on").withStyle(ChatFormatting.BLUE));
         }
         // Optional red warning line, e.g. for the Void Upgrade
         String warn = stack.getItem().getDescriptionId() + ".warn";

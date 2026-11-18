@@ -9,7 +9,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 
 /**
  * What Nexium armor gives besides its stats. Each is switched on or off in the armor menu; the setting is saved on the
- * piece it belongs to ({@link #slot()}), in {@code storagenexus:bonuses_off}.
+ * piece it belongs to ({@link #slot()}), in {@code nexium:bonuses_off}.
  */
 public enum ArmorBonus implements StringRepresentable {
     /** Full set: Fire Resistance (no fire or lava damage). */

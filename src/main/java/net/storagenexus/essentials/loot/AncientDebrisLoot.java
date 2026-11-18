@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
  * Only replaces vanilla's own table, so a data pack that changes it wins.
  */
 public final class AncientDebrisLoot {
-    private static final String TABLE = "/nexusessentials/ancient_debris_scrap.json";
+    private static final String TABLE = "/nexium/ancient_debris_scrap.json";
 
     public static void init() {
         LootTableEvents.REPLACE.register((key, original, source, registries) -> {

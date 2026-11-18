@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:netherite_helmet",
+    "minecraft:netherite_chestplate",
+    "minecraft:netherite_leggings",
+    "minecraft:netherite_boots",
+    "nexium:nexium_helmet",
+    "nexium:nexium_chestplate",
+    "nexium:nexium_leggings",
+    "nexium:nexium_boots"
+  ]
+}

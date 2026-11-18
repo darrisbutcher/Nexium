@@ -82,7 +82,7 @@ public class DimensionalOutputBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer sp && level.getBlockEntity(pos) instanceof DimensionalOutputBlockEntity be) {
-            Menus.open(sp, Component.translatable("block.storagenexus.dimensional_output"),
+            Menus.open(sp, Component.translatable("block.nexium.dimensional_output"),
                     new DimensionalMenu.OpenData(pos, be.displayName(), false),
                     (id, inv, p) -> new DimensionalMenu(id, inv, be));
         }

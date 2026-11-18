@@ -139,7 +139,7 @@ public class DimensionalMenu extends BaseMenu {
         if (be == null || be.linkId() == null || !(player.level() instanceof ServerLevel)) return;
         LinkRegistry reg = LinkRegistry.get(player.level().getServer());
         if (!reg.rename(be.linkId(), newName)) {
-            player.sendSystemMessage(Component.translatable("message.storagenexus.name_taken", newName).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.translatable("message.nexium.name_taken", newName).withStyle(ChatFormatting.RED));
             return;
         }
         // Refresh every loaded end of this link so labels update right away.
@@ -152,7 +152,7 @@ public class DimensionalMenu extends BaseMenu {
                 if (end.refreshName()) end.sync();
             }
         }
-        player.sendOverlayMessage(Component.translatable("message.storagenexus.renamed", link.name()));
+        player.sendOverlayMessage(Component.translatable("message.nexium.renamed", link.name()));
     }
 
     @Override

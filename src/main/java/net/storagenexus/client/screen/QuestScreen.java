@@ -36,7 +36,7 @@ public class QuestScreen extends Screen {
     private final java.util.List<Button> chapterButtons = new java.util.ArrayList<>();
 
     public QuestScreen(QuestStatePayload data) {
-        super(Component.translatable("screen.storagenexus.quests"));
+        super(Component.translatable("screen.nexium.quests"));
         chapter = Mth.clamp(lastChapter, 0, Math.max(0, QuestBook.chapters().size() - 1));
         update(data);
     }
@@ -158,7 +158,7 @@ public class QuestScreen extends Screen {
         int x = left + PAD + SIDE + 12, w = PANEL_W - PAD - SIDE - 12 - PAD - 8;
         g.text(font, Component.translatable(c.nameKey()).withStyle(ChatFormatting.BOLD), x, top + 10, TEXT, false);
         long done = c.quests().stream().filter(this::done).count();
-        Component count = Component.translatable("screen.storagenexus.quests.progress", done, c.quests().size());
+        Component count = Component.translatable("screen.nexium.quests.progress", done, c.quests().size());
         g.text(font, count, left + PANEL_W - PAD - 8 - font.width(count), top + 10, done == c.quests().size() ? GREEN : DIM, false);
         g.text(font, font.plainSubstrByWidth(Component.translatable(c.descKey()).getString(), w), x, top + 22, DIM, false);
 
@@ -176,7 +176,7 @@ public class QuestScreen extends Screen {
             int cur = isDone ? q.count() : current(q);
             g.fill(barX, barY, barX + barW, barY + 3, BAR_BG);
             g.fill(barX, barY, barX + barW * cur / Math.max(1, q.count()), barY + 3, isDone ? GREEN : 0xFF3FB8FF);
-            String label = isDone ? Component.translatable("screen.storagenexus.quests.done").getString() : cur + " / " + q.count();
+            String label = isDone ? Component.translatable("screen.nexium.quests.done").getString() : cur + " / " + q.count();
             g.text(font, label, x + w - font.width(label) - 2, barY - 3, isDone ? GREEN : DIM, false);
         }
         if (c.quests().size() > rows) {
@@ -186,13 +186,13 @@ public class QuestScreen extends Screen {
             g.fill(left + PANEL_W - 8, thumbY, left + PANEL_W - 5, thumbY + thumb, 0xFF8C8CAA);
         }
         // Footer: the reward, and that nothing is locked but later chapters
-        g.text(font, Component.translatable("screen.storagenexus.quests.reward", c.tier()), x, top + panelH - 22, GOLD, false);
-        g.text(font, font.plainSubstrByWidth(Component.translatable("screen.storagenexus.quests.hint").getString(), PANEL_W - PAD * 2), left + PAD, top + panelH - 12, DIM, false);
+        g.text(font, Component.translatable("screen.nexium.quests.reward", c.tier()), x, top + panelH - 22, GOLD, false);
+        g.text(font, font.plainSubstrByWidth(Component.translatable("screen.nexium.quests.hint").getString(), PANEL_W - PAD * 2), left + PAD, top + panelH - 12, DIM, false);
         // A locked chapter's button explains itself on hover
         for (int i = 0; i < chapterButtons.size(); i++) {
             Button b = chapterButtons.get(i);
             if (!isOpen(i) && b.isHovered() && i > 0) {
-                g.setTooltipForNextFrame(font, Component.translatable("screen.storagenexus.quests.locked", Component.translatable(chapters.get(i - 1).nameKey())), mouseX, mouseY);
+                g.setTooltipForNextFrame(font, Component.translatable("screen.nexium.quests.locked", Component.translatable(chapters.get(i - 1).nameKey())), mouseX, mouseY);
             }
         }
     }

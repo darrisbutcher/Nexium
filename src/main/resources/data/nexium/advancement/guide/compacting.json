@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:compacting_drawer"
+    },
+    "title": {
+      "translate": "advancement.nexium.compacting.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.compacting.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/drawers"
+}

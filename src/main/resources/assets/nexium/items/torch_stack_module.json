@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexium:item/torch_stack_module"
+  }
+}

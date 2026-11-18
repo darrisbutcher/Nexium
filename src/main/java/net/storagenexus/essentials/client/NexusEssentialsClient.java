@@ -23,25 +23,25 @@ public final class NexusEssentialsClient {
     /** Key binds are listed under Nexium. */
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(StorageNexus.id("main"));
     /** Switches the magnet in the trinket slot on or off. M by default; change it under Controls > Key Binds. */
-    public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexusessentials.toggle_magnet",
+    public static final KeyMapping TOGGLE_MAGNET = new KeyMapping("key.nexium.toggle_magnet",
             InputConstants.KEY_M, CATEGORY);
 
     /**
      * Hold while right-clicking a block with a block in hand to place it diagonally: one out from the face you click and one over
      * toward the nearest edge of it. Left Alt by default; change it under Controls > Key Binds.
      */
-    public static final KeyMapping DIAGONAL_PLACE = new KeyMapping("key.nexusessentials.diagonal_place",
+    public static final KeyMapping DIAGONAL_PLACE = new KeyMapping("key.nexium.diagonal_place",
             InputConstants.KEY_LALT, CATEGORY);
 
     /** Opens the Backpack worn in the backpack slot. B by default; change it under Controls > Key Binds. */
-    public static final KeyMapping OPEN_BACKPACK = new KeyMapping("key.nexusessentials.open_backpack",
+    public static final KeyMapping OPEN_BACKPACK = new KeyMapping("key.nexium.open_backpack",
             InputConstants.KEY_B, CATEGORY);
 
     /**
      * In a villager's trading screen, gives a villager nobody has traded with a new set of trades. C by default; change it under
      * Controls > Key Binds.
      */
-    public static final KeyMapping CYCLE_TRADES = new KeyMapping("key.nexusessentials.cycle_trades",
+    public static final KeyMapping CYCLE_TRADES = new KeyMapping("key.nexium.cycle_trades",
             InputConstants.KEY_C, CATEGORY);
 
     /** The name of a player in the world around you (the owner of a tamed mob), or null if they are not near. */
@@ -96,10 +96,10 @@ public final class NexusEssentialsClient {
             var details = net.storagenexus.essentials.capture.CapturedMobDetails.details(mob, NexusEssentialsClient::playerName);
             if (!details.isEmpty()) {
                 if (net.minecraft.client.Minecraft.getInstance().hasShiftDown()) lines.addAll(details);
-                else lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexusessentials.captured_mob_shift")
+                else lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexium.captured_mob_shift")
                         .withStyle(net.minecraft.ChatFormatting.DARK_GRAY, net.minecraft.ChatFormatting.ITALIC));
             }
-            lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexusessentials.captured_mob_release")
+            lines.add(net.minecraft.network.chat.Component.translatable("tooltip.nexium.captured_mob_release")
                     .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
         });
 

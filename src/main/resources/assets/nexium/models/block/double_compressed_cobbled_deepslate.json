@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "nexium:block/double_compressed_cobbled_deepslate"
+  }
+}

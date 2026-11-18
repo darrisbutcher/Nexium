@@ -9,7 +9,7 @@ import net.storagenexus.registry.ModBlocks;
 
 /** Drawer Controller reach through slaves, and its reach outline. */
 public class ControllerGameTest {
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 20)
+    @GameTest(environment = "nexium:isolated", padding = 40, maxTicks = 20)
     public void slavesExtendReachAlongADrawerLine(GameTestHelper h) {
         h.setBlock(new BlockPos(0, 1, 1), ModBlocks.DRAWER_CONTROLLER);
         for (int x = 1; x <= 30; x++) h.setBlock(new BlockPos(x, 1, 1), ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);

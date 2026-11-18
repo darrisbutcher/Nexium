@@ -8,10 +8,10 @@ import net.storagenexus.essentials.client.NexusEssentialsClient;
 
 /** The key that opens the Nexium settings screen; not bound to anything until the player picks one. */
 public final class ConfigKey {
-    public static final KeyMapping OPEN = new KeyMapping("key.storagenexus.open_settings",
+    public static final KeyMapping OPEN = new KeyMapping("key.nexium.open_settings",
             InputConstants.UNKNOWN.getValue(), NexusEssentialsClient.CATEGORY);
 
-    public static final KeyMapping QUESTS = new KeyMapping("key.storagenexus.open_quests",
+    public static final KeyMapping QUESTS = new KeyMapping("key.nexium.open_quests",
             InputConstants.UNKNOWN.getValue(), NexusEssentialsClient.CATEGORY);
 
     private ConfigKey() {}

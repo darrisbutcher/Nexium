@@ -35,13 +35,13 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
-        g.text(font, Component.translatable("screen.storagenexus.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
+        g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
                 BAR_X, BAR_Y + BAR_H + 4, TEXT, false);
         Component status = menu.burning()
-                ? Component.translatable("screen.storagenexus.generator.making", ThermalGeneratorBlockEntity.OUTPUT)
+                ? Component.translatable("screen.nexium.generator.making", ThermalGeneratorBlockEntity.OUTPUT)
                 : menu.energy() >= ThermalGeneratorBlockEntity.CAPACITY
-                ? Component.translatable("screen.storagenexus.generator.full")
-                : Component.translatable("screen.storagenexus.thermal.no_lava");
+                ? Component.translatable("screen.nexium.generator.full")
+                : Component.translatable("screen.nexium.thermal.no_lava");
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 16, MUTED, false);
     }
 
@@ -80,12 +80,12 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(TANK_X, TANK_Y, TANK_W, TANK_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.thermal.lava", menu.lavaMilli()),
-                    Component.translatable("screen.storagenexus.thermal.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.thermal.lava", menu.lavaMilli()),
+                    Component.translatable("screen.nexium.thermal.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
-                    Component.translatable("screen.storagenexus.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
+                    Component.translatable("screen.nexium.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
     }
 

@@ -17,10 +17,10 @@ import net.storagenexus.fluid.FluidDrawerBlockEntity;
 public class RetiredFluidGameTest {
     @GameTest
     public void honeyIsNoLongerRegisteredAndALeftoverFluidLoadsAsAnEmptySlot(GameTestHelper h) {
-        h.assertTrue(!BuiltInRegistries.FLUID.containsKey(Identifier.fromNamespaceAndPath("nexusessentials", "honey")), "no Honey fluid");
+        h.assertTrue(!BuiltInRegistries.FLUID.containsKey(Identifier.fromNamespaceAndPath("nexium", "honey")), "no Honey fluid");
         var data = new FluidDrawerBlockEntity.SlotData(FluidVariant.of(Fluids.LAVA), 81_000L, FluidVariant.of(Fluids.LAVA));
         JsonElement json = FluidDrawerBlockEntity.SlotData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow();
-        String retired = json.toString().replace("minecraft:lava", "nexusessentials:honey");
+        String retired = json.toString().replace("minecraft:lava", "nexium:honey");
         JsonElement parsed = com.google.gson.JsonParser.parseString(retired);
         var loaded = FluidDrawerBlockEntity.SlotData.CODEC.parse(JsonOps.INSTANCE, parsed).getOrThrow();
         h.assertTrue(loaded.variant().isBlank(), "the missing fluid loads as an empty slot");

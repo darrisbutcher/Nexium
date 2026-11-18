@@ -90,8 +90,8 @@ public final class NexiumArmor {
         if (off.isEmpty()) piece.remove(ModComponents.BONUSES_OFF);
         else piece.set(ModComponents.BONUSES_OFF, List.copyOf(off));
         update(player);
-        player.sendOverlayMessage(Component.translatable(nowOn ? "message.storagenexus.armor_menu.on" : "message.storagenexus.armor_menu.off",
-                Component.translatable("armor_bonus.storagenexus." + bonus.id())).withStyle(ChatFormatting.WHITE));
+        player.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.armor_menu.on" : "message.nexium.armor_menu.off",
+                Component.translatable("armor_bonus.nexium." + bonus.id())).withStyle(ChatFormatting.WHITE));
     }
 
     /** Gives or takes the effects and the knockback modifier for what the player wears now. */

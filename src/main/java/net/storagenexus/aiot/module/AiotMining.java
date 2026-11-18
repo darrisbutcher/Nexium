@@ -28,8 +28,8 @@ import java.util.List;
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
  *   <li><b>Vein mining</b>, for any block the AIOT is made for, stone included, and for grasses, ferns, bushes and leaf
- *       litter ({@code #storagenexus:vein_plants}, which vein together as one kind); never blocks with contents or those
- *       in {@code #storagenexus:vein_excluded} (empty unless a data pack fills it): every block of the
+ *       litter ({@code #nexium:vein_plants}, which vein together as one kind); never blocks with contents or those
+ *       in {@code #nexium:vein_excluded} (empty unless a data pack fills it): every block of the
  *       same kind touching it, corners included, up to the size set in the tool menu (never above the config's limit)
  *       in all. Only while the player holds the Vein Mine key; needs no module.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when

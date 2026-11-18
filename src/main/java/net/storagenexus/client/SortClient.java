@@ -22,7 +22,7 @@ import net.storagenexus.sort.SortPayload;
  * an item as well as over an empty slot, and sorts A to Z.
  */
 public final class SortClient {
-    public static final KeyMapping SORT = new KeyMapping("key.storagenexus.sort_inventory",
+    public static final KeyMapping SORT = new KeyMapping("key.nexium.sort_inventory",
             InputConstants.KEY_O, NexusEssentialsClient.CATEGORY);
 
     private SortClient() {}
@@ -69,7 +69,7 @@ public final class SortClient {
         Region region = InventorySorter.regionAt(screen.getMenu(), x - screen.leftPos, y - screen.topPos);
         if (region == null) return false;
         ClientPlayNetworking.send(new SortPayload(screen.getMenu().containerId, region == Region.PLAYER));
-        message = Component.translatable("message.storagenexus.sort");
+        message = Component.translatable("message.nexium.sort");
         messageUntil = System.currentTimeMillis() + MESSAGE_MS;
         return true;
     }

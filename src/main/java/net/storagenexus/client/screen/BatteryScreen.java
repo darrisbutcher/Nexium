@@ -31,10 +31,10 @@ public class BatteryScreen extends AbstractContainerScreen<BatteryMenu> {
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
-        g.text(font, Component.translatable("screen.storagenexus.generator.stored", number(menu.stored()), number(menu.capacity())),
+        g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.stored()), number(menu.capacity())),
                 BAR_X, BAR_Y + BAR_H + 6, TEXT, false);
         int percent = menu.capacity() <= 0 ? 0 : (int) (100L * menu.stored() / menu.capacity());
-        g.text(font, Component.translatable("screen.storagenexus.battery.percent", percent), BAR_X, BAR_Y + BAR_H + 18, MUTED, false);
+        g.text(font, Component.translatable("screen.nexium.battery.percent", percent), BAR_X, BAR_Y + BAR_H + 18, MUTED, false);
     }
 
     @Override

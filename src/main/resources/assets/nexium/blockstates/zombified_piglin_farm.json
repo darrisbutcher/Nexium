@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/zombified_piglin_farm"
+    },
+    "powered=true": {
+      "model": "nexium:block/zombified_piglin_farm"
+    }
+  }
+}

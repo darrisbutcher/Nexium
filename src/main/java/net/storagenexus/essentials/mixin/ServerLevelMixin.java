@@ -21,18 +21,18 @@ abstract class ServerLevelMixin {
             + "Lnet/minecraft/util/random/WeightedList;Lnet/minecraft/core/Holder;)V";
 
     @ModifyVariable(method = EXPLODE, at = @At("HEAD"), argsOnly = true)
-    private Level.ExplosionInteraction nexusessentials$keepBlocks(Level.ExplosionInteraction interaction, @Local(argsOnly = true) Entity source) {
+    private Level.ExplosionInteraction nexium$keepBlocks(Level.ExplosionInteraction interaction, @Local(argsOnly = true) Entity source) {
         return MobGriefing.keepsBlocks(source) ? Level.ExplosionInteraction.NONE : interaction;
     }
 
     @ModifyVariable(method = EXPLODE, at = @At("HEAD"), argsOnly = true)
-    private boolean nexusessentials$noFire(boolean fire, @Local(argsOnly = true) Entity source) {
+    private boolean nexium$noFire(boolean fire, @Local(argsOnly = true) Entity source) {
         return fire && !MobGriefing.keepsBlocks(source);
     }
 
     /** Keep the big explosion cloud: vanilla shows the small one for any explosion that breaks no blocks. */
     @WrapOperation(method = EXPLODE, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/ServerExplosion;isSmall()Z"))
-    private boolean nexusessentials$keepBigCloud(ServerExplosion explosion, Operation<Boolean> original, @Local(argsOnly = true) Entity source) {
+    private boolean nexium$keepBigCloud(ServerExplosion explosion, Operation<Boolean> original, @Local(argsOnly = true) Entity source) {
         return MobGriefing.keepsBlocks(source) ? explosion.radius() < 2.0F : original.call(explosion);
     }
 }

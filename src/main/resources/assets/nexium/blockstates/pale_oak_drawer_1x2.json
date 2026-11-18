@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "nexium:block/pale_oak_drawer_1x2"
+    },
+    "facing=east": {
+      "model": "nexium:block/pale_oak_drawer_1x2",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "nexium:block/pale_oak_drawer_1x2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nexium:block/pale_oak_drawer_1x2",
+      "y": 270
+    }
+  }
+}

@@ -51,7 +51,7 @@ public enum AiotTier {
         this.tools = tools;
     }
 
-    /** Item id prefix, as in {@code storagenexus:<id>_aiot}. Matches vanilla's tool names (golden, not gold). */
+    /** Item id prefix, as in {@code nexium:<id>_aiot}. Matches vanilla's tool names (golden, not gold). */
     public String id() {
         return id;
     }

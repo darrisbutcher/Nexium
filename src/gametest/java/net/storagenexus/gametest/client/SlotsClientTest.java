@@ -108,7 +108,7 @@ public class SlotsClientTest implements FabricClientGameTest {
                 return trinket.x + "," + trinket.y + " " + wings.x + "," + wings.y + " " + wings.getItem() + " " + trinket.getItem();
             });
             System.out.println("[nexus] survival extra slots: " + survival);
-            if (!survival.startsWith("77,26 77,44 1 minecraft:elytra 1 nexusessentials:magnet")) {
+            if (!survival.startsWith("77,26 77,44 1 minecraft:elytra 1 nexium:magnet")) {
                 throw new AssertionError("survival extra slots: " + survival);
             }
             String ammoAndTotem = ctx.computeOnClient(mc -> {
@@ -122,7 +122,7 @@ public class SlotsClientTest implements FabricClientGameTest {
                 Slot slot = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_BACKPACK);
                 return slot.x + "," + slot.y + " " + slot.getItem();
             });
-            if (!backpack.equals("77,8 1 nexusessentials:backpack")) throw new AssertionError("backpack slot: " + backpack);
+            if (!backpack.equals("77,8 1 nexium:backpack")) throw new AssertionError("backpack slot: " + backpack);
             ctx.setScreen(() -> null);
 
             world.getServer().runCommand("gamemode survival @a");

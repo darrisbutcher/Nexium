@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:256k_fluid_part",
+    "nexium:256k_fluid_part",
+    "nexium:256k_fluid_part",
+    "minecraft:emerald"
+  ],
+  "result": {
+    "id": "nexium:1m_fluid_part"
+  }
+}

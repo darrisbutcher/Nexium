@@ -19,7 +19,7 @@ abstract class LevelExtractorMixin {
     @Definition(id = "LocalPlayer", type = LocalPlayer.class)
     @Expression("? instanceof LocalPlayer")
     @ModifyExpressionValue(method = "extractVisibleEntities", at = @At("MIXINEXTRAS:EXPRESSION"))
-    private boolean nexusessentials$drawThePlayerFromTheFreeCamera(boolean isLocalPlayer) {
+    private boolean nexium$drawThePlayerFromTheFreeCamera(boolean isLocalPlayer) {
         return isLocalPlayer && !FreeCamera.showsPlayer();
     }
 }

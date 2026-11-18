@@ -19,7 +19,7 @@ abstract class InventoryMixin {
     public Player player;
 
     @Inject(method = "add(ILnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
-    private void nexusessentials$arrowsToTheSlot(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    private void nexium$arrowsToTheSlot(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         // Only "put it wherever it fits" (slot -1), never a specific slot, and only on the server
         if (slot != -1 || stack.isEmpty() || !ExtraSlots.isArrows(stack) || player.level().isClientSide()) return;
         ExtraSlots.of(player).moveArrowsIn(stack);

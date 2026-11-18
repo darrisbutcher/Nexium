@@ -22,10 +22,10 @@ public class FarmItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.nexusessentials." + kind.lang("makes")).withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.farm_every", IronFarmItem.time(kind.cycleTicks())).withStyle(ChatFormatting.GRAY));
-        if (kind.hasInput()) tooltip.accept(Component.translatable("tooltip.nexusessentials." + kind.lang("input")).withStyle(ChatFormatting.GOLD));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.farm_hopper").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.iron_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium." + kind.lang("makes")).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.farm_every", IronFarmItem.time(kind.cycleTicks())).withStyle(ChatFormatting.GRAY));
+        if (kind.hasInput()) tooltip.accept(Component.translatable("tooltip.nexium." + kind.lang("input")).withStyle(ChatFormatting.GOLD));
+        tooltip.accept(Component.translatable("tooltip.nexium.farm_hopper").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.iron_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

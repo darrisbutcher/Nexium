@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Nexium advancement tab (data/storagenexus/advancement/guide): every node loads, has a title and
+ * The Nexium advancement tab (data/nexium/advancement/guide): every node loads, has a title and
  * description in the lang file, is granted by the tick trigger, and sits at most two levels under the
  * root. Every node is unlocked from the start, but the depth limit keeps the tree readable.
  */
@@ -26,13 +26,13 @@ public class AdvancementTabGameTest {
         ServerAdvancementManager manager = h.getLevel().getServer().getAdvancements();
         List<AdvancementHolder> nodes = new ArrayList<>();
         for (AdvancementHolder a : manager.getAllAdvancements()) {
-            if (a.id().getNamespace().equals("storagenexus") && a.id().getPath().startsWith(PREFIX)) nodes.add(a);
+            if (a.id().getNamespace().equals("nexium") && a.id().getPath().startsWith(PREFIX)) nodes.add(a);
         }
         return nodes;
     }
 
     private static JsonObject lang() {
-        var in = AdvancementTabGameTest.class.getResourceAsStream("/assets/storagenexus/lang/en_us.json");
+        var in = AdvancementTabGameTest.class.getResourceAsStream("/assets/nexium/lang/en_us.json");
         return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
     }
 
@@ -58,7 +58,7 @@ public class AdvancementTabGameTest {
     @GameTest
     public void oneRootAndNothingDeeperThanTwo(GameTestHelper h) {
         List<AdvancementHolder> nodes = tab(h);
-        Identifier root = Identifier.fromNamespaceAndPath("storagenexus", PREFIX + "root");
+        Identifier root = Identifier.fromNamespaceAndPath("nexium", PREFIX + "root");
         int roots = 0;
         for (AdvancementHolder a : nodes) {
             if (a.value().parent().isEmpty()) {

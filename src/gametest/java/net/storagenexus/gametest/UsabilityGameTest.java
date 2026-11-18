@@ -187,7 +187,7 @@ public class UsabilityGameTest {
     }
 
     /** Runs alone (own environment) because it watches the global storage-change counter. */
-    @GameTest(environment = "storagenexus:isolated", maxTicks = 80)
+    @GameTest(environment = "nexium:isolated", maxTicks = 80)
     public void flowingWaterAndChestChangesDoNotRescanNetworks(GameTestHelper h) {
         BlockPos connector = new BlockPos(3, 1, 3);
         BlockPos chest = connector.east();

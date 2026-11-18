@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:oak_drawer_1x1"
+    },
+    "title": {
+      "translate": "advancement.nexium.drawers.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.drawers.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/root"
+}

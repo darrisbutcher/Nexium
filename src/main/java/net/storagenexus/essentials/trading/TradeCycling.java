@@ -40,16 +40,16 @@ public final class TradeCycling {
         if (villager == null) return Result.NOT_TRADING;
         if (villager.getOffers().isEmpty()) return Result.NO_TRADES;
         if (!untraded(villager)) {
-            player.sendOverlayMessage(Component.translatable("message.nexusessentials.trades_traded").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.trades_traded").withStyle(ChatFormatting.RED));
             return Result.ALREADY_TRADED;
         }
         // Forget the trades: asking for them again makes a new set for this profession and level
         villager.setOffers(null);
         MerchantOffers offers = villager.getOffers();
-        ((VillagerInvoker) villager).nexusessentials$updateSpecialPrices(player);
+        ((VillagerInvoker) villager).nexium$updateSpecialPrices(player);
         player.sendMerchantOffers(player.containerMenu.containerId, offers, villager.getVillagerData().level(), villager.getVillagerXp(),
                 villager.showProgressBar(), villager.canRestock());
-        player.sendOverlayMessage(Component.translatable("message.nexusessentials.trades_cycled").withStyle(ChatFormatting.GREEN));
+        player.sendOverlayMessage(Component.translatable("message.nexium.trades_cycled").withStyle(ChatFormatting.GREEN));
         return Result.CYCLED;
     }
 

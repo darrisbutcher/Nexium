@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "PPP",
+    "PSP"
+  ],
+  "key": {
+    "P": "minecraft:poplar_planks",
+    "S": "minecraft:poplar_slab"
+  },
+  "result": {
+    "id": "nexium:poplar_drawer_1x2",
+    "count": 2
+  }
+}

@@ -20,7 +20,7 @@ public class BedrockBreakerElixirItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         int seconds = NexusConfig.get().bedrockBreakerSeconds;
         String time = String.format("%d:%02d", seconds / 60, seconds % 60);
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.elixir_effect", time).withStyle(ChatFormatting.BLUE));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.elixir_how").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.elixir_effect", time).withStyle(ChatFormatting.BLUE));
+        tooltip.accept(Component.translatable("tooltip.nexium.elixir_how").withStyle(ChatFormatting.GRAY));
     }
 }

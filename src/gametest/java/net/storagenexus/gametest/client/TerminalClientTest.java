@@ -101,10 +101,10 @@ public class TerminalClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(30);
             DRAG = false;
-            expect(click(ctx, 0, 0, LEFT, false, "left on 64 gold barrel upgrades (take stack)"), "carried=[64 storagenexus:gold_barrel_upgrade]");
+            expect(click(ctx, 0, 0, LEFT, false, "left on 64 gold barrel upgrades (take stack)"), "carried=[64 nexium:gold_barrel_upgrade]");
             DRAG = true;
             expect(click(ctx, 0, 0, LEFT, false, "left on gold barrel upgrades again, holding them (deposit all)"), "carried=[0 minecraft:air]");
-            expect(click(ctx, 0, 0, RIGHT, false, "right on gold barrel upgrades (take one)"), "carried=[1 storagenexus:gold_barrel_upgrade]");
+            expect(click(ctx, 0, 0, RIGHT, false, "right on gold barrel upgrades (take one)"), "carried=[1 nexium:gold_barrel_upgrade]");
             expect(click(ctx, 0, 0, RIGHT, false, "right holding one (deposit one)"), "carried=[0 minecraft:air]");
             click(ctx, 0, 0, LEFT, false, "left with drag on gold barrel upgrades (take stack)");
             // ---- a right-click on the search box clears it

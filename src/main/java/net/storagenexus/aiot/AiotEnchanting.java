@@ -12,8 +12,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Silk Touch and Fortune on one AIOT. Vanilla never lets an item have both, so the AIOT keeps only one in
- * {@code minecraft:enchantments} and the other in {@code storagenexus:inactive_enchantments}, and records which is
- * active in {@code storagenexus:mining_mode}. Every change to an AIOT's enchantments (crafting, the anvil, the
+ * {@code minecraft:enchantments} and the other in {@code nexium:inactive_enchantments}, and records which is
+ * active in {@code nexium:mining_mode}. Every change to an AIOT's enchantments (crafting, the anvil, the
  * grindstone, the tool menu) ends with {@link #normalize}, which keeps the three components in step.
  */
 public final class AiotEnchanting {

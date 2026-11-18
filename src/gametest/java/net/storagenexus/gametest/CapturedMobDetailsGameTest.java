@@ -77,10 +77,10 @@ public class CapturedMobDetailsGameTest {
     @GameTest
     public void aFrogShowsItsVariant(GameTestHelper h) {
         CapturedMob frog = capture(h, EntityTypes.FROG, m -> {});
-        h.assertTrue(has(CapturedMobDetails.looks(frog), "tooltip.nexusessentials.captured_mob_variant", "Temperate"), "a frog shows its variant");
+        h.assertTrue(has(CapturedMobDetails.looks(frog), "tooltip.nexium.captured_mob_variant", "Temperate"), "a frog shows its variant");
         CompoundTag warm = new CompoundTag();
         warm.putString("variant", "minecraft:warm");
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.FROG, warm)), "tooltip.nexusessentials.captured_mob_variant", "Warm"), "a warm one says warm");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.FROG, warm)), "tooltip.nexium.captured_mob_variant", "Warm"), "a warm one says warm");
         h.succeed();
     }
 
@@ -88,20 +88,20 @@ public class CapturedMobDetailsGameTest {
     public void otherMobsShowWhatTheyLookLike(GameTestHelper h) {
         CompoundTag horse = new CompoundTag();
         horse.putInt("Variant", 2 | 3 << 8); // chestnut with white dots
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.HORSE, horse)), "tooltip.nexusessentials.captured_mob_variant", "Chestnut, White Dots"), "a horse's coat");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.HORSE, horse)), "tooltip.nexium.captured_mob_variant", "Chestnut, White Dots"), "a horse's coat");
         CompoundTag plain = new CompoundTag();
         plain.putInt("Variant", 5);
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.HORSE, plain)), "tooltip.nexusessentials.captured_mob_variant", "Gray"), "no markings, just the colour");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.HORSE, plain)), "tooltip.nexium.captured_mob_variant", "Gray"), "no markings, just the colour");
 
         CapturedMob sheep = capture(h, EntityTypes.SHEEP, m -> ((Sheep) m).setColor(DyeColor.LIGHT_BLUE));
-        h.assertTrue(has(CapturedMobDetails.looks(sheep), "tooltip.nexusessentials.captured_mob_colour", "Light Blue"), "a sheep's wool");
+        h.assertTrue(has(CapturedMobDetails.looks(sheep), "tooltip.nexium.captured_mob_colour", "Light Blue"), "a sheep's wool");
 
         CompoundTag rabbit = new CompoundTag();
         rabbit.putInt("RabbitType", 5);
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.RABBIT, rabbit)), "tooltip.nexusessentials.captured_mob_variant", "Salt and Pepper"), "a rabbit");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.RABBIT, rabbit)), "tooltip.nexium.captured_mob_variant", "Salt and Pepper"), "a rabbit");
         CompoundTag fox = new CompoundTag();
         fox.putString("Type", "snow");
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.FOX, fox)), "tooltip.nexusessentials.captured_mob_variant", "Snow"), "a fox");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.FOX, fox)), "tooltip.nexium.captured_mob_variant", "Snow"), "a fox");
 
         CompoundTag villager = new CompoundTag();
         CompoundTag data = new CompoundTag();
@@ -110,13 +110,13 @@ public class CapturedMobDetailsGameTest {
         data.putString("type", "minecraft:desert");
         villager.put("VillagerData", data);
         List<Component> lines = CapturedMobDetails.looks(made(EntityTypes.VILLAGER, villager));
-        h.assertTrue(has(lines, "tooltip.nexusessentials.captured_mob_villager", "Farmer") && has(lines, "tooltip.nexusessentials.captured_mob_villager", "Desert")
-                && has(lines, "tooltip.nexusessentials.captured_mob_villager", "merchant.level.3"), "a villager's job, level and village type");
+        h.assertTrue(has(lines, "tooltip.nexium.captured_mob_villager", "Farmer") && has(lines, "tooltip.nexium.captured_mob_villager", "Desert")
+                && has(lines, "tooltip.nexium.captured_mob_villager", "merchant.level.3"), "a villager's job, level and village type");
         CompoundTag none = new CompoundTag();
         CompoundTag jobless = new CompoundTag();
         jobless.putString("profession", "minecraft:none");
         none.put("VillagerData", jobless);
-        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.VILLAGER, none)), "tooltip.nexusessentials.captured_mob_unemployed", null), "without a job");
+        h.assertTrue(has(CapturedMobDetails.looks(made(EntityTypes.VILLAGER, none)), "tooltip.nexium.captured_mob_unemployed", null), "without a job");
         h.succeed();
     }
 
@@ -135,15 +135,15 @@ public class CapturedMobDetailsGameTest {
     public void ageAndBreeding(GameTestHelper h) {
         CapturedMob baby = capture(h, EntityTypes.COW, m -> { ((Animal) m).setBaby(true); ((Animal) m).setInLove(null); });
         List<Component> lines = CapturedMobDetails.details(baby, id -> null);
-        h.assertTrue(has(lines, "tooltip.nexusessentials.captured_mob_grows_up", "20:00"), "a new baby grows up in 20 minutes");
-        h.assertTrue(has(lines, "tooltip.nexusessentials.captured_mob_in_love", null), "in love");
+        h.assertTrue(has(lines, "tooltip.nexium.captured_mob_grows_up", "20:00"), "a new baby grows up in 20 minutes");
+        h.assertTrue(has(lines, "tooltip.nexium.captured_mob_in_love", null), "in love");
         CompoundTag adult = new CompoundTag();
         adult.putInt("Age", 6000);
-        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.COW, adult), id -> null), "tooltip.nexusessentials.captured_mob_breed_in", "5:00"), "breeding cooldown");
+        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.COW, adult), id -> null), "tooltip.nexium.captured_mob_breed_in", "5:00"), "breeding cooldown");
         CompoundTag locked = new CompoundTag();
         locked.putInt("Age", -100);
         locked.putBoolean("AgeLocked", true);
-        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.COW, locked), id -> null), "tooltip.nexusessentials.captured_mob_stays_baby", null), "a locked baby stays one");
+        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.COW, locked), id -> null), "tooltip.nexium.captured_mob_stays_baby", null), "a locked baby stays one");
         h.succeed();
     }
 
@@ -153,18 +153,18 @@ public class CapturedMobDetailsGameTest {
         var player = h.makeMockServerPlayerInLevel();
         CapturedMob wolf = capture(h, EntityTypes.WOLF, m -> ((Wolf) m).tame(player));
         UUID owner = player.getUUID();
-        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> id.equals(owner) ? "Steve" : null), "tooltip.nexusessentials.captured_mob_tamed_by", "Steve"), "tamed by name");
-        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> null), "tooltip.nexusessentials.captured_mob_tamed", null), "tamed, owner not known");
-        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> null), "tooltip.nexusessentials.captured_mob_collar", "Red"), "its collar");
+        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> id.equals(owner) ? "Steve" : null), "tooltip.nexium.captured_mob_tamed_by", "Steve"), "tamed by name");
+        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> null), "tooltip.nexium.captured_mob_tamed", null), "tamed, owner not known");
+        h.assertTrue(has(CapturedMobDetails.details(wolf, id -> null), "tooltip.nexium.captured_mob_collar", "Red"), "its collar");
         CapturedMob zombie = capture(h, EntityTypes.ZOMBIE, m -> {
             m.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
             m.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
         });
         List<Component> gear = CapturedMobDetails.details(zombie, id -> null);
-        h.assertTrue(has(gear, "tooltip.nexusessentials.captured_mob_gear", "item.minecraft.diamond_helmet") && has(gear, "tooltip.nexusessentials.captured_mob_gear", "item.minecraft.iron_sword"),
+        h.assertTrue(has(gear, "tooltip.nexium.captured_mob_gear", "item.minecraft.diamond_helmet") && has(gear, "tooltip.nexium.captured_mob_gear", "item.minecraft.iron_sword"),
                 "what it wears and holds");
         CapturedMob horse = capture(h, EntityTypes.HORSE, m -> m.setItemSlot(EquipmentSlot.BODY, new ItemStack(Items.IRON_HORSE_ARMOR)));
-        h.assertTrue(has(CapturedMobDetails.details(horse, id -> null), "tooltip.nexusessentials.captured_mob_gear", "item.minecraft.iron_horse_armor"), "horse armor");
+        h.assertTrue(has(CapturedMobDetails.details(horse, id -> null), "tooltip.nexium.captured_mob_gear", "item.minecraft.iron_horse_armor"), "horse armor");
         h.succeed();
     }
 
@@ -174,16 +174,16 @@ public class CapturedMobDetailsGameTest {
         List<Component> lines = CapturedMobDetails.details(cow, id -> null);
         h.assertTrue(has(lines, "effect.minecraft.speed", null) && has(lines, "enchantment.level.2", null) && has(lines, " (0:30)", null), "Speed II with its time left");
         CapturedMob sheared = capture(h, EntityTypes.SHEEP, m -> ((Sheep) m).setSheared(true));
-        h.assertTrue(has(CapturedMobDetails.details(sheared, id -> null), "tooltip.nexusessentials.captured_mob_sheared", null), "sheared");
+        h.assertTrue(has(CapturedMobDetails.details(sheared, id -> null), "tooltip.nexium.captured_mob_sheared", null), "sheared");
         CompoundTag slime = new CompoundTag();
         slime.putInt("Size", 2);
-        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.SLIME, slime), id -> null), "tooltip.nexusessentials.captured_mob_size", "3"), "a slime's size");
+        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.SLIME, slime), id -> null), "tooltip.nexium.captured_mob_size", "3"), "a slime's size");
         CompoundTag creeper = new CompoundTag();
         creeper.putBoolean("powered", true);
-        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.CREEPER, creeper), id -> null), "tooltip.nexusessentials.captured_mob_charged", null), "charged");
+        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.CREEPER, creeper), id -> null), "tooltip.nexium.captured_mob_charged", null), "charged");
         CompoundTag zombieVillager = new CompoundTag();
         zombieVillager.putInt("ConversionTime", 1200);
-        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.ZOMBIE_VILLAGER, zombieVillager), id -> null), "tooltip.nexusessentials.captured_mob_curing", null), "being cured");
+        h.assertTrue(has(CapturedMobDetails.details(made(EntityTypes.ZOMBIE_VILLAGER, zombieVillager), id -> null), "tooltip.nexium.captured_mob_curing", null), "being cured");
         h.succeed();
     }
 

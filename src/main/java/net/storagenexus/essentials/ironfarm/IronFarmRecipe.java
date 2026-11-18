@@ -43,7 +43,7 @@ public final class IronFarmRecipe {
         }
 
         public Component displayName() {
-            return Component.translatable("message.nexusessentials.iron_farm_part." + key);
+            return Component.translatable("message.nexium.iron_farm_part." + key);
         }
 
         /** Zombies and villagers are mobs: a spawn egg or a Captured Mob. */

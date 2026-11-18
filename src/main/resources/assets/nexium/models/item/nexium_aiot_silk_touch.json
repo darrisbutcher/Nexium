@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "nexium:item/nexium_aiot",
+    "layer1": "nexium:item/aiot_gem_silk_touch"
+  }
+}

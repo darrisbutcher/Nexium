@@ -17,9 +17,9 @@ abstract class CapeLayerMixin {
     @WrapOperation(
             method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/AvatarRenderState;FF)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/CapeLayer;hasLayer(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;)Z"))
-    private boolean nexusessentials$hideCapeUnderWings(CapeLayer layer, ItemStack stack, EquipmentClientInfo.LayerType type,
+    private boolean nexium$hideCapeUnderWings(CapeLayer layer, ItemStack stack, EquipmentClientInfo.LayerType type,
                                                        Operation<Boolean> original, @Local(argsOnly = true) AvatarRenderState state) {
-        if (type == EquipmentClientInfo.LayerType.WINGS && !((WingsRenderState) state).nexusessentials$wings().isEmpty()) return true;
+        if (type == EquipmentClientInfo.LayerType.WINGS && !((WingsRenderState) state).nexium$wings().isEmpty()) return true;
         return original.call(layer, stack, type);
     }
 }

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:bedrock_breaker_elixir"
+    },
+    "title": {
+      "translate": "advancement.nexium.elixir.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.elixir.description"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/root"
+}

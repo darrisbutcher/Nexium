@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "storagenexus-gametest",
+  "id": "nexium-gametest",
   "version": "1.0.0",
   "name": "Nexium Game Tests",
   "description": "In-game tests for Nexium. Not shipped with the mod.",
@@ -103,7 +103,7 @@
     ]
   },
   "depends": {
-    "storagenexus": "*",
+    "nexium": "*",
     "fabric-api": "*"
   }
 }

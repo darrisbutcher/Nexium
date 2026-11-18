@@ -28,7 +28,7 @@ public class DrawerKeyItem extends Item {
         if (!level.isClientSide()) {
             boolean now = !lockable.isLocked();
             lockable.setLocked(now);
-            player.sendOverlayMessage(Component.translatable(now ? "message.storagenexus.drawer_locked" : "message.storagenexus.drawer_unlocked"));
+            player.sendOverlayMessage(Component.translatable(now ? "message.nexium.drawer_locked" : "message.nexium.drawer_unlocked"));
             level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.8F, now ? 1.3F : 0.9F);
         }
         return true;

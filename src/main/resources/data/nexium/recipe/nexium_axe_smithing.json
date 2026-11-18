@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "nexium:nexium_ingot",
+  "base": "minecraft:netherite_axe",
+  "result": {
+    "id": "nexium:nexium_axe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

@@ -47,7 +47,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         }
         for (int i = 0; i < TYPE_KEYS.length; i++) {
             final int id = i;
-            typeButtons[i] = addRenderableWidget(Button.builder(Component.translatable("conduit.storagenexus." + TYPE_KEYS[i]),
+            typeButtons[i] = addRenderableWidget(Button.builder(Component.translatable("conduit.nexium." + TYPE_KEYS[i]),
                     b -> click(ConduitConfigMenu.BTN_TYPE + id)).bounds(leftPos + 8 + i * 46, topPos + 34, 44, 14).build());
         }
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_MODE))
@@ -79,17 +79,17 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         for (int i = 0; i < 6; i++) sideButtons[i].setMessage(Component.literal(i == side ? "[" + SIDES[i] + "]" : SIDES[i]));
         for (int i = 0; i < TYPE_KEYS.length; i++) {
             typeButtons[i].active = (types & (1 << i)) != 0;
-            Component name = Component.translatable("conduit.storagenexus." + TYPE_KEYS[i]);
+            Component name = Component.translatable("conduit.nexium." + TYPE_KEYS[i]);
             typeButtons[i].setMessage(i == type ? Component.literal("> ").append(name) : name);
         }
         SideConfig.Mode mode = SideConfig.Mode.values()[menu.get(ConduitConfigMenu.D_MODE) % 4];
-        modeButton.setMessage(Component.translatable("mode.storagenexus." + mode.name().toLowerCase(Locale.ROOT)));
+        modeButton.setMessage(Component.translatable("mode.nexium." + mode.name().toLowerCase(Locale.ROOT)));
         for (Button b : insertPicker) b.active = mode.inserts();
         for (Button b : extractPicker) b.active = mode.extracts();
         SideConfig.RedstoneControl rc = SideConfig.RedstoneControl.values()[menu.get(ConduitConfigMenu.D_REDSTONE) % 4];
-        redstoneButton.setMessage(Component.translatable("redstone.storagenexus." + rc.name().toLowerCase(Locale.ROOT)));
+        redstoneButton.setMessage(Component.translatable("redstone.nexium." + rc.name().toLowerCase(Locale.ROOT)));
         rrButton.setMessage(Component.translatable(menu.get(ConduitConfigMenu.D_RR) == 1
-                ? "screen.storagenexus.round_robin_on" : "screen.storagenexus.round_robin_off"));
+                ? "screen.nexium.round_robin_on" : "screen.nexium.round_robin_off"));
     }
 
     @Override
@@ -101,8 +101,8 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         SideConfig.Mode mode = mode();
-        g.text(font, Component.translatable("screen.storagenexus.channel_in"), leftPos + 8, topPos + PICKER_Y + 3, palette().text(), false);
-        g.text(font, Component.translatable("screen.storagenexus.channel_out"), leftPos + 70, topPos + PICKER_Y + 3, palette().text(), false);
+        g.text(font, Component.translatable("screen.nexium.channel_in"), leftPos + 8, topPos + PICKER_Y + 3, palette().text(), false);
+        g.text(font, Component.translatable("screen.nexium.channel_out"), leftPos + 70, topPos + PICKER_Y + 3, palette().text(), false);
         swatch(g, IN_SWATCH_X, menu.get(ConduitConfigMenu.D_CHANNEL) % 16, mode.inserts());
         swatch(g, OUT_SWATCH_X, menu.get(ConduitConfigMenu.D_EXTRACT_CHANNEL) % 16, mode.extracts());
         String prio = Integer.toString(menu.get(ConduitConfigMenu.D_PRIORITY) - 100);
@@ -141,7 +141,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         boolean connected = menu.get(ConduitConfigMenu.D_CONNECTED) == 1;
         return Component.empty().append(NeighbourNames.sideName(selectedSide())).append(": ")
                 .append(NeighbourNames.describe(menu.pos(), selectedSide()))
-                .append(Component.translatable(connected ? "screen.storagenexus.side_connected" : "screen.storagenexus.side_not_connected"));
+                .append(Component.translatable(connected ? "screen.nexium.side_connected" : "screen.nexium.side_not_connected"));
     }
 
     @Override
@@ -156,9 +156,9 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
             if (mouseX >= x && mouseX < x + 14 && mouseY >= topPos + PICKER_Y && mouseY < topPos + PICKER_Y + 14) {
                 int channel = menu.get(i == 0 ? ConduitConfigMenu.D_CHANNEL : ConduitConfigMenu.D_EXTRACT_CHANNEL) % 16;
                 g.setComponentTooltipForNextFrame(font, java.util.List.of(
-                        Component.translatable(i == 0 ? "screen.storagenexus.channel_in.tooltip" : "screen.storagenexus.channel_out.tooltip",
+                        Component.translatable(i == 0 ? "screen.nexium.channel_in.tooltip" : "screen.nexium.channel_out.tooltip",
                                 Component.translatable("color.minecraft." + COLOR_KEYS[channel])),
-                        Component.translatable(i == 0 ? "screen.storagenexus.channel_in.hint" : "screen.storagenexus.channel_out.hint")
+                        Component.translatable(i == 0 ? "screen.nexium.channel_in.hint" : "screen.nexium.channel_out.hint")
                                 .withStyle(net.minecraft.ChatFormatting.GRAY)), mouseX, mouseY);
             }
         }

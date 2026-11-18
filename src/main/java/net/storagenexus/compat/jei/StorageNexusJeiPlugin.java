@@ -80,7 +80,7 @@ public class StorageNexusJeiPlugin implements IModPlugin {
                                                              Player player, boolean maxTransfer, boolean doTransfer) {
             if (!menu.isCrafting()) return helper.createInternalError();
             if (!RecipeTransfer.canCraft(menu, player, recipe.value())) {
-                Component message = Component.translatable("screen.storagenexus.missing_ingredients");
+                Component message = Component.translatable("screen.nexium.missing_ingredients");
                 List<IRecipeSlotView> missing = slots == null ? List.of() : missingSlots(menu, player, slots);
                 return missing.isEmpty() ? helper.createUserErrorWithTooltip(message) : helper.createUserErrorForMissingSlots(message, missing);
             }

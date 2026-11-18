@@ -32,8 +32,8 @@ public class CapturedMobItem extends Item {
         if (mob == null) return super.getName(stack);
         Component typeName = mob.type().getDescription();
         return mob.customName()
-                .map(name -> (Component) Component.translatable("item.nexusessentials.captured_mob.named", name, typeName))
-                .orElseGet(() -> Component.translatable("item.nexusessentials.captured_mob.of", typeName));
+                .map(name -> (Component) Component.translatable("item.nexium.captured_mob.named", name, typeName))
+                .orElseGet(() -> Component.translatable("item.nexium.captured_mob.of", typeName));
     }
 
     @Override
@@ -61,8 +61,8 @@ public class CapturedMobItem extends Item {
         CapturedMob mob = stack.get(ModComponents.CAPTURED_MOB);
         if (mob == null) return;
         if (mob.customName().isPresent()) tooltip.accept(mob.type().getDescription().copy().withStyle(ChatFormatting.GRAY));
-        if (mob.baby()) tooltip.accept(Component.translatable("tooltip.nexusessentials.captured_mob_baby").withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.captured_mob_health",
+        if (mob.baby()) tooltip.accept(Component.translatable("tooltip.nexium.captured_mob_baby").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.captured_mob_health",
                 String.format(Locale.ROOT, "%.1f", mob.health()), String.format(Locale.ROOT, "%.0f", mob.maxHealth())).withStyle(ChatFormatting.RED));
         // What it looks like (a variant, a colour, a villager's job): always shown, the farms ask for variants
         CapturedMobDetails.looks(mob).forEach(tooltip);

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * What a Backpack holds: {@link #SIZE} slots, saved in the Backpack's {@code nexusessentials:backpack_items}
+ * What a Backpack holds: {@link #SIZE} slots, saved in the Backpack's {@code nexium:backpack_items}
  * component so the contents travel with the item (dropped on death, kept with keepInventory, carried in chests).
  *
  * <p>Each stored slot is an item (with its components), a count and its slot number rather than a plain item stack,

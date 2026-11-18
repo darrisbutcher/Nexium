@@ -40,7 +40,7 @@ public class BackpackItem extends Item {
             player.setItemInHand(hand, worn.copy());
             if (!level.isClientSide()) {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
-                player.sendOverlayMessage(Component.translatable("message.nexusessentials.backpack_equipped"));
+                player.sendOverlayMessage(Component.translatable("message.nexium.backpack_equipped"));
             }
             return InteractionResult.SUCCESS;
         }
@@ -52,16 +52,16 @@ public class BackpackItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.backpack_slots", BackpackContents.usedSlots(stack), BackpackContents.SIZE)
+        tooltip.accept(Component.translatable("tooltip.nexium.backpack_slots", BackpackContents.usedSlots(stack), BackpackContents.SIZE)
                 .withStyle(ChatFormatting.GRAY));
         for (ItemStack module : BackpackModules.slots(stack)) {
             if (module.isEmpty()) continue;
             boolean on = !module.has(net.storagenexus.registry.ModComponents.MODULE_OFF);
-            tooltip.accept(Component.translatable(on ? "tooltip.nexusessentials.backpack_module_on" : "tooltip.nexusessentials.backpack_module_off",
+            tooltip.accept(Component.translatable(on ? "tooltip.nexium.backpack_module_on" : "tooltip.nexium.backpack_module_off",
                     module.getHoverName()).withStyle(on ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
         }
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.backpack_use").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.backpack_key",
-                Component.keybind("key.nexusessentials.open_backpack")).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.backpack_use").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.backpack_key",
+                Component.keybind("key.nexium.open_backpack")).withStyle(ChatFormatting.DARK_GRAY));
     }
 }

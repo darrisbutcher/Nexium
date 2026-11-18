@@ -23,8 +23,8 @@ public class CapacityUpgradeItem extends UpgradeItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.storagenexus.capacity_upgrade", multiplier).withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.storagenexus.capacity_upgrade.stack").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.storagenexus.capacity_upgrade.swap").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.capacity_upgrade", multiplier).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.capacity_upgrade.stack").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.capacity_upgrade.swap").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

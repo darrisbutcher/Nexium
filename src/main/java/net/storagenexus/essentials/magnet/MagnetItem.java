@@ -57,7 +57,7 @@ public class MagnetItem extends Item {
             if (!level.isClientSide()) {
                 int range = nextRange(range(stack));
                 stack.set(ModComponents.MAGNET_RANGE, range);
-                player.sendOverlayMessage(Component.translatable("message.nexusessentials.magnet_range", range));
+                player.sendOverlayMessage(Component.translatable("message.nexium.magnet_range", range));
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 0.4F, 1.0F + range / 32.0F);
             }
             return InteractionResult.SUCCESS;
@@ -71,7 +71,7 @@ public class MagnetItem extends Item {
         player.setItemInHand(hand, worn.copy());
         if (!level.isClientSide()) {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
-            player.sendOverlayMessage(Component.translatable("message.nexusessentials.magnet_equipped"));
+            player.sendOverlayMessage(Component.translatable("message.nexium.magnet_equipped"));
         }
         return InteractionResult.SUCCESS;
     }
@@ -79,12 +79,12 @@ public class MagnetItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         boolean active = isActive(stack);
-        tooltip.accept(Component.translatable(active ? "tooltip.nexusessentials.magnet_on" : "tooltip.nexusessentials.magnet_off")
+        tooltip.accept(Component.translatable(active ? "tooltip.nexium.magnet_on" : "tooltip.nexium.magnet_off")
                 .withStyle(active ? ChatFormatting.GREEN : ChatFormatting.RED));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.magnet_range", range(stack)).withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.magnet_slot").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.magnet_cycle").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.magnet_toggle",
-                Component.keybind("key.nexusessentials.toggle_magnet")).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.magnet_range", range(stack)).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.magnet_slot").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.magnet_cycle").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.magnet_toggle",
+                Component.keybind("key.nexium.toggle_magnet")).withStyle(ChatFormatting.DARK_GRAY));
     }
 }

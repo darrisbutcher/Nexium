@@ -107,7 +107,7 @@ public class BackpackClientTest implements FabricClientGameTest {
                 var trinket = mc.player.inventoryMenu.getSlot(ExtraSlots.MENU_TRINKET);
                 return backpack.x + "," + backpack.y + " " + backpack.getItem().getItem() + " / " + trinket.x + "," + trinket.y;
             });
-            check(slots.startsWith("77,8 ") && slots.contains("nexusessentials:backpack") && slots.endsWith("77,26"), "the backpack slot is above the magnet slot and holds the backpack: " + slots);
+            check(slots.startsWith("77,8 ") && slots.contains("nexium:backpack") && slots.endsWith("77,26"), "the backpack slot is above the magnet slot and holds the backpack: " + slots);
             System.out.println("[nexus] backpack in the inventory: " + ctx.takeScreenshot("nexus_backpack_inventory"));
             ctx.setScreen(() -> null);
             ctx.waitTicks(5);
@@ -123,7 +123,7 @@ public class BackpackClientTest implements FabricClientGameTest {
                         + menu.getSlot(0).getItem().getItem() + " " + menu.getSlot(1).getItem().getItem() + " " + menu.getSlot(2).getItem().getItem() + " " + menu.getSlot(3).getItem().getItem()
                         + " " + menu.getSlot(4).getItem().isEmpty();
             });
-            check(shown.equals(Backpacks.EQUIPPED + " 1024 minecraft:torch | 12 | nexusessentials:auto_torch_module nexusessentials:restocking_module nexusessentials:feeding_module nexusessentials:compacting_module true"),
+            check(shown.equals(Backpacks.EQUIPPED + " 1024 minecraft:torch | 12 | nexium:auto_torch_module nexium:restocking_module nexium:feeding_module nexium:compacting_module true"),
                     "the client sees 1,024 torches in one slot, the diamonds and the four modules: " + shown);
             System.out.println("[nexus] backpack with stacks of 1,024: " + ctx.takeScreenshot("nexus_backpack_stacks_1024"));
 

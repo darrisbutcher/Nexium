@@ -105,7 +105,7 @@ public class AiotItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         // Sneak + right-click a Crafting Terminal: links the installed Nexus Link module to it
         if (!AiotModules.find(context.getItemInHand(), ModuleType.NEXUS_LINK).isEmpty()
-                && ModuleItem.linkTo(context, link -> AiotModules.relink(context.getItemInHand(), link), "message.storagenexus.nexus_link.linked")) {
+                && ModuleItem.linkTo(context, link -> AiotModules.relink(context.getItemInHand(), link), "message.nexium.nexus_link.linked")) {
             return InteractionResult.SUCCESS;
         }
         var transformers = context.getLevel().registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
@@ -124,14 +124,14 @@ public class AiotItem extends Item {
         // Silk Touch or Fortune, whichever isn't active, so the player knows the AIOT still has it
         ItemEnchantments inactive = stack.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY);
         for (Object2IntMap.Entry<Holder<Enchantment>> entry : inactive.entrySet()) {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.aiot_inactive",
+            tooltip.accept(Component.translatable("tooltip.nexium.aiot_inactive",
                     Enchantment.getFullname(entry.getKey(), entry.getIntValue())).withStyle(ChatFormatting.DARK_GRAY));
         }
         // Installed modules, and whether each is on
         for (ItemStack module : AiotModules.slots(stack)) {
             if (module.isEmpty()) continue;
             boolean on = !module.has(ModComponents.MODULE_OFF);
-            tooltip.accept(Component.translatable(on ? "tooltip.storagenexus.aiot_module_on" : "tooltip.storagenexus.aiot_module_off",
+            tooltip.accept(Component.translatable(on ? "tooltip.nexium.aiot_module_on" : "tooltip.nexium.aiot_module_off",
                     module.getHoverName()).withStyle(on ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY));
         }
     }

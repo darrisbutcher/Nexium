@@ -81,7 +81,7 @@ final class TerminalView {
 
     void init(Consumer<AbstractWidget> add, int left, int top) {
         String query = search == null ? "" : search.getValue();
-        search = new EditBox(font, 0, 0, 54, 11, Component.translatable("screen.storagenexus.search"));
+        search = new EditBox(font, 0, 0, 54, 11, Component.translatable("screen.nexium.search"));
         search.setMaxLength(50);
         search.setBordered(true);
         search.setValue(query);
@@ -100,7 +100,7 @@ final class TerminalView {
             descending = !descending;
             b.setMessage(directionLabel());
             refilter();
-        }).bounds(0, 0, 16, 13).tooltip(Tooltip.create(Component.translatable("screen.storagenexus.sort_direction"))).build();
+        }).bounds(0, 0, 16, 13).tooltip(Tooltip.create(Component.translatable("screen.nexium.sort_direction"))).build();
         add.accept(directionButton);
         reposition(left, top);
         refilter();
@@ -250,7 +250,7 @@ final class TerminalView {
             if (i == hovered) g.fill(x, y, x + 16, y + 16, 0x80FFFFFF);
         }
         if (!menu.clientOnline()) {
-            Component off = Component.translatable("message.storagenexus.network_offline").withStyle(ChatFormatting.RED);
+            Component off = Component.translatable("message.nexium.network_offline").withStyle(ChatFormatting.RED);
             g.text(font, off, gx + 81 - font.width(off) / 2, gy + rows() * 9 - 4, 0xFFFF5555, true);
         }
         Entry e = hovered < 0 ? null : entryAt(start + hovered);
@@ -262,7 +262,7 @@ final class TerminalView {
                 // The usual item tooltip plus the exact amount (the cell shows e.g. "3.5k")
                 ItemStack stack = e.item().stack();
                 List<Component> lines = new ArrayList<>(net.minecraft.client.gui.screens.Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
-                lines.add(Component.translatable("tooltip.storagenexus.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
+                lines.add(Component.translatable("tooltip.nexium.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
                         .withStyle(ChatFormatting.AQUA));
                 g.setTooltipForNextFrame(font, lines, stack.getTooltipImage(), mouseX, mouseY);
             }

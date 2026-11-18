@@ -126,7 +126,7 @@ public class SaveLoadGameTest {
         Set<String> missing = new TreeSet<>();
         for (BlockEntityType<?> type : BuiltInRegistries.BLOCK_ENTITY_TYPE) {
             String namespace = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type).getNamespace();
-            if ((namespace.equals("storagenexus") || namespace.equals("nexusessentials")) && !covered.contains(type)) {
+            if ((namespace.equals("nexium") || namespace.equals("nexium")) && !covered.contains(type)) {
                 missing.add(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type).toString());
             }
         }

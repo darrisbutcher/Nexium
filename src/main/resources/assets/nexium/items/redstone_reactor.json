@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "nexium:block/redstone_reactor"
+  }
+}

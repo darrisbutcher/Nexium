@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:disk_casing",
+    "nexium:64k_fluid_part"
+  ],
+  "result": {
+    "id": "nexium:64k_fluid_disk"
+  }
+}

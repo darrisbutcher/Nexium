@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "nexium:nexium_ingot",
+  "base": "minecraft:netherite_pickaxe",
+  "result": {
+    "id": "nexium:nexium_pickaxe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

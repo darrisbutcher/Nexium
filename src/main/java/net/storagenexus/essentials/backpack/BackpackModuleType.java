@@ -24,7 +24,7 @@ public enum BackpackModuleType {
         this.retired = retired;
     }
 
-    /** Item id prefix, as in {@code nexusessentials:<id>_module}, and lang key part. */
+    /** Item id prefix, as in {@code nexium:<id>_module}, and lang key part. */
     public String id() {
         return id;
     }

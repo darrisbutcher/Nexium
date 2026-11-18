@@ -14,7 +14,7 @@ import java.util.Optional;
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
     @Inject(method = "getTooltipImage", at = @At("HEAD"), cancellable = true)
-    private void storagenexus$shulkerPreview(CallbackInfoReturnable<Optional<TooltipComponent>> cir) {
+    private void nexium$shulkerPreview(CallbackInfoReturnable<Optional<TooltipComponent>> cir) {
         ShulkerPreview preview = ShulkerPreview.of((ItemStack) (Object) this);
         if (preview != null) cir.setReturnValue(Optional.of(preview));
     }

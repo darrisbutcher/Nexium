@@ -52,16 +52,16 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
         Component status;
         int colour;
         if (menu.paused()) {
-            status = Component.translatable("screen.nexusessentials.iron_farm_paused");
+            status = Component.translatable("screen.nexium.iron_farm_paused");
             colour = FULL;
         } else if (menu.full()) {
-            status = Component.translatable("screen.nexusessentials.iron_farm_full");
+            status = Component.translatable("screen.nexium.iron_farm_full");
             colour = FULL;
         } else if (menu.unpowered()) {
-            status = Component.translatable("screen.nexusessentials.no_power", IronFarmBlockEntity.ENERGY_PER_TICK);
+            status = Component.translatable("screen.nexium.no_power", IronFarmBlockEntity.ENERGY_PER_TICK);
             colour = FULL;
         } else {
-            status = Component.translatable("screen.nexusessentials.iron_farm_working", ironPerHour());
+            status = Component.translatable("screen.nexium.iron_farm_working", ironPerHour());
             colour = MUTED;
         }
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 4, colour, false);
@@ -92,8 +92,8 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X - 1, BAR_Y - 1, BAR_W + 2, BAR_H + 2, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.nexusessentials.iron_farm_next", Math.round(menu.progress() * 100)),
-                    Component.translatable("screen.nexusessentials.iron_farm_rate", ironPerHour()).withStyle(ChatFormatting.GRAY)
+                    Component.translatable("screen.nexium.iron_farm_next", Math.round(menu.progress() * 100)),
+                    Component.translatable("screen.nexium.iron_farm_rate", ironPerHour()).withStyle(ChatFormatting.GRAY)
             ), mouseX, mouseY);
         }
     }

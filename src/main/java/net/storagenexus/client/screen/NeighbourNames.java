@@ -17,7 +17,7 @@ final class NeighbourNames {
     private static final String[] SIDE_KEYS = {"down", "up", "north", "south", "west", "east"};
 
     static Component sideName(Direction side) {
-        return Component.translatable("direction.storagenexus." + SIDE_KEYS[side.get3DDataValue()]);
+        return Component.translatable("direction.nexium." + SIDE_KEYS[side.get3DDataValue()]);
     }
 
     /** "Chest", "Item Conduit (Tier 2), Fluid Conduit (Tier 1)", or "Nothing". */
@@ -26,7 +26,7 @@ final class NeighbourNames {
         if (level == null) return Component.empty();
         BlockPos n = pos.relative(side);
         BlockState state = level.getBlockState(n);
-        if (state.isAir()) return Component.translatable("screen.storagenexus.nothing");
+        if (state.isAir()) return Component.translatable("screen.nexium.nothing");
         if (level.getBlockEntity(n) instanceof ConduitBundleBlockEntity bundle) {
             MutableComponent out = Component.empty();
             for (ConduitType t : ConduitType.VALUES) {

@@ -121,12 +121,12 @@ public abstract class FacingDrawerBlock extends BaseEntityBlock {
                 Component name = stack.getHoverName();
                 ItemStack replaced;
                 if (upgradeable.tryInstall(stack)) {
-                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_installed", name));
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_installed", name));
                 } else if (!(replaced = upgradeable.tryReplaceCapacity(stack)).isEmpty()) {
-                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_replaced", replaced.getHoverName(), name));
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_replaced", replaced.getHoverName(), name));
                     popResourceFromFace(level, pos, hit.getDirection(), replaced);
                 } else {
-                    player.sendOverlayMessage(Component.translatable("message.storagenexus.upgrade_rejected"));
+                    player.sendOverlayMessage(Component.translatable("message.nexium.upgrade_rejected"));
                 }
             }
             return InteractionResult.SUCCESS;

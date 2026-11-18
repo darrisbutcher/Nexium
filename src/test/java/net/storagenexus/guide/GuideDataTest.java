@@ -50,10 +50,10 @@ class GuideDataTest {
     void categoriesTopicsAndLangKeys() {
         GuideData data = sample();
         assertEquals(2, data.categories().size());
-        assertEquals("codex.storagenexus.category.basics", data.categories().getFirst().titleKey());
+        assertEquals("codex.nexium.category.basics", data.categories().getFirst().titleKey());
         assertEquals("intro", data.home());
         GuideData.Topic intro = data.topic("intro");
-        assertEquals("guide.storagenexus.start.intro", intro.titleKey());
+        assertEquals("guide.nexium.start.intro", intro.titleKey());
         assertEquals(List.of("start.intro", "start.more"), intro.pages());
         assertEquals(List.of("cables"), intro.see());
         assertEquals(List.of(), intro.recipes());
@@ -70,7 +70,7 @@ class GuideDataTest {
                 "#minecraft:planks", null, "#minecraft:planks",
                 "#minecraft:planks", "#minecraft:planks", "#minecraft:planks"), frame.cells());
         assertEquals(2, frame.count());
-        assertEquals("guide.storagenexus.note.planks", frame.noteKey());
+        assertEquals("guide.nexium.note.planks", frame.noteKey());
 
         // A pattern smaller than 3x3 fills the first cells and leaves the rest empty
         GuideData.Recipe cable = sample().recipes().get("cable");

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:double_compressed_end_stone"
+  ],
+  "result": {
+    "id": "nexium:compressed_end_stone",
+    "count": 9
+  }
+}

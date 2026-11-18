@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class AvatarRendererMixin {
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V",
             at = @At("TAIL"))
-    private void nexusessentials$extractWings(Avatar entity, AvatarRenderState state, float partialTicks, CallbackInfo ci) {
+    private void nexium$extractWings(Avatar entity, AvatarRenderState state, float partialTicks, CallbackInfo ci) {
         ItemStack wings = entity instanceof Player player ? ExtraSlots.of(player).wings() : ItemStack.EMPTY;
-        ((WingsRenderState) state).nexusessentials$setWings(wings.isEmpty() ? ItemStack.EMPTY : wings.copy());
+        ((WingsRenderState) state).nexium$setWings(wings.isEmpty() ? ItemStack.EMPTY : wings.copy());
     }
 }

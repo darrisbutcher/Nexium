@@ -425,7 +425,7 @@ public class BackpackGameTest {
         }
     }
 
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 300)
+    @GameTest(environment = "nexium:isolated", padding = 40, maxTicks = 300)
     public void autoTorchLightsADarkRoomSpacedOut(GameTestHelper h) {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
@@ -471,7 +471,7 @@ public class BackpackGameTest {
                 .thenSucceed();
     }
 
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 200)
+    @GameTest(environment = "nexium:isolated", padding = 40, maxTicks = 200)
     public void autoTorchLightsBothSidesOfAWallAndACaveNobodySees(GameTestHelper h) {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
@@ -505,7 +505,7 @@ public class BackpackGameTest {
                 .thenSucceed();
     }
 
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 100)
+    @GameTest(environment = "nexium:isolated", padding = 40, maxTicks = 100)
     public void autoTorchLeavesLitGroundAndRunsOutOfTorchesGracefully(GameTestHelper h) {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();
@@ -960,7 +960,7 @@ public class BackpackGameTest {
         h.succeed();
     }
 
-    @GameTest(environment = "storagenexus:isolated", padding = 40, maxTicks = 200)
+    @GameTest(environment = "nexium:isolated", padding = 40, maxTicks = 200)
     public void autoTorchTakesTheTorchesFromTheOpenScreen(GameTestHelper h) {
         ServerPlayer player = player(h);
         ServerLevel level = h.getLevel();

@@ -48,40 +48,40 @@ public final class CapturedMobDetails {
         EntityType<?> type = mob.type();
         String variant = d.getStringOr("variant", "");
         if (!variant.isEmpty()) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", pretty(variant)));
+            lines.add(line("tooltip.nexium.captured_mob_variant", pretty(variant)));
         } else if (type == EntityTypes.HORSE && d.contains("Variant")) {
             int v = d.getIntOr("Variant", 0);
             String colour = name(HORSE_COLOURS, v & 255);
             String markings = name(HORSE_MARKINGS, v >> 8 & 255);
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", markings.isEmpty() ? colour : colour + ", " + markings));
+            lines.add(line("tooltip.nexium.captured_mob_variant", markings.isEmpty() ? colour : colour + ", " + markings));
         } else if ((type == EntityTypes.LLAMA || type == EntityTypes.TRADER_LLAMA) && d.contains("Variant")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", name(LLAMAS, d.getIntOr("Variant", 0))));
+            lines.add(line("tooltip.nexium.captured_mob_variant", name(LLAMAS, d.getIntOr("Variant", 0))));
         } else if (type == EntityTypes.PARROT && d.contains("Variant")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", name(PARROTS, d.getIntOr("Variant", 0))));
+            lines.add(line("tooltip.nexium.captured_mob_variant", name(PARROTS, d.getIntOr("Variant", 0))));
         } else if (type == EntityTypes.AXOLOTL && d.contains("Variant")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", name(AXOLOTLS, d.getIntOr("Variant", 0))));
+            lines.add(line("tooltip.nexium.captured_mob_variant", name(AXOLOTLS, d.getIntOr("Variant", 0))));
         } else if (type == EntityTypes.RABBIT && d.contains("RabbitType")) {
             int r = d.getIntOr("RabbitType", 0);
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", r == 99 ? "Killer Bunny" : name(RABBITS, r)));
+            lines.add(line("tooltip.nexium.captured_mob_variant", r == 99 ? "Killer Bunny" : name(RABBITS, r)));
         } else if ((type == EntityTypes.FOX || type == EntityTypes.MOOSHROOM) && d.contains("Type")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", pretty(d.getStringOr("Type", ""))));
+            lines.add(line("tooltip.nexium.captured_mob_variant", pretty(d.getStringOr("Type", ""))));
         } else if (type == EntityTypes.PANDA && d.contains("MainGene")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", pretty(d.getStringOr("MainGene", ""))));
+            lines.add(line("tooltip.nexium.captured_mob_variant", pretty(d.getStringOr("MainGene", ""))));
         } else if (type == EntityTypes.TROPICAL_FISH && d.contains("Variant")) {
             int v = d.getIntOr("Variant", 0);
             String pattern = pretty(net.minecraft.world.entity.animal.fish.TropicalFish.getPattern(v).name());
-            lines.add(line("tooltip.nexusessentials.captured_mob_variant", pattern + " (" + pretty(DyeColor.byId(v >> 16 & 255).getName())
+            lines.add(line("tooltip.nexium.captured_mob_variant", pattern + " (" + pretty(DyeColor.byId(v >> 16 & 255).getName())
                     + " and " + pretty(net.minecraft.world.entity.animal.fish.TropicalFish.getPatternColor(v).getName()) + ")"));
         }
         if (type == EntityTypes.SHEEP && d.contains("Color")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_colour", pretty(DyeColor.byId(d.getByteOr("Color", (byte) 0)).getName())));
+            lines.add(line("tooltip.nexium.captured_mob_colour", pretty(DyeColor.byId(d.getByteOr("Color", (byte) 0)).getName())));
         }
         if ((type == EntityTypes.VILLAGER || type == EntityTypes.ZOMBIE_VILLAGER) && d.contains("VillagerData")) {
             CompoundTag v = d.getCompoundOrEmpty("VillagerData");
             String profession = v.getStringOr("profession", "minecraft:none");
-            Component job = profession.endsWith(":none") ? Component.translatable("tooltip.nexusessentials.captured_mob_unemployed") : Component.literal(pretty(profession));
+            Component job = profession.endsWith(":none") ? Component.translatable("tooltip.nexium.captured_mob_unemployed") : Component.literal(pretty(profession));
             int level = Math.max(1, Math.min(5, v.getIntOr("level", 1)));
-            lines.add(line("tooltip.nexusessentials.captured_mob_villager", job, Component.translatable("merchant.level." + level), pretty(v.getStringOr("type", "minecraft:plains"))));
+            lines.add(line("tooltip.nexium.captured_mob_villager", job, Component.translatable("merchant.level." + level), pretty(v.getStringOr("type", "minecraft:plains"))));
         }
         return lines;
     }
@@ -99,23 +99,23 @@ public final class CapturedMobDetails {
         // Age and breeding
         int age = d.getIntOr("Age", 0);
         if (age < 0) {
-            lines.add(d.getBooleanOr("AgeLocked", false) ? line("tooltip.nexusessentials.captured_mob_stays_baby")
-                    : line("tooltip.nexusessentials.captured_mob_grows_up", time(-age)));
+            lines.add(d.getBooleanOr("AgeLocked", false) ? line("tooltip.nexium.captured_mob_stays_baby")
+                    : line("tooltip.nexium.captured_mob_grows_up", time(-age)));
         } else if (age > 0) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_breed_in", time(age)));
+            lines.add(line("tooltip.nexium.captured_mob_breed_in", time(age)));
         }
-        if (d.getIntOr("InLove", 0) > 0) lines.add(line("tooltip.nexusessentials.captured_mob_in_love"));
+        if (d.getIntOr("InLove", 0) > 0) lines.add(line("tooltip.nexium.captured_mob_in_love"));
 
         // Owner and gear
         var owner = d.getIntArray("Owner");
         if (owner.isPresent() && owner.get().length == 4) {
             String name = ownerName.apply(UUIDUtil.uuidFromIntArray(owner.get()));
-            lines.add(name == null ? line("tooltip.nexusessentials.captured_mob_tamed") : line("tooltip.nexusessentials.captured_mob_tamed_by", name));
+            lines.add(name == null ? line("tooltip.nexium.captured_mob_tamed") : line("tooltip.nexium.captured_mob_tamed_by", name));
             if (d.contains("CollarColor")) {
-                lines.add(line("tooltip.nexusessentials.captured_mob_collar", pretty(DyeColor.byId(d.getByteOr("CollarColor", (byte) 0)).getName())));
+                lines.add(line("tooltip.nexium.captured_mob_collar", pretty(DyeColor.byId(d.getByteOr("CollarColor", (byte) 0)).getName())));
             }
         }
-        if (d.getBooleanOr("Sitting", false)) lines.add(line("tooltip.nexusessentials.captured_mob_sitting"));
+        if (d.getBooleanOr("Sitting", false)) lines.add(line("tooltip.nexium.captured_mob_sitting"));
         List<Component> gear = gear(d.getCompoundOrEmpty("equipment"));
         if (!gear.isEmpty()) {
             MutableComponent joined = Component.empty();
@@ -123,7 +123,7 @@ public final class CapturedMobDetails {
                 if (i > 0) joined.append(", ");
                 joined.append(gear.get(i));
             }
-            lines.add(line("tooltip.nexusessentials.captured_mob_gear", joined));
+            lines.add(line("tooltip.nexium.captured_mob_gear", joined));
         }
 
         // Status and traits
@@ -139,11 +139,11 @@ public final class CapturedMobDetails {
             lines.add(Component.empty().append(text).append(" (" + time(e.getIntOr("duration", 0)) + ")").withStyle(ChatFormatting.BLUE));
         }
         if ((mob.type() == EntityTypes.SLIME || mob.type() == EntityTypes.MAGMA_CUBE) && d.contains("Size")) {
-            lines.add(line("tooltip.nexusessentials.captured_mob_size", d.getIntOr("Size", 0) + 1));
+            lines.add(line("tooltip.nexium.captured_mob_size", d.getIntOr("Size", 0) + 1));
         }
-        if (d.getBooleanOr("powered", false)) lines.add(line("tooltip.nexusessentials.captured_mob_charged"));
-        if (d.getBooleanOr("Sheared", false)) lines.add(line("tooltip.nexusessentials.captured_mob_sheared"));
-        if (d.getIntOr("ConversionTime", -1) > 0) lines.add(line("tooltip.nexusessentials.captured_mob_curing"));
+        if (d.getBooleanOr("powered", false)) lines.add(line("tooltip.nexium.captured_mob_charged"));
+        if (d.getBooleanOr("Sheared", false)) lines.add(line("tooltip.nexium.captured_mob_sheared"));
+        if (d.getIntOr("ConversionTime", -1) > 0) lines.add(line("tooltip.nexium.captured_mob_curing"));
         return lines;
     }
 

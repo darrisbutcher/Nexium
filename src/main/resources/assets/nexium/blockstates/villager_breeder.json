@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/villager_breeder"
+    },
+    "powered=true": {
+      "model": "nexium:block/villager_breeder"
+    }
+  }
+}

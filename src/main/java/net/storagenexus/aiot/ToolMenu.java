@@ -35,7 +35,7 @@ public final class ToolMenu {
             // The Construction Builder has its own menu
             // A short title that fits the panel ("Nexium Builder"), unless it was renamed
             Component title = tool.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME) ? tool.getHoverName()
-                    : Component.translatable("screen.storagenexus.builder.title." + builder.tier().id());
+                    : Component.translatable("screen.nexium.builder.title." + builder.tier().id());
             Menus.open(player, title, slot, (id, inventory, p) -> new net.storagenexus.builder.BuilderMenu(id, inventory, slot));
             return;
         }
@@ -45,11 +45,11 @@ public final class ToolMenu {
     public static void swapSilkTouchFortune(ServerPlayer player, ItemStack stack) {
         MiningMode mode = AiotEnchanting.swap(stack);
         if (mode == null) {
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_both").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.needs_both").withStyle(ChatFormatting.RED));
             return;
         }
         var enchantment = player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(mode.enchantment());
-        player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.mode",
+        player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.mode",
                 Enchantment.getFullname(enchantment, AiotEnchanting.activeLevel(stack, mode))));
     }
 
@@ -59,15 +59,15 @@ public final class ToolMenu {
         if (nowOff) stack.set(ModComponents.HASTE_OFF, Unit.INSTANCE);
         else stack.remove(ModComponents.HASTE_OFF);
         NexiumHaste.update(player);
-        player.sendOverlayMessage(Component.translatable(nowOff ? "message.storagenexus.tool_menu.haste_off"
-                : "message.storagenexus.tool_menu.haste_on"));
+        player.sendOverlayMessage(Component.translatable(nowOff ? "message.nexium.tool_menu.haste_off"
+                : "message.nexium.tool_menu.haste_on"));
     }
 
     /** Steps the AIOT's vein size to the next one. Returns false if the tool is not an AIOT. */
     public static boolean cycleVeinSize(ServerPlayer player, ItemStack stack) {
         int size = AiotModules.cycleVeinSize(stack);
         if (size == 0) return false;
-        player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.vein_size", size));
+        player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.vein_size", size));
         return true;
     }
 
@@ -75,8 +75,8 @@ public final class ToolMenu {
     public static boolean cycleTunnelLength(ServerPlayer player, ItemStack stack) {
         int length = AiotModules.cycleTunnelLength(stack);
         if (length == 0) return false;
-        player.sendOverlayMessage(length == 1 ? Component.translatable("message.storagenexus.tool_menu.tunnel_off")
-                : Component.translatable("message.storagenexus.tool_menu.tunnel", length));
+        player.sendOverlayMessage(length == 1 ? Component.translatable("message.nexium.tool_menu.tunnel_off")
+                : Component.translatable("message.nexium.tool_menu.tunnel", length));
         return true;
     }
 
@@ -85,8 +85,8 @@ public final class ToolMenu {
         ItemStack module = AiotModules.slots(stack).get(slot);
         Boolean nowOn = AiotModules.toggle(stack, slot);
         if (nowOn == null) return false;
-        player.sendOverlayMessage(Component.translatable(nowOn ? "message.storagenexus.tool_menu.module_on"
-                : "message.storagenexus.tool_menu.module_off", module.getHoverName()));
+        player.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.tool_menu.module_on"
+                : "message.nexium.tool_menu.module_off", module.getHoverName()));
         return true;
     }
 
@@ -104,7 +104,7 @@ public final class ToolMenu {
                 return;
             }
         }
-        player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+        player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.needs_area").withStyle(ChatFormatting.RED));
     }
 
     /**
@@ -118,11 +118,11 @@ public final class ToolMenu {
         if (!(tool.getItem() instanceof AiotItem)) return;
         int length = AiotModules.stepTunnelLength(tool, direction);
         if (length == 0) {
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+            player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.needs_area").withStyle(ChatFormatting.RED));
             return;
         }
-        player.sendOverlayMessage(length == 1 ? Component.translatable("message.storagenexus.tool_menu.tunnel_off")
-                : Component.translatable("message.storagenexus.tool_menu.tunnel", length));
+        player.sendOverlayMessage(length == 1 ? Component.translatable("message.nexium.tool_menu.tunnel_off")
+                : Component.translatable("message.nexium.tool_menu.tunnel", length));
     }
 
     private ToolMenu() {}

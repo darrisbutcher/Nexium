@@ -56,17 +56,17 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
             ItemStack module = menu.getSlot(i).getItem();
             if (!(module.getItem() instanceof BackpackModuleItem item)) {
                 button.active = false;
-                button.setMessage(Component.translatable("screen.nexusessentials.backpack.module_empty").withStyle(ChatFormatting.DARK_GRAY));
-                hints.set(button, Component.translatable("screen.nexusessentials.backpack.module_empty.tooltip"));
+                button.setMessage(Component.translatable("screen.nexium.backpack.module_empty").withStyle(ChatFormatting.DARK_GRAY));
+                hints.set(button, Component.translatable("screen.nexium.backpack.module_empty.tooltip"));
                 continue;
             }
             boolean on = !module.has(net.storagenexus.registry.ModComponents.MODULE_OFF);
             button.active = true;
-            button.setMessage(Component.translatable(on ? "screen.nexusessentials.backpack.module_on" : "screen.nexusessentials.backpack.module_off")
+            button.setMessage(Component.translatable(on ? "screen.nexium.backpack.module_on" : "screen.nexium.backpack.module_off")
                     .withStyle(on ? ChatFormatting.GREEN : ChatFormatting.RED));
             hints.set(button, Component.empty()
-                    .append(Component.translatable("item.nexusessentials." + item.type().id() + "_module.desc")).append("\n")
-                    .append(Component.translatable("screen.nexusessentials.backpack.module_click").withStyle(ChatFormatting.GRAY)));
+                    .append(Component.translatable("item.nexium." + item.type().id() + "_module.desc")).append("\n")
+                    .append(Component.translatable("screen.nexium.backpack.module_click").withStyle(ChatFormatting.GRAY)));
         }
     }
 
@@ -78,7 +78,7 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.nexusessentials.backpack.modules"), leftPos + BackpackMenu.MODULE_X, topPos + 6, palette().text(), false);
+        g.text(font, Component.translatable("screen.nexium.backpack.modules"), leftPos + BackpackMenu.MODULE_X, topPos + 6, palette().text(), false);
         // Outline the slot the Backpack was opened from: it stays put while the screen is open
         int source = menu.source();
         if (source >= 0 && source < 36) {

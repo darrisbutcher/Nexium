@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:storage_connector",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "nexium:filtered_connector",
+    "count": 1
+  }
+}

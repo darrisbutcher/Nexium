@@ -32,9 +32,9 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.reactor.retract"), b -> press(RedstoneReactorMenu.BTN_RETRACT))
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.reactor.retract"), b -> press(RedstoneReactorMenu.BTN_RETRACT))
                 .bounds(leftPos + 96, topPos + 68, 35, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.reactor.insert"), b -> press(RedstoneReactorMenu.BTN_INSERT))
+        addRenderableWidget(Button.builder(Component.translatable("screen.nexium.reactor.insert"), b -> press(RedstoneReactorMenu.BTN_INSERT))
                 .bounds(leftPos + 133, topPos + 68, 35, 14).build());
     }
 
@@ -51,11 +51,11 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
         int heat = menu.heatPermille();
-        g.text(font, Component.translatable("screen.storagenexus.reactor.heat", heat / 10, heat % 10), HEAT_X, HEAT_Y + HEAT_H + 3, heat >= 600 ? WARN : TEXT, false);
-        Component status = menu.shutDown() ? Component.translatable("screen.storagenexus.reactor.shut_down")
-                : Component.translatable("screen.storagenexus.reactor.output", number(menu.output()));
+        g.text(font, Component.translatable("screen.nexium.reactor.heat", heat / 10, heat % 10), HEAT_X, HEAT_Y + HEAT_H + 3, heat >= 600 ? WARN : TEXT, false);
+        Component status = menu.shutDown() ? Component.translatable("screen.nexium.reactor.shut_down")
+                : Component.translatable("screen.nexium.reactor.output", number(menu.output()));
         g.text(font, status, HEAT_X, HEAT_Y + HEAT_H + 14, menu.shutDown() ? WARN : MUTED, false);
-        g.text(font, Component.translatable("screen.storagenexus.reactor.depth." + menu.depth()), HEAT_X, HEAT_Y + HEAT_H + 25, MUTED, false);
+        g.text(font, Component.translatable("screen.nexium.reactor.depth." + menu.depth()), HEAT_X, HEAT_Y + HEAT_H + 25, MUTED, false);
     }
 
     @Override
@@ -97,11 +97,11 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(HEAT_X, HEAT_Y, HEAT_W, HEAT_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.reactor.heat_tip1").withStyle(ChatFormatting.GRAY),
-                    Component.translatable("screen.storagenexus.reactor.heat_tip2").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+                    Component.translatable("screen.nexium.reactor.heat_tip1").withStyle(ChatFormatting.GRAY),
+                    Component.translatable("screen.nexium.reactor.heat_tip2").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             g.setComponentTooltipForNextFrame(font, List.of(
-                    Component.translatable("screen.storagenexus.generator.stored", number(menu.energy()), number(RedstoneReactorBlockEntity.CAPACITY))), mouseX, mouseY);
+                    Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(RedstoneReactorBlockEntity.CAPACITY))), mouseX, mouseY);
         }
     }
 

@@ -50,7 +50,7 @@ public class DimensionalInputBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer sp && level.getBlockEntity(pos) instanceof DimensionalInputBlockEntity be) {
-            Menus.open(sp, Component.translatable("block.storagenexus.dimensional_input"),
+            Menus.open(sp, Component.translatable("block.nexium.dimensional_input"),
                     new DimensionalMenu.OpenData(pos, be.displayName(), true),
                     (id, inv, p) -> new DimensionalMenu(id, inv, be));
         }

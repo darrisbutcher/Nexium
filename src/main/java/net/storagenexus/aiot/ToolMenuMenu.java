@@ -57,7 +57,7 @@ public class ToolMenuMenu extends BaseMenu {
             int retired = AiotModules.takeRetired(tool()).size();
             if (retired > 0) {
                 RetiredModuleItem.refund(serverPlayer, retired);
-                serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.storagenexus.retired_module_returned"));
+                serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.nexium.retired_module_returned"));
             }
         }
         if (!player.level().isClientSide()) {

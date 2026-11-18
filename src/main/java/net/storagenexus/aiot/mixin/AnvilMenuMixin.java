@@ -34,20 +34,20 @@ abstract class AnvilMenuMixin extends ItemCombinerMenu {
 
     @WrapOperation(method = "createResult", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/item/enchantment/Enchantment;areCompatible(Lnet/minecraft/core/Holder;Lnet/minecraft/core/Holder;)Z"))
-    private boolean nexusessentials$elytraTakesAllProtections(Holder<Enchantment> enchantment, Holder<Enchantment> other, Operation<Boolean> original) {
+    private boolean nexium$elytraTakesAllProtections(Holder<Enchantment> enchantment, Holder<Enchantment> other, Operation<Boolean> original) {
         return original.call(enchantment, other) || ElytraEnchanting.mayStack(inputSlots.getItem(0), enchantment, other)
                 || AiotEnchanting.mayHoldBoth(inputSlots.getItem(0), enchantment, other);
     }
 
     /** The "Too Expensive!" check (the third 40 in createResult, which empties the result): never true without the limit. */
     @ModifyConstant(method = "createResult", constant = @Constant(intValue = 40, ordinal = 2))
-    private int storagenexus$noTooExpensive(int tooExpensive) {
+    private int nexium$noTooExpensive(int tooExpensive) {
         return NexusConfig.get().anvilNoCostLimit ? Integer.MAX_VALUE : tooExpensive;
     }
 
     /** An AIOT keeps both Silk Touch and Fortune, one of them inactive (a storage feature; this is the one mixin package). */
     @Inject(method = "createResult", at = @At("TAIL"))
-    private void storagenexus$aiotKeepsSilkTouchAndFortune(CallbackInfo ci) {
+    private void nexium$aiotKeepsSilkTouchAndFortune(CallbackInfo ci) {
         AiotEnchanting.afterAnvil(inputSlots.getItem(0), inputSlots.getItem(1), resultSlots.getItem(0));
     }
 }

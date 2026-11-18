@@ -25,7 +25,7 @@ public final class FarmRecipe {
     /** One material: its lang key suffix, how many, what counts, and the item the Assembler shows for it. */
     public record Part(String key, int needed, Predicate<ItemStack> matches, Item icon, boolean mob) {
         public Component displayName() {
-            return Component.translatable("message.nexusessentials.farm_part." + key);
+            return Component.translatable("message.nexium.farm_part." + key);
         }
     }
 

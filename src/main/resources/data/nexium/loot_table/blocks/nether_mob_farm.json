@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "nexium:farm_progress",
+              "nexium:farm_mode"
+            ],
+            "source": "block_entity"
+          },
+          "name": "nexium:nether_mob_farm"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nexium:blocks/nether_mob_farm"
+}

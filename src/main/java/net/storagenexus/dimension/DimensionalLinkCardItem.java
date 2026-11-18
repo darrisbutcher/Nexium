@@ -50,7 +50,7 @@ public class DimensionalLinkCardItem extends Item {
                     String requested = custom != null ? custom.getString() : null;
                     id = reg.create(requested, input.globalPos(), server.getRandom());
                     if (id == null) {
-                        player.sendSystemMessage(Component.translatable("message.storagenexus.name_taken", requested).withStyle(ChatFormatting.RED));
+                        player.sendSystemMessage(Component.translatable("message.nexium.name_taken", requested).withStyle(ChatFormatting.RED));
                         return InteractionResult.FAIL;
                     }
                 }
@@ -60,14 +60,14 @@ public class DimensionalLinkCardItem extends Item {
             String name = reg.get(id).name();
             card.set(ModComponents.LINK_ID, id);
             card.set(ModComponents.LINK_NAME, name);
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.card_input", name).withStyle(ChatFormatting.AQUA));
+            player.sendOverlayMessage(Component.translatable("message.nexium.card_input", name).withStyle(ChatFormatting.AQUA));
             return InteractionResult.SUCCESS;
         }
 
         if (linked instanceof DimensionalOutputBlockEntity output) {
             UUID id = card.get(ModComponents.LINK_ID);
             if (id == null || reg.get(id) == null) {
-                player.sendOverlayMessage(Component.translatable("message.storagenexus.card_empty").withStyle(ChatFormatting.RED));
+                player.sendOverlayMessage(Component.translatable("message.nexium.card_empty").withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
             reg.addOutput(id, output.globalPos());
@@ -79,7 +79,7 @@ public class DimensionalLinkCardItem extends Item {
                     if (other.refreshName()) other.sync();
                 }
             }
-            player.sendOverlayMessage(Component.translatable("message.storagenexus.card_output", output.displayName()).withStyle(ChatFormatting.AQUA));
+            player.sendOverlayMessage(Component.translatable("message.nexium.card_output", output.displayName()).withStyle(ChatFormatting.AQUA));
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
@@ -90,9 +90,9 @@ public class DimensionalLinkCardItem extends Item {
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         String name = stack.get(ModComponents.LINK_NAME);
         if (name == null) {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.card_blank").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltip.nexium.card_blank").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.accept(Component.translatable("tooltip.storagenexus.card_linked", name).withStyle(ChatFormatting.AQUA));
+            tooltip.accept(Component.translatable("tooltip.nexium.card_linked", name).withStyle(ChatFormatting.AQUA));
         }
     }
 }

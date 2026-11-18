@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nexium:double_compressed_cobbled_deepslate"
+  ],
+  "result": {
+    "id": "nexium:compressed_cobbled_deepslate",
+    "count": 9
+  }
+}

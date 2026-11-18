@@ -67,7 +67,7 @@ public class RecipeTweaksGameTest {
     @GameTest
     public void tweakRecipesLoad(GameTestHelper h) {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
-                .filter(r -> r.id().identifier().getNamespace().equals("nexusessentials") && r.id().identifier().getPath().startsWith("tweaks/")).count();
+                .filter(r -> r.id().identifier().getNamespace().equals("nexium") && r.id().identifier().getPath().startsWith("tweaks/")).count();
         h.assertValueEqual(ours, 410L, "recipe tweaks loaded");
         h.succeed();
     }

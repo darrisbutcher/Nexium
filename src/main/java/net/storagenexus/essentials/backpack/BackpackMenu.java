@@ -229,7 +229,7 @@ public class BackpackMenu extends BaseMenu {
         if (nowOn) changed.remove(net.storagenexus.registry.ModComponents.MODULE_OFF);
         else changed.set(net.storagenexus.registry.ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
         modules.setItem(slot, changed);
-        serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.nexusessentials.backpack_module_on" : "message.nexusessentials.backpack_module_off",
+        serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.backpack_module_on" : "message.nexium.backpack_module_off",
                 changed.getHoverName()).withStyle(nowOn ? ChatFormatting.GREEN : ChatFormatting.GRAY));
         return true;
     }

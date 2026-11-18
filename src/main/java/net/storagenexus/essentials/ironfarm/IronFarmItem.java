@@ -21,9 +21,9 @@ public class IronFarmItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.iron_farm_rate", ironPerHour()).withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.iron_farm_hopper").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.accept(Component.translatable("tooltip.nexusessentials.iron_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.iron_farm_rate", ironPerHour()).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.iron_farm_hopper").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.nexium.iron_farm_redstone").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     /** Average iron an hour (golems drop 3-5, so 4 on average), e.g. "1,920". */

@@ -46,7 +46,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     private CraftingTerminalScreen(TerminalMenu menu, CraftingRecipeBookComponent recipeBook, Inventory inventory, Component title) {
         super(menu, recipeBook, inventory, title);
         this.recipeBook = recipeBook;
-        // Widened in storagenexus.accesswidener: the recipe-book screen fixes the size at 176x166.
+        // Widened in nexium.accesswidener: the recipe-book screen fixes the size at 176x166.
         this.imageWidth = TerminalMenu.WIDTH;
         this.imageHeight = TerminalMenu.imageHeight(true, menu.rows());
         this.inventoryLabelY = TerminalMenu.inventoryTop(true, menu.rows()) - 11;
@@ -72,7 +72,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         clearButton = Button.builder(Component.literal("X").withStyle(ChatFormatting.RED), b -> {
             if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, TerminalMenu.CLEAR_GRID);
         }).bounds(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()), 16, 14)
-                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.clear_grid"))).build();
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.clear_grid"))).build();
         addRenderableWidget(clearButton);
     }
 
@@ -185,12 +185,12 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         int x = leftPos + 98, right = leftPos + imageWidth - 8;
         int top = topPos + TerminalMenu.craftingTop(menu.rows());
         long bucket = FluidConstants.BUCKET;
-        usageBlock(g, mouseX, mouseY, x, right, top + 1, "screen.storagenexus.usage_items",
+        usageBlock(g, mouseX, mouseY, x, right, top + 1, "screen.nexium.usage_items",
                 Fmt.compact(u.items()) + "/" + Fmt.compact(u.itemCapacity()), u.items(), u.itemCapacity(),
-                Component.translatable("screen.storagenexus.usage_items_tip", exact(u.items()), exact(u.itemCapacity()), percent(u.items(), u.itemCapacity())));
-        usageBlock(g, mouseX, mouseY, x, right, top + 39, "screen.storagenexus.usage_fluids",
+                Component.translatable("screen.nexium.usage_items_tip", exact(u.items()), exact(u.itemCapacity()), percent(u.items(), u.itemCapacity())));
+        usageBlock(g, mouseX, mouseY, x, right, top + 39, "screen.nexium.usage_fluids",
                 Fmt.compact(u.fluid() / bucket) + "/" + Fmt.compact(u.fluidCapacity() / bucket) + " B", u.fluid(), u.fluidCapacity(),
-                Component.translatable("screen.storagenexus.usage_fluids_tip", exact(u.fluid() / bucket), exact(u.fluidCapacity() / bucket),
+                Component.translatable("screen.nexium.usage_fluids_tip", exact(u.fluid() / bucket), exact(u.fluidCapacity() / bucket),
                         percent(u.fluid(), u.fluidCapacity())));
     }
 

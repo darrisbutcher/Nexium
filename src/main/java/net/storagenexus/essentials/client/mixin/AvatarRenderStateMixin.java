@@ -9,15 +9,15 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(AvatarRenderState.class)
 abstract class AvatarRenderStateMixin implements WingsRenderState {
     @Unique
-    private ItemStack nexusessentials$wings = ItemStack.EMPTY;
+    private ItemStack nexium$wings = ItemStack.EMPTY;
 
     @Override
-    public ItemStack nexusessentials$wings() {
-        return nexusessentials$wings;
+    public ItemStack nexium$wings() {
+        return nexium$wings;
     }
 
     @Override
-    public void nexusessentials$setWings(ItemStack wings) {
-        nexusessentials$wings = wings;
+    public void nexium$setWings(ItemStack wings) {
+        nexium$wings = wings;
     }
 }

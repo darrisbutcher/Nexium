@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexium:crafting_storage_tablet"
+    },
+    "title": {
+      "translate": "advancement.nexium.tablet.title"
+    },
+    "description": {
+      "translate": "advancement.nexium.tablet.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlocked": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "parent": "nexium:guide/connector"
+}

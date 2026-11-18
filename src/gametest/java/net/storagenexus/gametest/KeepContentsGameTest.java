@@ -133,9 +133,9 @@ public class KeepContentsGameTest {
     @GameTest
     public void allRecipesLoad(GameTestHelper h) {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
-                .filter(r -> r.id().identifier().getNamespace().equals("storagenexus")).count();
-        // Every file in data/storagenexus/recipe: AIOT (storagenexus:aiot_merge), Nexium, module, Construction Builder and storage disk recipes included
-        h.assertValueEqual(ours, 147L, "storagenexus recipes loaded");
+                .filter(r -> r.id().identifier().getNamespace().equals("nexium")).count();
+        // Every file in data/nexium/recipe: AIOT (nexium:aiot_merge), Nexium, module, Construction Builder and storage disk recipes included
+        h.assertValueEqual(ours, 757L, "nexium recipes loaded");
         h.succeed();
     }
 
