@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
+    # A change that only touches documentation has nothing to build or test
+    paths-ignore:
+      - '**.md'
+
+# A newer push to the same pull request replaces the run in progress. Runs on main are never cancelled, because they publish releases.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -28,8 +36,16 @@ jobs:
     # save and quit. Their screenshots are kept as an artifact.
     # There is no GPU: Minecraft can't get an OpenGL window from Xvfb ("Couldn't find matching GLX visual"), so it
     # falls back to Vulkan, which Mesa's software driver (lavapipe, in mesa-vulkan-drivers) provides.
+    # The client tests are split over three jobs that run side by side: job i runs every third test starting at i
+    # (see ShardedClientTests), so together they run each test once in about a third of the time.
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    env:
+      NEXIUM_SHARD: ${{ matrix.shard }}/3
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -38,7 +54,7 @@ jobs:
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
       - name: Install a virtual display and software Vulkan
-        run: sudo apt-get update && sudo apt-get install -y xvfb mesa-vulkan-drivers libvulkan1
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb mesa-vulkan-drivers libvulkan1
       - name: Run the client tests
         # If the client can't create a window it waits forever, so stop well before the job's limit
         timeout-minutes: 15
@@ -47,7 +63,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: client-test-screenshots
+          name: client-test-screenshots-${{ matrix.shard }}
           path: |
             build/run/clientGameTest/screenshots
             build/run/clientGameTest/logs
