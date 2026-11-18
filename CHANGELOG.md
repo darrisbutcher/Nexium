@@ -3,6 +3,36 @@
 All notable changes to Nexium (mod id `storagenexus`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.22.6
+
+* **Settings screen**: all 56 settings of `config/nexusessentials.json` can now be changed in the game, on **Nexium Settings**: open it from
+  the **Settings** button in the Codex or in the armor menu, from **Mod Menu**'s Configure button (if you use it), or with the
+  *Open Nexium Settings* key (unbound until you pick one). They are grouped by feature (Mobs, Items and world, AIOT tools and screens,
+  Nexium armor, One-block farms, Freezer). A switch is an On/Off button; a number is a box held to its limits. Each setting has its own
+  **Reset**; **Reset page** and **Reset all** do a group or everything. Hover a setting for what it does, its limits and default, and whether
+  it is for your own game or for the world you host. Changed settings are gold, and changes are saved as you make them. Settings are read
+  as they are used, so they apply at once in a world you host; a dedicated server still uses its own file.
+* **Power Meter**: a new block (`IGI / RCR / III`: iron ingots, glass, redstone, a comparator) you put against any **Energy Conduit** and
+  right-click for a **dashboard of that whole network**: how much it makes and uses each tick, the stored energy in the conduits and
+  batteries with a bar and how long it lasts at the present rate, a minute of history (green made, orange used), a warning when machines
+  go without, and every generator, machine and battery on it with its rate. **Control** (optional): each machine has a **priority**
+  (High, Normal, Low) and an **On/Off switch**. When power runs short the Low ones go without first, and Off takes a block off the network
+  (a machine stops taking power, a generator or battery stops giving it). They set the conduit sides that feed the block (the same priority
+  the Conduit Wrench sets, -5 / 0 / +5), and the switch is saved on the side as well. The numbers update once a second and start again
+  whenever any conduit is placed or broken.
+* **Quests**: a separate quest book of **six chapters** (Storage, Power, Farms, Tools, Backpack, Nexium; 41 quests), opened with the
+  **Quests** button in the Codex or the *Open Quests* key (unbound until you pick one). Each quest asks you to make or have an item; it
+  counts what you have already done (the game's own crafting statistics, or what you hold), so nothing is repeated. A chapter opens
+  once every quest in the one before it is done (a locked one says which). Every quest gives **random Nexium items** (ingots, a Nexium
+  block or a Nexium disk part; one roll in the first two chapters, two in the next three, three in the last), with a message and sound.
+  Progress is saved on the player and kept through death. **Recipes are never locked.** Quests are listed in
+  `data/storagenexus/quests.json` inside the mod, with their text in the language file.
+* **Faster storage networks**: a scan of a storage network is now shared by every block on it (buses, terminals, emitters, intakes...) instead
+  of each block scanning on its own, and the cache holds many more networks. With 20 buses on one network at its size limit and storage changing
+  every tick, a tick's work dropped from 24.8 ms to 2.9 ms. Nothing changes in how networks behave.
+* **Stress tests** (not shipped in the mod, run in the build): 300 overclocked farms, a network at its size limit, 100 conduits with 20 machines
+  and 20 players with Restocking all stay far under 1% of a server tick, apart from the network case above, now 6%.
+
 ## 1.22.5
 
 * **Water breathing**: the full Nexium set now also gives **Water Breathing**, like the helmet's Night Vision: an infinite effect with a steady

@@ -47,6 +47,7 @@ public class StorageNexus implements ModInitializer {
         ModTab.init();
         ModStorageLookups.init();
         ModPayloads.init();
+        net.storagenexus.quest.Quests.init();
         DrawerInteraction.init();
         AnchorRegistry.init();
         NexiumHaste.init();

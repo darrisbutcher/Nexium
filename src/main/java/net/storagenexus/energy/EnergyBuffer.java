@@ -68,6 +68,12 @@ public class EnergyBuffer implements NexusEnergy {
     }
 
     @Override
+    public boolean takesIn() { return accepts; }
+
+    @Override
+    public boolean givesOut() { return gives; }
+
+    @Override
     public long stored() { return stored; }
 
     @Override

@@ -106,6 +106,9 @@ public final class ModBlocks {
     public static final net.storagenexus.energy.ThermalGeneratorBlock THERMAL_GENERATOR = register("thermal_generator", net.storagenexus.energy.ThermalGeneratorBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
                     .lightLevel(s -> s.getValue(net.storagenexus.energy.ThermalGeneratorBlock.LIT) ? 15 : 4).requiresCorrectToolForDrops(), true);
+    /** Shows the power dashboard of the Energy Conduit network it sits against. */
+    public static final net.storagenexus.energy.PowerMeterBlock POWER_METER = register("power_meter", net.storagenexus.energy.PowerMeterBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
     /** Batteries: 250,000, 1,000,000 and 10,000,000 NE. */
     public static final net.storagenexus.energy.BatteryBlock IRON_BATTERY = register("iron_battery", p -> new net.storagenexus.energy.BatteryBlock(p, 250_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);

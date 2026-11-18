@@ -87,6 +87,7 @@ public class StorageNexusClient implements ClientModInitializer {
         GuideBookItem.openScreen = GuideScreens::open;
         CodexClient.init();
         SortClient.init();
+        net.storagenexus.client.screen.ConfigKey.init();
         ShiftTransferClient.init();
         ScrollTransferClient.init();
         NexusEssentialsClient.init();
@@ -98,6 +99,16 @@ public class StorageNexusClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.elevator.ElevatorOpenPayload.TYPE, (payload, context) ->
                 context.client().gui.setScreen(new net.storagenexus.client.screen.ElevatorScreen(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.energy.PowerReportPayload.TYPE, (payload, context) -> {
+            var client = context.client();
+            if (payload.open()) client.gui.setScreen(new net.storagenexus.client.screen.PowerMeterScreen(payload));
+            else if (client.gui.screen() instanceof net.storagenexus.client.screen.PowerMeterScreen screen) screen.update(payload);
+        });
+        ClientPlayNetworking.registerGlobalReceiver(net.storagenexus.quest.QuestStatePayload.TYPE, (payload, context) -> {
+            var client = context.client();
+            if (payload.open()) client.gui.setScreen(new net.storagenexus.client.screen.QuestScreen(payload));
+            else if (client.gui.screen() instanceof net.storagenexus.client.screen.QuestScreen screen) screen.update(payload);
+        });
         ClientPlayNetworking.registerGlobalReceiver(TerminalSyncPayload.TYPE, (payload, context) -> {
             if (context.client().player != null && context.client().player.containerMenu instanceof TerminalMenu menu) {
                 menu.receiveSync(payload);

@@ -38,7 +38,7 @@ public class ArmorMenuScreen extends Screen {
 
     @Override
     protected void init() {
-        height_ = TOP + ArmorBonus.values().length * ROW + 6;
+        height_ = TOP + ArmorBonus.values().length * ROW + 28;
         left = (width - WIDTH) / 2;
         top = (height - height_) / 2;
         for (ArmorBonus bonus : ArmorBonus.values()) {
@@ -46,6 +46,10 @@ public class ArmorMenuScreen extends Screen {
                             b -> ClientPlayNetworking.send(new ArmorBonusPayload(bonus)))
                     .bounds(left + 8, top + TOP + bonus.ordinal() * ROW, WIDTH - 16, 18).build());
         }
+        addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.config.open"),
+                        b -> minecraft.gui.setScreen(new ConfigScreen(this)))
+                .bounds(left + 8, top + TOP + ArmorBonus.values().length * ROW + 4, WIDTH - 16, 18)
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.storagenexus.config.open.tip"))).build());
         // To the tool menu, when holding a tool it is for
         toolsButton = addRenderableWidget(Button.builder(Component.translatable("screen.storagenexus.armor_menu.tools"), b -> {
             onClose();

@@ -1,5 +1,6 @@
 package net.storagenexus.client.guide;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -200,6 +201,14 @@ public class CodexScreen extends Screen {
                 .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.codex.forward"))).build());
         Component home = Component.translatable("screen.storagenexus.codex.home");
         addRenderableWidget(Button.builder(home, b -> open(data.home())).bounds(x + 40, PAD + 2, font.width(home) + 14, 18).build());
+        Component settings = Component.translatable("screen.storagenexus.config.open");
+        addRenderableWidget(Button.builder(settings, b -> minecraft.gui.setScreen(new net.storagenexus.client.screen.ConfigScreen(this)))
+                .bounds(x + 40 + font.width(home) + 18, PAD + 2, font.width(settings) + 14, 18)
+                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.config.open.tip"))).build());
+        Component quests = Component.translatable("screen.storagenexus.quests.open");
+        addRenderableWidget(Button.builder(quests, b -> ClientPlayNetworking.send(new net.storagenexus.quest.QuestRequestPayload(true)))
+                .bounds(x + 40 + font.width(home) + 18 + font.width(settings) + 18, PAD + 2, font.width(quests) + 14, 18)
+                .tooltip(Tooltip.create(Component.translatable("screen.storagenexus.quests.open.tip"))).build());
 
         int searchWidth = Mth.clamp(width / 5, 80, 180);
         search = new EditBox(font, width - PAD - 4 - searchWidth, PAD + 3, searchWidth, 16, Component.translatable("screen.storagenexus.codex.search"));

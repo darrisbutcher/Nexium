@@ -53,21 +53,29 @@ public final class StorageNetwork {
 
     private record CacheEntry(StorageNetwork network, long version, long gameTime) {}
 
+    /**
+     * Every network block of a scanned network maps to the same entry, so the buses, terminals and emitters on one network share
+     * one scan instead of each scanning it again after every change. The cap is for many networks; a network of {@link #MAX_NODES}
+     * blocks takes that many keys.
+     */
     private static final Map<CacheKey, CacheEntry> CACHE = new LinkedHashMap<>(64, 0.75f, true) {
         @Override
         protected boolean removeEldestEntry(Map.Entry<CacheKey, CacheEntry> eldest) {
-            return size() > 256;
+            return size() > 16384;
         }
     };
 
     private final List<Source<ItemVariant>> items;
     private final List<Source<FluidVariant>> fluids;
     private final int nodeCount;
+    /** The network blocks this was scanned from: all of them find this same network in the cache. */
+    private final Set<BlockPos> nodes;
 
-    private StorageNetwork(List<Source<ItemVariant>> items, List<Source<FluidVariant>> fluids, int nodeCount) {
+    private StorageNetwork(List<Source<ItemVariant>> items, List<Source<FluidVariant>> fluids, Set<BlockPos> nodes) {
         this.items = items;
         this.fluids = fluids;
-        this.nodeCount = nodeCount;
+        this.nodes = nodes;
+        this.nodeCount = nodes.size();
     }
 
     public int nodeCount() { return nodeCount; }
@@ -82,7 +90,10 @@ public final class StorageNetwork {
         long t = level.getGameTime();
         if (e != null && e.version == v && t >= e.gameTime && t - e.gameTime < CACHE_TICKS) return e.network;
         StorageNetwork net = scan(level, start);
-        CACHE.put(key, new CacheEntry(net, v, t));
+        CacheEntry fresh = new CacheEntry(net, v, t);
+        CACHE.put(key, fresh);
+        // Any other block of this network now finds the same scan, as long as it is current
+        for (BlockPos node : net.nodes) CACHE.put(new CacheKey(level.dimension(), node), fresh);
         return net;
     }
 
@@ -159,7 +170,7 @@ public final class StorageNetwork {
         }
         items.sort(Comparator.comparingInt((Source<ItemVariant> s) -> s.priority).reversed());
         fluids.sort(Comparator.comparingInt((Source<FluidVariant> s) -> s.priority).reversed());
-        return new StorageNetwork(items, fluids, visited.size());
+        return new StorageNetwork(items, fluids, visited);
     }
 
     // ---- Items ------------------------------------------------------------------------------
