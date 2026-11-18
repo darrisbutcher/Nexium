@@ -7,6 +7,9 @@
   "environment": "*",
   "entrypoints": {
     "fabric-client-gametest": [
+      "net.nexium.gametest.client.ShardedClientTests"
+    ],
+    "nexium-client-test": [
       "net.nexium.gametest.client.AdvancementTabClientTest",
       "net.nexium.gametest.client.CreativeTabsClientTest",
       "net.nexium.gametest.client.NexusFurnaceClientTest",
