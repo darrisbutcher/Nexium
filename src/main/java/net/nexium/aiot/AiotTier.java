@@ -3,7 +3,7 @@ package net.nexium.aiot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ToolMaterial;
-import net.nexium.nexium.NexiumMaterials;
+import net.nexium.gear.NexiumMaterials;
 import net.nexium.registry.ModItems;
 
 import java.util.List;

@@ -17,8 +17,8 @@ import net.nexium.aiot.module.AiotModules;
 import net.nexium.aiot.module.ModuleItem;
 import net.nexium.aiot.module.ModuleType;
 import net.nexium.client.ToolMenuClient;
-import net.nexium.nexium.NexiumArmor;
-import net.nexium.nexium.NexiumMaterials;
+import net.nexium.gear.NexiumArmor;
+import net.nexium.gear.NexiumMaterials;
 import net.nexium.registry.ModComponents;
 
 /**

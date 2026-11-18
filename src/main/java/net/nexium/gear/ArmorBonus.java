@@ -1,4 +1,4 @@
-package net.nexium.nexium;
+package net.nexium.gear;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;

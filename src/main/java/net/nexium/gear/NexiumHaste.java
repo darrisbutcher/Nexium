@@ -1,4 +1,4 @@
-package net.nexium.nexium;
+package net.nexium.gear;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.level.ServerPlayer;

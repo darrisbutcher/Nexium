@@ -1,4 +1,4 @@
-package net.nexium.nexium;
+package net.nexium.gear;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;

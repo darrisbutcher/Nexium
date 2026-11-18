@@ -16,7 +16,7 @@ import net.nexium.drawer.CompactingDrawerBlockEntity;
 import net.nexium.drawer.DrawerBlockEntity;
 import net.nexium.filter.FilterData;
 import net.nexium.fluid.FluidDrawerBlockEntity;
-import net.nexium.nexium.ArmorBonus;
+import net.nexium.gear.ArmorBonus;
 
 import java.util.List;
 import java.util.UUID;

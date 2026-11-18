@@ -4,8 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.nexium.nexium.ArmorBonus;
-import net.nexium.nexium.NexiumArmor;
+import net.nexium.gear.ArmorBonus;
+import net.nexium.gear.NexiumArmor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

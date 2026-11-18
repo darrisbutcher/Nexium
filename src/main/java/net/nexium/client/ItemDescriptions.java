@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.nexium.Nexium;
 import net.nexium.aiot.AiotItem;
 import net.nexium.drawer.DrawerBlock;
-import net.nexium.nexium.NexiumMaterials;
+import net.nexium.gear.NexiumMaterials;
 import net.nexium.registry.ModComponents;
 
 import java.util.List;

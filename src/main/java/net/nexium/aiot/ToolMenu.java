@@ -10,8 +10,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.nexium.aiot.module.AiotModules;
 import net.nexium.aiot.module.ModuleItem;
 import net.nexium.aiot.module.ModuleType;
-import net.nexium.nexium.NexiumHaste;
-import net.nexium.nexium.NexiumMaterials;
+import net.nexium.gear.NexiumHaste;
+import net.nexium.gear.NexiumMaterials;
 import net.nexium.registry.ModComponents;
 import net.nexium.util.Menus;
 

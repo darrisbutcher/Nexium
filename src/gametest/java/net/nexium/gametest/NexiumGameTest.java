@@ -30,7 +30,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nexium.aiot.AiotTier;
 import net.nexium.aiot.ToolMenu;
-import net.nexium.nexium.NexiumHaste;
+import net.nexium.gear.NexiumHaste;
 import net.nexium.registry.ModBlocks;
 import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModItems;

@@ -1,4 +1,4 @@
-package net.nexium.nexium;
+package net.nexium.gear;
 
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;

@@ -14,9 +14,9 @@ import net.nexium.aiot.ToolMenu;
 import net.nexium.aiot.ToolMenuPayload;
 import net.nexium.aiot.module.ModuleItem;
 import net.nexium.client.ToolMenuClient;
-import net.nexium.nexium.ArmorBonus;
-import net.nexium.nexium.ArmorBonusPayload;
-import net.nexium.nexium.NexiumArmor;
+import net.nexium.gear.ArmorBonus;
+import net.nexium.gear.ArmorBonusPayload;
+import net.nexium.gear.NexiumArmor;
 import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModItems;
 

@@ -16,7 +16,7 @@ import net.nexium.aiot.module.VeinKeyPayload;
 import net.nexium.client.screen.ArmorMenuScreen;
 import net.nexium.client.screen.ToolMenuScreen;
 import net.nexium.essentials.client.NexiumEssentialsClient;
-import net.nexium.nexium.NexiumArmor;
+import net.nexium.gear.NexiumArmor;
 import net.nexium.registry.ModMenus;
 
 /**

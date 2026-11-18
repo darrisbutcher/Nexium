@@ -1,4 +1,4 @@
-package net.nexium.nexium;
+package net.nexium.gear;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
