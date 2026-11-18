@@ -148,6 +148,13 @@ public final class ModItems {
     public static final Item NEXIUM_INGOT = register("nexium_ingot", Item::new, new Item.Properties().fireResistant());
     public static final BlockItem NEXIUM_BLOCK = register("nexium_block", p -> new BlockItem(ModBlocks.NEXIUM_BLOCK, p),
             new Item.Properties().useBlockDescriptionPrefix().fireResistant());
+    /** Armor for the dog (and only the dog): Nexium's own protection, worn on the body slot like Wolf Armor. */
+    public static final Item NEXIUM_DOG_ARMOR = register("nexium_dog_armor", Item::new,
+            new Item.Properties().wolfArmor(NexiumMaterials.ARMOR).fireResistant().component(net.minecraft.core.component.DataComponents.EQUIPPABLE,
+                    net.minecraft.world.item.equipment.Equippable.builder(net.minecraft.world.entity.EquipmentSlot.BODY)
+                            .setEquipSound(NexiumMaterials.ARMOR.equipSound()).setAsset(NexiumMaterials.EQUIPMENT_ASSET)
+                            .setAllowedEntities(net.nexium.dog.ModDogs.DOG).setCanBeSheared(true)
+                            .setShearingSound(net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.ARMOR_UNEQUIP_WOLF)).build()));
     public static final Item NEXIUM_SWORD = register("nexium_sword", Item::new,
             new Item.Properties().sword(NexiumMaterials.TOOL, 3.0F, -2.4F).fireResistant());
     public static final Item NEXIUM_PICKAXE = register("nexium_pickaxe", Item::new,

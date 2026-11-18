@@ -7,6 +7,7 @@
   },
   "mixins": [
     "BlockBehaviourMixin",
+    "CreeperMixin",
     "EnchantmentHelperMixin",
     "EndermanTakeBlockGoalMixin",
     "InventoryMenuMixin",
@@ -18,7 +19,8 @@
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",
-    "VillagerInvoker"
+    "VillagerInvoker",
+    "WolfAccess"
   ],
   "injectors": {
     "defaultRequire": 1

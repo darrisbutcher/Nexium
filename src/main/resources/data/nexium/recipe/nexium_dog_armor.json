@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "N  ",
+    "NNN",
+    "N N"
+  ],
+  "key": {
+    "N": "nexium:nexium_ingot"
+  },
+  "result": {
+    "id": "nexium:nexium_dog_armor"
+  }
+}

@@ -12,7 +12,7 @@ import java.util.List;
  * Runs the client tests, or one share of them. The tests are listed under the {@code nexium-client-test} entrypoint in this
  * mod's fabric.mod.json (the one {@code fabric-client-gametest} entrypoint is this class), so CI can split them over several
  * jobs: with the environment variable {@code NEXIUM_SHARD=i/n} this runs every n-th test starting at i (counting from 0).
- * Without it, all of them run, as before. Every share sees the same list in the same order, so together they cover each test once.
+ * Without it, all of them run, as before. {@code NEXIUM_ONLY=SomeClientTest} runs just that one test. Every share sees the same list in the same order, so together they cover each test once.
  */
 public class ShardedClientTests implements FabricClientGameTest {
     /** Whether the test at {@code position} belongs to share {@code index} of {@code count}. */
@@ -29,10 +29,12 @@ public class ShardedClientTests implements FabricClientGameTest {
         List<EntrypointContainer<FabricClientGameTest>> tests = FabricLoader.getInstance()
                 .getEntrypointContainers("nexium-client-test", FabricClientGameTest.class);
         System.out.println("[nexium-shard] share " + index + " of " + count + ", " + tests.size() + " client tests in all");
+        String only = System.getenv("NEXIUM_ONLY");
         int ran = 0;
         for (int i = 0; i < tests.size(); i++) {
-            if (!selected(i, index, count)) continue;
             FabricClientGameTest test = tests.get(i).getEntrypoint();
+            // NEXIUM_ONLY=SomeClientTest runs just that test (handy while working on one)
+            if (only != null ? !test.getClass().getSimpleName().equals(only) : !selected(i, index, count)) continue;
             System.out.println("[nexium-shard] running " + test.getClass().getSimpleName());
             test.runTest(ctx);
             ran++;

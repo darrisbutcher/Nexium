@@ -135,6 +135,7 @@ public final class MobCapture {
     public static ItemStack toItem(CapturedMob captured) {
         ItemStack stack = new ItemStack(ModItems.CAPTURED_MOB);
         stack.set(ModComponents.CAPTURED_MOB, captured);
+        if (captured.type() == net.nexium.dog.ModDogs.DOG) stack.set(DataComponents.ITEM_MODEL, net.nexium.Nexium.id("dog_egg"));
         SpawnEggItem.byId(captured.type()).ifPresent(egg -> {
             Identifier model = egg.value().components().get(DataComponents.ITEM_MODEL);
             if (model != null) stack.set(DataComponents.ITEM_MODEL, model);
@@ -161,6 +162,11 @@ public final class MobCapture {
         if (level.getEntity(entity.getUUID()) != null) entity.setUUID(Mth.createInsecureUUID(level.getRandom()));
         entity.setDeltaMovement(Vec3.ZERO);
         entity.resetFallDistance();
+        // A dog let out by a player belongs to that player
+        if (entity instanceof net.nexium.dog.DogEntity dog && player != null && !dog.isTame()) {
+            dog.tame(player);
+            dog.setHealth(dog.getMaxHealth());
+        }
         if (entity instanceof Mob mob) {
             mob.setYHeadRot(yaw);
             mob.setYBodyRot(yaw);
