@@ -36,6 +36,7 @@
     "c_item2": {"type": "shaped", "pattern": ["CCC", "CPC", "CCC"], "key": {"C": "nexium:item_conduit", "P": "minecraft:ender_pearl"}, "result": {"id": "nexium:ender_item_conduit", "count": 8}},
     "c_fluid2": {"type": "shaped", "pattern": ["CCC", "CPC", "CCC"], "key": {"C": "nexium:fluid_conduit", "P": "minecraft:ender_pearl"}, "result": {"id": "nexium:ender_fluid_conduit", "count": 8}},
     "wrench": {"type": "shaped", "pattern": ["I I", " N ", " I "], "key": {"I": "minecraft:iron_ingot", "N": "minecraft:gold_nugget"}, "result": {"id": "nexium:conduit_wrench"}},
+    "conduit_scanner": {"type": "shaped", "pattern": [" S ", "ICI", " R "], "key": {"S": "minecraft:spyglass", "I": "minecraft:iron_ingot", "C": "minecraft:comparator", "R": "minecraft:redstone"}, "result": {"id": "nexium:conduit_scanner"}},
     "c_speed": {"type": "shaped", "pattern": ["RIR", "IGI", "RIR"], "key": {"R": "minecraft:redstone", "I": "minecraft:iron_ingot", "G": "minecraft:gold_ingot"}, "result": {"id": "nexium:conduit_speed_upgrade"}},
     "f_basic": {"type": "shaped", "pattern": ["SPS", "PRP", "SPS"], "key": {"S": "minecraft:stick", "P": "minecraft:paper", "R": "minecraft:redstone"}, "result": {"id": "nexium:basic_filter"}},
     "f_adv": {"type": "shapeless", "ingredients": ["nexium:basic_filter", "minecraft:comparator", "minecraft:gold_ingot"], "result": {"id": "nexium:advanced_filter"}},

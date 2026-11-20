@@ -3,6 +3,19 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.0
+
+* **Conduit Scanner.** A new item for seeing what a conduit network connects to, so you don't have to remember it. Craft it from a
+  spyglass, a comparator, 2 iron ingots and redstone, then right-click any conduit with it. The window shows everything on that
+  conduit network: for each block touching a conduit, which side it's on, whether it takes out (**Out**), puts in (**In**) or both
+  (**In+Out**), and its channel colours, with priority and filter tags. There is a tab for each conduit type the network
+  carries (Item, Fluid, Energy), and a button switches between a list **grouped by channel colour** and a flat list. Hover a row for the details in words.
+  * **Warnings.** A red `!` marks a dead end: a side that takes out on a channel nothing inserts on, or inserts on a channel nothing takes out
+    of. The tooltip also says when a side is paused or held off by redstone right now.
+  * **Outlines.** Click a row to outline that block, and the conduit it hangs off, in the world for about 10 seconds; click again to remove it.
+    **Clear outlines** removes them all.
+  * The window refreshes while it's open, and a very large network is cut short (it says so). Energy has no channels, so that tab is a single list.
+
 ## 1.24.4
 
 * **Storage connectors no longer connect to machines.** The Storage Connector and the Filtered Connector add an inventory to the network

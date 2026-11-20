@@ -167,6 +167,12 @@ place it or right-click it to outline those chunks for a minute.
 * **Fluid Intake** pulls from the source blocks touching it, up to **8 buckets a second**, and holds **32 buckets**. An **Infinite Lava Source** (obsidian, lava buckets and an
   eye of ender) next to it gives endless lava.
 * **Basic Filter** (whitelist/blacklist) and **Advanced Filter** (by item tag).
+* **Conduit Scanner** (spyglass, comparator, 2 iron ingots, redstone): right-click any conduit with it to see everything on
+  that conduit network. For each block touching a conduit it shows the side, whether that side takes **Out**, puts **In** or
+  both, its channel colours, and its priority and filter. There is a tab for each conduit type the network carries (Item,
+  Fluid, Energy), and a button switches between a list grouped by channel colour and a flat list. A red `!` marks a dead end
+  (taking out on a channel nothing inserts on, or the other way round); paused and redstone-disabled sides are flagged in the
+  tooltip. Click a row to outline that block and its conduit in the world for about 10 seconds, and click again to remove it.
 
 ## Tools and Nexium
 

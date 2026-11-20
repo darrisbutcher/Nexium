@@ -29,6 +29,11 @@ public final class ModPayloads {
                 (payload, context) -> net.nexium.energy.PowerMeter.refresh(context.player(), payload.meter()));
         ServerPlayNetworking.registerGlobalReceiver(net.nexium.energy.PowerControlPayload.TYPE,
                 (payload, context) -> net.nexium.energy.PowerMeter.control(context.player(), payload.meter(), payload.machine(), payload.priority(), payload.paused()));
+        PayloadTypeRegistry.clientboundPlay().register(net.nexium.conduit.ScanReportPayload.TYPE, net.nexium.conduit.ScanReportPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(net.nexium.conduit.ScanRequestPayload.TYPE, net.nexium.conduit.ScanRequestPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(net.nexium.conduit.ScanRequestPayload.TYPE,
+                (payload, context) -> net.nexium.conduit.ConduitScanner.refresh(context.player(), payload.conduit(), payload.conduitType()));
+        net.nexium.conduit.ConduitScanner.init();
         PayloadTypeRegistry.serverboundPlay().register(TerminalActionPayload.TYPE, TerminalActionPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "ICI",
+    " R "
+  ],
+  "key": {
+    "S": "minecraft:spyglass",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:comparator",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "nexium:conduit_scanner",
+    "count": 1
+  }
+}
