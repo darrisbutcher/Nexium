@@ -46,28 +46,20 @@ public class AnchorRegistry extends SavedData {
         ).apply(i, Entry::new));
     }
 
-    private static final Codec<AnchorRegistry> CODEC = Codec.withAlternative(
-            RecordCodecBuilder.create(i -> i.group(
-                    Entry.CODEC.listOf().fieldOf("anchors").forGetter(r -> List.copyOf(r.anchors.values())),
-                    Codec.BOOL.optionalFieldOf("uses_tickets", false).forGetter(r -> r.usesTickets)
-            ).apply(i, AnchorRegistry::new)),
-            // Before 1.1.4 the save was just the list of anchors, and anchors used vanilla's forced flag
-            Entry.CODEC.listOf().xmap(list -> new AnchorRegistry(list, false), r -> List.copyOf(r.anchors.values())));
+    /** The saved list of anchors. (A {@code uses_tickets} flag that older saves carry is ignored.) */
+    private static final Codec<AnchorRegistry> CODEC = RecordCodecBuilder.create(i -> i.group(
+            Entry.CODEC.listOf().fieldOf("anchors").forGetter(r -> List.copyOf(r.anchors.values()))
+    ).apply(i, AnchorRegistry::new));
 
     public static final SavedDataType<AnchorRegistry> TYPE =
             new SavedDataType<>(Nexium.id("anchors"), AnchorRegistry::new, CODEC, null);
 
     private final Map<GlobalPos, Entry> anchors = new HashMap<>();
-    /** False for a world whose anchors still hold vanilla forced chunks from before 1.1.4; {@link #reconcile} releases them once. */
-    private boolean usesTickets;
 
-    public AnchorRegistry() {
-        usesTickets = true;
-    }
+    public AnchorRegistry() {}
 
-    private AnchorRegistry(List<Entry> entries, boolean usesTickets) {
+    private AnchorRegistry(List<Entry> entries) {
         for (Entry e : entries) anchors.put(e.pos(), e);
-        this.usesTickets = usesTickets;
     }
 
     /** Registers {@link #TICKET}; called from the mod initializer, while registries are still open. */
@@ -104,23 +96,10 @@ public class AnchorRegistry extends SavedData {
     }
 
     /**
-     * On server start: every anchor gets its ticket back (tickets aren't saved). The first time a world from before 1.1.4
-     * starts, this also releases the vanilla forced chunks its anchors used to hold, which are saved with the world and
-     * would otherwise stay loaded forever.
+     * On server start: every anchor gets its ticket back (tickets aren't saved). Vanilla's forced-chunk flag is never touched, so
+     * chunks forced with {@code /forceload} or by another mod are left as they are.
      */
     public void reconcile(MinecraftServer server) {
-        if (!usesTickets) {
-            for (Entry e : anchors.values()) {
-                ServerLevel level = server.getLevel(e.pos().dimension());
-                if (level == null) continue;
-                ChunkPos center = ChunkPos.containing(e.pos().pos());
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dz = -1; dz <= 1; dz++) level.setChunkForced(center.x() + dx, center.z() + dz, false);
-                }
-            }
-            usesTickets = true;
-            setDirty();
-        }
         for (Entry e : List.copyOf(anchors.values())) {
             ServerLevel level = server.getLevel(e.pos().dimension());
             if (level != null) refreshArea(level, e.pos().pos());

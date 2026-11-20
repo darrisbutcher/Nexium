@@ -17,7 +17,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * The energy of a run of touching Energy Conduits, shared like Mekanism's cable networks: every conduit adds to one pool
@@ -34,7 +33,6 @@ public final class EnergyNetwork {
     public static final long CAPACITY_TIER_1 = 10_000, CAPACITY_TIER_2 = 200_000;
 
     private static final int MAX_MEMBERS = 4096;
-    private static final Map<ConduitBundleBlockEntity, EnergyNetwork> NETWORKS = new WeakHashMap<>();
 
     private final List<ConduitBundleBlockEntity> members;
     private final long version;
@@ -75,7 +73,7 @@ public final class EnergyNetwork {
     /** The network this conduit belongs to, built again when any conduit has changed. */
     public static EnergyNetwork of(ConduitBundleBlockEntity start) {
         long version = StorageEvents.conduitVersion();
-        EnergyNetwork known = NETWORKS.get(start);
+        EnergyNetwork known = start.cachedEnergyNetwork();
         if (known != null && known.version == version) return known;
         List<ConduitBundleBlockEntity> found = new ArrayList<>();
         Set<ConduitBundleBlockEntity> seen = java.util.Collections.newSetFromMap(new IdentityHashMap<>());
@@ -94,7 +92,7 @@ public final class EnergyNetwork {
             }
         }
         EnergyNetwork network = new EnergyNetwork(found, version);
-        for (ConduitBundleBlockEntity b : found) NETWORKS.put(b, network);
+        for (ConduitBundleBlockEntity b : found) b.setCachedEnergyNetwork(network);
         return network;
     }
 

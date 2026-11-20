@@ -4,8 +4,6 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -89,25 +87,23 @@ public class AnchorGameTest {
     }
 
     /**
-     * A world from before 1.1.4: its anchors saved as a bare list, and their chunks forced with the vanilla flag. This one
-     * was set to the On-demand mode, which 1.13.0 removed: it loads its chunks all the time now.
+     * What server start does: the saved list of anchors loads back, every anchor gets its ticket again, and chunks someone else forced
+     * (with /forceload or another mod) around the anchor stay forced: the anchor never touches vanilla's forced-chunk flag.
      */
     @GameTest
-    public void oldWorldsSwapForcedChunksForTicketsOnce(GameTestHelper h) {
+    public void aSavedAnchorGetsItsTicketBackAndLeavesForcedChunksAlone(GameTestHelper h) {
         ServerLevel level = h.getLevel();
         ChunkPos center = farChunk(h, 2);
         GlobalPos anchor = anchorIn(level, center, 64);
         for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) level.setChunkForced(center.x() + dx, center.z() + dz, true);
 
-        CompoundTag entry = new CompoundTag();
-        entry.put("pos", GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, anchor).getOrThrow());
-        entry.putBoolean("on_demand", true);
-        ListTag oldSave = new ListTag();
-        oldSave.add(entry);
-        AnchorRegistry loaded = AnchorRegistry.TYPE.codec().parse(NbtOps.INSTANCE, oldSave).getOrThrow();
-        h.assertTrue(loaded.all().contains(anchor), "the old save loads");
+        AnchorRegistry saved = new AnchorRegistry();
+        saved.put(anchor);
+        Tag save = AnchorRegistry.TYPE.codec().encodeStart(NbtOps.INSTANCE, saved).getOrThrow();
+        AnchorRegistry loaded = AnchorRegistry.TYPE.codec().parse(NbtOps.INSTANCE, save).getOrThrow();
+        h.assertTrue(loaded.all().contains(anchor), "the save loads back with its anchor");
 
-        loaded.reconcile(level.getServer()); // what server start does
+        loaded.reconcile(level.getServer());
         int stillForced = 0;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
@@ -115,16 +111,12 @@ public class AnchorGameTest {
             }
         }
         boolean ticket = hasTicket(level, center);
-        Tag newSave = AnchorRegistry.TYPE.codec().encodeStart(NbtOps.INSTANCE, loaded).getOrThrow();
-        AnchorRegistry reloaded = AnchorRegistry.TYPE.codec().parse(NbtOps.INSTANCE, newSave).getOrThrow();
         loaded.remove(anchor);
         loaded.refreshArea(level, anchor.pos()); // clean up the ticket
         for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) level.setChunkForced(center.x() + dx, center.z() + dz, false);
 
-        h.assertValueEqual(stillForced, 0, "forced chunks left around the old anchor");
-        h.assertTrue(ticket, "the anchor, once On-demand, holds its chunks with its ticket");
-        h.assertTrue(newSave instanceof CompoundTag c && c.getBooleanOr("uses_tickets", false), "the new save records that the swap is done");
-        h.assertTrue(reloaded.all().contains(anchor), "the new save loads back with its anchor");
+        h.assertValueEqual(stillForced, 9, "chunks forced by someone else stay forced");
+        h.assertTrue(ticket, "the anchor holds its chunks with its own ticket again");
         h.succeed();
     }
 

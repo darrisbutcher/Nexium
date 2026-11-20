@@ -329,6 +329,30 @@ public class BuilderGameTest {
         h.succeed();
     }
 
+    /** Undo changes blocks again, so it asks the same question building did: may this player change blocks here? (Here, the world border says no.) */
+    @GameTest
+    public void undoOnlyChangesBlocksThePlayerMayChange(GameTestHelper h) {
+        floor(h, Blocks.STONE);
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        player.getInventory().add(new ItemStack(Items.STONE, 9));
+        build(h, player, CENTER, Direction.UP);
+        h.assertValueEqual(count(h, Blocks.STONE, 2), 9, "a layer is built");
+        var border = h.getLevel().getWorldBorder();
+        double size = border.getSize(), centerX = border.getCenterX(), centerZ = border.getCenterZ();
+        int undone;
+        try {
+            border.setCenter(centerX + 5000, centerZ + 5000);
+            border.setSize(10);
+            undone = BuilderService.undo(player);
+        } finally {
+            border.setSize(size);
+            border.setCenter(centerX, centerZ);
+        }
+        h.assertValueEqual(undone, 0, "nothing is undone where the player may not change blocks");
+        h.assertValueEqual(count(h, Blocks.STONE, 2), 9, "and the blocks are still there");
+        h.succeed();
+    }
+
     @GameTest
     public void undoGoesBackTwoBuilds(GameTestHelper h) {
         floor(h, Blocks.STONE);

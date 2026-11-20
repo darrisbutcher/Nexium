@@ -143,7 +143,8 @@ public final class BuilderService {
         java.util.Collections.reverse(entries);
         // Which blocks still stand as built is decided before any is taken back: taking one back changes how the
         // fences and panes beside it join up
-        entries.removeIf(e -> !level.isLoaded(e.pos()) || level.getBlockState(e.pos()) != e.placed());
+        // (and, as when it was built, only where this player is allowed to change blocks: spawn protection, the world border)
+        entries.removeIf(e -> !level.isLoaded(e.pos()) || !level.mayInteract(player, e.pos()) || level.getBlockState(e.pos()) != e.placed());
         for (Entry e : entries) {
             if (!creative && !takeAll(player.getInventory(), e.returned())) continue;
             level.setBlock(e.pos(), e.previous(), Block.UPDATE_ALL);

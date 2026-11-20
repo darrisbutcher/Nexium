@@ -3,6 +3,22 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.24.3
+
+A maintenance release: fixes found by reviewing the code, each with a test.
+
+* **Energy conduits no longer leak memory.** The energy network cache was a map that was never emptied, so every conduit, and the whole
+  level with them, stayed in memory after a chunk unloaded or you left a world (in singleplayer, until the game was closed). A conduit
+  now holds its own network, which goes with it, and the conduits beside a removed or unloaded one find their network again without it.
+* **Storage networks never load chunks.** Scanning a network looked at blocks in the next chunk without checking it was loaded, which
+  loads it. The scan now stops at the edge of what is loaded, and picks the rest up once it loads.
+* **Builder Undo asks first.** It now respects spawn protection and the world border, as building does: blocks where you may not change
+  blocks are left as they are.
+* **A settings file with a mistake is kept.** If `config/nexium.json` can't be read, say after a typo, it is no longer replaced by the
+  defaults and lost: it is moved to `nexium.json.broken-<date>-<time>` (and the log says so) before the defaults are written.
+* **Dimensional Anchors drop their old-world migration.** It could release chunks someone else had forced with `/forceload`, and only
+  applied to saves from before 1.1.4, which can't be loaded since 1.23.0 anyway. Anchors never touch the forced-chunk flag now.
+
 ## 1.24.2
 
 * **Zoom**: hold the new Zoom key (unbound until you pick one under Key Binds, in Nexium) and the view closes in smoothly. While it is
