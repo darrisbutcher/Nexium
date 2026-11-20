@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.24.2
+
+* **Zoom**: hold the new Zoom key (unbound until you pick one under Key Binds, in Nexium) and the view closes in smoothly. While it is
+  held the scroll wheel zooms in more or less, from 1.25x to 20x (4x to start; the hotbar does not change), the level is remembered,
+  and letting go eases back out. Mouse turning slows down by the same amount so aiming stays steady. It works from the free camera too.
+* **No fog in the free camera**: while the camera is away from your player, all fog is gone (the render distance's haze, and the
+  water, lava, powder snow, blindness and darkness fog), so it sees clearly to the edge of the loaded world, even underwater or
+  underground. Normal play is unchanged.
+
 ## 1.24.1
 
 * **Reinforced Glass**: tinted glass that nothing but a player can break. It blocks light like tinted glass and drops itself with any

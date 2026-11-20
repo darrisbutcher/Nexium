@@ -402,9 +402,17 @@ vanilla. Endermen never pick up blocks.
   movement keys and the mouse **fly the camera through everything**: forward goes where it looks, jump goes up, sneak goes down,
   sprint is 3 times faster, and **Left Ctrl + the scroll wheel change the speed** (10 blocks a second to start; the speed key is
   `Free Camera Speed` under Controls > Key Binds, in Nexium). The plain scroll wheel does nothing. Press K again to come back.
+* **No fog** while the camera is away: the render distance's haze, water, lava, powder snow, blindness and darkness fog are all
+  removed, so you see clearly to the edge of the loaded world, underwater or underground.
 * While it is away nothing you click reaches the world, and the hand, the experience bar and its level number are not drawn. Your own
   body is drawn once the camera is outside it. It ends by itself if your player is hurt or dies, or you change world. It is all on the
   client: the server is not told.
+
+### Zoom
+* **Hold the Zoom key** (none until you pick one: Controls > Key Binds, in Nexium) and the view closes in smoothly; **scroll the wheel
+  while it is held** to zoom in more or less, from 1.25x to 20x (4x to start; the level is remembered, and the hotbar does not change
+  while you do). Let go and it eases back out. **Mouse turning slows down by the same amount** so aiming stays steady. It also works
+  from the free camera. All on the client.
 
 ### Villagers
 * **Trades never run out.** Every trade can be made as often as you like and none is ever locked after a few uses; prices still follow

@@ -62,6 +62,19 @@ public final class FreeCamera {
         return speed;
     }
 
+    /** Far beyond anything the game draws, so a fog that starts here never shows. */
+    private static final float FOG_FAR = 1.0E7F;
+
+    /** Pushes every kind of fog (the render distance's, water, lava, powder snow, blindness, darkness; the sky's and the clouds') out of sight. */
+    public static void removeFog(net.minecraft.client.renderer.fog.FogData fog) {
+        fog.environmentalStart = FOG_FAR;
+        fog.environmentalEnd = FOG_FAR * 2;
+        fog.renderDistanceStart = FOG_FAR;
+        fog.renderDistanceEnd = FOG_FAR * 2;
+        fog.skyEnd = FOG_FAR * 2;
+        fog.cloudEnd = FOG_FAR * 2;
+    }
+
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE);
         KeyMappingHelper.registerKeyMapping(SPEED_MODIFIER);
