@@ -286,8 +286,9 @@ public class ConfigScreen extends Screen {
         NexusConfig defaults = new NexusConfig();
         Component applies = Component.translatable(e.clientSide() ? "screen.nexium.config.client" : "screen.nexium.config.server");
         if (e.isBlockList()) {
-            lines.add(Component.translatable("screen.nexium.config.default", Component.translatable("screen.nexium.config.empty"))
-                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+            int count = e.getList(defaults).size();
+            lines.add(Component.translatable("screen.nexium.config.default", count == 0 ? Component.translatable("screen.nexium.config.empty")
+                    : Component.translatable("screen.nexium.config.entries", count)).withStyle(net.minecraft.ChatFormatting.GRAY));
         } else if (e.isSwitch()) {
             lines.add(Component.translatable("screen.nexium.config.default",
                     Component.translatable(e.getBoolean(defaults) ? "screen.nexium.config.on" : "screen.nexium.config.off"))

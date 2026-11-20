@@ -73,8 +73,12 @@ public final class ConfigSchema {
         /** Puts this setting back to the default. */
         public void reset(NexusConfig config) {
             NexusConfig defaults = new NexusConfig();
-            if (isBlockList()) getList(config).clear();
-            else if (isSwitch) setBoolean(config, getBoolean(defaults));
+            if (isBlockList()) {
+                List<String> list = getList(config);
+                List<String> original = new java.util.ArrayList<>(getList(defaults));
+                list.clear();
+                list.addAll(original);
+            } else if (isSwitch) setBoolean(config, getBoolean(defaults));
             else setInt(config, getInt(defaults));
         }
 
@@ -112,6 +116,7 @@ public final class ConfigSchema {
         bool("items", "ancientDebrisDropsScrap"),
         bool("items", "rightClickHarvest"),
         number("items", "harvestVeinMax", 1, 1024),
+        blocks("items", "connectorBlacklist"),
         bool("items", "anvilNoCostLimit"),
         bool("tools", "aiotVeinMining"),
         number("tools", "aiotVeinMaxBlocks", 1, 512),

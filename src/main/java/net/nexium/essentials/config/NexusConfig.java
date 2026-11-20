@@ -148,6 +148,17 @@ public final class NexusConfig {
      * ({@code #minecraft:logs}). Empty by default. The {@code #nexium:vein_excluded} tag (for data packs) is on top of this.
      */
     public List<String> veinBlacklist = new ArrayList<>();
+    /** What {@link #connectorBlacklist} starts as: the vanilla machines, and Nexium's own ({@code #nexium:machines}). */
+    private static List<String> defaultConnectorBlacklist() {
+        return new ArrayList<>(List.of("minecraft:furnace", "minecraft:blast_furnace", "minecraft:smoker", "minecraft:brewing_stand",
+                "minecraft:hopper", "minecraft:dispenser", "minecraft:dropper", "minecraft:crafter", "#nexium:machines"));
+    }
+    /**
+     * Blocks the Storage Connector and the Filtered Connector never connect to (block ids or {@code #tags}): a connector adds an
+     * inventory to the network as storage, which suits chests and barrels, not machines with a different slot behind each face. Use an
+     * Import/Export Bus to feed a machine. Starts with the vanilla machines and {@code #nexium:machines}; take an entry off to connect to it.
+     */
+    public List<String> connectorBlacklist = defaultConnectorBlacklist();
     /** The 3x3 Mining module works. */
     public boolean aiotAreaMining = true;
     /** Longest tunnel the 3x3 Mining module can dig, in 3x3 layers. Players pick a shorter one (2, 3, 8, 16, 24, 32) per tool, in the tool menu or by holding the tunnel key and scrolling. */
@@ -181,9 +192,18 @@ public final class NexusConfig {
 
     /** Whether vein mining is told to leave this block alone: its id, or one of its tags, is on {@link #veinBlacklist}. */
     public boolean veinBlacklisted(BlockState state) {
-        if (veinBlacklist == null || veinBlacklist.isEmpty()) return false;
+        return listed(veinBlacklist, state);
+    }
+
+    /** Whether the storage connectors refuse to connect to this block: its id, or one of its tags, is on {@link #connectorBlacklist}. */
+    public boolean connectorRefuses(BlockState state) {
+        return listed(connectorBlacklist, state);
+    }
+
+    private static boolean listed(List<String> list, BlockState state) {
+        if (list == null || list.isEmpty()) return false;
         String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
-        for (String entry : veinBlacklist) {
+        for (String entry : list) {
             if (entry == null) continue;
             if (entry.startsWith("#")) {
                 if (state.tags().anyMatch(tag -> entry.equals("#" + tag.location()))) return true;

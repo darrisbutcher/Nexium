@@ -61,6 +61,7 @@
       "net.nexium.gametest.ReinforcedGlassGameTest",
       "net.nexium.gametest.VeinAnyToolGameTest",
       "net.nexium.gametest.MaintenanceGameTest",
+      "net.nexium.gametest.ConnectorMachinesGameTest",
       "net.nexium.gametest.RestockingGameTest",
       "net.nexium.gametest.DrawerKeyGameTest",
       "net.nexium.gametest.BackpackGameTest",
