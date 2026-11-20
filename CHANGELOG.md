@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.24.4
+
+* **Storage connectors no longer connect to machines.** The Storage Connector and the Filtered Connector add an inventory to the network
+  as storage, which suits chests and barrels but not machines with a different slot behind each face: a connector on a furnace saw
+  only one face (the input), so fuel and output were out of reach. They now skip furnaces, blast furnaces, smokers, brewing stands,
+  hoppers, dispensers, droppers, crafters and Nexium's own machines (farms, the Farm Assembler, generators, batteries, the Redstone
+  Reactor, the Freezer, the Nexus Furnace, the Power Meter, the Lava Spring). Use an **Import/Export Bus** on the face you want to feed or empty
+  a machine. **Existing connectors touching a machine stop connecting to it.** The list is a new setting, `connectorBlacklist`
+  (Nexium Settings > Items and world): it starts with those blocks and the tag `#nexium:machines` (a data pack can add to it), and you can take
+  an entry off to connect to that block again.
+
 ## 1.24.3
 
 A maintenance release: fixes found by reviewing the code, each with a test.

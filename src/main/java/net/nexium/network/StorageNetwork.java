@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nexium.conduit.ConduitBundleBlock;
 import net.nexium.drawer.DrawerControllerBlockEntity;
+import net.nexium.essentials.config.NexusConfig;
 import net.nexium.filter.FilterData;
 import net.nexium.util.StorageEvents;
 import org.jetbrains.annotations.Nullable;
@@ -148,6 +149,8 @@ public final class StorageNetwork {
                 if (!loaded.test(inv)) continue; // an inventory in an unloaded chunk is out of reach until it loads
                 BlockState invState = level.getBlockState(inv);
                 if (invState.getBlock() instanceof NetworkBlock || invState.getBlock() instanceof ConduitBundleBlock) continue;
+                // A connector adds an inventory as storage; machines (furnaces, farms...) are fed with an Import/Export Bus instead
+                if (NexusConfig.get().connectorRefuses(invState)) continue;
                 if (level.getBlockEntity(inv) instanceof DrawerControllerBlockEntity ctrl) {
                     claimedByController.addAll(ctrl.clusterPositions());
                 }

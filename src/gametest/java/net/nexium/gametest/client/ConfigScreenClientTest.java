@@ -40,6 +40,13 @@ public class ConfigScreenClientTest implements FabricClientGameTest {
         check(!range.isDefault(scratch), "a changed number is not the default");
         range.reset(scratch);
         check(range.isDefault(scratch) && scratch.magnetMaxRange == 16, "reset puts the default back");
+        ConfigSchema.Entry connectors = ConfigSchema.ENTRIES.stream().filter(e -> e.field().equals("connectorBlacklist")).findFirst().orElseThrow();
+        check(connectors.isBlockList() && connectors.isDefault(scratch) && scratch.connectorBlacklist.contains("minecraft:furnace"),
+                "the connector list starts with the machines");
+        scratch.connectorBlacklist.clear();
+        check(!connectors.isDefault(scratch), "an emptied connector list is not the default");
+        connectors.reset(scratch);
+        check(connectors.isDefault(scratch) && scratch.connectorBlacklist.contains("#nexium:machines"), "reset puts the machines back on it");
         ConfigSchema.Entry flag = ConfigSchema.ENTRIES.stream().filter(e -> e.field().equals("mobPickUp")).findFirst().orElseThrow();
         flag.setBoolean(scratch, false);
         check(!flag.isDefault(scratch), "a changed switch is not the default");

@@ -71,8 +71,13 @@ the matching **Barrel Upgrade** to upgrade it in place (Iron upgrades a vanilla 
 on). What is inside stays inside.
 
 ### Simple network
-* **Storage Connector** reads every inventory touching it; **Filtered Connector** reads only the one it faces,
-  through a filter. Both have a priority: items go into the highest priority inventory that takes them, even if a lower
+* **Storage Connector** reads every storage inventory touching it; **Filtered Connector** reads only the one it faces,
+  through a filter. **They do not connect to machines**: furnaces, blast furnaces, smokers, brewing stands, hoppers, dispensers,
+  droppers, crafters and Nexium's own machines (farms, the Farm Assembler, generators, batteries, the Reactor, the Freezer, the
+  Nexus Furnace...) are skipped, because a machine has a different slot behind each face and a connector would see only one of them.
+  Feed a machine with an **Import/Export Bus** on the face you want instead. What is refused is the `connectorBlacklist` setting
+  (block ids and `#tags`; it starts with the machines above and `#nexium:machines`): take an entry off to connect to that block.
+  Both have a priority: items go into the highest priority inventory that takes them, even if a lower
   one already holds some, and come out of the lowest first. At the same priority, items join their own kind first. A Drawer
   Controller behind a connector only fills drawers that already hold the item or are locked to it. **Inventory Cable**
   links connectors and terminals. No power.
@@ -771,6 +776,7 @@ nothing you typed is lost; fix it there and copy it back.
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
 | `aiotVeinMining` | `true` | Vein mining works (with any tool or an empty hand) |
 | `veinBlacklist` | `[]` | Blocks vein mining never takes: block ids and `#tags`, edited in the settings screen |
+| `connectorBlacklist` | the vanilla machines and `#nexium:machines` | Blocks the Storage Connector and the Filtered Connector never connect to: block ids and `#tags`, edited in the settings screen |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes (with any tool), 1 to 512 |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
