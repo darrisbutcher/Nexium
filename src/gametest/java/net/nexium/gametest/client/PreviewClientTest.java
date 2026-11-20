@@ -21,7 +21,7 @@ import net.nexium.registry.ModItems;
 /**
  * Looking at a stone wall with a diamond AIOT whose 3x3 Mining module has a tunnel of 8: the blocks it would mine
  * (8 layers of 3x3, less the one looked at) are outlined, and a screenshot shows the outline. With a tunnel of 1 it
- * is the plain 3x3, with the Vein Mine key held on dirt the vein is outlined, and a plain pickaxe outlines nothing.
+ * is the plain 3x3, with the Vein Mine key held on dirt the vein is outlined, and a plain pickaxe outlines nothing until the key is held, when it outlines the vein too.
  */
 public class PreviewClientTest implements FabricClientGameTest {
     @Override
@@ -83,7 +83,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             int vein = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
             check(vein == 255, "a vein in a wall of dirt outlines up to the size, 255 more blocks, got " + vein);
             String hudVein = ctx.computeOnClient(mc -> hud(mc));
-            check(hudVein.startsWith("3x3: on | Vein: up to 256 (hold V"), "the HUD lists the 3x3 module and the vein size, got: " + hudVein);
+            check(hudVein.startsWith("3x3: on | Vein: up to 256 (hold Left Control"), "the HUD lists the 3x3 module and the vein size, got: " + hudVein);
             System.out.println("[nexus] vein preview: " + ctx.takeScreenshot("nexus_preview_vein"));
             ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
 
@@ -115,6 +115,14 @@ public class PreviewClientTest implements FabricClientGameTest {
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "a plain pickaxe outlines nothing");
             check(ctx.computeOnClient(mc -> hud(mc).isEmpty()), "a plain pickaxe shows no HUD");
+            // Vein mining works with any tool: with the key held the plain pickaxe outlines the vein too, still with no HUD
+            ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
+            ctx.waitTicks(10);
+            check(!ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "a plain pickaxe outlines the vein while the key is held");
+            check(ctx.computeOnClient(mc -> hud(mc).isEmpty()), "and still shows no HUD");
+            ctx.getInput().releaseKey(ToolMenuClient.VEIN_MINE);
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> AiotPreview.outlined().isEmpty()), "and nothing once the key is let go");
         }
     }
 

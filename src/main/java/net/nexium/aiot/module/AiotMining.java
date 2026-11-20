@@ -10,6 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -23,15 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Vein mining (the Vein Mine key, no module) and the 3x3 Mining module. When a player mines a block with an AIOT that has one on, the extra blocks are
- * mined as if the player had mined each one: same drops (Fortune, Silk Touch, a Nexus Link), 1 durability each, spawn
+ * Vein mining (the Vein Mine key, no module) and the 3x3 Mining module. When a player mines a block with a tool that vein mines or an AIOT that has
+ * a module on, the extra blocks are mined as if the player had mined each one: same drops (Fortune, Silk Touch, a Nexus Link), 1 durability each, spawn
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
- *   <li><b>Vein mining</b>, for any block the AIOT is made for, stone included, and for grasses, ferns, bushes and leaf
- *       litter ({@code #nexium:vein_plants}, which vein together as one kind); never blocks with contents or those
- *       in {@code #nexium:vein_excluded} (empty unless a data pack fills it): every block of the
- *       same kind touching it, corners included, up to the size set in the tool menu (never above the config's limit)
- *       in all. Only while the player holds the Vein Mine key; needs no module.</li>
+ *   <li><b>Vein mining</b>, with any tool or an empty hand, for any block the tool is right for, stone included, and for grasses,
+ *       ferns, bushes and leaf litter ({@code #nexium:vein_plants}, which vein together as one kind); never blocks with contents,
+ *       those in {@code #nexium:vein_excluded} (empty unless a data pack fills it) or those on the config's {@code veinBlacklist}:
+ *       every block of the same kind touching it, corners included, up to the size set in an AIOT's tool menu (any other tool: the
+ *       config's limit), never above the config's limit, in all. Only while the player holds the Vein Mine key; needs no module.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
  *       looking ahead, the floor or ceiling when looking down or up). Only blocks the AIOT is made for and no harder
  *       than about twice the mined block; never blocks with contents, such as chests. With a tunnel length set in the
@@ -59,13 +60,14 @@ public final class AiotMining {
         ItemStack tool = player.getMainHandItem();
         List<BlockPos> extra = extraBlocks(level, player, tool, pos, state, VeinKey.held(player));
         if (extra.isEmpty()) return;
+        Item item = tool.getItem();
         busy = true;
         try {
             // A Nexus Link sends the whole swing's drops to the network in one go
             NexusLink.batch(player, () -> {
                 for (BlockPos target : extra) {
                     // Stop if the tool breaks or is put away part of the way through
-                    if (!(player.getMainHandItem().getItem() instanceof AiotItem)) break;
+                    if (player.getMainHandItem().getItem() != item) break;
                     // Spawn protection and the world border, which vanilla checks before the first block only
                     if (!level.mayInteract(player, target)) continue;
                     player.gameMode.destroyBlock(target);
@@ -81,26 +83,37 @@ public final class AiotMining {
      * or none (an empty list). Shared by the server, which mines them, and the client, which outlines them as a preview.
      */
     public static List<BlockPos> extraBlocks(Level level, Player player, ItemStack tool, BlockPos pos, BlockState state, boolean veinKeyHeld) {
-        if (!(tool.getItem() instanceof AiotItem) || player.isSecondaryUseActive()) return List.of();
+        if (player.isSecondaryUseActive()) return List.of();
         NexusConfig config = NexusConfig.get();
+        boolean aiot = tool.getItem() instanceof AiotItem;
+        // Vein mining works with any tool or an empty hand; an AIOT's own size comes from its tool menu
         if (config.aiotVeinMining && veinKeyHeld && veinable(level, pos, state, tool)) {
-            return vein(level, pos, state, AiotModules.veinSize(tool));
+            return vein(level, pos, state, aiot ? AiotModules.veinSize(tool) : config.aiotVeinMaxBlocks);
         }
-        if (config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
+        if (aiot && config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
             return area(level, player, pos, state, tool, AiotModules.tunnelLength(tool));
         }
         return List.of();
     }
 
     /**
-     * Whether vein mining takes this block: not a block with contents or one that can't be broken, and either a grass,
-     * fern, bush or leaf litter ({@link #VEIN_PLANTS}), or one the tool is right for: it mines it faster, and where the
-     * block needs a tool to drop anything (obsidian), the tool is strong enough to.
+     * Whether vein mining takes this block: not a block with contents, one that can't be broken, or one on the blacklist, and either
+     * a grass, fern, bush or leaf litter ({@link #VEIN_PLANTS}), or one the tool is right for: it mines it faster (or, for a tool
+     * with no speed bonus on it and an empty hand, it is a block that needs no tool at all, such as dirt), and where the block
+     * needs a tool to drop anything (obsidian), the tool is strong enough to.
      */
     private static boolean veinable(Level level, BlockPos pos, BlockState state, ItemStack tool) {
-        if (state.is(VEIN_EXCLUDED) || state.hasBlockEntity() || state.getDestroySpeed(level, pos) < 0) return false;
+        if (blocked(state) || state.hasBlockEntity() || state.getDestroySpeed(level, pos) < 0) return false;
         if (state.is(VEIN_PLANTS)) return true;
-        return tool.getDestroySpeed(state) > 1.0F && (!state.requiresCorrectToolForDrops() || tool.isCorrectToolForDrops(state));
+        boolean rightTool = !state.requiresCorrectToolForDrops() || tool.isCorrectToolForDrops(state);
+        if (tool.getItem() instanceof AiotItem) return tool.getDestroySpeed(state) > 1.0F && rightTool;
+        // Any other tool, or a bare hand: faster than a hand on this block, or a block a hand can take (dirt, sand, wool...)
+        return rightTool && (tool.getDestroySpeed(state) > 1.0F || !state.requiresCorrectToolForDrops());
+    }
+
+    /** Whether vein mining leaves this block alone: the {@code #nexium:vein_excluded} tag, or the config's blacklist (block ids and {@code #tags}). */
+    public static boolean blocked(BlockState state) {
+        return state.is(VEIN_EXCLUDED) || NexusConfig.get().veinBlacklisted(state);
     }
 
     /** The ore group a block belongs to ({@code #c:ores/diamond} and the like), or null if it stands alone. */
@@ -136,6 +149,7 @@ public final class AiotMining {
                         if (!level.hasChunkAt(next) || !seen.add(next.asLong())) continue;
                         BlockState state = level.getBlockState(next);
                         if (!state.is(block) && (group == null || !state.is(group))) continue;
+                        if (blocked(state)) continue;
                         found.add(next.immutable());
                         queue.enqueue(next.asLong());
                     }

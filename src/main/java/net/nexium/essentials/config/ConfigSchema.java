@@ -9,8 +9,27 @@ import java.util.List;
  * this, so a limit is written once.
  */
 public final class ConfigSchema {
-    /** One setting. For a switch, min and max are unused. */
+    /** One setting. For a switch, min and max are unused; a block list (a negative min) is a list of block ids and tags, edited in its own screen. */
     public record Entry(String group, String field, boolean isSwitch, int min, int max, boolean clientSide) {
+        public boolean isBlockList() {
+            return min < 0;
+        }
+
+        /** The block list's entries (live, so a change to it is a change to the config). */
+        @SuppressWarnings("unchecked")
+        public List<String> getList(NexusConfig config) {
+            try {
+                List<String> list = (List<String>) reflect().get(config);
+                if (list == null) {
+                    list = new java.util.ArrayList<>();
+                    reflect().set(config, list);
+                }
+                return list;
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
         private Field reflect() {
             try {
                 return NexusConfig.class.getField(field);
@@ -54,12 +73,14 @@ public final class ConfigSchema {
         /** Puts this setting back to the default. */
         public void reset(NexusConfig config) {
             NexusConfig defaults = new NexusConfig();
-            if (isSwitch) setBoolean(config, getBoolean(defaults));
+            if (isBlockList()) getList(config).clear();
+            else if (isSwitch) setBoolean(config, getBoolean(defaults));
             else setInt(config, getInt(defaults));
         }
 
         public boolean isDefault(NexusConfig config) {
             NexusConfig defaults = new NexusConfig();
+            if (isBlockList()) return getList(config).equals(getList(defaults));
             return isSwitch ? getBoolean(config) == getBoolean(defaults) : getInt(config) == getInt(defaults);
         }
 
@@ -94,6 +115,7 @@ public final class ConfigSchema {
         bool("items", "anvilNoCostLimit"),
         bool("tools", "aiotVeinMining"),
         number("tools", "aiotVeinMaxBlocks", 1, 512),
+        blocks("tools", "veinBlacklist"),
         bool("tools", "aiotAreaMining"),
         number("tools", "aiotTunnelMaxLength", 1, 64),
         bool("tools", "aiotNexusLink"),
@@ -150,6 +172,11 @@ public final class ConfigSchema {
 
     private static Entry number(String group, String field, int min, int max) {
         return new Entry(group, field, false, min, max, false);
+    }
+
+    /** A list of block ids and tags, edited in its own screen. */
+    private static Entry blocks(String group, String field) {
+        return new Entry(group, field, false, -1, -1, false);
     }
 
     private static Entry number(String group, String field, int min, int max, boolean clientSide) {

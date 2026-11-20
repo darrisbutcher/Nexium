@@ -166,7 +166,8 @@
       "topics": [
         "explosions",
         "debris",
-        "sand"
+        "sand",
+        "reinforced_glass"
       ]
     }
   ],
@@ -2235,6 +2236,28 @@
         "farms",
         "freezer",
         "conduits"
+      ]
+    },
+    "reinforced_glass": {
+      "pages": [
+        "essentials.reinforced_glass"
+      ],
+      "icon": "nexium:reinforced_glass",
+      "recipes": [
+        "reinforced_glass"
+      ],
+      "items": [
+        "nexium:reinforced_glass"
+      ],
+      "aliases": [
+        "Reinforced Glass",
+        "Glass",
+        "Tinted glass",
+        "Wither proof",
+        "Dragon proof"
+      ],
+      "see": [
+        "explosions"
       ]
     },
     "dog": {

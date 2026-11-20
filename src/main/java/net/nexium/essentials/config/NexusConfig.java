@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.state.BlockState;
 import net.nexium.essentials.NexiumEssentials;
 
 import java.io.IOException;
@@ -12,6 +15,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Settings in {@code config/nexium.json}. The file is created with the defaults on first launch
@@ -138,6 +143,11 @@ public final class NexusConfig {
     public int aiotVeinMaxBlocks = 256;
     /** Which version of this file wrote it, so a changed default can be carried over once. */
     public Integer configVersion;
+    /**
+     * Blocks vein mining leaves alone, for every tool: block ids ({@code minecraft:diamond_ore}) or block tags
+     * ({@code #minecraft:logs}). Empty by default. The {@code #nexium:vein_excluded} tag (for data packs) is on top of this.
+     */
+    public List<String> veinBlacklist = new ArrayList<>();
     /** The 3x3 Mining module works. */
     public boolean aiotAreaMining = true;
     /** Longest tunnel the 3x3 Mining module can dig, in 3x3 layers. Players pick a shorter one (2, 3, 8, 16, 24, 32) per tool, in the tool menu or by holding the tunnel key and scrolling. */
@@ -167,6 +177,34 @@ public final class NexusConfig {
 
     public static NexusConfig get() {
         return instance;
+    }
+
+    /** Whether vein mining is told to leave this block alone: its id, or one of its tags, is on {@link #veinBlacklist}. */
+    public boolean veinBlacklisted(BlockState state) {
+        if (veinBlacklist == null || veinBlacklist.isEmpty()) return false;
+        String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+        for (String entry : veinBlacklist) {
+            if (entry == null) continue;
+            if (entry.startsWith("#")) {
+                if (state.tags().anyMatch(tag -> entry.equals("#" + tag.location()))) return true;
+            } else if (entry.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Turns what a player typed into a blacklist entry: a block id ({@code diamond_ore} means {@code minecraft:diamond_ore}) of a block
+     * that exists, or a {@code #tag}. Null if it is neither.
+     */
+    public static String blacklistEntry(String typed) {
+        String text = typed == null ? "" : typed.trim().toLowerCase(java.util.Locale.ROOT);
+        boolean tag = text.startsWith("#");
+        Identifier id = Identifier.tryParse(tag ? text.substring(1) : text);
+        if (id == null) return null;
+        if (tag) return "#" + id;
+        return BuiltInRegistries.BLOCK.containsKey(id) ? id.toString() : null;
     }
 
     /** Carries a changed default over once for a file written by an older version (a fresh file already has the new defaults). */
@@ -213,6 +251,6 @@ public final class NexusConfig {
     }
 
     private void clamp() {
-        for (ConfigSchema.Entry e : ConfigSchema.ENTRIES) if (!e.isSwitch()) e.setInt(this, e.getInt(this));
+        for (ConfigSchema.Entry e : ConfigSchema.ENTRIES) if (!e.isSwitch() && !e.isBlockList()) e.setInt(this, e.getInt(this));
     }
 }
