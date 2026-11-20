@@ -221,29 +221,58 @@ public final class NexusConfig {
         instance.configVersion = VERSION;
     }
 
+    private static Path configFile() {
+        return FabricLoader.getInstance().getConfigDir().resolve(NexiumEssentials.NAMESPACE + ".json");
+    }
+
     public static void load() {
-        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexiumEssentials.NAMESPACE + ".json");
+        instance = loadFrom(configFile());
+    }
+
+    /**
+     * Reads the settings in {@code file}, tidies them (older versions' defaults carried over, numbers held to their limits) and writes
+     * them back. A file that can't be read, say after a typo, is not thrown away: it is moved aside to {@code <name>.broken-<time>}
+     * before the defaults are written in its place, so what the player had typed is still there to fix.
+     */
+    public static NexusConfig loadFrom(Path file) {
         NexusConfig loaded = null;
         if (Files.exists(file)) {
             try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 loaded = GSON.fromJson(reader, NexusConfig.class);
             } catch (IOException | JsonParseException e) {
                 NexiumEssentials.LOG.error("Could not read {}, using the defaults", file, e);
+                setAside(file);
             }
         }
-        instance = loaded == null ? new NexusConfig() : loaded;
-        migrate(instance, loaded != null);
-        instance.clamp();
-        save();
+        NexusConfig config = loaded == null ? new NexusConfig() : loaded;
+        migrate(config, loaded != null);
+        config.clamp();
+        write(file, config);
+        return config;
+    }
+
+    /** Moves a settings file that could not be read out of the way, keeping it. */
+    private static void setAside(Path file) {
+        String stamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        Path aside = file.resolveSibling(file.getFileName() + ".broken-" + stamp);
+        try {
+            Files.move(file, aside, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            NexiumEssentials.LOG.error("The unreadable settings file was kept as {}; fix it there and copy it back, or delete it to keep the defaults", aside);
+        } catch (IOException e) {
+            NexiumEssentials.LOG.error("Could not keep a copy of the unreadable {}", file, e);
+        }
     }
 
     /** Writes the current settings to the file. The settings screen calls this when a setting changes. */
     public static void save() {
-        Path file = FabricLoader.getInstance().getConfigDir().resolve(NexiumEssentials.NAMESPACE + ".json");
+        write(configFile(), instance);
+    }
+
+    private static void write(Path file, NexusConfig config) {
         try {
             Files.createDirectories(file.getParent());
             try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
-                GSON.toJson(instance, writer);
+                GSON.toJson(config, writer);
             }
         } catch (IOException e) {
             NexiumEssentials.LOG.warn("Could not write {}", file, e);

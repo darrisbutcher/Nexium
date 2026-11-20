@@ -89,7 +89,7 @@ public final class StorageNetwork {
         long v = StorageEvents.storageVersion();
         long t = level.getGameTime();
         if (e != null && e.version == v && t >= e.gameTime && t - e.gameTime < CACHE_TICKS) return e.network;
-        StorageNetwork net = scan(level, start);
+        StorageNetwork net = scan(level, start, level::hasChunkAt);
         CacheEntry fresh = new CacheEntry(net, v, t);
         CACHE.put(key, fresh);
         // Any other block of this network now finds the same scan, as long as it is current
@@ -102,7 +102,12 @@ public final class StorageNetwork {
         CACHE.clear();
     }
 
-    private static StorageNetwork scan(Level level, BlockPos start) {
+    /**
+     * Scans the network around {@code start}. Only positions {@code loaded} accepts are looked at: asking a level for a block in a
+     * chunk that is not loaded would load it, so the network ends at the edge of what is loaded (the real caller passes
+     * {@code level::hasChunkAt}). Public so a test can say where that edge is.
+     */
+    public static StorageNetwork scan(Level level, BlockPos start, java.util.function.Predicate<BlockPos> loaded) {
         Set<BlockPos> visited = new HashSet<>();
         Deque<BlockPos> queue = new ArrayDeque<>();
         List<BlockPos> connectors = new ArrayList<>();
@@ -117,6 +122,8 @@ public final class StorageNetwork {
             for (Direction d : Direction.values()) {
                 BlockPos next = pos.relative(d);
                 if (visited.contains(next)) continue;
+                // Never look into a chunk that is not loaded: asking for a block there would load it. The network ends at its edge for now.
+                if (!loaded.test(next)) continue;
                 if (level.getBlockState(next).getBlock() instanceof NetworkBlock) {
                     visited.add(next);
                     queue.add(next);
@@ -138,6 +145,7 @@ public final class StorageNetwork {
                     : List.of(Direction.values());
             for (Direction d : dirs) {
                 BlockPos inv = c.relative(d);
+                if (!loaded.test(inv)) continue; // an inventory in an unloaded chunk is out of reach until it loads
                 BlockState invState = level.getBlockState(inv);
                 if (invState.getBlock() instanceof NetworkBlock || invState.getBlock() instanceof ConduitBundleBlock) continue;
                 if (level.getBlockEntity(inv) instanceof DrawerControllerBlockEntity ctrl) {

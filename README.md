@@ -743,7 +743,9 @@ saved on the player. The quests are in `data/nexium/quests.json` in the mod.
 `config/nexium.json` is created on first launch. Every setting can also be changed in the game, on **Nexium Settings**:
 the **Settings** button in the Codex or the armor menu, **Mod Menu**'s Configure button, or the *Open Nexium Settings* key (unbound
 by default). They are grouped by feature, each has a Reset, and hovering one says what it does and its limits. Changes are saved as
-you make them and apply at once in a world you host. On a server, the server's file is the one that counts.
+you make them and apply at once in a world you host. On a server, the server's file is the one that counts. If the file can't be
+read (a typo, say), the game starts with the defaults and keeps what you had as `nexium.json.broken-<date>-<time>` beside it, so
+nothing you typed is lost; fix it there and copy it back.
 
 | Setting | Default | What it does |
 |---|---|---|

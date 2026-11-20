@@ -54,6 +54,12 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
     private record Target(BlockPos invPos, Direction side, SideConfig cfg, int distance) {}
 
     private final Map<Integer, List<Target>> targetCache = new HashMap<>();
+    /**
+     * The energy network this conduit last found itself in. It is kept here, not in a static map, so it goes when the conduit does:
+     * a map keyed by block entities whose values hold those same block entities is never emptied, and would keep every conduit (and
+     * with them the whole level) alive after its chunk unloads or the world is left.
+     */
+    private @Nullable EnergyNetwork energyNetwork;
     // Client-side cache for the channel markers drawn on each arm
     private final int[][] markers = new int[ConduitType.VALUES.length][6];
     private long markersAt = -1;
@@ -64,6 +70,23 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         for (ConduitType t : ConduitType.VALUES) {
             for (Direction d : Direction.values()) configs[t.ordinal()][d.get3DDataValue()] = new SideConfig(t);
         }
+    }
+
+    /** The energy network found for this conduit, if it is still current (see {@link EnergyNetwork#of}). */
+    @Nullable EnergyNetwork cachedEnergyNetwork() {
+        return energyNetwork;
+    }
+
+    void setCachedEnergyNetwork(@Nullable EnergyNetwork network) {
+        energyNetwork = network;
+    }
+
+    /** Broken, or its chunk unloaded: forget the network, and let the conduits beside it find theirs again without this one. */
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        energyNetwork = null;
+        StorageEvents.conduitsChanged();
     }
 
     // ---- Contents ---------------------------------------------------------------------------
