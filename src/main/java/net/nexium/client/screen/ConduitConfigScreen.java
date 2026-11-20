@@ -17,7 +17,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
             0xFF9D9D97, 0xFF169C9C, 0xFF8932B8, 0xFF3C44AA, 0xFF835432, 0xFF5E7C16, 0xFFB02E26, 0xFF1D1D21
     };
     private static final String[] SIDES = {"D", "U", "N", "S", "W", "E"};
-    private static final String[] COLOR_KEYS = {"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+    public static final String[] COLOR_KEYS = {"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
             "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"};
 
     private static final String[] TYPE_KEYS = {"item", "fluid", "energy"};

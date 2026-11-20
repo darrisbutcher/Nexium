@@ -48,6 +48,7 @@
       "topics": [
         "conduits",
         "wrench",
+        "scanner",
         "filters",
         "dlinks",
         "anchor",
@@ -692,6 +693,29 @@
       ],
       "see": [
         "conduits"
+      ]
+    },
+    "scanner": {
+      "pages": [
+        "links.scanner",
+        "links.scanner2"
+      ],
+      "icon": "nexium:conduit_scanner",
+      "recipes": [
+        "conduit_scanner"
+      ],
+      "items": [
+        "nexium:conduit_scanner"
+      ],
+      "aliases": [
+        "Conduit Scanner",
+        "Scanner",
+        "Conduit network",
+        "Channels"
+      ],
+      "see": [
+        "conduits",
+        "wrench"
       ]
     },
     "filters": {

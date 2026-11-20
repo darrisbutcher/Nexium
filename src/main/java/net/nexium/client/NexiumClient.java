@@ -98,6 +98,7 @@ public class NexiumClient implements ClientModInitializer {
         NexiumEssentialsClient.init();
         ToolMenuClient.init();
         AiotPreview.init();
+        ScannerOutline.init();
         DiagonalPreview.init();
         net.nexium.essentials.client.FreeCamera.init();
         net.nexium.essentials.client.Zoom.init();
@@ -109,6 +110,11 @@ public class NexiumClient implements ClientModInitializer {
             var client = context.client();
             if (payload.open()) client.gui.setScreen(new net.nexium.client.screen.PowerMeterScreen(payload));
             else if (client.gui.screen() instanceof net.nexium.client.screen.PowerMeterScreen screen) screen.update(payload);
+        });
+        ClientPlayNetworking.registerGlobalReceiver(net.nexium.conduit.ScanReportPayload.TYPE, (payload, context) -> {
+            var client = context.client();
+            if (payload.open()) client.gui.setScreen(new net.nexium.client.screen.ConduitScannerScreen(payload));
+            else if (client.gui.screen() instanceof net.nexium.client.screen.ConduitScannerScreen screen) screen.update(payload);
         });
         ClientPlayNetworking.registerGlobalReceiver(net.nexium.quest.QuestStatePayload.TYPE, (payload, context) -> {
             var client = context.client();

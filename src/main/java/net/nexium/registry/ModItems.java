@@ -71,6 +71,8 @@ public final class ModItems {
     public static final ConduitItem ENERGY_CONDUIT = register("energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 1), new Item.Properties());
     public static final ConduitItem ENDER_ENERGY_CONDUIT = register("ender_energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 2), new Item.Properties());
     public static final ConduitWrenchItem CONDUIT_WRENCH = register("conduit_wrench", ConduitWrenchItem::new, new Item.Properties().stacksTo(1));
+    /** Shows everything on a conduit's network in a window; changes nothing. */
+    public static final net.nexium.conduit.ConduitScannerItem CONDUIT_SCANNER = register("conduit_scanner", net.nexium.conduit.ConduitScannerItem::new, new Item.Properties().stacksTo(1));
     public static final FilterItem BASIC_FILTER = register("basic_filter", p -> new FilterItem(p, false), new Item.Properties().stacksTo(1));
     public static final FilterItem ADVANCED_FILTER = register("advanced_filter", p -> new FilterItem(p, true), new Item.Properties().stacksTo(1));
 
