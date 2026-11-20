@@ -3,6 +3,26 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.24.1
+
+* **Reinforced Glass**: tinted glass that nothing but a player can break. It blocks light like tinted glass and drops itself with any
+  tool, but the Wither, the Ender Dragon and every explosion (creepers, TNT, ghast fireballs, Wither skulls, end crystals) leave it
+  standing. Craft 8 from 8 glass around an obsidian block (Tools tab; the Codex has a page on it).
+* **Vein mining with any tool**: hold the Vein Mine key and mine with a pickaxe, axe, shovel, hoe, any other item or an empty
+  hand, not just an AIOT. The block must be one the tool is right for (a bare hand takes what it can break, such as dirt, sand
+  and logs; obsidian still needs a diamond-grade tool); every block costs the tool 1 durability and a tool that breaks stops the
+  vein. An AIOT keeps the vein size from its tool menu; any other tool takes up to the `aiotVeinMaxBlocks` limit (256).
+  The outline preview shows for any tool while the key is held. The setting `aiotVeinMining` now covers all tools.
+* **Vein mining blacklist**: a new setting, `veinBlacklist` (Nexium Settings > All-in-one Tools, which opens a list you add to by
+  typing a block id such as `diamond_ore` or a tag such as `#minecraft:logs`, or with one click for the block you last looked at),
+  keeps those blocks out of vein mining for every tool, AIOTs included. The first block you mine still breaks.
+* **Zoe bites 1.5 times as hard** as a wolf (6 damage instead of 4). It is a permanent attribute bonus, so it is saved with her and in
+  her egg, and a Zoe saved before this version gets it too.
+* **Zoe's skin**: the back of her head had an eye painted on it by mistake; it is plain fur now.
+* **The Vein Mine key is now Left Control by default** (it was V). Players who already have the game's saved controls keep
+  the key they have (Minecraft saved V for them); change it under Key Binds. Left Control is also the default Sprint key: both
+  work while it is held, so change one of them in Key Binds if that gets in the way.
+
 ## 1.24.0
 
 * **Zoe, the dog**: a new follower that behaves like a tamed wolf, with her own model and skin (a black and white speckled

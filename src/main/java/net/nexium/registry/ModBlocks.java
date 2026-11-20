@@ -152,6 +152,16 @@ public final class ModBlocks {
     public static final Block NEXIUM_BLOCK = register("nexium_block", Block::new, BlockBehaviour.Properties.of()
             .mapColor(MapColor.COLOR_BLACK).strength(50.0F, 1200.0F).sound(SoundType.NETHERITE_BLOCK).requiresCorrectToolForDrops(), false);
 
+    /**
+     * Tinted glass that nothing but a player can break: it blocks light like tinted glass, drops itself with any tool, and the
+     * Wither, the Ender Dragon and every explosion leave it alone (the {@code dragon_immune} and {@code wither_immune} block tags, and
+     * bedrock's blast resistance).
+     */
+    public static final Block REINFORCED_GLASS = register("reinforced_glass", net.minecraft.world.level.block.TintedGlassBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.3F, 3_600_000.0F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false), true);
+
     private static BlockBehaviour.Properties stone() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0f).sound(SoundType.STONE).requiresCorrectToolForDrops();
     }

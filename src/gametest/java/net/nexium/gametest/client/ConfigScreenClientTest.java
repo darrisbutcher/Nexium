@@ -3,6 +3,7 @@ package net.nexium.gametest.client;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.nexium.client.screen.BlockListScreen;
 import net.nexium.client.screen.ConfigScreen;
 import net.nexium.essentials.config.ConfigSchema;
 import net.nexium.essentials.config.NexusConfig;
@@ -23,7 +24,7 @@ public class ConfigScreenClientTest implements FabricClientGameTest {
         List<String> fields = new ArrayList<>();
         for (Field f : NexusConfig.class.getFields()) {
             if (Modifier.isStatic(f.getModifiers())) continue;
-            if (f.getType() == boolean.class || f.getType() == int.class) fields.add(f.getName());
+            if (f.getType() == boolean.class || f.getType() == int.class || f.getType() == List.class) fields.add(f.getName());
         }
         List<String> listed = ConfigSchema.ENTRIES.stream().map(ConfigSchema.Entry::field).toList();
         check(listed.size() == fields.size() && listed.containsAll(fields), "the schema lists every setting once, missing: "
@@ -61,6 +62,33 @@ public class ConfigScreenClientTest implements FabricClientGameTest {
                     System.out.println("[nexus] settings " + group + ": " + ctx.takeScreenshot("nexus_settings_" + group));
                 }
             }
+            // The vein mining blacklist: its own screen, with ids and tags typed in, refused when unknown, and taken off again
+            ConfigSchema.Entry blacklist = ConfigSchema.ENTRIES.stream().filter(e -> e.field().equals("veinBlacklist")).findFirst().orElseThrow();
+            check(blacklist.isBlockList() && ConfigSchema.in("tools").contains(blacklist), "the blacklist is a block list on the tools page");
+            NexusConfig.get().veinBlacklist.clear();
+            ctx.runOnClient(mc -> ((ConfigScreen) mc.gui.screen()).showGroup("tools"));
+            ctx.waitTicks(3);
+            System.out.println("[nexus] settings tools with blacklist: " + ctx.takeScreenshot("nexus_settings_blacklist_row"));
+            ctx.runOnClient(mc -> mc.gui.setScreen(new BlockListScreen(mc.gui.screen(), blacklist)));
+            ctx.waitTicks(3);
+            ctx.runOnClient(mc -> {
+                BlockListScreen screen = (BlockListScreen) mc.gui.screen();
+                screen.typeAndAdd("diamond_ore");
+                screen.typeAndAdd("#minecraft:logs");
+                screen.typeAndAdd("nonsense_block");
+                screen.typeAndAdd("diamond_ore");
+            });
+            ctx.waitTicks(3);
+            List<String> listed2 = ctx.computeOnClient(mc -> ((BlockListScreen) mc.gui.screen()).entries());
+            check(listed2.equals(List.of("minecraft:diamond_ore", "#minecraft:logs")),
+                    "the list holds the block and the tag once each and refuses the unknown one: " + listed2);
+            check(NexusConfig.get().veinBlacklist.equals(listed2), "and the live settings hold the same");
+            System.out.println("[nexus] settings blacklist screen: " + ctx.takeScreenshot("nexus_settings_blacklist"));
+            NexusConfig.get().veinBlacklist.clear();
+            NexusConfig.save();
+            ctx.runOnClient(mc -> mc.gui.setScreen(new ConfigScreen(null)));
+            ctx.waitTicks(3);
+
             // A change in the live settings shows on the page and Reset page puts it back
             NexusConfig.get().creepersBreakBlocks = true;
             ctx.runOnClient(mc -> ((ConfigScreen) mc.gui.screen()).showGroup("mobs"));

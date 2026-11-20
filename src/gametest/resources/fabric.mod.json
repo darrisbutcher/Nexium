@@ -57,6 +57,8 @@
       "net.nexium.gametest.PowerMeterGameTest",
       "net.nexium.gametest.QuestGameTest",
       "net.nexium.gametest.DogGameTest",
+      "net.nexium.gametest.ReinforcedGlassGameTest",
+      "net.nexium.gametest.VeinAnyToolGameTest",
       "net.nexium.gametest.RestockingGameTest",
       "net.nexium.gametest.DrawerKeyGameTest",
       "net.nexium.gametest.BackpackGameTest",

@@ -121,7 +121,10 @@ public class ConfigScreen extends Screen {
         NexusConfig config = NexusConfig.get();
         for (Entry entry : ConfigSchema.in(group)) {
             Row row = new Row(entry);
-            if (entry.isSwitch()) {
+            if (entry.isBlockList()) {
+                row.toggle = addRenderableWidget(Button.builder(Component.empty(), b -> minecraft.gui.setScreen(new BlockListScreen(this, entry)))
+                        .bounds(0, 0, CONTROL, 18).build());
+            } else if (entry.isSwitch()) {
                 row.toggle = addRenderableWidget(Button.builder(Component.empty(), b -> {
                     entry.setBoolean(NexusConfig.get(), !entry.getBoolean(NexusConfig.get()));
                     changed();
@@ -181,7 +184,8 @@ public class ConfigScreen extends Screen {
             if (row.toggle != null) {
                 row.toggle.setPosition(controlX, y);
                 row.toggle.visible = shown;
-                row.toggle.setMessage(Component.translatable(e.getBoolean(config) ? "screen.nexium.config.on" : "screen.nexium.config.off"));
+                if (e.isBlockList()) row.toggle.setMessage(Component.translatable("screen.nexium.config.edit", e.getList(config).size()));
+                else row.toggle.setMessage(Component.translatable(e.getBoolean(config) ? "screen.nexium.config.on" : "screen.nexium.config.off"));
             }
             if (row.box != null) {
                 row.box.setPosition(controlX, y);
@@ -281,7 +285,10 @@ public class ConfigScreen extends Screen {
         lines.add(Component.translatable(e.tipKey()));
         NexusConfig defaults = new NexusConfig();
         Component applies = Component.translatable(e.clientSide() ? "screen.nexium.config.client" : "screen.nexium.config.server");
-        if (e.isSwitch()) {
+        if (e.isBlockList()) {
+            lines.add(Component.translatable("screen.nexium.config.default", Component.translatable("screen.nexium.config.empty"))
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+        } else if (e.isSwitch()) {
             lines.add(Component.translatable("screen.nexium.config.default",
                     Component.translatable(e.getBoolean(defaults) ? "screen.nexium.config.on" : "screen.nexium.config.off"))
                     .withStyle(net.minecraft.ChatFormatting.GRAY));

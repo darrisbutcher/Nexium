@@ -28,9 +28,9 @@ public final class ToolMenuClient {
     public static final KeyMapping TOOL_MENU = new KeyMapping("key.nexium.tool_menu",
             InputConstants.KEY_G, NexiumEssentialsClient.CATEGORY);
 
-    /** Hold while mining with an AIOT to vein mine (no module needed). */
+    /** Hold while mining, with any tool or an empty hand, to vein mine (no module needed). */
     public static final KeyMapping VEIN_MINE = new KeyMapping("key.nexium.vein_mine",
-            InputConstants.KEY_V, NexiumEssentialsClient.CATEGORY);
+            InputConstants.KEY_LCONTROL, NexiumEssentialsClient.CATEGORY);
     private static boolean veinSent;
 
     /**

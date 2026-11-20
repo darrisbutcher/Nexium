@@ -214,22 +214,26 @@ place it or right-click it to outline those chunks for a minute.
   Nexium) to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
   many 3x3 layers going away from you, one swing, with the same rules for every block. Only blocks the AIOT is made for, at most about twice as
   hard as the block you mined, and never blocks with contents such as chests.
-* **Vein mining** (no module): mining any block, stone included, mines every block of the same kind touching it, up to
-  the size set in the tool menu. Grasses, ferns, bushes, dead bushes, azaleas and leaf litter (the
-  `#nexium:vein_plants` tag) count as one kind, so a mixed patch clears in one swing, and cost no durability.
-  Blocks with contents, such as chests, are never vein mined, and the tool must be right for the block (obsidian needs a
-  diamond-grade AIOT). A data pack can list blocks to leave out in `#nexium:vein_excluded` (empty by default).
-  **Hold the Vein Mine key** (**V**) while mining; without it, you mine one block.
+* **Vein mining** (no module, **any tool or an empty hand**): mining any block, stone included, mines every block of the same
+  kind touching it, up to the size set in an AIOT's tool menu (any other tool or a bare hand takes up to `aiotVeinMaxBlocks`).
+  Grasses, ferns, bushes, dead bushes, azaleas and leaf litter (the `#nexium:vein_plants` tag) count as one kind, so a mixed
+  patch clears in one swing, and cost no durability. Blocks with contents, such as chests, are never vein mined, and the tool
+  must be right for the block (obsidian needs a diamond-grade pickaxe or AIOT; a bare hand takes only what it can break, such as
+  dirt, sand or logs). Other tools and AIOTs pay 1 durability per block, and a tool that breaks stops the vein.
+  **Hold the Vein Mine key** (**Left Control** by default; change it under Key Binds) while mining; without it, you mine one
+  block. **Blacklist**: the `veinBlacklist` setting (Nexium Settings > All-in-one Tools > Vein mining blacklist, or `config/nexium.json`)
+  lists blocks vein mining never takes, with any tool: block ids such as `minecraft:diamond_ore` or tags such as `#minecraft:logs`.
+  The screen can add the block you last looked at. A data pack can also list blocks in `#nexium:vein_excluded` (empty by default).
 * **The old Vein Mining Module** is retired. It stays in the game only so that AIOTs and chests that hold one still load:
   it can't be crafted, right-clicking it gives back its materials (4 iron ingots, 4 lapis lazuli and a diamond), and so
   does opening the tool menu of an AIOT that still has one installed.
 * With an AIOT in hand, a **faint pale green outline** shows the blocks your next swing would take along with the one you
   look at (the rest of a vein while the key is held, the 3x3 or the tunnel). Sneaking mines one block, so nothing is
   outlined. It uses the same rules as the mining, and shows for 20 seconds after you switch to an AIOT or press the 3x3
-  (X), tunnel (Z) or vein (V) key, and while V is held, like the readout below. `aiotMiningPreview` (client) turns it off.
+  (X), tunnel (Z) or vein key, and while the vein key is held, like the readout below. `aiotMiningPreview` (client) turns it off.
 * A small readout in the bottom right corner, by the hotbar, shows what the AIOT in your hand is set to: Silk Touch or
   Fortune (when it holds both) the vein size and each module's state (3x3 on, tunnel depth, Nexus Link). It shows for 20
-  seconds after you switch to an AIOT or press the 3x3 (X), tunnel (Z) or vein (V) key, stays up while V is held, then fades
+  seconds after you switch to an AIOT or press the 3x3 (X), tunnel (Z) or vein key, stays up while the vein key is held, then fades
   out. `aiotHudSeconds` (client) changes the time, 0 keeps it up; `aiotHud` turns it off.
 * Each block costs 1 durability, Fortune, Silk Touch and the Nexus Link apply, and spawn protection is respected.
   **Sneak** to mine just one block.
@@ -517,6 +521,12 @@ Any piece of netherite armor counts as gold armor: piglins stay neutral.
   **Elder Guardian** cost **10 experience levels** (`bossPickUpLevels`; other mods' bosses in `#c:bosses` too, and a
   data pack can add mobs to `#nexium:pick_up_costs_levels`).
 
+### Reinforced Glass
+Tinted glass that nothing but you can break. It **blocks light** like tinted glass and **drops itself with any tool**, but the
+**Wither**, the **Ender Dragon** and **every explosion** (creepers, TNT, ghast fireballs, Wither skulls, end crystals) leave it
+standing. Craft **8** from **8 glass around 1 obsidian** (glass on the top and bottom rows, glass, obsidian, glass in the middle
+row). It is in the Tools tab.
+
 ### Zoe, the dog
 A follower that behaves like a tamed wolf, with her own model and skin (a black and white speckled cattle dog with a green
 collar).
@@ -525,6 +535,7 @@ collar).
   empty hand** to put her back in the egg.
 * She **follows you**, **comes to you** when you get far away, **attacks** what attacks you or what you attack, and **lies down**
   when you right-click her to sit. Dye her collar as you would a wolf's.
+* **She bites 1.5 times as hard as a wolf** (6 damage instead of 4).
 * **Nothing can kill her**: mobs, falls, fire, lava, drowning and explosions do nothing. Your own hits hurt her but never kill
   her; only the kill command and the void take her away.
 * **Creepers run from her** (like from cats) and **cannot blow up** while she is within 8 blocks.
@@ -533,7 +544,7 @@ collar).
 
 ### Right-click harvest
 **Right-click a fully grown crop** (wheat, carrots, potatoes, beetroot, nether wart, cocoa) to harvest it: it drops as if
-broken, less the one seed it is replanted with. **Hold V** (the vein mining key) to harvest the
+broken, less the one seed it is replanted with. **Hold the vein mining key** (Left Control) to harvest the
 whole connected field at once, up to `harvestVeinMax` crops. Sneak to use an item on the crop instead. `rightClickHarvest`
 turns it off.
 
@@ -743,13 +754,14 @@ you make them and apply at once in a world you host. On a server, the server's f
 | `bossPickUpLevels` | `10` | Experience levels it costs to pick up a boss (the Warden, the Elder Guardian); 0 makes them free |
 | `ancientDebrisDropsScrap` | `true` | Ancient debris drops Fortune-multiplied netherite scrap |
 | `rightClickHarvest` | `true` | Right-click a grown crop to harvest and replant it |
-| `harvestVeinMax` | `128` | Most crops one harvest takes with V held, 1 to 1024 |
+| `harvestVeinMax` | `128` | Most crops one harvest takes with the vein key held, 1 to 1024 |
 | `anvilNoCostLimit` | `true` | An anvil is never Too Expensive: any job, for its full cost in levels; false keeps vanilla's limit |
 | `ironFarmGolemTicks` | `150` | Ticks between golems (150 = 7.5 s) |
 | `villagerBreederTicks`, `piglinBarterTicks`, `zombifiedPiglinTicks`, `witherSkeletonTicks`, `shulkerFarmTicks`, `witchFarmTicks`, `sugarCaneFarmTicks`, `bambooFarmTicks`, `netherWartFarmTicks`, `monsterFarmTicks`, `netherMobFarmTicks`, `oceanFarmTicks`, `slimeFarmTicks`, `livestockFarmTicks`, `cropFarmTicks`, `gourdFarmTicks`, `generatorFarmTicks`, `beeFarmTicks`, `mossFarmTicks`, `froglightFarmTicks` | `12000`, `120`, `80`, `120`, `600`, `200`, `400`, `400`, `600`, `200`, `200`, `200`, `200`, `400`, `400`, `400`, `200`, `400`, `400`, `400` | Ticks per cycle of each farm (20 ticks a second), 1 to 1,000,000 |
 | `freezerIceTicks`, `freezerPackedIceTicks`, `freezerBlueIceTicks` | `100`, `900`, `1800` | Ticks the Freezer takes for 1 ice, 1 packed ice and 1 blue ice |
-| `aiotVeinMining` | `true` | Vein mining works |
-| `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes, 1 to 512 |
+| `aiotVeinMining` | `true` | Vein mining works (with any tool or an empty hand) |
+| `veinBlacklist` | `[]` | Blocks vein mining never takes: block ids and `#tags`, edited in the settings screen |
+| `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes (with any tool), 1 to 512 |
 | `aiotAreaMining` | `true` | The 3x3 Mining module works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
@@ -757,7 +769,7 @@ you make them and apply at once in a world you host. On a server, the server's f
 | `diagonalPreview` | `true` | Client: outline the cell a diagonal or straight-across placement would put the block in, and mark the edge or face used, while the Diagonal Placement key is held |
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
-| `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or V; 0 keeps them up |
+| `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or the vein key; 0 keeps them up |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |

@@ -70,8 +70,9 @@ public final class AiotPreview {
             return;
         }
         if (!NexusConfig.get().aiotMiningPreview) return;
-        if (!(tool.getItem() instanceof AiotItem)) return;
-        // Only for a while after switching to the AIOT or pressing its 3x3, tunnel or vein key (with the readout),
+        // Any other tool or an empty hand shows the outline only while the vein key is held
+        if (!(tool.getItem() instanceof AiotItem) && !ToolMenuClient.VEIN_MINE.isDown()) return;
+        // An AIOT shows it for a while after switching to it or pressing its 3x3, tunnel or vein key (with the readout),
         // and while the vein key is held
         if (!AiotHud.visible() && !ToolMenuClient.VEIN_MINE.isDown()) return;
         style = STYLE;
