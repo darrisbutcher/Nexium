@@ -100,6 +100,7 @@ public class NexiumClient implements ClientModInitializer {
         AiotPreview.init();
         DiagonalPreview.init();
         net.nexium.essentials.client.FreeCamera.init();
+        net.nexium.essentials.client.Zoom.init();
         AiotHud.init();
 
         ClientPlayNetworking.registerGlobalReceiver(net.nexium.elevator.ElevatorOpenPayload.TYPE, (payload, context) ->

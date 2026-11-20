@@ -36,6 +36,7 @@
       "net.nexium.gametest.client.CompressedBlocksClientTest",
       "net.nexium.gametest.client.BackpackClientTest",
       "net.nexium.gametest.client.FreeCameraClientTest",
+      "net.nexium.gametest.client.ZoomClientTest",
       "net.nexium.gametest.client.BigSpongesClientTest",
       "net.nexium.gametest.client.TradeCyclingClientTest",
       "net.nexium.gametest.client.MoreCompressedBlocksClientTest",
