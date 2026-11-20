@@ -535,6 +535,7 @@ collar).
   empty hand** to put her back in the egg.
 * She **follows you**, **comes to you** when you get far away, **attacks** what attacks you or what you attack, and **lies down**
   when you right-click her to sit. Dye her collar as you would a wolf's.
+* **She bites 1.5 times as hard as a wolf** (6 damage instead of 4).
 * **Nothing can kill her**: mobs, falls, fire, lava, drowning and explosions do nothing. Your own hits hurt her but never kill
   her; only the kill command and the void take her away.
 * **Creepers run from her** (like from cats) and **cannot blow up** while she is within 8 blocks.

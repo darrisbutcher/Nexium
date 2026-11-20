@@ -1,15 +1,20 @@
 package net.nexium.dog;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.nexium.Nexium;
 
 /**
  * The dog: a tamed-wolf-style companion that follows its owner, sits (lying down), teleports to the owner when far away and
@@ -20,8 +25,30 @@ import net.minecraft.world.level.Level;
  * (see the Creeper mixin).
  */
 public class DogEntity extends Wolf {
+    /** Zoe bites 1.5 times as hard as a wolf (6 damage instead of 4), whatever else changes her attack. */
+    public static final double DAMAGE_MULTIPLIER = 1.5;
+    private static final Identifier DAMAGE_BOOST = Nexium.id("zoe_damage");
+
     public DogEntity(EntityType<? extends Wolf> type, Level level) {
         super(type, level);
+        ensureDamageBoost();
+    }
+
+    /**
+     * Puts her damage bonus on her attack. It is a permanent modifier, so it is saved with her and in her egg, but a dog saved
+     * before it existed, or one whose attributes were reloaded without it, gets it back here the next time she ticks.
+     */
+    public void ensureDamageBoost() {
+        AttributeInstance damage = getAttribute(Attributes.ATTACK_DAMAGE);
+        if (damage != null && !damage.hasModifier(DAMAGE_BOOST)) {
+            damage.addPermanentModifier(new AttributeModifier(DAMAGE_BOOST, DAMAGE_MULTIPLIER - 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide()) ensureDamageBoost();
     }
 
     /** Zoe's collar is green, not a wolf's red. */

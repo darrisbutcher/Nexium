@@ -154,6 +154,39 @@ public class DogGameTest {
     }
 
     @GameTest(maxTicks = 40)
+    public void zoeBitesOneAndAHalfTimesAsHardAsAWolf(GameTestHelper h) {
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        net.minecraft.world.entity.animal.wolf.Wolf wolf = net.minecraft.world.entity.EntityTypes.WOLF.create(h.getLevel(), EntitySpawnReason.COMMAND);
+        double wolfDamage = wolf.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        DogEntity dog = dog(h, new BlockPos(2, 2, 2), player);
+        dog.setNoAi(true);
+        double dogDamage = dog.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        h.assertTrue(Math.abs(dogDamage - wolfDamage * 1.5) < 1.0E-6, "Zoe's attack is 1.5 times a wolf's: " + dogDamage + " against " + wolfDamage);
+
+        // A real bite: a pig has 10 health and no armor
+        net.minecraft.world.entity.animal.pig.Pig pig = net.minecraft.world.entity.EntityTypes.PIG.create(h.getLevel(), EntitySpawnReason.COMMAND);
+        Vec3 at = h.absoluteVec(Vec3.atBottomCenterOf(new BlockPos(3, 2, 2)));
+        pig.snapTo(at.x, at.y, at.z, 0.0F, 0.0F);
+        pig.setNoAi(true);
+        h.getLevel().addFreshEntity(pig);
+        float before = pig.getHealth();
+        dog.doHurtTarget(h.getLevel(), pig);
+        h.assertTrue(Math.abs((before - pig.getHealth()) - dogDamage) < 1.0E-3, "a bite takes " + dogDamage + " health, took " + (before - pig.getHealth()));
+
+        // It comes back if it is lost, and stays through the egg
+        dog.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).removeModifiers();
+        h.assertTrue(dog.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == wolfDamage, "without the bonus she bites like a wolf");
+        dog.ensureDamageBoost();
+        h.assertTrue(Math.abs(dog.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) - dogDamage) < 1.0E-6, "the bonus is put back");
+        ItemStack egg = MobCapture.capture(dog);
+        h.assertTrue(MobCapture.release(h.getLevel(), egg.get(ModComponents.CAPTURED_MOB), h.absoluteVec(Vec3.atBottomCenterOf(new BlockPos(1, 2, 1))), 0.0F, player), "let out of the egg");
+        DogEntity out = h.getLevel().getEntitiesOfClass(DogEntity.class, h.getBounds().inflate(2)).stream().findFirst().orElse(null);
+        h.assertTrue(out != null && Math.abs(out.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) - dogDamage) < 1.0E-6,
+                "still 1.5 times after the egg");
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
     public void theDogWearsWolfArmorAndNexiumDogArmor(GameTestHelper h) {
         ServerPlayer player = h.makeMockServerPlayerInLevel();
         DogEntity dog = dog(h, new BlockPos(2, 2, 2), player);

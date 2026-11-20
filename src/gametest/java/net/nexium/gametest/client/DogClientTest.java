@@ -44,6 +44,10 @@ public class DogClientTest implements FabricClientGameTest {
             ctx.runOnClient(mc -> mc.player.setXRot(20.0F));
             ctx.getInput().pressKey(options -> options.keyToggleGui); // no HUD in the shots
             System.out.println("[nexus] dog stands front: " + ctx.takeScreenshot("nexus_dog_stand_front"));
+            // From behind, close up: the back of the head is plain fur (an eye was once painted there by mistake)
+            world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f 180 25", at[0], at[1] + 0.6, at[2] + 2.3));
+            ctx.waitTicks(10);
+            System.out.println("[nexus] dog stands back: " + ctx.takeScreenshot("nexus_dog_stand_back"));
             // From the side: the player walks round to the dog's east and looks west at it
             world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f 90 20", at[0] + 3.4, at[1], at[2]));
             ctx.waitTicks(10);

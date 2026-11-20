@@ -16,6 +16,9 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 * **Vein mining blacklist**: a new setting, `veinBlacklist` (Nexium Settings > All-in-one Tools, which opens a list you add to by
   typing a block id such as `diamond_ore` or a tag such as `#minecraft:logs`, or with one click for the block you last looked at),
   keeps those blocks out of vein mining for every tool, AIOTs included. The first block you mine still breaks.
+* **Zoe bites 1.5 times as hard** as a wolf (6 damage instead of 4). It is a permanent attribute bonus, so it is saved with her and in
+  her egg, and a Zoe saved before this version gets it too.
+* **Zoe's skin**: the back of her head had an eye painted on it by mistake; it is plain fur now.
 * **The Vein Mine key is now Left Control by default** (it was V). Players who already have the game's saved controls keep
   the key they have (Minecraft saved V for them); change it under Key Binds. Left Control is also the default Sprint key: both
   work while it is held, so change one of them in Key Binds if that gets in the way.
