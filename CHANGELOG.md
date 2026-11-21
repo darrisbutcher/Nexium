@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.2
+
+* **Night vision in the free camera.** While the free camera is away from the player, the world is drawn with the Night Vision effect at full
+  strength: caves, nights and unlit rooms are as bright as day. Only how it looks changes (your player is not given the effect, and it
+  ends the moment you press K again). The free camera already had no fog and no cave culling, so you can now look through a whole
+  mountain at night.
+
 ## 1.25.1
 
 * **The Drawer quest takes any drawer.** "A drawer for everything" only counted the Oak Drawer (1x1), so crafting a Poplar Drawer, or

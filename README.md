@@ -415,6 +415,8 @@ vanilla. Endermen never pick up blocks.
   `Free Camera Speed` under Controls > Key Binds, in Nexium). The plain scroll wheel does nothing. Press K again to come back.
 * **No fog** while the camera is away: the render distance's haze, water, lava, powder snow, blindness and darkness fog are all
   removed, so you see clearly to the edge of the loaded world, underwater or underground.
+* **Night vision:** the world is drawn with the Night Vision effect at full strength while the camera is away, so caves, nights and unlit
+  rooms are as bright as day. It only changes how things look; your player is not given the effect.
 * **Nothing is culled:** the game normally draws only what it can reach from the camera through open space, which leaves caves and
   terrain undrawn when the camera is inside rock or under the world. That culling is off while the free camera is away.
 * While it is away nothing you click reaches the world, and the hand, the experience bar and its level number are not drawn. Your own
