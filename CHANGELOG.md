@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.4
+
+* **Nothing in the quest book is locked.** A chapter used to open only once every quest of the one before it was done, and quests in a closed
+  chapter did not count, even if you already held the item. Now every chapter and quest is open from the start, in any order, and a quest
+  counts as soon as you have done it. The quests inside a chapter were never locked behind each other. **Quests you have already met in
+  the later chapters are finished the first time the book checks (about a second after you join), each with its reward**, so on an existing
+  world you may get a pile of random items at once (what does not fit in your inventory drops at your feet). A random reward can also be the
+  very item another quest asks for, which finishes that quest too. The Drawer quest's text is shorter so it fits its line.
+
 ## 1.25.3
 
 * **Using a trade never makes it dearer.** A villager's prices used to climb with demand: each time it restocked, the game added to a trade's
