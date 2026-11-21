@@ -125,6 +125,113 @@ public class FreeCameraClientTest implements FabricClientGameTest {
             ctx.waitTicks(6);
             check(ctx.computeOnClient(mc -> !FreeCamera.active() && mc.getCameraEntity() == mc.player), "when the player is hurt the camera comes back by itself");
             check(ctx.computeOnClient(mc -> mc.player.input instanceof KeyboardInput), "with the player's keys working");
+
+            // Cave culling: the game draws only the render sections it can reach from the camera through open space, so from below the
+            // world (or from inside rock) a cave, or any room, behind solid ground is left undrawn, and which ones are drawn changes as
+            // the camera turns. The free camera turns that off. A single stone block floats high above the ground; a camera 90 blocks
+            // below it, looking straight up, is blocked by the ground slab: the game's own camera does not draw it, the free camera does.
+            int normalDistance = ctx.computeOnClient(mc -> mc.options.renderDistance().get());
+            ctx.runOnClient(mc -> mc.options.renderDistance().set(16));
+            // The server only sends chunks as far as its own view distance, so it is raised too
+            int[] serverDistance = new int[1];
+            world.getServer().runOnServer(server -> {
+                serverDistance[0] = server.getPlayerList().getViewDistance();
+                server.getPlayerList().setViewDistance(16);
+            });
+            ctx.waitTicks(100);
+            world.getServer().runCommand("gamemode creative @a");
+            int[] origin = new int[2];
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                origin[0] = ((base[0].getX() >> 4) + 2) * 16;
+                origin[1] = (base[0].getZ() >> 4) * 16;
+                player.level().setBlock(new BlockPos(origin[0] + 8, -40, origin[1] + 8), Blocks.STONE.defaultBlockState(), 2);
+            });
+            ctx.waitTicks(100);
+            BlockPos room = new BlockPos(origin[0], -48, origin[1]);
+            // Without the free camera: a camera put there by hand does not draw the room
+            ctx.runOnClient(mc -> {
+                net.minecraft.world.entity.Marker m = new net.minecraft.world.entity.Marker(net.minecraft.world.entity.EntityTypes.MARKER, mc.level);
+                m.noPhysics = true;
+                m.setPos(origin[0] + 8.5, -130, origin[1] + 8.5);
+                m.setYRot(0);
+                m.setXRot(-90);
+                m.setOldPosAndRot();
+                mc.setCameraEntity(m);
+            });
+            ctx.waitTicks(60);
+            check(!ctx.computeOnClient(mc -> mc.levelRenderer.visibleSections().stream().anyMatch(sec -> sec.getRenderOrigin().equals(room))),
+                    "from below the world the game's own camera does not draw a room behind the ground (cave culling)");
+            ctx.runOnClient(mc -> mc.setCameraEntity(mc.player));
+            ctx.waitTicks(5);
+            // The free camera, flown to the same place, draws it
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> FreeCamera.active()), "the free camera is on again");
+            ctx.runOnClient(mc -> {
+                var cam = FreeCamera.camera();
+                cam.setPos(origin[0] + 8.5, -130, origin[1] + 8.5);
+                cam.setYRot(0);
+                cam.setXRot(-90);
+                cam.setOldPosAndRot();
+            });
+            ctx.waitTicks(60);
+            check(ctx.computeOnClient(mc -> mc.levelRenderer.visibleSections().stream().anyMatch(sec -> sec.getRenderOrigin().equals(room))),
+                    "from the same place the free camera draws it: no cave culling");
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> !FreeCamera.active() && mc.getCameraEntity() == mc.player), "and it goes off again");
+
+            // The same from inside rock, which is where a free camera usually ends up: the render section the camera is in and the six
+            // next to it are solid stone, and a single block floats 88 blocks ahead in the open. The game's own camera boxed in like
+            // that does not draw the far block; the free camera does.
+            int[] rock = new int[2];
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                rock[0] = ((base[0].getX() >> 4) - 3) * 16;
+                rock[1] = (base[0].getZ() >> 4) * 16;
+                int y0 = -32;
+                int[][] sections = {{0, 0, 0}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+                for (int[] s : sections) {
+                    for (int x = 0; x < 16; x++) for (int z = 0; z < 16; z++) for (int y = 0; y < 16; y++) {
+                        player.level().setBlock(new BlockPos(rock[0] + s[0] * 16 + x, y0 + s[1] * 16 + y, rock[1] + s[2] * 16 + z), Blocks.STONE.defaultBlockState(), 2);
+                    }
+                }
+                player.level().setBlock(new BlockPos(rock[0] + 8, y0 + 8, rock[1] + 88), Blocks.STONE.defaultBlockState(), 2);
+            });
+            ctx.waitTicks(100);
+            BlockPos far = new BlockPos(rock[0], -32, rock[1] + 80);
+            ctx.runOnClient(mc -> {
+                net.minecraft.world.entity.Marker m = new net.minecraft.world.entity.Marker(net.minecraft.world.entity.EntityTypes.MARKER, mc.level);
+                m.noPhysics = true;
+                m.setPos(rock[0] + 8.5, -32 + 8.5, rock[1] + 8.5);
+                m.setYRot(0);
+                m.setXRot(0);
+                m.setOldPosAndRot();
+                mc.setCameraEntity(m);
+            });
+            ctx.waitTicks(60);
+            check(!ctx.computeOnClient(mc -> mc.levelRenderer.visibleSections().stream().anyMatch(sec -> sec.getRenderOrigin().equals(far))),
+                    "boxed in by rock the game's own camera does not draw a block far ahead (cave culling)");
+            ctx.runOnClient(mc -> mc.setCameraEntity(mc.player));
+            ctx.waitTicks(5);
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(3);
+            ctx.runOnClient(mc -> {
+                var cam = FreeCamera.camera();
+                cam.setPos(rock[0] + 8.5, -32 + 8.5, rock[1] + 8.5);
+                cam.setYRot(0);
+                cam.setXRot(0);
+                cam.setOldPosAndRot();
+            });
+            ctx.waitTicks(60);
+            check(ctx.computeOnClient(mc -> mc.levelRenderer.visibleSections().stream().anyMatch(sec -> sec.getRenderOrigin().equals(far))),
+                    "the free camera in the same rock draws it: no cave culling");
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> !FreeCamera.active() && mc.getCameraEntity() == mc.player), "and it goes off again");
+            ctx.runOnClient(mc -> mc.options.renderDistance().set(normalDistance));
+            world.getServer().runOnServer(server -> server.getPlayerList().setViewDistance(serverDistance[0]));
         }
     }
 

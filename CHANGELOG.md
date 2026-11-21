@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.1
+
+* **The Drawer quest takes any drawer.** "A drawer for everything" only counted the Oak Drawer (1x1), so crafting a Poplar Drawer, or
+  any other wood or size, did not finish it. A quest can now name an item tag as well as an item (`"tag"` in `quests.json`), and any item
+  in it counts: the Drawer quest uses `#nexium:drawers`, so a drawer of any wood and any size, crafted or held, finishes it.
+* **Every Nexium recipe is in the recipe book from the start.** You are given all of them when you join a world (and again after a
+  `/reload`, which also picks up recipes added by an update), instead of finding them one at a time. Recipes of the game and other mods
+  unlock the way they always did.
+* **The free camera no longer hides caves and terrain.** The game only draws the parts of the world it can reach from the camera through
+  open space, so with the free camera inside rock, or under the world, most caves and terrain went undrawn until you turned or moved. The
+  free camera now has that culling off (as the game already does for a spectator inside a block), so everything in view stays drawn.
+
 ## 1.25.0
 
 * **Conduit Scanner.** A new item for seeing what a conduit network connects to, so you don't have to remember it. Craft it from a

@@ -15,6 +15,7 @@
           "id": "drawer",
           "goal": "get",
           "item": "nexium:oak_drawer_1x1",
+          "tag": "nexium:drawers",
           "count": 1
         },
         {

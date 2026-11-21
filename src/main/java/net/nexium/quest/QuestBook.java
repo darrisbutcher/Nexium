@@ -3,10 +3,14 @@ package net.nexium.quest;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.nexium.Nexium;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The quests, read from {@code data/nexium/quests.json} in the mod: chapters in order, each a list of quests with a goal.
+ * The quests, read from {@code data/nexium/quests.json} in the mod: chapters in order, each a list of quests with a goal (an item, and
+ * optionally an item tag whose members count too).
  * Both the server (which checks the goals) and the client (which draws the book) read the same file. A chapter is open once every
  * quest of the one before it is done. Names and descriptions come from the language file:
  * {@code quest.nexium.<chapter>.<quest>} and {@code .desc}.
@@ -25,7 +30,23 @@ public final class QuestBook {
     /** Make something (the crafting statistic, or having it counts) or use it (placing a block counts). */
     public enum Goal { GET, USE }
 
-    public record Quest(String chapter, String id, Goal goal, Item item, int count) {
+    /**
+     * {@code item} is the item the quest names. When {@code tag} is set, any item in that tag counts as well (a Drawer of any wood, say),
+     * and {@code item} is the one drawn in the book and the one a test hands over.
+     */
+    public record Quest(String chapter, String id, Goal goal, Item item, @Nullable TagKey<Item> tag, int count) {
+        /** Every item that counts for this quest: the named one, then whatever else its tag holds (a tag is only known once a world is loaded). */
+        public List<Item> items() {
+            List<Item> out = new ArrayList<>();
+            out.add(item);
+            if (tag != null) {
+                for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+                    if (!out.contains(holder.value())) out.add(holder.value());
+                }
+            }
+            return out;
+        }
+
         /** The key a quest is saved and sent under. */
         public String key() {
             return chapter + "." + id;
@@ -81,8 +102,10 @@ public final class QuestBook {
                 List<Quest> quests = new ArrayList<>();
                 for (var qe : c.getAsJsonArray("quests")) {
                     JsonObject q = qe.getAsJsonObject();
+                    // An optional "tag" lets any item in that item tag count as well as the named item
+                    TagKey<Item> tag = q.has("tag") ? TagKey.create(Registries.ITEM, Identifier.parse(q.get("tag").getAsString())) : null;
                     quests.add(new Quest(chapterId, q.get("id").getAsString(), Goal.valueOf(q.get("goal").getAsString().toUpperCase(java.util.Locale.ROOT)),
-                            item(q.get("item").getAsString()), q.get("count").getAsInt()));
+                            item(q.get("item").getAsString()), tag, q.get("count").getAsInt()));
                 }
                 out.add(new Chapter(chapterId, item(c.get("icon").getAsString()), c.get("tier").getAsInt(), List.copyOf(quests)));
             }

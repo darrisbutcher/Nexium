@@ -415,6 +415,8 @@ vanilla. Endermen never pick up blocks.
   `Free Camera Speed` under Controls > Key Binds, in Nexium). The plain scroll wheel does nothing. Press K again to come back.
 * **No fog** while the camera is away: the render distance's haze, water, lava, powder snow, blindness and darkness fog are all
   removed, so you see clearly to the edge of the loaded world, underwater or underground.
+* **Nothing is culled:** the game normally draws only what it can reach from the camera through open space, which leaves caves and
+  terrain undrawn when the camera is inside rock or under the world. That culling is off while the free camera is away.
 * While it is away nothing you click reaches the world, and the hand, the experience bar and its level number are not drawn. Your own
   body is drawn once the camera is outside it. It ends by itself if your player is hurt or dies, or you change world. It is all on the
   client: the server is not told.
@@ -746,8 +748,9 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 A quest book with six chapters (Storage, Power, Farms, Tools, Backpack, Nexium), opened with the **Quests** button at the top of the
 Codex or the *Open Quests* key (no key until you pick one). Each quest asks you to make or have an item and counts what you have
 already done (crafting statistics, or what you hold). A chapter opens once every quest of the one before it is done. Every quest gives
-a random item from the mod (more of them in later chapters). No recipe is ever locked. Progress is
-saved on the player. The quests are in `data/nexium/quests.json` in the mod.
+a random item from the mod (more of them in later chapters). A quest can take a whole item tag instead of one item (the Drawer
+quest takes a drawer of any wood or size). No recipe is ever locked, and **every Nexium recipe is put in your recipe book when you join
+a world** (and after a `/reload`). Progress is saved on the player. The quests are in `data/nexium/quests.json` in the mod.
 
 ## Settings
 

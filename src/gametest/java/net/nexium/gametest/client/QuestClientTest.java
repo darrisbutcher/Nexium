@@ -21,6 +21,10 @@ public class QuestClientTest implements FabricClientGameTest {
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(20);
+            // Joining a world puts every Nexium recipe in the recipe book
+            check(world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getRecipeBook()
+                            .contains(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, net.nexium.Nexium.id("conduit_wrench")))),
+                    "the Nexium recipes are unlocked when a world starts");
             var chapters = QuestBook.chapters();
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
