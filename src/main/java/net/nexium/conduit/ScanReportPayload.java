@@ -35,7 +35,7 @@ public record ScanReportPayload(boolean open, ConduitScan.Report report) impleme
             Identifier.STREAM_CODEC.encode(buf, l.block());
             buf.writeByte(l.mode().ordinal());
             buf.writeByte(l.inChannel());
-            buf.writeByte(l.outChannel());
+            buf.writeShort(l.outChannels());
             buf.writeByte(l.priority());
             buf.writeByte(l.redstone().ordinal());
             buf.writeBoolean(l.filtered());
@@ -63,7 +63,7 @@ public record ScanReportPayload(boolean open, ConduitScan.Report report) impleme
             BlockPos target = BlockPos.STREAM_CODEC.decode(buf);
             Identifier block = Identifier.STREAM_CODEC.decode(buf);
             SideConfig.Mode mode = modes[Math.floorMod(buf.readByte(), modes.length)];
-            int in = buf.readByte(), out = buf.readByte(), priority = buf.readByte();
+            int in = buf.readByte(), out = buf.readShort() & 0xFFFF, priority = buf.readByte();
             SideConfig.RedstoneControl redstone = redstones[Math.floorMod(buf.readByte(), redstones.length)];
             boolean filtered = buf.readBoolean(), roundRobin = buf.readBoolean();
             int speed = buf.readByte(), flags = buf.readByte();

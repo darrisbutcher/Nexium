@@ -129,18 +129,18 @@ public class ConduitScannerScreen extends Screen {
         if (grouped && report.type() != ConduitType.ENERGY) {
             TreeSet<Integer> channels = new TreeSet<>();
             for (Link l : report.links()) {
-                if (l.mode().extracts()) channels.add(l.outChannel());
+                if (l.mode().extracts()) for (int c = 0; c < 16; c++) if (l.outOn(c)) channels.add(c);
                 if (l.mode().inserts()) channels.add(l.inChannel());
             }
             for (int c : channels) {
                 out.add(new Row(true, c, null, false));
-                for (Link l : report.links()) if (l.mode().extracts() && l.outChannel() == c) out.add(new Row(false, c, l, true));
+                for (Link l : report.links()) if (l.mode().extracts() && l.outOn(c)) out.add(new Row(false, c, l, true));
                 for (Link l : report.links()) if (l.mode().inserts() && l.inChannel() == c) out.add(new Row(false, c, l, false));
             }
         } else {
             List<Link> sorted = new ArrayList<>(report.links());
-            sorted.sort(Comparator.comparingInt((Link l) -> Math.max(l.inChannel(), l.outChannel())).thenComparing(l -> l.mode().ordinal()));
-            for (Link l : sorted) out.add(new Row(false, l.mode().extracts() ? l.outChannel() : l.inChannel(), l, l.mode().extracts()));
+            sorted.sort(Comparator.comparingInt((Link l) -> Math.max(l.inChannel(), l.firstOut())).thenComparing(l -> l.mode().ordinal()));
+            for (Link l : sorted) out.add(new Row(false, l.mode().extracts() ? l.firstOut() : l.inChannel(), l, l.mode().extracts()));
         }
         rows = out;
         scroll = Mth.clamp(scroll, 0, Math.max(0, rows.size() - visible));
@@ -312,8 +312,26 @@ public class ConduitScannerScreen extends Screen {
         if (!(grouped && report.type() != ConduitType.ENERGY) && report.type() != ConduitType.ENERGY) {
             // The list layout has no colour headings: show both channels as swatches (in, then out)
             if (l.mode().inserts()) swatch(g, cx, y + 5, l.inChannel());
-            if (l.mode().extracts()) swatch(g, cx + 16, y + 5, l.outChannel());
-            cx += 36;
+            cx += 16;
+            if (l.mode().extracts()) {
+                // Every extract colour that is on, up to three, then how many more
+                int shown = 0, more = 0;
+                for (int c = 0; c < 16; c++) {
+                    if (!l.outOn(c)) continue;
+                    if (shown < 3) {
+                        swatch(g, cx + shown * 13, y + 5, c);
+                        shown++;
+                    } else {
+                        more++;
+                    }
+                }
+                cx += shown * 13;
+                if (more > 0) {
+                    g.text(font, "+" + more, cx, y + 8, DIM, false);
+                    cx += font.width("+" + more) + 2;
+                }
+            }
+            cx += 6;
         }
         // Small tags: priority, filter, round robin, redstone, speed
         StringBuilder tags = new StringBuilder();
@@ -345,6 +363,18 @@ public class ConduitScannerScreen extends Screen {
         return Component.translatable("color.minecraft." + ConduitConfigScreen.COLOR_KEYS[Math.floorMod(channel, 16)]);
     }
 
+    /** The names of every channel in the set, separated by commas. */
+    private static Component channelNames(int mask) {
+        Component out = Component.empty();
+        boolean first = true;
+        for (int c = 0; c < 16; c++) {
+            if ((mask >> c & 1) == 0) continue;
+            out = out.copy().append(first ? Component.empty() : Component.literal(", ")).append(channelName(c));
+            first = false;
+        }
+        return out;
+    }
+
     private void drawTooltip(GuiGraphicsExtractor g, Row row, int mouseX, int mouseY) {
         Link l = row.link();
         Block block = BuiltInRegistries.BLOCK.getValue(l.block());
@@ -355,7 +385,7 @@ public class ConduitScannerScreen extends Screen {
                 l.conduit().getX() + ", " + l.conduit().getY() + ", " + l.conduit().getZ()).withStyle(ChatFormatting.GRAY));
         lines.add(Component.translatable("screen.nexium.scanner.tip.mode", Component.translatable("screen.nexium.scanner.mode." + l.mode().name().toLowerCase(Locale.ROOT))));
         if (report.type() != ConduitType.ENERGY) {
-            if (l.mode().extracts()) lines.add(Component.translatable("screen.nexium.scanner.tip.out", channelName(l.outChannel())).withStyle(ChatFormatting.GOLD));
+            if (l.mode().extracts()) lines.add(Component.translatable("screen.nexium.scanner.tip.out", channelNames(l.outChannels())).withStyle(ChatFormatting.GOLD));
             if (l.mode().inserts()) lines.add(Component.translatable("screen.nexium.scanner.tip.in", channelName(l.inChannel())).withStyle(ChatFormatting.GREEN));
         }
         if (l.priority() != 0) lines.add(Component.translatable("screen.nexium.scanner.tip.priority", l.priority()));
@@ -364,7 +394,7 @@ public class ConduitScannerScreen extends Screen {
             lines.add(Component.translatable("screen.nexium.scanner.tip.redstone." + l.redstone().name().toLowerCase(Locale.ROOT)));
         }
         int flags = flagsFor(row);
-        if ((flags & ConduitScan.NO_RECEIVER) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.no_receiver", channelName(l.outChannel())).withStyle(ChatFormatting.RED));
+        if ((flags & ConduitScan.NO_RECEIVER) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.no_receiver", channelNames(l.outChannels())).withStyle(ChatFormatting.RED));
         if ((flags & ConduitScan.NO_SENDER) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.no_sender", channelName(l.inChannel())).withStyle(ChatFormatting.RED));
         if ((flags & ConduitScan.REDSTONE_OFF) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.redstone").withStyle(ChatFormatting.RED));
         if ((flags & ConduitScan.PAUSED) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.paused").withStyle(ChatFormatting.RED));

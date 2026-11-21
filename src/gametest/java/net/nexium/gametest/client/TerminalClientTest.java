@@ -286,7 +286,7 @@ public class TerminalClientTest implements FabricClientGameTest {
                     var cfg = be.config(net.nexium.conduit.ConduitType.ITEM, Direction.EAST);
                     cfg.mode = net.nexium.conduit.SideConfig.Mode.BOTH;
                     cfg.channel = 1;
-                    cfg.extractChannel = 11;
+                    cfg.setExtractChannel(11);
                     be.changed();
                     net.nexium.util.Menus.open(player, net.minecraft.network.chat.Component.literal("Conduit"),
                             new net.nexium.conduit.ConduitConfigMenu.OpenData(c, Direction.EAST.get3DDataValue()),
@@ -298,7 +298,7 @@ public class TerminalClientTest implements FabricClientGameTest {
             String conduit = ctx.computeOnClient(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> sc
                     && sc.getMenu() instanceof net.nexium.conduit.ConduitConfigMenu m
                     ? sc.getClass().getSimpleName() + " in " + m.get(net.nexium.conduit.ConduitConfigMenu.D_CHANNEL)
-                      + " out " + m.get(net.nexium.conduit.ConduitConfigMenu.D_EXTRACT_CHANNEL) : "none");
+                      + " out " + m.get(net.nexium.conduit.ConduitConfigMenu.D_EXTRACT_CHANNELS) : "none");
             System.out.println("DRAWER conduit screen: " + conduit);
             ctx.runOnClient(mc -> mc.gui.setScreen(null));
         }

@@ -67,7 +67,7 @@ public class ConduitScannerClientTest implements FabricClientGameTest {
                 // Red channel (14): the west chest is taken from, the east barrel is filled first
                 SideConfig w = ba.config(ConduitType.ITEM, Direction.WEST);
                 w.mode = SideConfig.Mode.EXTRACT;
-                w.extractChannel = 14;
+                w.setExtractChannel(14);
                 SideConfig e = bc.config(ConduitType.ITEM, Direction.EAST);
                 e.mode = SideConfig.Mode.INSERT;
                 e.channel = 14;
@@ -80,11 +80,11 @@ public class ConduitScannerClientTest implements FabricClientGameTest {
                 SideConfig sb = bb.config(ConduitType.ITEM, Direction.SOUTH);
                 sb.mode = SideConfig.Mode.BOTH;
                 sb.channel = 9;
-                sb.extractChannel = 14;
+                sb.setExtractChannel(14);
                 // Orange (1): extracts, but only with a redstone signal (there is none), and nothing inserts on orange
                 SideConfig sc = bc.config(ConduitType.ITEM, Direction.SOUTH);
                 sc.mode = SideConfig.Mode.EXTRACT;
-                sc.extractChannel = 1;
+                sc.setExtractChannel(1);
                 sc.redstone = SideConfig.RedstoneControl.WITH_SIGNAL;
                 for (ConduitBundleBlockEntity be : List.of(ba, bb, bc)) be.changed();
                 player.getInventory().clearContent();
