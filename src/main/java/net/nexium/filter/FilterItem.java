@@ -53,6 +53,10 @@ public class FilterItem extends Item {
                 .withStyle(d.whitelist() ? ChatFormatting.GREEN : ChatFormatting.RED));
         if (advanced) tooltip.accept(Component.translatable("tooltip.nexium.tag_mode").withStyle(ChatFormatting.GOLD));
         else if (d.matchComponents()) tooltip.accept(Component.translatable("tooltip.nexium.match_components").withStyle(ChatFormatting.GRAY));
+        if (d.special() != FilterData.Special.NONE) {
+            tooltip.accept(Component.translatable("tooltip.nexium.filter_special." + d.special().key()).withStyle(ChatFormatting.AQUA));
+        }
+        for (var tag : d.tags()) tooltip.accept(Component.literal(" # " + tag).withStyle(ChatFormatting.DARK_AQUA));
         for (ItemStack s : d.entries()) {
             if (!s.isEmpty()) tooltip.accept(Component.literal(" - ").append(s.getHoverName()).withStyle(ChatFormatting.DARK_GRAY));
         }

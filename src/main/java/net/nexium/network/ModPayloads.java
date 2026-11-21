@@ -34,6 +34,10 @@ public final class ModPayloads {
         ServerPlayNetworking.registerGlobalReceiver(net.nexium.conduit.ScanRequestPayload.TYPE,
                 (payload, context) -> net.nexium.conduit.ConduitScanner.refresh(context.player(), payload.conduit(), payload.conduitType()));
         net.nexium.conduit.ConduitScanner.init();
+        PayloadTypeRegistry.serverboundPlay().register(net.nexium.filter.FilterTagsPayload.TYPE, net.nexium.filter.FilterTagsPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(net.nexium.filter.FilterTagsPayload.TYPE, (payload, context) -> {
+            if (context.player().containerMenu instanceof net.nexium.filter.FilterMenu menu) menu.setTags(payload.tags());
+        });
         PayloadTypeRegistry.serverboundPlay().register(TerminalActionPayload.TYPE, TerminalActionPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(RenameLinkPayload.TYPE, RenameLinkPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(FillGridPayload.TYPE, FillGridPayload.STREAM_CODEC);

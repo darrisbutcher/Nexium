@@ -1,5 +1,9 @@
 package net.nexium.filter;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,19 +22,23 @@ import java.util.List;
 
 /** Ghost-slot editor for filters. Clicking a slot copies the held item (it is not consumed). */
 public class FilterMenu extends BaseMenu {
-    public static final int BTN_WHITELIST = 0, BTN_COMPONENTS = 1;
+    public static final int BTN_WHITELIST = 0, BTN_COMPONENTS = 1, BTN_SPECIAL = 2;
+    /** Where the player's inventory starts: lower on an Advanced Filter, whose screen has a row more for its tags. */
+    public static final int INVENTORY_TOP = 84, ADVANCED_INVENTORY_TOP = 102;
 
     private final InteractionHand hand;
     private final Player player;
     private final SimpleContainer ghost = new SimpleContainer(FilterData.SIZE);
     private final ContainerData flags;
     private final int lockedSlot;
+    private final boolean advanced;
 
     public FilterMenu(int id, Inventory inventory, Integer handOrdinal) {
         super(ModMenus.FILTER, id);
         this.hand = InteractionHand.values()[handOrdinal];
         this.player = inventory.player;
         ItemStack stack = player.getItemInHand(hand);
+        this.advanced = stack.getItem() instanceof FilterItem filterItem && filterItem.isAdvanced();
         FilterData data = stack.getItem() instanceof FilterItem fi ? fi.data(stack) : FilterData.empty(false);
         List<ItemStack> entries = data.toList();
         for (int i = 0; i < FilterData.SIZE; i++) ghost.setItem(i, entries.get(i));
@@ -41,19 +49,23 @@ public class FilterMenu extends BaseMenu {
                 @Override public boolean mayPlace(ItemStack s) { return false; }
             });
         }
-        addPlayerSlots(inventory, 8, 84);
+        addPlayerSlots(inventory, 8, advanced ? ADVANCED_INVENTORY_TOP : INVENTORY_TOP);
         this.lockedSlot = hand == InteractionHand.MAIN_HAND ? playerSlotStart + 27 + inventory.getSelectedSlot() : -1;
 
         if (player.level().isClientSide()) {
-            flags = new SimpleContainerData(2);
+            flags = new SimpleContainerData(3);
         } else {
             flags = new ContainerData() {
                 @Override public int get(int i) {
                     FilterData d = current();
-                    return i == 0 ? (d.whitelist() ? 1 : 0) : (d.matchComponents() ? 1 : 0);
+                    return switch (i) {
+                        case 0 -> d.whitelist() ? 1 : 0;
+                        case 1 -> d.matchComponents() ? 1 : 0;
+                        default -> d.special().ordinal();
+                    };
                 }
                 @Override public void set(int i, int v) {}
-                @Override public int getCount() { return 2; }
+                @Override public int getCount() { return 3; }
             };
         }
         addDataSlots(flags);
@@ -77,6 +89,25 @@ public class FilterMenu extends BaseMenu {
 
     public boolean whitelist() { return flags.get(0) == 1; }
     public boolean matchComponents() { return flags.get(1) == 1; }
+    /** Whether this is an Advanced Filter, which has tags and the special matches. */
+    public boolean advanced() { return advanced; }
+    public FilterData.Special special() { return FilterData.Special.values()[Math.floorMod(flags.get(2), FilterData.Special.values().length)]; }
+    /** The tags chosen for the filter in hand (read from the item, so the client has them too). */
+    public java.util.List<Identifier> tags() { return current().tags(); }
+
+    /**
+     * Replaces the filter's chosen tags (the tag picker sends them). Only an Advanced Filter takes tags; unknown tags and repeats are
+     * dropped, and no more than {@link FilterData#MAX_TAGS} are kept.
+     */
+    public void setTags(java.util.List<Identifier> ids) {
+        if (!advanced) return;
+        List<Identifier> clean = new ArrayList<>();
+        for (Identifier id : ids) {
+            if (clean.size() >= FilterData.MAX_TAGS) break;
+            if (!clean.contains(id) && BuiltInRegistries.ITEM.get(TagKey.create(Registries.ITEM, id)).isPresent()) clean.add(id);
+        }
+        save(current().withTags(clean));
+    }
 
     @Override
     public void clicked(int slotId, int button, ContainerInput clickType, Player p) {
@@ -114,6 +145,7 @@ public class FilterMenu extends BaseMenu {
         FilterData d = current();
         if (id == BTN_WHITELIST) save(d.withWhitelist(!d.whitelist()));
         else if (id == BTN_COMPONENTS) save(d.withMatchComponents(!d.matchComponents()));
+        else if (id == BTN_SPECIAL && advanced) save(d.withSpecial(d.special().next()));
         return true;
     }
 
