@@ -29,6 +29,13 @@ public class JeiCheck implements IModPlugin {
         runtime = jeiRuntime;
     }
 
+    /** The extra areas JEI keeps its item list out of on the open screen, as {x, y, width, height}; null without a runtime. */
+    public static java.util.List<int[]> exclusionAreas(Minecraft mc) {
+        if (runtime == null) return null;
+        return runtime.getScreenHelper().getGuiExclusionAreas(mc.gui.screen())
+                .map(r -> new int[]{r.getX(), r.getY(), r.getWidth(), r.getHeight()}).toList();
+    }
+
     /** JEI's search text, or null without a runtime. */
     public static String filterText() {
         return runtime == null ? null : runtime.getIngredientFilter().getFilterText();

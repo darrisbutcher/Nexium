@@ -53,6 +53,7 @@ dependencies {
     // Optional recipe-viewer support (JEI and REI "+" buttons). compileOnly: not shipped, not required.
     compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
     compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") { transitive = false }
+    compileOnly("me.shedaniel.cloth:basic-math:0.6.1") { transitive = false } // REI's Rectangle, for its exclusion zones
     // `./gradlew runClientGameTest -PwithJei` runs the client test with JEI installed.
     gametestCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
     if (project.hasProperty("withJei")) localRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"

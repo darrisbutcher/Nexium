@@ -10,7 +10,11 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import net.minecraft.client.renderer.Rect2i;
+import net.nexium.client.screen.BackpackScreen;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -35,7 +39,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * JEI's "+" button on crafting recipes fills the Crafting Terminal's grid from the network (or the Backpack's grid, with a Crafting
+ * JEI's item list moves aside for the Backpack's crafting panel, and JEI's "+" button on crafting recipes fills the Crafting Terminal's grid from the network (or the Backpack's grid, with a Crafting
  * module, from its own slots and then the inventory), and marks in red the slots nothing can fill; JEI's search box and the
  * terminals' stay the same. Only loaded when JEI is installed.
  */
@@ -54,6 +58,18 @@ public class NexiumJeiPlugin implements IModPlugin {
     @Override
     public void onRuntimeUnavailable() {
         RecipeViewerSearch.disconnect();
+    }
+
+    /** The Backpack's crafting panel sticks out to the right of its screen: JEI's item list moves aside for it. */
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addGuiContainerHandler(BackpackScreen.class, new IGuiContainerHandler<BackpackScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(BackpackScreen screen) {
+                int[] panel = screen.craftingPanelBounds();
+                return panel == null ? List.of() : List.of(new Rect2i(panel[0], panel[1], panel[2], panel[3]));
+            }
+        });
     }
 
     @Override

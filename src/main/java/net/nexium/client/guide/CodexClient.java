@@ -37,7 +37,8 @@ public final class CodexClient {
             }
         });
         ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> {
-            if (GuideScreens.topicFor(stack) != null) {
+            // With the look-up key unbound the line would read "Press Not Bound"
+            if (!LOOKUP.isUnbound() && GuideScreens.topicFor(stack) != null) {
                 lines.add(Component.translatable("tooltip.nexium.codex", LOOKUP.getTranslatedKeyMessage()).withStyle(ChatFormatting.DARK_GRAY));
             }
         });

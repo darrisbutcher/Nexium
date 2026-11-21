@@ -50,7 +50,9 @@ public final class ItemDescriptions {
         for (int i = 1; i <= MAX_LINES; i++) {
             String lineKey = i == 1 ? key : key + i;
             if (!language.has(lineKey)) break;
-            lines.add(Component.translatable(lineKey).withStyle(ChatFormatting.GRAY));
+            Component line = Component.translatable(lineKey).withStyle(ChatFormatting.GRAY);
+            // An item that adds its own description (the Backpack modules do) is not given it a second time
+            if (!lines.contains(line)) lines.add(line);
         }
         // Nexium mining tools: whether their Haste II is on
         if (stack.is(NexiumMaterials.GRANTS_HASTE)) {

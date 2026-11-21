@@ -5,7 +5,7 @@ conduits, all-in-one tools (AIOTs), **Nexium** (a tier above netherite) and a se
 (no creeper or ghast block damage, an item and XP magnet, wings, arrow and totem slots, Fortune on ancient debris,
 a 1-block iron farm and more).
 
-Every item is in one of three **Nexium** creative tabs (Storage; Tools; Farms & Power), and every tooltip says what its item does.
+Every item is in one of three **Nexium** creative tabs (Storage; Tools; Farms & Power), and every tooltip says what its item does. Nexium tooltips wrap to a narrow column (170 pixels), so a long description never runs off the screen.
 
 The **Nexium Codex** is the in-game manual, a small built-in wiki. Right-click the **Nexium Guide** (given once when you join
 a world, or crafted from a book and any drawer) to open it, or press **H** outside a screen. The sidebar lists 11 categories
@@ -392,7 +392,7 @@ vanilla. Endermen never pick up blocks.
   slots and your inventory can make, and a recipe you click, or a recipe viewer's JEI or REI "+", fills the grid from the Backpack
   first and your inventory after it. After every craft the emptied grid slots refill from the Backpack, so a shift-click on the
   result crafts all there is. Take the module out or switch it off, or close the screen, and what is in the grid goes back into the
-  Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla.
+  Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla. JEI and REI keep their item lists clear of the crafting panel (it sticks out to the right of the screen).
 * **Trash**: the Backpack's screen always has a trash slot, under the module column (no module needed). Drop an item on it to get
   rid of it. It keeps the last item you put in until you put another in or close the screen, so you can take it back; shift-click
   empties it into your inventory.
