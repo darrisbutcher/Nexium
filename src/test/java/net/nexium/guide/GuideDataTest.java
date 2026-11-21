@@ -22,7 +22,8 @@ class GuideDataTest {
                         "result": {"id": "mod:cable", "count": 4}},
               "card": {"type": "shapeless", "ingredients": ["minecraft:paper", "minecraft:ender_pearl"], "result": {"id": "mod:card"}},
               "upgrade": {"type": "smithing", "template": "a:template", "base": "a:base", "addition": "a:addition",
-                          "result": {"id": "a:result"}, "verify": "a:result_smithing"}
+                          "result": {"id": "a:result"}, "verify": "a:result_smithing"},
+              "plain": {"type": "smithing", "base": "a:base", "addition": "a:addition", "result": {"id": "a:plain_result"}}
             }}
             """;
 
@@ -93,6 +94,11 @@ class GuideDataTest {
         assertEquals(1, upgrade.rows());
         assertEquals(Arrays.asList("a:template", "a:base", "a:addition"), upgrade.cells());
         assertEquals("a:result_smithing", upgrade.verify());
+
+        // A smithing recipe with no template leaves that slot empty, as the smithing table does
+        GuideData.Recipe plain = sample().recipes().get("plain");
+        assertEquals(1, plain.rows());
+        assertEquals(Arrays.asList(null, "a:base", "a:addition"), plain.cells());
     }
 
     @Test

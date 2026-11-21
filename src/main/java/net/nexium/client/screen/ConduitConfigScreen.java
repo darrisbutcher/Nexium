@@ -1,5 +1,6 @@
 package net.nexium.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -145,7 +146,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // The grid first: a container screen answers every click itself, so what comes after super would never run
         int cell = extractCellAt(event.x(), event.y());
-        if (cell >= 0 && event.button() == 0 && mode().extracts()) {
+        if (cell >= 0 && event.button() == InputConstants.MOUSE_BUTTON_LEFT && mode().extracts()) {
             click(ConduitConfigMenu.BTN_EXTRACT_TOGGLE + cell);
             return true;
         }

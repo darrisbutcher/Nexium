@@ -1,5 +1,6 @@
 package net.nexium.gametest.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -78,6 +79,12 @@ public class ConfigScreenClientTest implements FabricClientGameTest {
             System.out.println("[nexus] settings tools with blacklist: " + ctx.takeScreenshot("nexus_settings_blacklist_row"));
             ctx.runOnClient(mc -> mc.gui.setScreen(new BlockListScreen(mc.gui.screen(), blacklist)));
             ctx.waitTicks(3);
+            // Typing in the box and pressing Enter adds the block, with real key presses (the Enter code is the game's, not 257)
+            ctx.getInput().typeChars("emerald_ore");
+            ctx.getInput().pressKey(InputConstants.KEY_RETURN);
+            ctx.waitTicks(3);
+            List<String> byEnter = ctx.computeOnClient(mc -> ((BlockListScreen) mc.gui.screen()).entries());
+            check(byEnter.equals(List.of("minecraft:emerald_ore")), "Enter adds what was typed: " + byEnter);
             ctx.runOnClient(mc -> {
                 BlockListScreen screen = (BlockListScreen) mc.gui.screen();
                 screen.typeAndAdd("diamond_ore");
@@ -87,7 +94,7 @@ public class ConfigScreenClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(3);
             List<String> listed2 = ctx.computeOnClient(mc -> ((BlockListScreen) mc.gui.screen()).entries());
-            check(listed2.equals(List.of("minecraft:diamond_ore", "#minecraft:logs")),
+            check(listed2.equals(List.of("minecraft:emerald_ore", "minecraft:diamond_ore", "#minecraft:logs")),
                     "the list holds the block and the tag once each and refuses the unknown one: " + listed2);
             check(NexusConfig.get().veinBlacklist.equals(listed2), "and the live settings hold the same");
             System.out.println("[nexus] settings blacklist screen: " + ctx.takeScreenshot("nexus_settings_blacklist"));

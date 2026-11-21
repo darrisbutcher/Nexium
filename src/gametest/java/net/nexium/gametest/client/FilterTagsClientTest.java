@@ -3,8 +3,6 @@ package net.nexium.gametest.client;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -44,21 +42,21 @@ public class FilterTagsClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FilterScreen s && s.menuAdvanced()), "an Advanced Filter's editor has the extra buttons");
             System.out.println("[nexus] advanced filter: " + shot(ctx, "nexus_filter_advanced"));
 
-            // The Match button steps through the special matches, and the filter in hand follows
-            ctx.runOnClient(mc -> ((FilterScreen) mc.gui.screen()).clickMatch());
+            // The Match button steps through the special matches, and the filter in hand follows (each a real click on the button)
+            clickMatch(ctx);
             ctx.waitTicks(5);
             check(held(world).special() == FilterData.Special.SMELTABLE, "Match goes to smeltable: " + held(world).special());
-            ctx.runOnClient(mc -> ((FilterScreen) mc.gui.screen()).clickMatch());
+            clickMatch(ctx);
             ctx.waitTicks(5);
             check(held(world).special() == FilterData.Special.FUEL, "then to furnace fuel: " + held(world).special());
-            ctx.runOnClient(mc -> ((FilterScreen) mc.gui.screen()).clickMatch());
-            ctx.runOnClient(mc -> ((FilterScreen) mc.gui.screen()).clickMatch());
+            clickMatch(ctx);
+            clickMatch(ctx);
             ctx.waitTicks(5);
             check(held(world).special() == FilterData.Special.SMELTABLE, "and round again to smeltable: " + held(world).special());
             System.out.println("[nexus] advanced filter, smeltable: " + shot(ctx, "nexus_filter_advanced_smeltable"));
 
-            // The tag picker
-            ctx.runOnClient(mc -> ((FilterScreen) mc.gui.screen()).openTagPicker());
+            // The tag picker, opened with a real click on the Tags button
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((FilterScreen) mc.gui.screen()).tagsCentre()));
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof TagPickerScreen), "the Tags button opens the tag picker");
             check(world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).containerMenu instanceof FilterMenu),
@@ -84,7 +82,7 @@ public class FilterTagsClientTest implements FabricClientGameTest {
             click(ctx, row);
 
             // Done goes back to the filter, which shows how many tags are chosen and is still open on the server
-            ctx.runOnClient(mc -> ((TagPickerScreen) mc.gui.screen()).onClose());
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((TagPickerScreen) mc.gui.screen()).doneCentre()));
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FilterScreen), "Done goes back to the filter");
             check(ctx.computeOnClient(mc -> ((FilterScreen) mc.gui.screen()).tagCount()) == 2, "which shows the two chosen tags");
@@ -133,14 +131,15 @@ public class FilterTagsClientTest implements FabricClientGameTest {
         });
     }
 
-    /** A real left click in the middle of that row. */
+    /** A real left click (cursor moved there, left button pressed) in the middle of that row. */
     private static void click(ClientGameTestContext ctx, int row) {
-        ctx.runOnClient(mc -> {
-            TagPickerScreen screen = (TagPickerScreen) mc.gui.screen();
-            int[] p = screen.rowCentre(row);
-            screen.mouseClicked(new MouseButtonEvent(p[0], p[1], new MouseButtonInfo(0, 0)), false);
-        });
-        ctx.waitTicks(5);
+        RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((TagPickerScreen) mc.gui.screen()).rowCentre(row)));
+        ctx.waitTicks(2);
+    }
+
+    /** A real left click on the Match button. */
+    private static void clickMatch(ClientGameTestContext ctx) {
+        RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((FilterScreen) mc.gui.screen()).matchCentre()));
     }
 
     /** A screenshot with the recipe toasts cleared away, so they are not in the way. */

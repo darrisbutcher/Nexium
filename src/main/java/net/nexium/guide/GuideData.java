@@ -140,7 +140,7 @@ public record GuideData(List<Category> categories, Map<String, Topic> topics, Ma
                 while (cells.size() < 9) cells.add(null);
             }
             case SMITHING -> {
-                cells.add(r.get("template").getAsString());
+                cells.add(r.has("template") ? r.get("template").getAsString() : null); // no template: that slot stays empty
                 cells.add(r.get("base").getAsString());
                 cells.add(r.get("addition").getAsString());
             }

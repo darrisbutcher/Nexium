@@ -392,7 +392,7 @@ public class BuilderGameTest {
     }
 
     private static ItemStack smith(GameTestHelper h, ItemStack base, ItemStack addition) {
-        SmithingRecipeInput input = new SmithingRecipeInput(new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), base, addition);
+        SmithingRecipeInput input = new SmithingRecipeInput(ItemStack.EMPTY, base, addition); // no template: that slot stays empty
         return h.getLevel().recipeAccess().getRecipeFor(RecipeType.SMITHING, input, h.getLevel())
                 .map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
     }

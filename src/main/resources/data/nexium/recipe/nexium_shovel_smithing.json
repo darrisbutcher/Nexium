@@ -4,6 +4,5 @@
   "base": "minecraft:netherite_shovel",
   "result": {
     "id": "nexium:nexium_shovel"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

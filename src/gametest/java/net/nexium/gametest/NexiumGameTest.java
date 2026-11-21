@@ -1,6 +1,7 @@
 package net.nexium.gametest;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -17,12 +18,16 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -59,7 +64,7 @@ public class NexiumGameTest {
     }
 
     private static ItemStack smith(GameTestHelper h, ItemStack base, ItemStack addition) {
-        SmithingRecipeInput input = new SmithingRecipeInput(template(), base, addition);
+        SmithingRecipeInput input = new SmithingRecipeInput(ItemStack.EMPTY, base, addition); // no template: that slot stays empty
         return h.getLevel().recipeAccess().getRecipeFor(RecipeType.SMITHING, input, h.getLevel())
                 .map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
     }
@@ -174,6 +179,34 @@ public class NexiumGameTest {
         }
         h.assertTrue(smith(h, new ItemStack(Items.DIAMOND_SWORD), new ItemStack(ModItems.NEXIUM_INGOT)).isEmpty(),
                 "diamond gear has to become netherite first");
+        h.succeed();
+    }
+
+    /** The netherite upgrade template is no part of any Nexium recipe: each smithing recipe takes the piece and the addition only. */
+    @GameTest
+    public void noNexiumSmithingRecipeNeedsATemplate(GameTestHelper h) {
+        int found = 0;
+        for (RecipeHolder<?> holder : h.getLevel().recipeAccess().getRecipes()) {
+            if (!holder.id().identifier().getNamespace().equals("nexium") || !(holder.value() instanceof SmithingRecipe smithing)) continue;
+            found++;
+            h.assertTrue(smithing.templateIngredient().isEmpty(), holder.id().identifier() + " has no template");
+        }
+        h.assertTrue(found == 14, "all 14 Nexium smithing recipes were checked, found " + found);
+        h.succeed();
+    }
+
+    /** At a real smithing table: piece + ingot with the template slot empty gives the Nexium piece, and a template in the slot gives nothing. */
+    @GameTest
+    public void theSmithingTableUpgradesWithTheTemplateSlotEmpty(GameTestHelper h) {
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        SmithingMenu menu = new SmithingMenu(0, player.getInventory(), ContainerLevelAccess.create(h.getLevel(), h.absolutePos(new BlockPos(0, 1, 0))));
+        menu.getSlot(SmithingMenu.BASE_SLOT).set(new ItemStack(Items.NETHERITE_PICKAXE));
+        menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).set(new ItemStack(ModItems.NEXIUM_INGOT));
+        ItemStack result = menu.getSlot(SmithingMenu.RESULT_SLOT).getItem();
+        h.assertTrue(result.is(ModItems.NEXIUM_PICKAXE), "netherite pickaxe + Nexium ingot, template slot empty, gives a Nexium pickaxe, got " + result);
+
+        menu.getSlot(SmithingMenu.TEMPLATE_SLOT).set(template());
+        h.assertTrue(menu.getSlot(SmithingMenu.RESULT_SLOT).getItem().isEmpty(), "with the netherite upgrade in the template slot there is no Nexium recipe");
         h.succeed();
     }
 

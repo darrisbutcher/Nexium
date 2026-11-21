@@ -4,6 +4,5 @@
   "base": "minecraft:netherite_sword",
   "result": {
     "id": "nexium:nexium_sword"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

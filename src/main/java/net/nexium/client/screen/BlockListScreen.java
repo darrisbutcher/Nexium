@@ -158,7 +158,8 @@ public class BlockListScreen extends Screen {
 
     @Override
     public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
-        if (input != null && input.isFocused() && (event.key() == 257 || event.key() == 335)) { // Enter
+        // Enter (either one): the game's own test for it, as key codes are not the numbers they once were
+        if (input != null && input.isFocused() && event.isConfirmation()) {
             addTyped();
             return true;
         }
