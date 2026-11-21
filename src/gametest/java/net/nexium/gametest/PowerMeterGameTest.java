@@ -83,6 +83,65 @@ public class PowerMeterGameTest {
         });
     }
 
+    /** The meter's row for the generator at {@code GENERATOR}, once a full second has been counted; null before that. */
+    private static EnergyNetwork.Endpoint generatorRow(GameTestHelper h) {
+        EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), h.absolutePos(METER));
+        h.assertTrue(network != null, "the meter has a network");
+        EnergyNetwork.Report r = network.report(h.getLevel());
+        BlockPos genPos = h.absolutePos(GENERATOR);
+        return r.endpoints().stream().filter(e -> e.pos().equals(genPos)).findFirst().orElse(null);
+    }
+
+    /** A burning generator, with blaze rods, on its own conduit: the meter shows the 20 NE/t it makes. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 200)
+    public void aBurningGeneratorShowsItsFullOutputInTheMeter(GameTestHelper h) {
+        h.setBlock(GENERATOR, ModBlocks.COMBUSTION_GENERATOR);
+        h.getBlockEntity(GENERATOR, CombustionGeneratorBlockEntity.class).setItem(0, new ItemStack(Items.BLAZE_ROD, 8));
+        h.setBlock(C1, ModBlocks.CONDUIT_BUNDLE);
+        h.getBlockEntity(C1, ConduitBundleBlockEntity.class).addConduit(ConduitType.ENERGY, 1);
+        h.setBlock(METER, ModBlocks.POWER_METER);
+        h.succeedWhen(() -> {
+            h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
+            EnergyNetwork.Endpoint gen = generatorRow(h);
+            h.assertTrue(gen != null, "the generator is listed");
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 1.5f, "the meter shows about 20 NE/t for the generator, not " + gen.perTick());
+        });
+    }
+
+    /** The same, with a Battery touching the generator, which the generator also fills directly. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 200)
+    public void aGeneratorTouchingABatteryStillShowsWhatItMakes(GameTestHelper h) {
+        h.setBlock(GENERATOR, ModBlocks.COMBUSTION_GENERATOR);
+        h.getBlockEntity(GENERATOR, CombustionGeneratorBlockEntity.class).setItem(0, new ItemStack(Items.BLAZE_ROD, 8));
+        h.setBlock(C1, ModBlocks.CONDUIT_BUNDLE);
+        h.getBlockEntity(C1, ConduitBundleBlockEntity.class).addConduit(ConduitType.ENERGY, 1);
+        h.setBlock(METER, ModBlocks.POWER_METER);
+        h.setBlock(new BlockPos(1, 2, 3), ModBlocks.IRON_BATTERY); // touches the generator, not the conduit
+        h.succeedWhen(() -> {
+            h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
+            EnergyNetwork.Endpoint gen = generatorRow(h);
+            h.assertTrue(gen != null, "the generator is listed");
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 1.5f, "with a battery touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 20");
+        });
+    }
+
+    /** The same, with a farm touching the generator, which the generator also feeds directly. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 200)
+    public void aGeneratorTouchingAMachineStillShowsWhatItMakes(GameTestHelper h) {
+        h.setBlock(GENERATOR, ModBlocks.COMBUSTION_GENERATOR);
+        h.getBlockEntity(GENERATOR, CombustionGeneratorBlockEntity.class).setItem(0, new ItemStack(Items.BLAZE_ROD, 8));
+        h.setBlock(C1, ModBlocks.CONDUIT_BUNDLE);
+        h.getBlockEntity(C1, ConduitBundleBlockEntity.class).addConduit(ConduitType.ENERGY, 1);
+        h.setBlock(METER, ModBlocks.POWER_METER);
+        h.setBlock(new BlockPos(1, 2, 3), net.nexium.essentials.registry.ModBlocks.FARMS.get(FarmKind.SUGAR_CANE)); // touches the generator, not the conduit
+        h.succeedWhen(() -> {
+            h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
+            EnergyNetwork.Endpoint gen = generatorRow(h);
+            h.assertTrue(gen != null, "the generator is listed");
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 1.5f, "with a machine touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 20");
+        });
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
     public void aReportSurvivesTheJourneyToTheScreen(GameTestHelper h) {
         EnergyNetwork.Report report = new EnergyNetwork.Report(1234, 10_000, 500, 250_000, 12.5f, 20f, -7.5f, true, 90,

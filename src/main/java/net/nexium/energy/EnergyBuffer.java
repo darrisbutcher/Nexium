@@ -9,6 +9,8 @@ public class EnergyBuffer implements NexusEnergy {
     private final boolean accepts, gives;
     private final Runnable onChange;
     private long stored;
+    /** What has gone in from outside and out to outside, ever: the Power Meter reads how much of it moved in a second. */
+    private long totalIn, totalOut;
 
     public EnergyBuffer(long capacity, boolean accepts, boolean gives, Runnable onChange) {
         this.capacity = capacity;
@@ -29,13 +31,25 @@ public class EnergyBuffer implements NexusEnergy {
 
     @Override
     public long insert(long max, boolean simulate) {
-        return accepts ? add(max, simulate) : 0;
+        if (!accepts) return 0;
+        long n = add(max, simulate);
+        if (!simulate) totalIn += n;
+        return n;
     }
 
     @Override
     public long extract(long max, boolean simulate) {
-        return gives ? remove(max, simulate) : 0;
+        if (!gives) return 0;
+        long n = remove(max, simulate);
+        if (!simulate) totalOut += n;
+        return n;
     }
+
+    @Override
+    public long totalIn() { return totalIn; }
+
+    @Override
+    public long totalOut() { return totalOut; }
 
     /** Adds energy from the block itself (a generator making it), whatever the outside may do. */
     public long add(long max, boolean simulate) {

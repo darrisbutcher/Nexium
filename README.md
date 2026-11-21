@@ -756,6 +756,8 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   for a dashboard of that conduit's whole network: what it makes and uses, what is stored and how long it lasts, a minute of history,
   and every generator, machine and battery on it with its rate. Each machine has a **priority** (High, Normal, Low: Low goes without
   first when power runs short) and an **On/Off** switch, which set the conduit sides that feed it.
+  A generator's row shows everything it makes, including what it hands straight to a Battery or machine touching it (not only what the
+  conduit takes from it), and a machine's row everything it takes in, however it arrives.
 * **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 200 NE/t at
   the default depth (1,800 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
   the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with

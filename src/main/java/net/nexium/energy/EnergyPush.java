@@ -16,7 +16,8 @@ public final class EnergyPush {
             NexusEnergy target = NexusEnergy.SIDED.find(level, next, side.getOpposite());
             if (target == null) continue;
             long room = target.insert(from.stored(), true);
-            if (room > 0) target.insert(from.remove(room, false), false);
+            // extract, not remove: this is energy leaving the block, and the Power Meter counts it as made (or given) by it
+            if (room > 0) target.insert(from.extract(room, false), false);
         }
     }
 

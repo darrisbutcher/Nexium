@@ -29,4 +29,13 @@ public interface NexusEnergy {
     default boolean givesOut() { return true; }
 
     long capacity();
+
+    /**
+     * Everything that has ever been put in from outside, by anything (a conduit network, a generator touching it), or -1 when this holder
+     * does not count. The Power Meter reads how much changed over a second, so what a machine took in shows however it arrived.
+     */
+    default long totalIn() { return -1; }
+
+    /** The same for what has been taken out from outside (a generator's output, whoever took it), or -1. */
+    default long totalOut() { return -1; }
 }
