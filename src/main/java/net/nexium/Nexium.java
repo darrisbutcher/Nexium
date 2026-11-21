@@ -50,6 +50,7 @@ public class Nexium implements ModInitializer {
         ModPayloads.init();
         net.nexium.quest.Quests.init();
         net.nexium.quest.RecipeUnlock.init();
+        net.nexium.filter.FilterSpecials.init();
         DrawerInteraction.init();
         AnchorRegistry.init();
         NexiumHaste.init();
