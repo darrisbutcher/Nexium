@@ -135,6 +135,25 @@ public class VillagersAndMendingGameTest {
         h.succeed();
     }
 
+    @GameTest
+    public void usingATradeNeverRaisesItsPrice(GameTestHelper h) {
+        // Four emeralds, and a price multiplier that makes demand count for a lot: unchanged, heavy use would push this to the 64 emerald cap
+        MerchantOffer offer = new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.BREAD), 12, 5, 0.5F);
+        h.assertTrue(offer.getCostA().getCount() == 4, "it starts at its base price: " + offer.getCostA().getCount());
+        for (int i = 0; i < 40; i++) offer.increaseUses();
+        offer.updateDemand();   // what a villager does when it restocks
+        h.assertTrue(offer.getDemand() <= 0, "restocking does not raise the demand: " + offer.getDemand());
+        h.assertTrue(offer.getCostA().getCount() == 4, "so a trade used 40 times costs what it did: " + offer.getCostA().getCount());
+        // A trade saved with its demand already raised (from before) is priced at its base price too
+        MerchantOffer raised = new MerchantOffer(new ItemCost(Items.EMERALD, 4), Optional.empty(), new ItemStack(Items.BREAD), 0, 12, 5, 0.5F, 60);
+        h.assertTrue(raised.getDemand() == 60, "it still holds the demand it was saved with: " + raised.getDemand());
+        h.assertTrue(raised.getCostA().getCount() == 4, "but is not charged for it: " + raised.getCostA().getCount());
+        // A trade with a second item is the same
+        MerchantOffer two = new MerchantOffer(new ItemCost(Items.EMERALD, 3), Optional.of(new ItemCost(Items.BOOK, 2)), new ItemStack(Items.BREAD), 0, 12, 5, 0.5F, 60);
+        h.assertTrue(two.getCostA().getCount() == 3 && two.getCostB().getCount() == 2, "and so is its second price: " + two.getCostA().getCount() + " and " + two.getCostB().getCount());
+        h.succeed();
+    }
+
     private static Villager farmer(GameTestHelper h, ServerPlayer player, boolean profession) {
         Villager villager = h.spawn(EntityTypes.VILLAGER, CENTER.east());
         if (profession) {

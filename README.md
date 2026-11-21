@@ -430,8 +430,9 @@ vanilla. Endermen never pick up blocks.
   from the free camera. All on the client.
 
 ### Villagers
-* **Trades never run out.** Every trade can be made as often as you like and none is ever locked after a few uses; prices still follow
-  demand. It applies to villagers and wandering traders alike.
+* **Trades never run out, and never get dearer.** Every trade can be made as often as you like and none is ever locked after a few uses,
+  and using a trade does not raise its price: prices ignore **demand** (a trade that had gone up goes back to its base price). The
+  discounts and surcharges for how the village sees you still apply. It applies to villagers and wandering traders alike.
 * **Trade cycling.** In a villager's trading screen press **C** (change it under Controls > Key Binds, in Nexium) to give a villager
   **nobody has traded with** a new set of trades, again and again until you like them, the way breaking and replacing its job site
   block does, without the block. It only works on a Novice with no experience and no trade used: once you trade with a villager, or
