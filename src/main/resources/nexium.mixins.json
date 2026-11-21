@@ -16,6 +16,7 @@
     "MerchantOfferMixin",
     "PiglinAiMixin",
     "PlayerMixin",
+    "ServerChunkCacheMixin",
     "ServerExplosionMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",

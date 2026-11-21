@@ -3,6 +3,27 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.10
+
+* **The Enchanted Grindstone: pull enchantments off an item onto books of their own.** Craft it from a Grindstone, a Book and Lapis
+  Lazuli (anywhere in the crafting grid). It is a grindstone to look at, with a violet wheel and glowing runes, and places the same
+  way, but right-clicking it opens its own menu: an item slot, a slot for plain Books and a list of the enchantments on the item.
+  Click one and it comes off onto a new Enchanted Book that holds just that enchantment, using up one Book. It is free (no
+  experience), the item keeps its wear, its name and every other enchantment, curses can be pulled off too, and it works on tools,
+  armor and enchanted books alike (a book that already holds one enchantment has nothing to separate). An AIOT's waiting Silk Touch or
+  Fortune is listed and taken off like the rest. A list of more than five enchantments scrolls with the mouse wheel; a full inventory
+  gets the new book dropped at the player's feet; closing the screen gives back what is in the slots. The plain Grindstone is
+  unchanged. The Codex has pages for it (in the Enchanting chapter) and a quest in the Tools chapter.
+
+* **The Hostile Mob Switch: turn hostile mob spawning off for the whole world.** Made at the Farm Assembler (pick Hostile Switch) from
+  **140 hostile mobs of any kind**, as spawn eggs or Captured Mobs. Right-click it and press Stop hostile spawning (or Allow hostile
+  spawning to undo it). It is one setting for the whole world, saved with it, that every switch shows and changes, wherever it stands: while it
+  is on, no hostile mob spawns near any player in any dimension. It does what Peaceful does to spawning without removing the mobs
+  already there: the usual spawn cycle, phantoms and patrols stop, and so do the spawns the spawn_monsters game rule governs (nether
+  portal zombified piglins, reinforcement zombies, endermites from pearls, creakings). Mob spawners and spawn eggs still work. A redstone
+  signal on a switch turns spawning off, and losing the power turns it back on. Breaking a switch leaves the setting as it was, and a
+  switch drops with any tool. The Codex has pages for it (in the Machines, Mobs & Villagers chapter) and there is a quest in the Farms chapter.
+
 ## 1.25.9
 
 * **A Crafting module for the Backpack: a 3x3 crafting grid in its screen.** Make it with iron ingots in the corners, any planks on the four

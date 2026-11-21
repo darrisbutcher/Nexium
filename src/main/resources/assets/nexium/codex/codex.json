@@ -151,6 +151,7 @@
         "mobs",
         "dog",
         "librarian",
+        "hostile_switch",
         "piglins"
       ]
     },
@@ -159,6 +160,7 @@
       "icon": "nexium:bedrock_breaker_elixir",
       "topics": [
         "enchant_levels",
+        "enchanted_grindstone",
         "elixir"
       ]
     },
@@ -1525,7 +1527,29 @@
       "see": [
         "iron_farm",
         "farms",
-        "librarian"
+        "librarian",
+        "hostile_switch"
+      ]
+    },
+    "hostile_switch": {
+      "pages": [
+        "mobs.hostile_switch",
+        "mobs.hostile_switch2"
+      ],
+      "icon": "nexium:hostile_mob_switch",
+      "items": [
+        "nexium:hostile_mob_switch"
+      ],
+      "aliases": [
+        "Hostile Mob Switch",
+        "stop mob spawning",
+        "no hostile mobs",
+        "peaceful"
+      ],
+      "see": [
+        "farm_assembler",
+        "librarian",
+        "mobs"
       ]
     },
     "iron_farm": {
@@ -1753,6 +1777,30 @@
         "enchantment levels"
       ],
       "see": [
+        "librarian",
+        "elytra"
+      ]
+    },
+    "enchanted_grindstone": {
+      "pages": [
+        "essentials.enchanted_grindstone",
+        "essentials.enchanted_grindstone2"
+      ],
+      "icon": "nexium:enchanted_grindstone",
+      "recipes": [
+        "enchanted_grindstone"
+      ],
+      "items": [
+        "nexium:enchanted_grindstone"
+      ],
+      "aliases": [
+        "Enchanted Grindstone",
+        "disenchanting",
+        "separate enchantments",
+        "enchanted books"
+      ],
+      "see": [
+        "enchant_levels",
         "librarian",
         "elytra"
       ]

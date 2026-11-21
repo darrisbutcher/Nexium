@@ -117,6 +117,8 @@
     "nexium:triple_compressed_obsidian",
     "nexium:compressed_magma_block",
     "nexium:double_compressed_magma_block",
-    "nexium:triple_compressed_magma_block"
+    "nexium:triple_compressed_magma_block",
+    "nexium:enchanted_grindstone",
+    "nexium:hostile_mob_switch"
   ]
 }

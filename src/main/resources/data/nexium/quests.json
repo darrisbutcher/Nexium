@@ -145,6 +145,12 @@
           "goal": "get",
           "item": "nexium:xp_farm",
           "count": 1
+        },
+        {
+          "id": "hostile_switch",
+          "goal": "get",
+          "item": "nexium:hostile_mob_switch",
+          "count": 1
         }
       ]
     },
@@ -187,6 +193,12 @@
           "id": "builder",
           "goal": "get",
           "item": "nexium:iron_builder",
+          "count": 1
+        },
+        {
+          "id": "grindstone",
+          "goal": "get",
+          "item": "nexium:enchanted_grindstone",
           "count": 1
         }
       ]

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "nexium:block/hostile_mob_switch"
+    },
+    "powered=true": {
+      "model": "nexium:block/hostile_mob_switch"
+    }
+  }
+}

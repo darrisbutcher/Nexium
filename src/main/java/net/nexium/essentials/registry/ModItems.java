@@ -66,6 +66,10 @@ public final class ModItems {
     public static final net.minecraft.world.item.BlockItem FARM_ASSEMBLER = register("farm_assembler",
             p -> new net.minecraft.world.item.BlockItem(ModBlocks.FARM_ASSEMBLER, p), new Item.Properties().useBlockDescriptionPrefix());
 
+    /** A grindstone that pulls enchantments off an item onto books of their own. Made from a Grindstone, a Book and Lapis Lazuli. */
+    public static final net.minecraft.world.item.BlockItem ENCHANTED_GRINDSTONE = register("enchanted_grindstone",
+            p -> new net.minecraft.world.item.BlockItem(ModBlocks.ENCHANTED_GRINDSTONE, p), new Item.Properties().useBlockDescriptionPrefix());
+
     /** The 1-block iron farm. Only made at the Farm Assembler, but creative players find it in the Nexium tab. */
     public static final IronFarmItem IRON_FARM = register("iron_farm", p -> new IronFarmItem(ModBlocks.IRON_FARM, p), new Item.Properties()
             .useBlockDescriptionPrefix()
@@ -74,6 +78,11 @@ public final class ModItems {
     /** The Experience Farm. Only made at the Farm Assembler, but creative players find it in the Farms and Power tab. */
     public static final net.nexium.essentials.xpfarm.XpFarmItem XP_FARM = register("xp_farm",
             p -> new net.nexium.essentials.xpfarm.XpFarmItem(ModBlocks.XP_FARM, p), new Item.Properties()
+                    .useBlockDescriptionPrefix()
+                    .rarity(Rarity.UNCOMMON));
+    /** Switches hostile mob spawning off for the whole world. Only made at the Farm Assembler (from 140 hostile mobs), but creative players find it in the Farms and Power tab. */
+    public static final net.minecraft.world.item.BlockItem HOSTILE_MOB_SWITCH = register("hostile_mob_switch",
+            p -> new net.minecraft.world.item.BlockItem(ModBlocks.HOSTILE_MOB_SWITCH, p), new Item.Properties()
                     .useBlockDescriptionPrefix()
                     .rarity(Rarity.UNCOMMON));
     /** The other one-block farms. Only made at the Farm Assembler, but creative players find them in the Nexium tab. */
@@ -100,7 +109,7 @@ public final class ModItems {
      */
     public static final List<Item> TAB_ORDER = java.util.stream.Stream.of(
             java.util.stream.Stream.of(MAGNET, BACKPACK), BACKPACK_MODULES.entrySet().stream().filter(e -> !e.getKey().retired()).map(java.util.Map.Entry::getValue),
-            java.util.stream.Stream.of(BEDROCK_BREAKER_ELIXIR, FARM_ASSEMBLER, IRON_FARM, XP_FARM), FARMS.values().stream(),
+            java.util.stream.Stream.of(BEDROCK_BREAKER_ELIXIR, ENCHANTED_GRINDSTONE, FARM_ASSEMBLER, IRON_FARM, XP_FARM, HOSTILE_MOB_SWITCH), FARMS.values().stream(),
             net.nexium.essentials.compressed.CompressedBlocks.items().stream(), net.nexium.essentials.sponge.BigSponges.items().stream())
             .flatMap(stream -> stream).map(i -> (Item) i).toList();
 

@@ -518,6 +518,19 @@ An anvil never says **Too Expensive!**: any job can be done, for its **full cost
   excludes both, and Fortune still excludes Silk Touch.
 * This is done with data files (`data/minecraft/enchantment`), so a data pack can change it.
 
+### Enchanted Grindstone
+Craft it from a **Grindstone, a Book and Lapis Lazuli** (shapeless: anywhere in the crafting grid). It is a grindstone to look at
+(same shape, same ways of being placed, with a violet wheel) but its menu does something else: it **pulls enchantments off an item
+one at a time, each onto a book of its own**, for free.
+
+* Right-click it. Put an enchanted tool, armor piece or **enchanted book** in the top slot and plain **Books** in the Book slot. The
+  list shows every enchantment on the item (curses in red); **click one** and it comes off onto a new Enchanted Book that holds just
+  that enchantment, using up one Book. The item keeps its wear, its name and every other enchantment.
+* It costs no experience and gives none back. Curses come off like any other enchantment. A book that already holds a single
+  enchantment has nothing to separate. An AIOT's inactive Silk Touch or Fortune is listed and taken off like the rest.
+* A list longer than five scrolls with the mouse wheel. If your inventory is full the new book drops at your feet; closing the screen
+  gives back what is in the slots. The plain Grindstone is unchanged: it still wipes enchantments for experience.
+
 ### Master Librarian
 At a **Farm Assembler**, pick **Master Librarian**, put in **12 villagers** (spawn eggs or Captured Mobs) and press Build. The
 villagers are used up and a **Master Librarian** comes out as a Captured Mob: right-click a block to let him out.
@@ -528,6 +541,19 @@ villagers are used up and a **Master Librarian** comes out as a Captured Mob: ri
 * He is level 5 with every trade unlocked. A librarian made this way doesn't count as a villager for any recipe, so it can't
   be fed back in.
 * `librarianVillagers` changes how many villagers he takes.
+
+### Hostile Mob Switch
+A block that **turns hostile mob spawning off for the whole world**. Make it at a **Farm Assembler**: pick **Hostile Switch** and put in
+**140 hostile mobs of any kind** (zombies, creepers, endermen, blazes and so on, as spawn eggs or Captured Mobs), then press Build.
+
+* Right-click it. **Stop hostile spawning** turns the setting on, **Allow hostile spawning** turns it off. It is **one setting for the whole
+  world**, saved with the world: every switch shows and changes the same state, wherever it stands and whether or not its chunk is
+  loaded. While it is on, no hostile mob spawns near any player, in any dimension.
+* It does what **Peaceful** does to spawning, without removing mobs that are already there: the usual spawn cycle, phantoms and
+  patrols are off, and so are the spawns the `spawn_monsters` game rule governs (zombified piglins from a nether portal,
+  reinforcement zombies, endermites from an ender pearl, creakings). **Mob spawners and spawn eggs still work.**
+* A **redstone signal** on a switch follows too: power turns hostile spawning off, and losing the power turns it back on.
+* Breaking a switch leaves the setting as it was, so keep one to turn it back. It drops with any tool.
 
 ### Elevator
 
@@ -624,7 +650,7 @@ Crafting and loot changes that need no setup. They add recipes (to the vanilla o
   Silk Touch (the AIOT's Silk Touch too).
 
 ### Farm Assembler
-Makes the one-block farms below and the Master Librarian. **Recipe**: a crafting table in the middle, 4 iron ingots on the
+Makes the one-block farms below, the Master Librarian and the Hostile Mob Switch. **Recipe**: a crafting table in the middle, 4 iron ingots on the
 sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
 
 * Right-click it, pick what to make from the list on the left, and put in what it needs. The right side shows how much of

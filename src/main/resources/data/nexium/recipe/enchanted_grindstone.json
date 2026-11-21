@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:grindstone",
+    "minecraft:book",
+    "minecraft:lapis_lazuli"
+  ],
+  "result": {
+    "id": "nexium:enchanted_grindstone"
+  }
+}

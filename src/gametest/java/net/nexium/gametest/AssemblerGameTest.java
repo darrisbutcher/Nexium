@@ -259,6 +259,17 @@ public class AssemblerGameTest {
             }
             case XP_FARM -> add(list, Items.EXPERIENCE_BOTTLE, AssemblyTarget.XP_FARM_BOTTLES);
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
+            case HOSTILE_SWITCH -> {
+                // Any hostile mob counts: a mix of kinds as Captured Mobs, or spawn eggs of two kinds
+                if (capturedMobs) {
+                    EntityType<?>[] kinds = {EntityTypes.ZOMBIE, EntityTypes.CREEPER, EntityTypes.SKELETON, EntityTypes.ENDERMAN, EntityTypes.SPIDER};
+                    for (int i = 0; i < 140; i++) list.add(captured(kinds[i % kinds.length]));
+                } else {
+                    list.add(new ItemStack(Items.ZOMBIE_SPAWN_EGG, 64));
+                    list.add(new ItemStack(Items.CREEPER_SPAWN_EGG, 64));
+                    list.add(new ItemStack(Items.BLAZE_SPAWN_EGG, 12));
+                }
+            }
         }
         return list;
     }
@@ -273,6 +284,25 @@ public class AssemblerGameTest {
         int n = 0;
         for (int i = 0; i < Inventory.INVENTORY_SIZE; i++) if (player.getInventory().getItem(i).is(item)) n += player.getInventory().getItem(i).getCount();
         return n;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theHostileMobSwitchTakesOnlyHostileMobs(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        a.select(AssemblyTarget.HOSTILE_SWITCH, null);
+        h.assertValueEqual(a.accept(new ItemStack(Items.COW_SPAWN_EGG, 10)), 0, "a cow is not hostile");
+        h.assertValueEqual(a.accept(captured(EntityTypes.VILLAGER)), 0, "neither is a villager");
+        h.assertValueEqual(a.accept(captured(EntityTypes.WOLF)), 0, "or a wolf");
+        h.assertValueEqual(a.accept(new ItemStack(Items.STONE, 64)), 0, "or stone");
+        h.assertValueEqual(a.accept(captured(EntityTypes.CREEPER)), 1, "a Captured Creeper counts");
+        h.assertValueEqual(a.accept(new ItemStack(Items.ZOMBIE_SPAWN_EGG, 138)), 138, "and so do spawn eggs of hostile mobs");
+        h.assertFalse(a.isComplete(), "139 is not enough");
+        h.assertValueEqual(a.accept(captured(EntityTypes.PIGLIN_BRUTE)), 1, "a piglin brute is hostile too");
+        h.assertTrue(a.isComplete(), "140 hostile mobs complete it");
+        h.assertValueEqual(a.accept(captured(EntityTypes.ZOMBIE)), 0, "and it takes no more");
+        h.assertTrue(a.build(h.getLevel()), "it builds");
+        h.assertTrue(a.output().removeItemNoUpdate(0).is(net.nexium.essentials.registry.ModItems.HOSTILE_MOB_SWITCH), "a Hostile Mob Switch comes out");
+        h.succeed();
     }
 
     // ---------------------------------------------------------------- building
@@ -305,13 +335,15 @@ public class AssemblerGameTest {
         // Every farm asks 9 stacks of its filler block (the Tree Farm 18 of logs)
         Map<AssemblyTarget, Integer> filler = new java.util.EnumMap<>(AssemblyTarget.class);
         for (AssemblyTarget target : AssemblyTarget.values()) {
-            if (target != AssemblyTarget.LIBRARIAN && target != AssemblyTarget.XP_FARM) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
+            if (target != AssemblyTarget.LIBRARIAN && target != AssemblyTarget.XP_FARM && target != AssemblyTarget.HOSTILE_SWITCH) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
         }
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
             h.assertValueEqual(reqs.getLast().needed(), amount, target + "'s filler");
         });
         h.assertValueEqual(AssemblyTarget.LIBRARIAN.requirements().getFirst().needed(), 12, "the librarian takes 12 villagers");
+        h.assertValueEqual(AssemblyTarget.HOSTILE_SWITCH.requirements().size(), 1, "the Hostile Mob Switch has one line");
+        h.assertValueEqual(AssemblyTarget.HOSTILE_SWITCH.requirements().getFirst().needed(), 140, "it takes 140 hostile mobs");
         // The Experience Farm takes one stack of Bottles o' Enchanting and nothing else
         h.assertValueEqual(AssemblyTarget.XP_FARM.requirements().size(), 1, "the Experience Farm has one line");
         h.assertValueEqual(AssemblyTarget.XP_FARM.requirements().getFirst().needed(), 64, "64 Bottles o' Enchanting");

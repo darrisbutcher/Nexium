@@ -7,6 +7,7 @@ import net.minecraft.world.item.Items;
 import net.nexium.essentials.config.NexusConfig;
 import net.nexium.essentials.farm.FarmKind;
 import net.nexium.essentials.farm.FarmRecipe;
+import net.nexium.essentials.hostile.HostileMobSwitch;
 import net.nexium.essentials.ironfarm.IronFarmRecipe;
 import net.nexium.essentials.librarian.Librarian;
 import net.nexium.essentials.registry.ModItems;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** What the Farm Assembler can make: the one-block farms (the Experience Farm too) and the Master Librarian, in the order its screen lists them. */
+/** What the Farm Assembler can make: the one-block farms (the Experience Farm too), the Master Librarian and the Hostile Mob Switch, in the order its screen lists them. */
 public enum AssemblyTarget {
     IRON_FARM(null),
     VILLAGER_BREEDER(FarmKind.VILLAGER_BREEDER),
@@ -41,7 +42,8 @@ public enum AssemblyTarget {
     FROGLIGHT(FarmKind.FROGLIGHT),
     TREE(FarmKind.TREE),
     XP_FARM(null),
-    LIBRARIAN(null);
+    LIBRARIAN(null),
+    HOSTILE_SWITCH(null);
 
     /** The Experience Farm takes a stack of Bottles o' Enchanting and nothing else. */
     public static final int XP_FARM_BOTTLES = 64;
@@ -81,6 +83,9 @@ public enum AssemblyTarget {
         } else if (this == XP_FARM) {
             list.add(new Requirement(Component.translatable("item.minecraft.experience_bottle"), XP_FARM_BOTTLES,
                     s -> s.is(Items.EXPERIENCE_BOTTLE), Items.EXPERIENCE_BOTTLE, false));
+        } else if (this == HOSTILE_SWITCH) {
+            list.add(new Requirement(Component.translatable("message.nexium.hostile_switch_part.mobs"), HostileMobSwitch.MOBS_NEEDED,
+                    HostileMobSwitch::isHostileMob, Items.ZOMBIE_SPAWN_EGG, true));
         } else if (this == LIBRARIAN) {
             list.add(new Requirement(IronFarmRecipe.Part.VILLAGERS.displayName(), NexusConfig.get().librarianVillagers,
                     s -> IronFarmRecipe.partOf(s) == IronFarmRecipe.Part.VILLAGERS, Items.VILLAGER_SPAWN_EGG, true));
@@ -101,6 +106,7 @@ public enum AssemblyTarget {
         if (this == IRON_FARM) return new ItemStack(ModItems.IRON_FARM);
         if (this == XP_FARM) return new ItemStack(ModItems.XP_FARM);
         if (this == LIBRARIAN) return new ItemStack(Items.VILLAGER_SPAWN_EGG);
+        if (this == HOSTILE_SWITCH) return new ItemStack(ModItems.HOSTILE_MOB_SWITCH);
         return new ItemStack(ModItems.FARMS.get(kind));
     }
 
