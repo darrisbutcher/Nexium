@@ -299,8 +299,8 @@ public class ConfigScreen extends Screen {
         }
         lines.add(Component.translatable("screen.nexium.config.applies", applies).withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
         List<FormattedCharSequence> wrapped = new ArrayList<>();
-        int wrap = Math.min(220, Math.max(120, width / 2));
-        for (Component line : lines) wrapped.addAll(font.split(line, wrap));
+        int room = Math.max(120, width / 2); // a very small screen leaves less than the usual width
+        for (Component line : lines) wrapped.addAll(net.nexium.client.Tooltips.split(font, line, room));
         g.setTooltipForNextFrame(font, wrapped, mouseX, mouseY);
     }
 }

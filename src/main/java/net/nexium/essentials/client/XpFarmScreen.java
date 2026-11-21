@@ -137,7 +137,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X, ENERGY_Y, BAR_W, ENERGY_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.xp_farm.energy", number(menu.energy()), number(energyCapacity())),
                     Component.translatable("screen.nexium.xp_farm.energy.tip", XpFarmBlockEntity.ENERGY_PER_TICK * Overclock.multiplier(menu.overclock()),
                             XpFarmBlockEntity.XP_PER_TICK * 20 * Overclock.multiplier(menu.overclock())).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);

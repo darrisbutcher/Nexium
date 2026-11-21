@@ -210,7 +210,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         int color = fraction < 0.75 ? 0xFF4CAF50 : fraction < 0.9 ? 0xFFE0C040 : 0xFFE05050;
         if (fill > 0) g.fill(x, barY, x + fill, barY + 4, color);
         if (mouseX >= x && mouseX < right && mouseY >= y && mouseY < barY + 4) {
-            g.setComponentTooltipForNextFrame(font, java.util.List.of(tooltip), mouseX, mouseY);
+            net.nexium.client.Tooltips.show(g, font, java.util.List.of(tooltip), mouseX, mouseY);
         }
     }
 

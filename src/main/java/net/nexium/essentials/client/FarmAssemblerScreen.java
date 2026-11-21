@@ -191,18 +191,18 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
             if (rowShowing(t) && inside(mouseX, mouseY, lx + 1, rowTop(t), rowWidth(), LIST_ROW)) {
                 List<Component> lines = new ArrayList<>(List.of(t.displayName().copy().withStyle(ChatFormatting.WHITE), t.makes().copy().withStyle(ChatFormatting.GRAY)));
                 if (t != chosen) lines.add(Component.translatable("screen.nexium.assembler.switch").withStyle(ChatFormatting.DARK_GRAY));
-                g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
+                net.nexium.client.Tooltips.show(g, font, lines, mouseX, mouseY);
                 return;
             }
         }
         if (inside(mouseX, mouseY, lx, topPos + ADD_Y, LIST_W, BUTTON_H)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.assembler.add_tip").withStyle(ChatFormatting.GRAY),
                     Component.translatable("screen.nexium.assembler.add_tip2").withStyle(ChatFormatting.DARK_GRAY)), mouseX, mouseY);
             return;
         }
         if (inside(mouseX, mouseY, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, BUTTON_H)) {
-            g.setComponentTooltipForNextFrame(font, buildTip(chosen), mouseX, mouseY);
+            net.nexium.client.Tooltips.show(g, font, buildTip(chosen), mouseX, mouseY);
             return;
         }
         List<Requirement> reqs = chosen.requirements();
@@ -214,7 +214,7 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
                 int missing = menu.needed(i) - menu.count(i);
                 lines.add(missing > 0 ? Component.translatable("screen.nexium.assembler.still", String.format("%,d", missing)).withStyle(ChatFormatting.YELLOW)
                         : Component.translatable("screen.nexium.assembler.done").withStyle(ChatFormatting.GREEN));
-                g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
+                net.nexium.client.Tooltips.show(g, font, lines, mouseX, mouseY);
                 return;
             }
         }

@@ -79,11 +79,11 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(TANK_X, TANK_Y, TANK_W, TANK_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.thermal.lava", menu.lavaMilli()),
                     Component.translatable("screen.nexium.thermal.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
                     Component.translatable("screen.nexium.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
