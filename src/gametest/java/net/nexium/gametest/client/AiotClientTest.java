@@ -109,7 +109,8 @@ public class AiotClientTest implements FabricClientGameTest {
             check(tooltip.contains("Diamond AIOT"), "the name is Diamond AIOT: " + tooltip);
             check(tooltip.contains("Fortune III"), "Fortune III is listed: " + tooltip);
             check(tooltip.contains("Silk Touch (inactive)"), "the inactive Silk Touch is listed: " + tooltip);
-            check(tooltip.contains("Pickaxe, axe, shovel, hoe and sword in one"), "the description is shown: " + tooltip);
+            // The description wraps to the tooltip's width, so it is read across its lines
+            check(String.join(" ", tooltip).contains("Pickaxe, axe, shovel, hoe and sword in one"), "the description is shown: " + tooltip);
             check(tooltip.stream().anyMatch(line -> line.contains("9 Attack Damage")), "9 attack damage, like a diamond axe: " + tooltip);
             check(tooltip.stream().anyMatch(line -> line.contains("1.6 Attack Speed")), "1.6 attack speed, like a sword: " + tooltip);
             check(tooltip.contains("Module: Nexus Link Module"), "the installed Nexus Link is listed: " + tooltip);
