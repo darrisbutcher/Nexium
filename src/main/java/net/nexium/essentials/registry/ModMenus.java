@@ -24,6 +24,9 @@ public final class ModMenus {
     public static final ExtendedMenuType<net.nexium.essentials.grindstone.EnchantedGrindstoneMenu, BlockPos> ENCHANTED_GRINDSTONE = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("enchanted_grindstone"), new ExtendedMenuType<>(net.nexium.essentials.grindstone.EnchantedGrindstoneMenu::new, BlockPos.STREAM_CODEC));
 
+    public static final ExtendedMenuType<net.nexium.essentials.hostile.HostileMobSwitchMenu, BlockPos> HOSTILE_MOB_SWITCH = Registry.register(BuiltInRegistries.MENU,
+            NexiumEssentials.id("hostile_mob_switch"), new ExtendedMenuType<>(net.nexium.essentials.hostile.HostileMobSwitchMenu::new, BlockPos.STREAM_CODEC));
+
     /** Opening data: {@code Backpacks.EQUIPPED}, or the inventory slot holding the Backpack. */
     public static final ExtendedMenuType<net.nexium.essentials.backpack.BackpackMenu, Integer> BACKPACK = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("backpack"), new ExtendedMenuType<>(net.nexium.essentials.backpack.BackpackMenu::new, net.minecraft.network.codec.ByteBufCodecs.VAR_INT));

@@ -31,6 +31,14 @@ public final class ModBlocks {
                     .pushReaction(net.minecraft.world.level.material.PushReaction.IMMOVEABLE));
 
     /**
+     * Made at the Farm Assembler from 140 hostile mobs. A pickaxe mines it faster, but it drops with any tool, because losing one
+     * would cost all those mobs.
+     */
+    public static final net.nexium.essentials.hostile.HostileMobSwitchBlock HOSTILE_MOB_SWITCH = register("hostile_mob_switch",
+            net.nexium.essentials.hostile.HostileMobSwitchBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .strength(5.0F, 6.0F).sound(SoundType.METAL));
+
+    /**
      * Made at the Farm Assembler. A pickaxe mines it faster, but it drops with any tool (or none),
      * because losing one would cost all its materials.
      */

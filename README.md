@@ -542,6 +542,19 @@ villagers are used up and a **Master Librarian** comes out as a Captured Mob: ri
   be fed back in.
 * `librarianVillagers` changes how many villagers he takes.
 
+### Hostile Mob Switch
+A block that **turns hostile mob spawning off for the whole world**. Make it at a **Farm Assembler**: pick **Hostile Switch** and put in
+**140 hostile mobs of any kind** (zombies, creepers, endermen, blazes and so on, as spawn eggs or Captured Mobs), then press Build.
+
+* Right-click it. **Stop hostile spawning** turns the setting on, **Allow hostile spawning** turns it off. It is **one setting for the whole
+  world**, saved with the world: every switch shows and changes the same state, wherever it stands and whether or not its chunk is
+  loaded. While it is on, no hostile mob spawns near any player, in any dimension.
+* It does what **Peaceful** does to spawning, without removing mobs that are already there: the usual spawn cycle, phantoms and
+  patrols are off, and so are the spawns the `spawn_monsters` game rule governs (zombified piglins from a nether portal,
+  reinforcement zombies, endermites from an ender pearl, creakings). **Mob spawners and spawn eggs still work.**
+* A **redstone signal** on a switch follows too: power turns hostile spawning off, and losing the power turns it back on.
+* Breaking a switch leaves the setting as it was, so keep one to turn it back. It drops with any tool.
+
 ### Elevator
 
 A flat Nexium platform, a quarter of a block tall. **Craft:** chiseled deepslate across the top, iron ingots at the
@@ -637,7 +650,7 @@ Crafting and loot changes that need no setup. They add recipes (to the vanilla o
   Silk Touch (the AIOT's Silk Touch too).
 
 ### Farm Assembler
-Makes the one-block farms below and the Master Librarian. **Recipe**: a crafting table in the middle, 4 iron ingots on the
+Makes the one-block farms below, the Master Librarian and the Hostile Mob Switch. **Recipe**: a crafting table in the middle, 4 iron ingots on the
 sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
 
 * Right-click it, pick what to make from the list on the left, and put in what it needs. The right side shows how much of

@@ -15,6 +15,15 @@ Pull requests are squash merged, so each one is a single commit on `main`.
   gets the new book dropped at the player's feet; closing the screen gives back what is in the slots. The plain Grindstone is
   unchanged. The Codex has pages for it (in the Enchanting chapter) and a quest in the Tools chapter.
 
+* **The Hostile Mob Switch: turn hostile mob spawning off for the whole world.** Made at the Farm Assembler (pick Hostile Switch) from
+  **140 hostile mobs of any kind**, as spawn eggs or Captured Mobs. Right-click it and press Stop hostile spawning (or Allow hostile
+  spawning to undo it). It is one setting for the whole world, saved with it, that every switch shows and changes, wherever it stands: while it
+  is on, no hostile mob spawns near any player in any dimension. It does what Peaceful does to spawning without removing the mobs
+  already there: the usual spawn cycle, phantoms and patrols stop, and so do the spawns the spawn_monsters game rule governs (nether
+  portal zombified piglins, reinforcement zombies, endermites from pearls, creakings). Mob spawners and spawn eggs still work. A redstone
+  signal on a switch turns spawning off, and losing the power turns it back on. Breaking a switch leaves the setting as it was, and a
+  switch drops with any tool. The Codex has pages for it (in the Machines, Mobs & Villagers chapter) and there is a quest in the Farms chapter.
+
 ## 1.25.9
 
 * **A Crafting module for the Backpack: a 3x3 crafting grid in its screen.** Make it with iron ingots in the corners, any planks on the four

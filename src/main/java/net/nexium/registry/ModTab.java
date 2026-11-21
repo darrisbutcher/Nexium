@@ -27,7 +27,7 @@ public final class ModTab {
 
     private static final Set<String> POWER = Set.of("freezer", "solar_panel", "thermal_generator", "combustion_generator",
             "iron_battery", "gold_battery", "diamond_battery", "redstone_reactor", "redstone_fuel_rod", "spent_fuel_rod",
-            "energy_conduit", "ender_energy_conduit", "farm_assembler", "nexus_furnace", "power_meter");
+            "energy_conduit", "ender_energy_conduit", "farm_assembler", "hostile_mob_switch", "nexus_furnace", "power_meter");
 
     /** Which tab an item belongs to. */
     public static Group groupOf(Item item) {

@@ -145,6 +145,12 @@
           "goal": "get",
           "item": "nexium:xp_farm",
           "count": 1
+        },
+        {
+          "id": "hostile_switch",
+          "goal": "get",
+          "item": "nexium:hostile_mob_switch",
+          "count": 1
         }
       ]
     },
