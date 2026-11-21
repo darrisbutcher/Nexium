@@ -4,17 +4,26 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.nexium.drawer.DrawerBlock;
+import net.nexium.drawer.DrawerWood;
 import net.nexium.quest.QuestBook;
 import net.nexium.quest.QuestBook.Chapter;
 import net.nexium.quest.QuestBook.Quest;
 import net.nexium.quest.QuestStatePayload;
 import net.nexium.quest.Quests;
+import net.nexium.quest.RecipeUnlock;
+import net.nexium.registry.ModBlocks;
 import net.nexium.registry.ModItems;
 
 import java.io.InputStreamReader;
@@ -122,6 +131,54 @@ public class QuestGameTest {
         QuestStatePayload back = QuestStatePayload.STREAM_CODEC.decode(buf);
         h.assertTrue(back.open(), "the open flag");
         h.assertValueEqual(back.entries(), payload.entries(), "the entries");
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
+    public void aDrawerOfAnyWoodFinishesTheDrawerQuest(GameTestHelper h) {
+        Quest drawer = QuestBook.find("storage.drawer");
+        h.assertTrue(drawer != null && drawer.tag() != null, "the drawer quest takes a whole tag of items");
+        for (DrawerBlock d : ModBlocks.ALL_DRAWERS) {
+            h.assertTrue(drawer.items().contains(d.asItem()), "every drawer counts, not " + d + " left out");
+        }
+        // Crafted: a poplar drawer, not the oak one the quest names
+        ServerPlayer crafted = h.makeMockServerPlayerInLevel();
+        crafted.awardStat(Stats.ITEM_CRAFTED.get(ModBlocks.DRAWERS.get(DrawerWood.POPLAR)[0].asItem()));
+        h.assertTrue(Quests.check(crafted).stream().anyMatch(q -> q.key().equals("storage.drawer")), "crafting a poplar drawer finishes the quest");
+        // Held: a spruce 2x2 drawer
+        ServerPlayer held = h.makeMockServerPlayerInLevel();
+        held.getInventory().add(new ItemStack(ModBlocks.DRAWERS.get(DrawerWood.SPRUCE)[2]));
+        h.assertTrue(Quests.check(held).stream().anyMatch(q -> q.key().equals("storage.drawer")), "so does holding a spruce 2x2 drawer");
+        // Anything else does not
+        ServerPlayer other = h.makeMockServerPlayerInLevel();
+        other.awardStat(Stats.ITEM_CRAFTED.get(Items.STICK));
+        other.getInventory().add(new ItemStack(Items.OAK_PLANKS, 8));
+        h.assertTrue(Quests.check(other).isEmpty(), "a stick and planks are not a drawer");
+        // A quest with no tag still wants exactly its item
+        Quest connector = QuestBook.find("storage.connector");
+        h.assertTrue(connector.tag() == null && connector.items().size() == 1, "a quest without a tag names one item");
+        h.succeed();
+    }
+
+    @GameTest(maxTicks = 40)
+    public void everyNexiumRecipeIsInTheRecipeBookFromTheStart(GameTestHelper h) {
+        // The mock player joins the server like a real one, which unlocks them
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        List<RecipeHolder<?>> mine = h.getLevel().getServer().getRecipeManager().getLearnableRecipes().stream()
+                .filter(r -> r.id().identifier().getNamespace().equals("nexium")).toList();
+        h.assertTrue(mine.size() > 300, "the mod has plenty of recipes: " + mine.size());
+        for (RecipeHolder<?> recipe : mine) {
+            h.assertTrue(player.getRecipeBook().contains(recipe.id()), "unlocked when the player joined: " + recipe.id().identifier());
+        }
+        h.assertTrue(!player.getRecipeBook().contains(ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("crafting_table"))),
+                "the game's own recipes unlock the way they always do");
+        // Unlocking again (after a reload, say) gives back what is missing and nothing else
+        List<RecipeHolder<?>> some = mine.subList(0, 3);
+        player.resetRecipes(some);
+        h.assertTrue(!player.getRecipeBook().contains(some.getFirst().id()), "a recipe taken away is gone");
+        h.assertTrue(RecipeUnlock.unlock(player) > 0, "unlocking gives it back");
+        for (RecipeHolder<?> recipe : some) h.assertTrue(player.getRecipeBook().contains(recipe.id()), "back: " + recipe.id().identifier());
+        h.assertTrue(RecipeUnlock.unlock(player) == 0, "nothing is unlocked twice");
         h.succeed();
     }
 }

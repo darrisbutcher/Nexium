@@ -27,7 +27,7 @@ import java.util.Set;
  * The quest system on the server: which quests a player has finished (saved on the player, kept through death), checking
  * the goals once a second, and the rewards: a few random items from the mod for each quest. A chapter is open once every quest of
  * the one before it is done. Quests count what the player has already done (the game's own statistics, or what they hold), so
- * nothing has to be repeated. Recipes are never locked by any of this.
+ * nothing has to be repeated. Recipes are never locked by any of this (every Nexium recipe is unlocked on joining, see {@link RecipeUnlock}).
  */
 public final class Quests {
     private static final AttachmentType<List<String>> DONE = AttachmentRegistry.create(Nexium.id("quests_done"),
@@ -84,8 +84,12 @@ public final class Quests {
 
     /** How far a player is on a quest, from 0 to its count. */
     public static int progress(ServerPlayer player, Quest quest) {
-        int fromStats = player.getStats().getValue(quest.goal() == QuestBook.Goal.GET ? Stats.ITEM_CRAFTED.get(quest.item()) : Stats.ITEM_USED.get(quest.item()));
-        int held = quest.goal() == QuestBook.Goal.GET ? player.getInventory().countItem(quest.item()) : 0;
+        // A quest that takes a whole tag (any Drawer) counts every item in it, added together
+        int fromStats = 0, held = 0;
+        for (Item item : quest.items()) {
+            fromStats += player.getStats().getValue(quest.goal() == QuestBook.Goal.GET ? Stats.ITEM_CRAFTED.get(item) : Stats.ITEM_USED.get(item));
+            if (quest.goal() == QuestBook.Goal.GET) held += player.getInventory().countItem(item);
+        }
         return Math.min(quest.count(), Math.max(fromStats, held));
     }
 
