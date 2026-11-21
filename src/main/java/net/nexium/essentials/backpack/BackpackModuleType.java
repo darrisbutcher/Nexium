@@ -14,7 +14,9 @@ public enum BackpackModuleType {
     /** Packs what the Backpack holds into storage blocks (9 iron ingots into an iron block). */
     COMPACTING("compacting", false),
     /** Tops up the stacks you are using (hotbar and offhand) from the Backpack, unpacking storage blocks when it has to. */
-    RESTOCKING("restocking", false);
+    RESTOCKING("restocking", false),
+    /** Gives the Backpack's screen a 3x3 crafting grid that crafts from the grid and from what the Backpack holds. */
+    CRAFTING("crafting", false);
 
     private final String id;
     private final boolean retired;

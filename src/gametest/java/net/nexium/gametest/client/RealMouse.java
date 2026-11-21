@@ -24,6 +24,13 @@ final class RealMouse {
         ctx.waitTicks(3);
     }
 
+    /** A right click at the screen (GUI) position, then a few ticks. */
+    static void rightClick(ClientGameTestContext ctx, int[] position) {
+        moveTo(ctx, position[0], position[1]);
+        ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
+        ctx.waitTicks(3);
+    }
+
     /** Moves the cursor to the screen (GUI) position {@code position}, so it rests there (a hint shows, say). */
     static void moveTo(ClientGameTestContext ctx, int[] position) {
         moveTo(ctx, position[0], position[1]);

@@ -20,16 +20,23 @@ import net.nexium.essentials.client.NexiumEssentialsClient;
  * The Backpack's own slot in the inventory is outlined when it was opened from there: it can't be moved while the
  * screen is open. The Open Backpack key closes the screen again.
  *
+ * <p>With a Crafting module installed and on, a panel on the right of the screen holds a 3x3 crafting grid and its result slot, and the
+ * screen is centred as a whole. The trash slot under the module column is always there; it is drawn as a small bin while it is empty.
+ *
  * <p>With a Feeding module installed, a small panel under the module column holds its two settings: the hunger level it eats at
  * (a click steps it lower, shift-click higher) and whether it may waste food.
  */
 public class BackpackScreen extends BaseScreen<BackpackMenu> {
     private static final int TOGGLE_X = BackpackMenu.MODULE_X + 20, TOGGLE_WIDTH = 48;
     /** The Feeding panel: its heading, then its level button and its waste button, under the last module row. */
+    /** The crafting panel's height: its title, the grid and a margin. */
+    private static final int SIDE_H = BackpackMenu.CRAFT_Y + 3 * 18 + 10;
     private static final int FEEDING_Y = BackpackMenu.MODULE_Y + BackpackModules.SLOTS * BackpackMenu.MODULE_ROW + 4, FEEDING_WIDTH = 68;
     private final Button[] toggles = new Button[BackpackModules.SLOTS];
     private Button feedingLevel, feedingWaste;
     private boolean hasFeeding;
+    /** Whether the crafting panel is showing (the screen is centred with it, and re-centred when it comes or goes). */
+    private boolean craftingShown;
     private final SideHints hints = new SideHints();
 
     public BackpackScreen(BackpackMenu menu, Inventory inventory, Component title) {
@@ -41,6 +48,9 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     @Override
     protected void init() {
         super.init();
+        craftingShown = menu.craftingActive();
+        // Centre the screen with the crafting panel, which sits to its right
+        leftPos = (width - BackpackMenu.WIDTH - (craftingShown ? BackpackMenu.SIDE_W : 0)) / 2;
         for (int i = 0; i < BackpackModules.SLOTS; i++) {
             final int slot = i;
             toggles[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(BackpackMenu.BTN_TOGGLE_MODULE + slot))
@@ -48,9 +58,9 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
         }
         feedingLevel = addRenderableWidget(Button.builder(Component.empty(),
                         b -> click(minecraft != null && minecraft.hasShiftDown() ? BackpackMenu.BTN_FEEDING_LEVEL_BACK : BackpackMenu.BTN_FEEDING_LEVEL))
-                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 11, FEEDING_WIDTH, 16).build());
+                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 13, FEEDING_WIDTH, 16).build());
         feedingWaste = addRenderableWidget(Button.builder(Component.empty(), b -> click(BackpackMenu.BTN_FEEDING_WASTE))
-                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 29, FEEDING_WIDTH, 16).build());
+                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 31, FEEDING_WIDTH, 16).build());
         refresh();
     }
 
@@ -61,7 +71,27 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     @Override
     protected void containerTick() {
         super.containerTick();
+        // The Crafting module came or went: the panel shows or hides, and the screen is centred again
+        if (menu.craftingActive() != craftingShown) rebuildWidgets();
         refresh();
+    }
+
+    /** A click in the crafting panel is not a click outside the screen (which would throw away what you carry). */
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int xo, int yo) {
+        if (craftingShown && mouseX >= xo + BackpackMenu.SIDE_X && mouseX < xo + BackpackMenu.SIDE_X + BackpackMenu.SIDE_W
+                && mouseY >= yo && mouseY < yo + SIDE_H) return false;
+        return super.hasClickedOutside(mouseX, mouseY, xo, yo);
+    }
+
+    /** The centre of a slot of this menu, in screen coordinates (for tests, which click it with the real mouse). */
+    public int[] slotCentre(net.minecraft.world.inventory.Slot slot) {
+        return new int[]{leftPos + slot.x + 8, topPos + slot.y + 8};
+    }
+
+    /** Whether the crafting panel is showing (for tests). */
+    public boolean craftingShown() {
+        return craftingShown;
     }
 
     private void refresh() {
@@ -127,7 +157,14 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
-        hints.render(g, leftPos, leftPos + imageWidth, mouseX, mouseY);
+        hints.render(g, leftPos, leftPos + imageWidth + (craftingShown ? BackpackMenu.SIDE_W : 0), mouseX, mouseY);
+        // The trash slot says what it is, empty or not
+        if (hoveredSlot == menu.trashSlot() && menu.getCarried().isEmpty()) {
+            java.util.List<net.minecraft.util.FormattedCharSequence> lines = new java.util.ArrayList<>();
+            lines.add(Component.translatable("screen.nexium.backpack.trash").getVisualOrderText());
+            lines.addAll(font.split(Component.translatable("screen.nexium.backpack.trash.tip").withStyle(ChatFormatting.GRAY), 160));
+            g.setTooltipForNextFrame(font, lines, mouseX, mouseY);
+        }
     }
 
     @Override
@@ -135,6 +172,15 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
         g.text(font, Component.translatable("screen.nexium.backpack.modules"), leftPos + BackpackMenu.MODULE_X, topPos + 6, palette().text(), false);
         if (hasFeeding) {
             g.text(font, Component.translatable("screen.nexium.backpack.feeding"), leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y, palette().text(), false);
+        }
+        trashIcon(g);
+        if (craftingShown) {
+            // The crafting panel, joined to the right of the main one: its title, the grid (the slots draw themselves), an arrow and the result
+            palette().panel(g, leftPos + BackpackMenu.SIDE_X - 2, topPos, BackpackMenu.SIDE_W + 2, SIDE_H);
+            for (var slot : menu.getInputGridSlots()) palette().slot(g, leftPos + slot.x, topPos + slot.y);
+            palette().slot(g, leftPos + menu.getResultSlot().x, topPos + menu.getResultSlot().y);
+            g.text(font, Component.translatable("screen.nexium.backpack.crafting"), leftPos + BackpackMenu.SIDE_X + 8, topPos + 6, palette().text(), false);
+            g.text(font, "\u2192", leftPos + BackpackMenu.SIDE_X + 66, topPos + BackpackMenu.CRAFT_Y + 22, palette().text(), false);
         }
         // Outline the slot the Backpack was opened from: it stays put while the screen is open
         int source = menu.source();
@@ -147,6 +193,19 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
             g.fill(x - 1, y, x, y + 16, c);
             g.fill(x + 16, y, x + 17, y + 16, c);
         }
+    }
+
+    /** A small bin in the trash slot while it is empty, so you can tell what the slot is. */
+    private void trashIcon(GuiGraphicsExtractor g) {
+        var slot = menu.trashSlot();
+        if (slot.hasItem()) return;
+        int x = leftPos + slot.x, y = topPos + slot.y;
+        int body = 0xFF8A8A98, line = 0xFF55555F, rim = 0xFFA6A6B4;
+        g.fill(x + 6, y + 1, x + 10, y + 2, rim); // the handle
+        g.fill(x + 2, y + 2, x + 14, y + 4, rim); // the lid
+        g.fill(x + 3, y + 4, x + 13, y + 14, body); // the bin
+        g.fill(x + 4, y + 14, x + 12, y + 15, body);
+        for (int stripe : new int[]{6, 8, 10}) g.fill(x + stripe, y + 6, x + stripe + 1, y + 13, line);
     }
 
     @Override

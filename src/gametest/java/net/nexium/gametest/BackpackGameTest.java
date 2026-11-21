@@ -204,7 +204,8 @@ public class BackpackGameTest {
         ServerPlayer player = player(h);
         ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, new ItemStack(ModItems.BACKPACK));
         BackpackMenu menu = openEquipped(player);
-        h.assertValueEqual(menu.slots.size(), BackpackModules.SLOTS + BackpackContents.SIZE + 36, "5 module slots, 36 backpack slots and the inventory");
+        h.assertValueEqual(menu.slots.size(), BackpackModules.SLOTS + BackpackContents.SIZE + 36 + 9 + 1 + 1,
+                "5 module slots, 36 backpack slots, the inventory, and after it the crafting grid (9), its result slot and the trash slot");
         menu.getSlot(TORCH_SLOT).set(new ItemStack(Items.DIAMOND, 5));
         menu.getSlot(TORCH_SLOT + 35).set(new ItemStack(Items.APPLE, 7));
         ItemStack backpack = ExtraSlots.of(player).backpack();
@@ -289,7 +290,9 @@ public class BackpackGameTest {
         // Shift-clicking a stack from the inventory tops it up, past 99
         slot.set(new ItemStack(Items.COBBLESTONE, 1000));
         player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 64));
-        menu.quickMoveStack(player, menu.slots.size() - 9);
+        int hotbar = -1;
+        for (Slot s : menu.slots) if (s.container == player.getInventory() && s.getContainerSlot() == 0) hotbar = s.index;
+        menu.quickMoveStack(player, hotbar);
         h.assertValueEqual(slot.getItem().getCount(), 1024, "shift-click topped it up to 1,024");
         h.assertTrue(player.getInventory().getItem(0).isEmpty(), "the other 40 went to another free slot of the backpack");
         h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.COBBLESTONE), 1064, "1,064 cobblestone in the backpack in all");
@@ -823,6 +826,135 @@ public class BackpackGameTest {
         h.assertTrue(BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.FEEDING).isEmpty(), "no Feeding module appeared");
         h.assertTrue(BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.COMPACTING).getComponents()
                 .equals(module(BackpackModuleType.COMPACTING).getComponents()), "and the Compacting module has no settings put on it");
+        h.succeed();
+    }
+
+    // ---------------------------------------------------------------- Crafting module and trash
+
+    /** A player wearing a Backpack with the Crafting module on and these stacks in its storage. */
+    private static ServerPlayer craftingWith(GameTestHelper h, ItemStack... stacks) {
+        ItemStack backpack = backpackWith(BackpackModuleType.CRAFTING);
+        fill(backpack, stacks);
+        return wearing(h, backpack);
+    }
+
+    private static void click(BackpackMenu menu, ServerPlayer player, Slot slot, net.minecraft.world.inventory.ContainerInput input) {
+        menu.clicked(slot.index, 0, input, player);
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theCraftingGridCraftsAndRefillsFromTheBackpack(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 14));
+        BackpackMenu menu = openScreen(player);
+        h.assertTrue(menu.craftingActive(), "the module is installed and on");
+        // Two planks one above the other make four sticks
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS));
+        menu.getInputGridSlots().get(3).set(new ItemStack(Items.OAK_PLANKS));
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.STICK) && menu.getResultSlot().getItem().getCount() == 4, "the result slot shows 4 sticks, got " + menu.getResultSlot().getItem());
+        click(menu, player, menu.getResultSlot(), net.minecraft.world.inventory.ContainerInput.PICKUP);
+        h.assertTrue(menu.getCarried().is(Items.STICK) && menu.getCarried().getCount() == 4, "the sticks are in the hand");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 12, "the two planks that went into the grid came from the Backpack's 14, so 12 are left");
+        h.assertTrue(menu.getInputGridSlots().get(0).getItem().is(Items.OAK_PLANKS) && menu.getInputGridSlots().get(3).getItem().is(Items.OAK_PLANKS), "and both grid slots are full again");
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.STICK), "so the next 4 sticks are already showing");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void shiftClickOnTheResultCraftsAsMuchAsThereIs(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 14));
+        BackpackMenu menu = openScreen(player);
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS));
+        menu.getInputGridSlots().get(3).set(new ItemStack(Items.OAK_PLANKS));
+        click(menu, player, menu.getResultSlot(), net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
+        int sticks = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) if (player.getInventory().getItem(i).is(Items.STICK)) sticks += player.getInventory().getItem(i).getCount();
+        h.assertValueEqual(sticks, 32, "all 16 planks (2 in the grid and 14 in the Backpack) became 32 sticks in your inventory");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 0, "none left in the Backpack");
+        h.assertTrue(menu.getInputGridSlots().get(0).getItem().isEmpty(), "and the grid is empty");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theGridIsOnlyThereWhileTheModuleIsOn(GameTestHelper h) {
+        ServerPlayer without = wearing(h, backpackWith());
+        BackpackMenu menu = openScreen(without);
+        Slot grid = menu.getInputGridSlots().get(0);
+        h.assertTrue(!menu.craftingActive() && !grid.isActive() && !grid.mayPlace(new ItemStack(Items.OAK_PLANKS)), "no module: no grid");
+        h.assertTrue(!menu.getResultSlot().isActive() && !menu.getResultSlot().mayPickup(without), "and no result slot");
+        without.closeContainer();
+
+        ServerPlayer with = craftingWith(h);
+        BackpackMenu on = openScreen(with);
+        h.assertTrue(on.craftingActive() && on.getInputGridSlots().get(0).isActive() && on.getInputGridSlots().get(0).mayPlace(new ItemStack(Items.OAK_PLANKS)), "the module on: the grid is there");
+        on.clickMenuButton(with, BackpackMenu.BTN_TOGGLE_MODULE);
+        h.assertTrue(!on.craftingActive() && !on.getInputGridSlots().get(0).isActive(), "switched off: the grid is gone");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void takingTheModuleOutOrSwitchingItOffReturnsTheGrid(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h);
+        BackpackMenu menu = openScreen(player);
+        menu.getInputGridSlots().get(0).set(new ItemStack(Items.OAK_PLANKS, 3));
+        menu.getInputGridSlots().get(4).set(new ItemStack(Items.COBBLESTONE, 5));
+        menu.clickMenuButton(player, BackpackMenu.BTN_TOGGLE_MODULE); // switched off
+        h.assertTrue(menu.getInputGridSlots().get(0).getItem().isEmpty() && menu.getInputGridSlots().get(4).getItem().isEmpty(), "the grid is emptied");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 3, "the planks are in the Backpack");
+        h.assertValueEqual(held(player, Items.COBBLESTONE), 5, "and the cobblestone");
+        h.assertTrue(menu.getResultSlot().getItem().isEmpty(), "and there is no result left showing");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void closingTheScreenReturnsTheGridAndEmptiesTheTrash(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h);
+        BackpackMenu menu = openScreen(player);
+        menu.getInputGridSlots().get(1).set(new ItemStack(Items.IRON_INGOT, 4));
+        menu.trashSlot().set(new ItemStack(Items.DIRT, 10));
+        player.closeContainer();
+        h.assertValueEqual(held(player, Items.IRON_INGOT), 4, "what was in the grid is back in the Backpack");
+        h.assertTrue(menu.trashSlot().getItem().isEmpty(), "the trash is empty");
+        h.assertValueEqual(total(player, Items.DIRT), 0, "and what was in it is gone, not in the Backpack or the inventory");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theTrashKeepsTheLastItemUntilAnotherGoesIn(GameTestHelper h) {
+        ServerPlayer player = wearing(h, backpackWith()); // no module: the trash is always there
+        BackpackMenu menu = openScreen(player);
+        Slot trash = menu.trashSlot();
+        menu.setCarried(new ItemStack(Items.DIRT, 20));
+        click(menu, player, trash, net.minecraft.world.inventory.ContainerInput.PICKUP);
+        h.assertTrue(trash.getItem().is(Items.DIRT) && trash.getItem().getCount() == 20 && menu.getCarried().isEmpty(), "dirt put in the trash stays in it, and the hand is empty");
+        // Take it back
+        click(menu, player, trash, net.minecraft.world.inventory.ContainerInput.PICKUP);
+        h.assertTrue(menu.getCarried().is(Items.DIRT) && menu.getCarried().getCount() == 20 && trash.getItem().isEmpty(), "clicking the trash with an empty hand takes the dirt back");
+        // Put it in, then put something else in: the first is destroyed
+        click(menu, player, trash, net.minecraft.world.inventory.ContainerInput.PICKUP);
+        menu.setCarried(new ItemStack(Items.STONE, 7));
+        click(menu, player, trash, net.minecraft.world.inventory.ContainerInput.PICKUP);
+        h.assertTrue(trash.getItem().is(Items.STONE) && trash.getItem().getCount() == 7 && menu.getCarried().isEmpty(), "putting stone in replaces the dirt: the trash holds the stone, and nothing was handed back");
+        h.assertValueEqual(total(player, Items.DIRT), 0, "the dirt is gone");
+        // Shift-click on it gives the item back to the inventory
+        click(menu, player, trash, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
+        h.assertTrue(trash.getItem().isEmpty(), "shift-click empties the trash");
+        h.assertValueEqual(total(player, Items.STONE), 7, "into the inventory");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void shiftClickNeverPutsAnythingInTheTrashOrTheGrid(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h);
+        BackpackMenu menu = openScreen(player);
+        player.getInventory().setItem(10, new ItemStack(Items.OAK_PLANKS, 8));
+        // Find the inventory slot that holds the planks
+        Slot holder = null;
+        for (Slot s : menu.slots) if (s.container == player.getInventory() && s.getItem().is(Items.OAK_PLANKS)) holder = s;
+        h.assertTrue(holder != null, "the planks are in a player slot");
+        click(menu, player, holder, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
+        h.assertTrue(menu.trashSlot().getItem().isEmpty(), "nothing went in the trash");
+        for (Slot grid : menu.getInputGridSlots()) h.assertTrue(grid.getItem().isEmpty(), "nothing went in the grid");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 8, "the planks went into the Backpack's storage");
         h.succeed();
     }
 

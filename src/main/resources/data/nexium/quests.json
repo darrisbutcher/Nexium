@@ -227,6 +227,12 @@
           "count": 1
         },
         {
+          "id": "crafting",
+          "goal": "get",
+          "item": "nexium:crafting_module",
+          "count": 1
+        },
+        {
           "id": "compressed",
           "goal": "get",
           "item": "nexium:triple_compressed_stone",
