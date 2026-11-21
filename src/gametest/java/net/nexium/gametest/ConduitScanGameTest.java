@@ -33,6 +33,32 @@ public class ConduitScanGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void aSideOnSeveralColoursOnlyWarnsWhenNoneOfThemHasAReceiver(GameTestHelper h) {
+        ConduitBundleBlockEntity be = bundle(h, CENTER, ConduitType.ITEM);
+        BlockPos west = CENTER.west(), east = CENTER.east(), north = CENTER.north(), south = CENTER.south();
+        for (BlockPos chest : List.of(west, east, north, south)) h.setBlock(chest, Blocks.CHEST);
+        // West extracts on 3 and 4; east inserts on 4 (so one of its colours has a receiver); north extracts on 8 and 9 (neither has one)
+        SideConfig w = be.config(ConduitType.ITEM, Direction.WEST);
+        w.mode = SideConfig.Mode.EXTRACT;
+        w.extractChannels = 1 << 3 | 1 << 4;
+        SideConfig e = be.config(ConduitType.ITEM, Direction.EAST);
+        e.mode = SideConfig.Mode.INSERT;
+        e.channel = 4;
+        SideConfig n = be.config(ConduitType.ITEM, Direction.NORTH);
+        n.mode = SideConfig.Mode.EXTRACT;
+        n.extractChannels = 1 << 8 | 1 << 9;
+        be.config(ConduitType.ITEM, Direction.SOUTH).mode = SideConfig.Mode.DISABLED;
+        be.changed();
+        ConduitScan.Report report = ConduitScan.scan(h.getLevel(), h.absolutePos(CENTER), ConduitType.ITEM);
+        Link lw = linkAt(report, h, west), le = linkAt(report, h, east), ln = linkAt(report, h, north);
+        h.assertTrue(lw.outOn(3) && lw.outOn(4) && !lw.outOn(5) && lw.outChannels() == (1 << 3 | 1 << 4), "west extracts on 3 and 4: " + lw);
+        h.assertTrue(!lw.has(ConduitScan.NO_RECEIVER), "one of west's colours has a receiver, so no warning: " + lw);
+        h.assertTrue(!le.has(ConduitScan.NO_SENDER), "east inserts on 4, which west extracts on too: " + le);
+        h.assertTrue(ln.has(ConduitScan.NO_RECEIVER), "none of north's colours has a receiver: " + ln);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void aScanListsEachSideThatEndsAtABlock(GameTestHelper h) {
         ConduitBundleBlockEntity be = bundle(h, CENTER, ConduitType.ITEM);
         BlockPos west = CENTER.west(), east = CENTER.east(), south = CENTER.south(), north = CENTER.north();
@@ -41,7 +67,7 @@ public class ConduitScanGameTest {
         // north takes onto channel 9 (nothing delivers it)
         SideConfig w = be.config(ConduitType.ITEM, Direction.WEST);
         w.mode = SideConfig.Mode.EXTRACT;
-        w.extractChannel = 3;
+        w.setExtractChannel(3);
         SideConfig e = be.config(ConduitType.ITEM, Direction.EAST);
         e.mode = SideConfig.Mode.INSERT;
         e.channel = 3;
@@ -51,7 +77,7 @@ public class ConduitScanGameTest {
         s.channel = 7;
         SideConfig n = be.config(ConduitType.ITEM, Direction.NORTH);
         n.mode = SideConfig.Mode.EXTRACT;
-        n.extractChannel = 9;
+        n.setExtractChannel(9);
         be.changed();
 
         ConduitScan.Report report = ConduitScan.scan(h.getLevel(), h.absolutePos(CENTER), ConduitType.ITEM);
@@ -62,7 +88,7 @@ public class ConduitScanGameTest {
         h.assertTrue(report.carries(ConduitType.ITEM) && !report.carries(ConduitType.FLUID) && !report.carries(ConduitType.ENERGY), "it carries items only");
 
         Link lw = linkAt(report, h, west), le = linkAt(report, h, east), ls = linkAt(report, h, south), ln = linkAt(report, h, north);
-        h.assertTrue(lw.mode() == SideConfig.Mode.EXTRACT && lw.outChannel() == 3 && lw.flags() == 0, "west extracts on 3 and has a receiver: " + lw);
+        h.assertTrue(lw.mode() == SideConfig.Mode.EXTRACT && lw.outChannels() == 1 << 3 && lw.flags() == 0, "west extracts on 3 and has a receiver: " + lw);
         h.assertTrue(le.mode() == SideConfig.Mode.INSERT && le.inChannel() == 3 && le.priority() == 4 && le.flags() == 0, "east inserts on 3 and has a sender: " + le);
         h.assertTrue(ls.has(ConduitScan.NO_SENDER) && !ls.has(ConduitScan.NO_RECEIVER), "south inserts on 7 with nothing extracting there: " + ls);
         h.assertTrue(ln.has(ConduitScan.NO_RECEIVER) && !ln.has(ConduitScan.NO_SENDER), "north extracts on 9 with nothing inserting there: " + ln);
@@ -78,7 +104,7 @@ public class ConduitScanGameTest {
         SideConfig w = be.config(ConduitType.ITEM, Direction.WEST);
         w.mode = SideConfig.Mode.BOTH;
         w.channel = 2;
-        w.extractChannel = 2;
+        w.setExtractChannel(2);
         be.changed();
         // A Both side alone on its channel: it would only be moving things into and out of itself, so both warnings show
         ConduitScan.Report alone = ConduitScan.scan(h.getLevel(), h.absolutePos(CENTER), ConduitType.ITEM);
@@ -88,7 +114,7 @@ public class ConduitScanGameTest {
         SideConfig e = be.config(ConduitType.ITEM, Direction.EAST);
         e.mode = SideConfig.Mode.BOTH;
         e.channel = 2;
-        e.extractChannel = 2;
+        e.setExtractChannel(2);
         be.changed();
         ConduitScan.Report pair = ConduitScan.scan(h.getLevel(), h.absolutePos(CENTER), ConduitType.ITEM);
         h.assertTrue(linkAt(pair, h, CENTER.west()).flags() == 0 && linkAt(pair, h, CENTER.east()).flags() == 0, "two Both sides on one channel answer each other");
@@ -134,7 +160,7 @@ public class ConduitScanGameTest {
         ConduitScan.Report report = ConduitScan.scan(h.getLevel(), h.absolutePos(CENTER), ConduitType.ENERGY);
         h.assertTrue(report != null && report.carries(ConduitType.ITEM) && report.carries(ConduitType.ENERGY), "the bundle's tabs are item and energy");
         Link l = linkAt(report, h, CENTER.west());
-        h.assertTrue(l != null && l.inChannel() == -1 && l.outChannel() == -1, "energy has no channels");
+        h.assertTrue(l != null && l.inChannel() == -1 && l.outChannels() == 0, "energy has no channels");
         h.assertTrue(l.has(ConduitScan.PAUSED) && !l.has(ConduitScan.NO_RECEIVER) && !l.has(ConduitScan.NO_SENDER), "a paused side is flagged, and no channel warnings are made for energy: " + l);
         h.succeed();
     }

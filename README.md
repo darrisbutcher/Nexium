@@ -159,8 +159,9 @@ place it or right-click it to outline those chunks for a minute.
 
 ### Conduits
 * Item and Fluid conduits (Tier 1 and 2) share one block. Fluid: 100 mB/tick (Tier 1), 2000 mB/tick (Tier 2).
-* Every side has an **insert** colour and an **extract** colour; what a side extracts goes to insert sides of the
-  same colour.
+* Every side has an **insert** colour and one or more **extract** colours; what a side extracts goes to insert sides
+  of any of its extract colours. In the side's settings the **Out** row is a grid of the 16 colours: click one to switch
+  it on or off (at least one stays on). A side has one filter, shared by all its colours.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
   facade.

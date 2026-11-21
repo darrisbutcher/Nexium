@@ -34,8 +34,11 @@ public class SideConfig {
     public Mode mode;
     /** Colour channel this side inserts on: it receives from extract sides with the same extract channel. */
     public int channel;
-    /** Colour channel this side extracts on; may differ from the insert channel on a Both side. */
-    public int extractChannel;
+    /**
+     * Colour channels this side extracts on, one bit each (bit n is channel n): what it takes out goes to the insert sides of any of
+     * these colours. Never empty. May differ from the insert channel on a Both side.
+     */
+    public int extractChannels = 1;
     public RedstoneControl redstone = RedstoneControl.ALWAYS;
     public int priority;
     public boolean roundRobin;
@@ -51,12 +54,33 @@ public class SideConfig {
         this.mode = type == ConduitType.ENERGY ? Mode.BOTH : Mode.INSERT;
     }
 
-    /** The channel things taken in through this side travel on: the insert channel for an Insert side. */
-    public int sourceChannel() {
-        return mode == Mode.INSERT ? channel : extractChannel;
+    /** The channels things taken in through this side travel on, as a mask: the insert channel for an Insert side, else the extract channels. */
+    public int sourceChannels() {
+        return mode == Mode.INSERT ? 1 << channel : extractChannels;
     }
 
-    private record Data(int mode, int channel, int extractChannel, int redstone, int priority, boolean roundRobin, ItemStack filter, ItemStack upgrades, boolean paused) {}
+    public boolean extractsOn(int channel) {
+        return (extractChannels >> channel & 1) != 0;
+    }
+
+    /** Makes {@code channel} the only extract channel. */
+    public void setExtractChannel(int channel) {
+        extractChannels = 1 << Math.floorMod(channel, 16);
+    }
+
+    /** Switches {@code channel} on or off as an extract channel; the last one left on is never switched off. */
+    public void toggleExtractChannel(int channel) {
+        int next = extractChannels ^ (1 << Math.floorMod(channel, 16));
+        if (next != 0) extractChannels = next;
+    }
+
+    /** The lowest extract channel on (the one older versions knew as the extract channel). */
+    public int firstExtractChannel() {
+        return Integer.numberOfTrailingZeros(extractChannels);
+    }
+
+    private record Data(int mode, int channel, int extractChannel, int redstone, int priority, boolean roundRobin, ItemStack filter, ItemStack upgrades, boolean paused,
+                        int extractChannels) {}
 
     private static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.INT.fieldOf("mode").forGetter(Data::mode),
@@ -68,7 +92,9 @@ public class SideConfig {
             Codec.BOOL.fieldOf("round_robin").forGetter(Data::roundRobin),
             ItemStack.OPTIONAL_CODEC.fieldOf("filter").forGetter(Data::filter),
             ItemStack.OPTIONAL_CODEC.fieldOf("upgrades").forGetter(Data::upgrades),
-            Codec.BOOL.optionalFieldOf("paused", false).forGetter(Data::paused)
+            Codec.BOOL.optionalFieldOf("paused", false).forGetter(Data::paused),
+            // The set of extract channels, one bit each; 0 (older saves) means just the one in extract_channel
+            Codec.INT.optionalFieldOf("extract_channels", 0).forGetter(Data::extractChannels)
     ).apply(i, Data::new));
 
     public static Codec<SideConfig> codec(ConduitType type) {
@@ -76,7 +102,8 @@ public class SideConfig {
             SideConfig c = new SideConfig(type);
             c.mode = Mode.values()[Math.floorMod(d.mode(), Mode.values().length)];
             c.channel = Math.floorMod(d.channel(), 16);
-            c.extractChannel = d.extractChannel() < 0 ? c.channel : Math.floorMod(d.extractChannel(), 16);
+            int mask = d.extractChannels() & 0xFFFF;
+            c.extractChannels = mask != 0 ? mask : 1 << (d.extractChannel() < 0 ? c.channel : Math.floorMod(d.extractChannel(), 16));
             c.redstone = RedstoneControl.values()[Math.floorMod(d.redstone(), RedstoneControl.values().length)];
             c.priority = d.priority();
             c.roundRobin = d.roundRobin();
@@ -84,7 +111,8 @@ public class SideConfig {
             c.upgrades = d.upgrades();
             c.paused = d.paused();
             return c;
-        }, c -> new Data(c.mode.ordinal(), c.channel, c.extractChannel, c.redstone.ordinal(), c.priority, c.roundRobin, c.filter, c.upgrades, c.paused));
+        }, c -> new Data(c.mode.ordinal(), c.channel, c.firstExtractChannel(), c.redstone.ordinal(), c.priority, c.roundRobin, c.filter, c.upgrades, c.paused,
+                c.extractChannels));
     }
 
     public int speedUpgrades() {

@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.5
+
+* **A conduit side can extract on several colours at once.** In a conduit's settings the **Out** row is now a grid of the 16 colours:
+  click a colour to switch it on or off (at least one always stays on). What the side takes out goes to the insert sides of **any** of its
+  colours, so one extract side can feed receivers on different colours, and a side saved before this keeps the one colour it had. A side
+  still has **one filter**, shared by all of its colours, and an insert side still has one colour. Because the grid needs room, the settings
+  screen is 18 pixels taller. On the conduit itself the extract side shows one ring for each colour that is on (as many as fit on the arm).
+  The Conduit Scanner shows every Out colour of a side (a link appears under each colour's heading), names them all in its tooltip, and
+  warns of a dead end only when none of a side's colours has a receiver.
+
 ## 1.25.4
 
 * **Nothing in the quest book is locked.** A chapter used to open only once every quest of the one before it was done, and quests in a closed

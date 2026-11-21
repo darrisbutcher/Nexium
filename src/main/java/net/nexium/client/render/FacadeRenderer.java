@@ -37,6 +37,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** Distance from the block centre along the arm, per conduit type (px). */
     /** How much further out the extract ring sits than the insert ring. */
     private static final float EXTRACT_OFFSET = 2.6f / 16;
+    /** Each further extract colour is another ring this much farther out, as long as it still fits on the arm. */
+    private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.9f / 16;
     private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}, {4.0f / 16, 4.6f / 16}};
 
     public static class FacadeState extends BlockEntityRenderState {
@@ -80,14 +82,21 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
                 for (Direction d : Direction.values()) {
                     int marker = state.channels[t][d.get3DDataValue()];
                     if (marker < 0) continue;
-                    SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 8) & 3];
-                    // Inner ring: the insert colour. Outer ring, nearer the block: the extract colour.
+                    SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 4) & 3];
+                    // Inner ring: the insert colour. Outer ring, nearer the block: the extract colour, and one more ring
+                    // farther out for each further extract colour that is on (as many as fit on the arm).
                     if (mode.inserts()) {
                         ring(p, buffer, d, RING_SPAN[t][0], RING_SPAN[t][1], ConduitConfigScreen.CHANNEL_COLORS[marker & 15], light);
                     }
                     if (mode.extracts()) {
-                        ring(p, buffer, d, RING_SPAN[t][0] + EXTRACT_OFFSET, RING_SPAN[t][1] + EXTRACT_OFFSET,
-                                ConduitConfigScreen.CHANNEL_COLORS[(marker >> 4) & 15], light);
+                        int extract = marker >>> 6 & 0xFFFF, shown = 0;
+                        for (int c = 0; c < 16; c++) {
+                            if ((extract >> c & 1) == 0) continue;
+                            float shift = EXTRACT_OFFSET + shown * EXTRACT_STEP;
+                            if (shown > 0 && RING_SPAN[t][1] + shift > ARM_END) break;
+                            ring(p, buffer, d, RING_SPAN[t][0] + shift, RING_SPAN[t][1] + shift, ConduitConfigScreen.CHANNEL_COLORS[c], light);
+                            shown++;
+                        }
                     }
                 }
             }

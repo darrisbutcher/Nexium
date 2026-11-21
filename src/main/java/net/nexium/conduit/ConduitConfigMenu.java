@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * filter and speed upgrades.
  */
 public class ConduitConfigMenu extends BaseMenu {
-    public static final int INVENTORY_TOP = 130;
+    public static final int INVENTORY_TOP = 148;
 
     public static final int BTN_SIDE = 0;      // 0..5
     public static final int BTN_TYPE = 10;     // 10..12
@@ -36,11 +36,11 @@ public class ConduitConfigMenu extends BaseMenu {
     public static final int BTN_PRIORITY_UP = 24;
     public static final int BTN_PRIORITY_DOWN = 25;
     public static final int BTN_ROUND_ROBIN = 26;
-    public static final int BTN_EXTRACT_CHANNEL_NEXT = 27;
-    public static final int BTN_EXTRACT_CHANNEL_PREV = 28;
+    /** 40..55: switches extract channel 0..15 on or off (a side can extract on several colours at once). */
+    public static final int BTN_EXTRACT_TOGGLE = 40;
 
     public static final int D_SIDE = 0, D_TYPE = 1, D_MODE = 2, D_CHANNEL = 3, D_REDSTONE = 4, D_PRIORITY = 5,
-            D_RR = 6, D_TYPES = 7, D_CONNECTED = 8, D_EXTRACT_CHANNEL = 9, DATA_COUNT = 10;
+            D_RR = 6, D_TYPES = 7, D_CONNECTED = 8, D_EXTRACT_CHANNELS = 9, DATA_COUNT = 10;
 
     public record OpenData(BlockPos pos, int side) {
         public static final StreamCodec<RegistryFriendlyByteBuf, OpenData> STREAM_CODEC = StreamCodec.composite(
@@ -85,7 +85,8 @@ public class ConduitConfigMenu extends BaseMenu {
                     case D_TYPE -> type;
                     case D_MODE -> c.mode.ordinal();
                     case D_CHANNEL -> c.channel;
-                    case D_EXTRACT_CHANNEL -> c.extractChannel;
+                    // A 16 bit set of channels, one bit each: read it with & 0xFFFF (a data slot may send it as a signed short)
+                    case D_EXTRACT_CHANNELS -> c.extractChannels;
                     case D_REDSTONE -> c.redstone.ordinal();
                     case D_PRIORITY -> c.priority + 100;
                     case D_RR -> c.roundRobin ? 1 : 0;
@@ -136,12 +137,15 @@ public class ConduitConfigMenu extends BaseMenu {
         }
         if (!be.has(ConduitType.VALUES[type])) return true;
         SideConfig c = cfg();
+        if (id >= BTN_EXTRACT_TOGGLE && id < BTN_EXTRACT_TOGGLE + 16) {
+            c.toggleExtractChannel(id - BTN_EXTRACT_TOGGLE);
+            be.changed();
+            return true;
+        }
         switch (id) {
             case BTN_MODE -> c.mode = c.mode.next();
             case BTN_CHANNEL_NEXT -> c.channel = (c.channel + 1) % 16;
             case BTN_CHANNEL_PREV -> c.channel = (c.channel + 15) % 16;
-            case BTN_EXTRACT_CHANNEL_NEXT -> c.extractChannel = (c.extractChannel + 1) % 16;
-            case BTN_EXTRACT_CHANNEL_PREV -> c.extractChannel = (c.extractChannel + 15) % 16;
             case BTN_REDSTONE -> c.redstone = c.redstone.next();
             case BTN_PRIORITY_UP -> c.priority = Math.min(SideConfig.MAX_PRIORITY, c.priority + 1);
             case BTN_PRIORITY_DOWN -> c.priority = Math.max(-SideConfig.MAX_PRIORITY, c.priority - 1);

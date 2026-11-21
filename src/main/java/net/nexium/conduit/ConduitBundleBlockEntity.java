@@ -162,9 +162,9 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         return markers;
     }
 
-    /** Insert channel in bits 0-3, extract channel in bits 4-7, mode in bits 8-9. */
+    /** Insert channel in bits 0-3, mode in bits 4-5, the set of extract channels (one bit each) in bits 6-21. */
     public static int packMarker(SideConfig cfg) {
-        return cfg.channel | cfg.extractChannel << 4 | cfg.mode.ordinal() << 8;
+        return cfg.channel | cfg.mode.ordinal() << 4 | cfg.extractChannels << 6;
     }
 
     public int connectionMask() {
@@ -219,6 +219,17 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
                 be.transferFluids(d, cfg, mbPerTick * FLUID_INTERVAL * DROPLETS_PER_MB);
             }
         }
+    }
+
+    /** The inserters on any of the channels in {@code mask} (bit n is channel n), best first: by priority, then nearest. */
+    private List<Target> targetsOn(ConduitType type, int mask) {
+        if (Integer.bitCount(mask) == 1) return targets(type, Integer.numberOfTrailingZeros(mask));
+        List<Target> out = new ArrayList<>();
+        for (int c = 0; c < 16; c++) {
+            if ((mask >> c & 1) != 0) out.addAll(targets(type, c));
+        }
+        out.sort(Comparator.comparingInt((Target t) -> -t.cfg.priority).thenComparingInt(Target::distance));
+        return out;
     }
 
     private List<Target> targets(ConduitType type, int channel) {
@@ -279,7 +290,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         Storage<ItemVariant> source = ItemStorage.SIDED.find(level, sourcePos, dir.getOpposite());
         if (source == null) return;
         FilterData extractFilter = filterOf(cfg);
-        for (Target t : ordered(targets(ConduitType.ITEM, cfg.extractChannel), sourcePos, cfg)) {
+        for (Target t : ordered(targetsOn(ConduitType.ITEM, cfg.extractChannels), sourcePos, cfg)) {
             if (budget <= 0) break;
             Storage<ItemVariant> dest = ItemStorage.SIDED.find(level, t.invPos, t.side);
             if (dest == null) continue;
@@ -308,7 +319,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         if (sourceFilter != null && !sourceFilter.matches(variant)) return 0;
         BlockPos sourcePos = worldPosition.relative(side);
         long moved = 0;
-        for (Target t : ordered(targets(ConduitType.ITEM, cfg.sourceChannel()), sourcePos, cfg)) {
+        for (Target t : ordered(targetsOn(ConduitType.ITEM, cfg.sourceChannels()), sourcePos, cfg)) {
             if (moved >= amount) break;
             FilterData targetFilter = filterOf(t.cfg);
             if (targetFilter != null && !targetFilter.matches(variant)) continue;
@@ -366,7 +377,7 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         Storage<FluidVariant> source = FluidStorage.SIDED.find(level, sourcePos, dir.getOpposite());
         if (source == null) return;
         FilterData extractFilter = filterOf(cfg);
-        for (Target t : ordered(targets(ConduitType.FLUID, cfg.extractChannel), sourcePos, cfg)) {
+        for (Target t : ordered(targetsOn(ConduitType.FLUID, cfg.extractChannels), sourcePos, cfg)) {
             if (budget <= 0) break;
             Storage<FluidVariant> dest = FluidStorage.SIDED.find(level, t.invPos, t.side);
             if (dest == null) continue;

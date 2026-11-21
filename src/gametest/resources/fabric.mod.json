@@ -38,6 +38,7 @@
       "net.nexium.gametest.client.FreeCameraClientTest",
       "net.nexium.gametest.client.ZoomClientTest",
       "net.nexium.gametest.client.ConduitScannerClientTest",
+      "net.nexium.gametest.client.ConduitExtractColoursClientTest",
       "net.nexium.gametest.client.BigSpongesClientTest",
       "net.nexium.gametest.client.TradeCyclingClientTest",
       "net.nexium.gametest.client.MoreCompressedBlocksClientTest",

@@ -31,13 +31,25 @@ public final class ConduitScan {
     public static final int NO_RECEIVER = 1, NO_SENDER = 2, REDSTONE_OFF = 4, PAUSED = 8;
 
     /**
-     * One side of a conduit that ends at a block. The channels are -1 for energy, which has none (every energy conduit shares one pool).
+     * One side of a conduit that ends at a block. {@code inChannel} is the insert colour and {@code outChannels} the set of extract
+     * colours (one bit each, bit n is channel n); for energy, which has no channels (every energy conduit shares one pool), they are
+     * -1 and 0.
      */
     public record Link(BlockPos conduit, Direction side, BlockPos target, Identifier block, SideConfig.Mode mode, int inChannel,
-                       int outChannel, int priority, SideConfig.RedstoneControl redstone, boolean filtered, boolean roundRobin,
+                       int outChannels, int priority, SideConfig.RedstoneControl redstone, boolean filtered, boolean roundRobin,
                        int speedUpgrades, int flags) {
         public boolean has(int flag) {
             return (flags & flag) != 0;
+        }
+
+        /** Whether this side extracts on {@code channel}. */
+        public boolean outOn(int channel) {
+            return channel >= 0 && (outChannels >> channel & 1) != 0;
+        }
+
+        /** The lowest extract colour on, or -1 when there is none (energy). */
+        public int firstOut() {
+            return outChannels == 0 ? -1 : Integer.numberOfTrailingZeros(outChannels);
         }
     }
 
@@ -87,7 +99,7 @@ public final class ConduitScan {
                 if (!cfg.redstone.allows(powered)) flags |= REDSTONE_OFF;
                 if (cfg.paused) flags |= PAUSED;
                 links.add(new Link(pos.immutable(), d, next.immutable(), BuiltInRegistries.BLOCK.getKey(level.getBlockState(next).getBlock()),
-                        cfg.mode, energy ? -1 : cfg.channel, energy ? -1 : cfg.extractChannel, cfg.priority, cfg.redstone,
+                        cfg.mode, energy ? -1 : cfg.channel, energy ? 0 : cfg.extractChannels, cfg.priority, cfg.redstone,
                         !cfg.filter.isEmpty(), cfg.roundRobin, cfg.speedUpgrades(), flags));
             }
         }
@@ -98,20 +110,20 @@ public final class ConduitScan {
     }
 
     /**
-     * Adds the dead-end warnings: an extracting side needs another block that inserts on its channel, and an inserting side needs another
-     * block that extracts on its channel (the same block does not count: a conduit never moves things from a block back into itself).
+     * Adds the dead-end warnings: an extracting side needs another block that inserts on one of its channels, and an inserting side needs
+     * another block that extracts on its channel (the same block does not count: a conduit never moves things from a block back into itself).
      */
     private static List<Link> withDeadEnds(List<Link> links) {
         List<Link> out = new ArrayList<>(links.size());
         for (Link l : links) {
             int flags = l.flags();
-            if (l.mode().extracts() && links.stream().noneMatch(o -> !o.target().equals(l.target()) && o.mode().inserts() && o.inChannel() == l.outChannel())) {
+            if (l.mode().extracts() && links.stream().noneMatch(o -> !o.target().equals(l.target()) && o.mode().inserts() && l.outOn(o.inChannel()))) {
                 flags |= NO_RECEIVER;
             }
-            if (l.mode().inserts() && links.stream().noneMatch(o -> !o.target().equals(l.target()) && o.mode().extracts() && o.outChannel() == l.inChannel())) {
+            if (l.mode().inserts() && links.stream().noneMatch(o -> !o.target().equals(l.target()) && o.mode().extracts() && o.outOn(l.inChannel()))) {
                 flags |= NO_SENDER;
             }
-            out.add(flags == l.flags() ? l : new Link(l.conduit(), l.side(), l.target(), l.block(), l.mode(), l.inChannel(), l.outChannel(),
+            out.add(flags == l.flags() ? l : new Link(l.conduit(), l.side(), l.target(), l.block(), l.mode(), l.inChannel(), l.outChannels(),
                     l.priority(), l.redstone(), l.filtered(), l.roundRobin(), l.speedUpgrades(), flags));
         }
         return out;
