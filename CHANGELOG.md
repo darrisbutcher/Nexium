@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.3
+
+* **Using a trade never makes it dearer.** A villager's prices used to climb with demand: each time it restocked, the game added to a trade's
+  demand by how much it had been used, and since trades never run out that kept growing, so a trade you used a lot ended up at the
+  top price. Demand no longer grows, and the price ignores any demand a trade already has, so **a trade that had gone up goes back to its
+  base price** (the discounts and surcharges for how the village sees you still apply). It applies to villagers and wandering traders
+  alike, and the trading screen shows the same price the server charges.
+
 ## 1.25.2
 
 * **Night vision in the free camera.** While the free camera is away from the player, the world is drawn with the Night Vision effect at full
