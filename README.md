@@ -190,8 +190,8 @@ place it or right-click it to outline those chunks for a minute.
   level, Silk Touch and Fortune both stay (one active, one inactive), the best of Sharpness / Smite / Bane of
   Arthropods stays, curses stay, and the AIOT lasts 1.5 times as long as the five tools together (five fresh tools
   make a full AIOT; worn ones a worn one).
-* **Netherite**: at a smithing table, a Diamond AIOT, a netherite upgrade template and a netherite block.
-  **Nexium**: a Netherite AIOT, a template and a Block of Nexium.
+* **Netherite**: at a smithing table, a Diamond AIOT and a netherite block (leave the template slot empty).
+  **Nexium**: a Netherite AIOT and a Block of Nexium.
 
   | | Stone | Copper | Iron | Golden | Diamond | Netherite | Nexium |
   |---|---|---|---|---|---|---|---|
@@ -266,7 +266,7 @@ is placed as one and uses two slabs.
 
 * **Tiers**: Iron places up to **9** blocks a click, Diamond **27**, Netherite **64**, Nexium **128** (and never breaks).
   Each block costs 1 durability. Iron: `PLP / IGI / I I` (paper, lapis lazuli, iron ingots, a gold nugget). Add a
-  **diamond** in a crafting grid for Diamond; at a smithing table with a netherite upgrade template, a **netherite ingot**
+  **diamond** in a crafting grid for Diamond; at a smithing table (template slot empty), a **netherite ingot**
   makes Netherite and a **Nexium ingot** makes Nexium. Upgrades keep its settings and module.
 * **Modes**: **Extend** (the whole connected face), **Line** (one row, along the way you look) and **Exchange** (swaps
   the clicked surface for your offhand block and gives you what the old blocks drop when broken, so stone comes back
@@ -284,7 +284,7 @@ is placed as one and uses two slabs.
 ### Nexium
 * **Nexium Ingot**: a diamond, an emerald and a netherite ingot in a crafting table make
   **3 ingots**. Nine make a **Block of Nexium** (a beacon base).
-* **Gear**: at a smithing table, a netherite upgrade template, the netherite piece and a Nexium ingot. There is a
+* **Gear**: at a smithing table, the netherite piece and a Nexium ingot (leave the template slot empty). There is a
   Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and boots**, and the Nexium AIOT.
   Everything Nexium survives fire and lava.
 * **Tools**: netherite's mining speed and level, 2,500 uses, one more attack damage than netherite.

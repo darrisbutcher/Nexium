@@ -4,6 +4,5 @@
   "base": "nexium:diamond_aiot",
   "result": {
     "id": "nexium:netherite_aiot"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

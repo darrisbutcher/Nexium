@@ -4,6 +4,5 @@
   "base": "nexium:netherite_builder",
   "result": {
     "id": "nexium:nexium_builder"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

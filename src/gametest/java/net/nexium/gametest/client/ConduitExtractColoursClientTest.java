@@ -3,8 +3,6 @@ package net.nexium.gametest.client;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -107,14 +105,10 @@ public class ConduitExtractColoursClientTest implements FabricClientGameTest {
                 .config(ConduitType.ITEM, Direction.EAST).extractChannels);
     }
 
-    /** A real left click in the middle of that colour's square. */
+    /** A real left click (cursor moved there, left button pressed) in the middle of that colour's square. */
     private static void click(ClientGameTestContext ctx, int channel) {
-        ctx.runOnClient(mc -> {
-            ConduitConfigScreen screen = (ConduitConfigScreen) mc.gui.screen();
-            int[] p = screen.extractCellCentre(channel);
-            screen.mouseClicked(new MouseButtonEvent(p[0], p[1], new MouseButtonInfo(0, 0)), false);
-        });
-        ctx.waitTicks(5);
+        RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((ConduitConfigScreen) mc.gui.screen()).extractCellCentre(channel)));
+        ctx.waitTicks(2);
     }
 
     private static void check(boolean ok, String what) {

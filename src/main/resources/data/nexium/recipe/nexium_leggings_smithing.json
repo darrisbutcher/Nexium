@@ -4,6 +4,5 @@
   "base": "minecraft:netherite_leggings",
   "result": {
     "id": "nexium:nexium_leggings"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

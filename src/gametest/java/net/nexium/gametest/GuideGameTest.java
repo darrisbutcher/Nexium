@@ -195,7 +195,9 @@ public class GuideGameTest {
                 }
                 case SMITHING -> {
                     h.assertTrue(type.equals("minecraft:smithing_transform"), card.id() + " is smithing but " + verify + " is " + type);
-                    List<String> wanted = List.of(ingredient(real.get("template")), ingredient(real.get("base")), ingredient(real.get("addition")));
+                    // A recipe with no template leaves the first slot empty, as the card does
+                    List<String> wanted = java.util.Arrays.asList(real.has("template") ? ingredient(real.get("template")) : null,
+                            ingredient(real.get("base")), ingredient(real.get("addition")));
                     for (int i = 0; i < 3; i++) {
                         h.assertTrue(sameIngredient(card.cells().get(i), wanted.get(i)),
                                 card.id() + " smithing slot " + i + ": the card shows " + card.cells().get(i) + ", the recipe wants " + wanted.get(i));

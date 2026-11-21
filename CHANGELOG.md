@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.7
+
+* **Left clicks work in the tag picker and in the conduit's Out colour grid.** In this version of the game the left mouse button is
+  number 1 (it was 0 in older ones), and both screens only accepted 0, so clicking a tag in the Advanced Filter's picker, or a colour
+  in a conduit's Out grid (new in 1.25.5), did nothing. Both take a left click now. A check through the rest of the mod found one more
+  case: **Enter in the vein-mining blacklist screen** never added the typed block (it compared against an old key number); it does now.
+  The tests for these click and press through the game's real mouse and keyboard, and a new check fails the build if a mouse button or
+  key is ever compared with a bare number again.
+* **Nexium recipes no longer need the netherite upgrade template.** All 14 smithing recipes (the ten Nexium tools and armor pieces,
+  the Nexium AIOT and builder, and the Netherite AIOT and builder) take just the piece and the addition: **leave the template slot
+  empty**. A template in the slot gives no result. The Codex cards show the empty slot and the pages and README say so.
+
 ## 1.25.6
 
 * **The Advanced Filter can match item tags you choose, anything smeltable, or furnace fuel.** Its editor has two new buttons. **Tags** opens a

@@ -96,14 +96,14 @@ public class FilterScreen extends BaseScreen<FilterMenu> {
         return menu.advanced();
     }
 
-    /** Opens the tag picker (for tests). */
-    public void openTagPicker() {
-        openPicker();
+    /** The centre of the Tags button, in screen coordinates (for tests, which click it with the real mouse). */
+    public int[] tagsCentre() {
+        return new int[]{leftPos + 8 + 80, topPos + 64 + 8};
     }
 
-    /** Clicks the Match button (for tests). */
-    public void clickMatch() {
-        click(FilterMenu.BTN_SPECIAL);
+    /** The centre of the Match button, in screen coordinates (for tests). */
+    public int[] matchCentre() {
+        return new int[]{leftPos + 72 + 48, topPos + 44 + 8};
     }
 
     @Override

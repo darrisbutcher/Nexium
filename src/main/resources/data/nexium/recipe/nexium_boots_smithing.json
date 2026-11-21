@@ -4,6 +4,5 @@
   "base": "minecraft:netherite_boots",
   "result": {
     "id": "nexium:nexium_boots"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
+  }
 }

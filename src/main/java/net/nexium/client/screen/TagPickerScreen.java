@@ -1,5 +1,6 @@
 package net.nexium.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -102,6 +103,11 @@ public class TagPickerScreen extends Screen {
         return new int[]{left + PANEL_W / 2, top + 42 + index * ROW + ROW / 2};
     }
 
+    /** The centre of the Done button, in screen coordinates (for tests). */
+    public int[] doneCentre() {
+        return new int[]{left + PANEL_W - PAD - 28, top + PANEL_H - PAD - 8};
+    }
+
     public void toggleRow(int index) {
         int i = scroll + index;
         if (i >= 0 && i < shown.size()) toggle(shown.get(i).id());
@@ -154,7 +160,7 @@ public class TagPickerScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (super.mouseClicked(event, doubleClick)) return true;
         int row = rowAt(event.x(), event.y());
-        if (row < 0 || event.button() != 0) return false;
+        if (row < 0 || event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         toggleRow(row);
         return true;
     }

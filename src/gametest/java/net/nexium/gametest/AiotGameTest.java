@@ -313,12 +313,12 @@ public class AiotGameTest {
         ItemStack diamond = withSilkTouchAndFortune(h, new ItemStack(aiot(AiotTier.DIAMOND)), MiningMode.FORTUNE);
         diamond.enchant(enchantment(h, Enchantments.EFFICIENCY), 5);
         diamond.setDamageValue(500);
-        ItemStack template = new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
+        ItemStack template = ItemStack.EMPTY; // no template: that slot stays empty
 
         SmithingRecipeInput input = new SmithingRecipeInput(template, diamond, new ItemStack(Items.NETHERITE_BLOCK));
         ItemStack result = h.getLevel().recipeAccess().getRecipeFor(RecipeType.SMITHING, input, h.getLevel())
                 .map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
-        h.assertTrue(result.is(aiot(AiotTier.NETHERITE)), "template + diamond AIOT + netherite block = netherite AIOT, got " + result);
+        h.assertTrue(result.is(aiot(AiotTier.NETHERITE)), "diamond AIOT + netherite block = netherite AIOT (no template), got " + result);
         h.assertTrue(result.getEnchantments().getLevel(enchantment(h, Enchantments.EFFICIENCY)) == 5, "enchantments stay");
         h.assertTrue(result.getOrDefault(ModComponents.INACTIVE_ENCHANTMENTS, ItemEnchantments.EMPTY)
                 .getLevel(enchantment(h, Enchantments.SILK_TOUCH)) == 1, "the inactive Silk Touch stays");
