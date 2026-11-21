@@ -3,6 +3,24 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.11
+
+* **The inventory key (E) closes every Nexium window,** as Escape does and as it closes vanilla's own windows. The Codex, the quest book,
+  the settings, the Conduit Scanner, the Power Meter, the Elevator, the Armor menu, the block list and the tag picker did not close on it
+  before. While you are typing in a text box, E types and the window stays. It follows whatever key you have set for the inventory.
+* **JEI and REI keep their item lists clear of the Backpack's crafting panel.** The panel sticks out to the right of the Backpack's screen,
+  and their lists were drawn over it; they now move aside for it (and come back when the Crafting module is taken out).
+* **Nexium tooltips wrap to one narrow width, 170 pixels.** Every Nexium item's tooltip and the hover tips of the machine and settings
+  screens now wrap instead of running off the screen. The screens that did wrap used widths of their own (the Backpack's trash hint 160,
+  the Enchanted Grindstone's 150, the Conduit Scanner's 230, the settings screen's up to 220); they all use the one width now. A few
+  tooltips said things twice and no longer do: the Backpack modules' description, and the link instructions of the Crafting Storage
+  Tablet and the Dimensional Link Card (their status line now just says "Not linked"). The Codex line on an item's tooltip no longer
+  reads "Press Not Bound" when its key is unbound.
+* **The Power Meter shows what a generator really makes.** A generator (and a Battery) hands energy straight to a Battery or machine
+  touching it before a conduit can take any, and the meter did not count that: a Combustion Generator burning blaze rods said 20 NE/t on
+  its screen and showed 0.0 in the meter when a Battery touched it. A generator's row now shows everything it makes, and a machine's row
+  everything it takes in, however it arrives.
+
 ## 1.25.10
 
 * **The Enchanted Grindstone: pull enchantments off an item onto books of their own.** Craft it from a Grindstone, a Book and Lapis

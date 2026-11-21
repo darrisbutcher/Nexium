@@ -487,7 +487,7 @@ public class CodexScreen extends Screen {
         g.disableScissor();
         scrollbar(g, contentRight + 3, top, bottom, contentScroll, contentHeight, visible);
         if (hoveredLink != null) {
-            g.setTooltipForNextFrame(Component.translatable("screen.nexium.codex.open", titles.get(hoveredLink)), mouseX, mouseY);
+            net.nexium.client.Tooltips.show(g, font, java.util.List.of(Component.translatable("screen.nexium.codex.open", titles.get(hoveredLink))), mouseX, mouseY);
         }
     }
 

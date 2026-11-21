@@ -197,19 +197,19 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
         int nameRight = leftPos + imageWidth - 8;
         if (mouseY >= topPos + 4 && mouseY < topPos + 15 && mouseX >= nameRight - neighbourWidth() && mouseX < nameRight) {
-            g.setTooltipForNextFrame(font, neighbourTooltip(), mouseX, mouseY);
+            net.nexium.client.Tooltips.show(g, font, java.util.List.of(neighbourTooltip()), mouseX, mouseY);
         }
         int inX = leftPos + IN_SWATCH_X;
         if (mouseX >= inX && mouseX < inX + 14 && mouseY >= topPos + PICKER_Y && mouseY < topPos + PICKER_Y + 14) {
             int channel = menu.get(ConduitConfigMenu.D_CHANNEL) % 16;
-            g.setComponentTooltipForNextFrame(font, java.util.List.of(
+            net.nexium.client.Tooltips.show(g, font, java.util.List.of(
                     Component.translatable("screen.nexium.channel_in.tooltip", Component.translatable("color.minecraft." + COLOR_KEYS[channel])),
                     Component.translatable("screen.nexium.channel_in.hint").withStyle(net.minecraft.ChatFormatting.GRAY)), mouseX, mouseY);
         }
         int cell = extractCellAt(mouseX, mouseY);
         if (cell >= 0) {
             boolean on = (extractMask() >> cell & 1) != 0;
-            g.setComponentTooltipForNextFrame(font, java.util.List.of(
+            net.nexium.client.Tooltips.show(g, font, java.util.List.of(
                     Component.translatable("color.minecraft." + COLOR_KEYS[cell]).withStyle(net.minecraft.ChatFormatting.WHITE),
                     Component.translatable(on ? "screen.nexium.channel_out.on" : "screen.nexium.channel_out.off").withStyle(on ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.GRAY),
                     Component.translatable("screen.nexium.channel_out.hint").withStyle(net.minecraft.ChatFormatting.GRAY)), mouseX, mouseY);

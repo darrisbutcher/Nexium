@@ -88,7 +88,9 @@ public class NexiumClient implements ClientModInitializer {
         });
 
         ItemDescriptions.init();
+        CloseOnInventoryKey.init();
         ContentsTooltip.init();
+        Tooltips.init();
         GuideBookItem.openScreen = GuideScreens::open;
         CodexClient.init();
         SortClient.init();

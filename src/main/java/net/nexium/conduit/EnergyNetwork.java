@@ -57,6 +57,8 @@ public final class EnergyNetwork {
         Direction dir;
         int priority;
         boolean paused;
+        /** What the block had taken in and given out when this second began, to tell how much moved by every route (-1: it does not count). */
+        long baseIn = -1, baseOut = -1;
     }
 
     private final Map<BlockPos, Seen> seen = new HashMap<>();
@@ -189,20 +191,27 @@ public final class EnergyNetwork {
             BlockPos pos = e.getKey();
             Seen s = e.getValue();
             long[] f = flow.getOrDefault(pos, new long[2]);
+            NexusEnergy target = NexusEnergy.SIDED.find(level, pos, s.dir.getOpposite());
             Role role;
             if (level.getBlockEntity(pos) instanceof BatteryBlockEntity battery) {
                 role = Role.BATTERY;
                 batteryStored += battery.energy().stored();
                 batteryCapacity += battery.energy().capacity();
             } else {
-                NexusEnergy target = NexusEnergy.SIDED.find(level, pos, s.dir.getOpposite());
                 if (target == null) continue;
                 role = target.givesOut() && !target.takesIn() ? Role.PRODUCER : Role.CONSUMER;
             }
+            // What went in and out in this second, by every route: the conduits, and a generator or Battery handing it straight to a
+            // block that touches it (which the network never sees). A holder that does not count falls back to what the network moved.
+            long in = f[0], out = f[1];
+            if (target != null && s.baseIn >= 0 && target.totalIn() >= 0) {
+                in = target.totalIn() - s.baseIn;
+                out = target.totalOut() - s.baseOut;
+            }
             float perTick = switch (role) {
-                case PRODUCER -> (float) f[1] / ticks;
-                case CONSUMER -> (float) f[0] / ticks;
-                case BATTERY -> (float) (f[0] - f[1]) / ticks;
+                case PRODUCER -> (float) out / ticks;
+                case CONSUMER -> (float) in / ticks;
+                case BATTERY -> (float) (in - out) / ticks;
             };
             switch (role) {
                 case PRODUCER -> produced += perTick;
@@ -249,7 +258,16 @@ public final class EnergyNetwork {
                 if (level.getBlockEntity(next) instanceof ConduitBundleBlockEntity || !m.connectsTo(ConduitType.ENERGY, d)) continue;
                 SideConfig cfg = m.config(ConduitType.ENERGY, d);
                 boolean battery = level.getBlockEntity(next) instanceof BatteryBlockEntity;
-                Seen s = seen.computeIfAbsent(next, k -> new Seen());
+                Seen s = seen.get(next);
+                if (s == null) {
+                    s = new Seen();
+                    NexusEnergy there = NexusEnergy.SIDED.find(level, next, d.getOpposite());
+                    if (there != null) {
+                        s.baseIn = there.totalIn();
+                        s.baseOut = there.totalOut();
+                    }
+                    seen.put(next, s);
+                }
                 s.dir = d;
                 s.priority = cfg.priority;
                 s.paused = cfg.paused;

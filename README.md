@@ -5,7 +5,7 @@ conduits, all-in-one tools (AIOTs), **Nexium** (a tier above netherite) and a se
 (no creeper or ghast block damage, an item and XP magnet, wings, arrow and totem slots, Fortune on ancient debris,
 a 1-block iron farm and more).
 
-Every item is in one of three **Nexium** creative tabs (Storage; Tools; Farms & Power), and every tooltip says what its item does.
+Every item is in one of three **Nexium** creative tabs (Storage; Tools; Farms & Power), and every tooltip says what its item does. Nexium tooltips wrap to a narrow column (170 pixels), so a long description never runs off the screen.
 
 The **Nexium Codex** is the in-game manual, a small built-in wiki. Right-click the **Nexium Guide** (given once when you join
 a world, or crafted from a book and any drawer) to open it, or press **H** outside a screen. The sidebar lists 11 categories
@@ -14,6 +14,9 @@ Machines, Mobs & Villagers, Enchanting & Effects, World Tweaks) and a search box
 that scrolls: words that name another topic are links, recipes are drawn as crafting grids (click an ingredient to open its
 page), and "See also" lists related topics. Back and forward work like a browser. In any inventory, hover over an item and
 press **H** to open its page; Escape brings you back. Every item in the mod has a page.
+
+The **inventory key** (E, or whatever you set it to) closes any Nexium window, as Escape does and as it does for vanilla's own windows: the
+Codex, the quest book, the settings, the Conduit Scanner, the Power Meter and the rest. While you are typing in a text box, E types.
 
 The **Nexium advancement tab** (press **L**) is a quick map of everything in the mod: 33 nodes with an icon and a short
 description each, all unlocked from the start. For a bigger, easier-to-read advancements screen, try the optional
@@ -392,7 +395,7 @@ vanilla. Endermen never pick up blocks.
   slots and your inventory can make, and a recipe you click, or a recipe viewer's JEI or REI "+", fills the grid from the Backpack
   first and your inventory after it. After every craft the emptied grid slots refill from the Backpack, so a shift-click on the
   result crafts all there is. Take the module out or switch it off, or close the screen, and what is in the grid goes back into the
-  Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla.
+  Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla. JEI and REI keep their item lists clear of the crafting panel (it sticks out to the right of the screen).
 * **Trash**: the Backpack's screen always has a trash slot, under the module column (no module needed). Drop an item on it to get
   rid of it. It keeps the last item you put in until you put another in or close the screen, so you can take it back; shift-click
   empties it into your inventory.
@@ -753,6 +756,8 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   for a dashboard of that conduit's whole network: what it makes and uses, what is stored and how long it lasts, a minute of history,
   and every generator, machine and battery on it with its rate. Each machine has a **priority** (High, Normal, Low: Low goes without
   first when power runs short) and an **On/Off** switch, which set the conduit sides that feed it.
+  A generator's row shows everything it makes, including what it hands straight to a Battery or machine touching it (not only what the
+  conduit takes from it), and a machine's row everything it takes in, however it arrives.
 * **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 200 NE/t at
   the default depth (1,800 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
   the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with

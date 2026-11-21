@@ -81,8 +81,10 @@ public class QuestGameTest {
         player.getInventory().add(new ItemStack(last.item(), last.count()));
         player.getInventory().add(new ItemStack(second.item(), second.count()));
         List<Quest> more = Quests.check(player);
-        h.assertTrue(more.stream().anyMatch(q -> q.key().equals(last.key())) && more.stream().anyMatch(q -> q.key().equals(second.key())),
-                "quests of the last and the second chapter count too, in any order: " + more);
+        // (The first check paid random rewards, and one of them can be the very item of one of these two quests, which then finished
+        // at once and is not in this result: what counts is that both are done.)
+        h.assertTrue(Quests.done(player).contains(last.key()) && Quests.done(player).contains(second.key()),
+                "quests of the last and the second chapter count too, in any order: " + more + ", done: " + Quests.done(player));
         // A whole chapter, then nothing is done twice (a random reward can finish a quest too, so the check goes round until nothing is left)
         give(player, chapters.get(0));
         Quests.check(player);

@@ -96,11 +96,11 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(HEAT_X, HEAT_Y, HEAT_W, HEAT_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.reactor.heat_tip1").withStyle(ChatFormatting.GRAY),
                     Component.translatable("screen.nexium.reactor.heat_tip2").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(RedstoneReactorBlockEntity.CAPACITY))), mouseX, mouseY);
         }
     }

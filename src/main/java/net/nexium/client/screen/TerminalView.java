@@ -256,14 +256,14 @@ final class TerminalView {
         Entry e = hovered < 0 ? null : entryAt(start + hovered);
         if (e != null && menu.getCarried().isEmpty()) {
             if (e.fluid() != null) {
-                g.setComponentTooltipForNextFrame(font, List.of(fluidName(e.fluid().fluid()),
+                net.nexium.client.Tooltips.show(g, font, List.of(fluidName(e.fluid().fluid()),
                         Component.literal(Fmt.toMb(e.fluid().amount()) + " mB").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
             } else if (e.item() != null) {
                 // The usual item tooltip plus the exact amount (the cell shows e.g. "3.5k")
                 ItemStack stack = e.item().stack();
                 List<Component> lines = new ArrayList<>(net.minecraft.client.gui.screens.Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
-                lines.add(Component.translatable("tooltip.nexium.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
-                        .withStyle(ChatFormatting.AQUA));
+                lines.addAll(net.nexium.client.Tooltips.wrap(font, Component.translatable("tooltip.nexium.in_network", String.format(Locale.ROOT, "%,d", e.item().count()))
+                        .withStyle(ChatFormatting.AQUA), net.nexium.client.Tooltips.MAX_WIDTH));
                 g.setTooltipForNextFrame(font, lines, stack.getTooltipImage(), mouseX, mouseY);
             }
         }

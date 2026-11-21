@@ -3,6 +3,9 @@ package net.nexium.compat.rei;
 import me.shedaniel.rei.api.client.REIRuntime;
 import me.shedaniel.rei.api.client.gui.widgets.TextField;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
+import me.shedaniel.math.Rectangle;
+import me.shedaniel.rei.api.client.registry.screen.ExclusionZones;
+import me.shedaniel.rei.api.client.registry.screen.ExclusionZonesProvider;
 import me.shedaniel.rei.api.client.registry.transfer.TransferHandler;
 import me.shedaniel.rei.api.client.registry.transfer.TransferHandlerRegistry;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
@@ -14,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.nexium.client.compat.RecipeTransfer;
+import net.nexium.client.screen.BackpackScreen;
 import net.nexium.client.compat.RecipeViewerSearch;
 import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.terminal.TerminalMenu;
@@ -28,6 +32,15 @@ import java.util.Optional;
  */
 public class NexiumReiPlugin implements REIClientPlugin {
     private static final String CRAFTING_CATEGORY = "minecraft:plugins/crafting";
+
+    /** The Backpack's crafting panel sticks out to the right of its screen: REI's item list moves aside for it. */
+    @Override
+    public void registerExclusionZones(ExclusionZones zones) {
+        zones.register(BackpackScreen.class, (ExclusionZonesProvider<BackpackScreen>) screen -> {
+            int[] panel = screen.craftingPanelBounds();
+            return panel == null ? List.of() : List.of(new Rectangle(panel[0], panel[1], panel[2], panel[3]));
+        });
+    }
 
     @Override
     public void registerTransferHandlers(TransferHandlerRegistry registry) {

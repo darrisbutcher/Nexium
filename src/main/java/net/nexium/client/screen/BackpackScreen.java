@@ -221,6 +221,14 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
         return new int[]{leftPos + slot.x + 8, topPos + slot.y + 8};
     }
 
+    /**
+     * The crafting panel's area, {x, y, width, height} in screen coordinates, or null when it is not showing. It sits outside the
+     * screen's own size, to its right, so JEI and REI are told about it (their item lists move aside).
+     */
+    public int[] craftingPanelBounds() {
+        return craftingShown ? new int[]{leftPos + BackpackMenu.SIDE_X - 2, topPos, BackpackMenu.SIDE_W + 2, SIDE_H} : null;
+    }
+
     /** Whether the crafting panel is showing (for tests). */
     public boolean craftingShown() {
         return craftingShown;
@@ -298,7 +306,7 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
         if (hoveredSlot == menu.trashSlot() && menu.getCarried().isEmpty()) {
             java.util.List<net.minecraft.util.FormattedCharSequence> lines = new java.util.ArrayList<>();
             lines.add(Component.translatable("screen.nexium.backpack.trash").getVisualOrderText());
-            lines.addAll(font.split(Component.translatable("screen.nexium.backpack.trash.tip").withStyle(ChatFormatting.GRAY), 160));
+            lines.addAll(net.nexium.client.Tooltips.split(font, Component.translatable("screen.nexium.backpack.trash.tip").withStyle(ChatFormatting.GRAY)));
             g.setTooltipForNextFrame(font, lines, mouseX, mouseY);
         }
     }

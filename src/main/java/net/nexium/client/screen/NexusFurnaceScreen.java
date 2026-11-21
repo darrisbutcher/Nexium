@@ -110,7 +110,7 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.furnace.energy", number(menu.energy()), number(NexusFurnaceBlockEntity.CAPACITY)),
                     Component.translatable("screen.nexium.furnace.tip", NexusFurnaceBlockEntity.ENERGY_PER_SLOT,
                             NexusFurnaceBlockEntity.COOK_TICKS / 20.0).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
