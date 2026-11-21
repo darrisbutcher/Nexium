@@ -65,29 +65,28 @@ public class QuestGameTest {
     }
 
     @GameTest(maxTicks = 40)
-    public void chaptersOpenOneAfterAnotherAndCountWhatIsAlreadyDone(GameTestHelper h) {
+    public void nothingIsLockedAndQuestsCountWhatIsAlreadyDone(GameTestHelper h) {
         ServerPlayer player = h.makeMockServerPlayerInLevel();
         List<Chapter> chapters = QuestBook.chapters();
         h.assertTrue(Quests.done(player).isEmpty(), "nothing is done at the start");
-        // A quest of the second chapter, with nothing done in the first: it waits
-        Quest later = chapters.get(1).quests().getFirst();
+        // A quest of the fourth chapter counts at once, with nothing done in the first three
+        Quest later = chapters.get(3).quests().getFirst();
         player.getInventory().add(new ItemStack(later.item(), later.count()));
-        h.assertTrue(Quests.check(player).isEmpty(), "a later chapter's quest does not count while it is closed");
-        h.assertTrue(!Quests.open(Quests.done(player), 1), "the second chapter is closed");
-        // One quest of the first chapter
-        Quest first = chapters.get(0).quests().getFirst();
-        player.getInventory().add(new ItemStack(first.item(), first.count()));
         List<Quest> done = Quests.check(player);
-        // A random reward can be the very item another quest of the chapter asks for (any drawer, say), which finishes that quest too
-        h.assertTrue(done.stream().anyMatch(q -> q.key().equals(first.key())) && done.stream().allMatch(q -> q.chapter().equals(first.chapter())),
-                "the first quest is done, and nothing outside its chapter: " + done);
-        h.assertTrue(Quests.done(player).contains(first.key()), "and remembered");
-        // Everything in the first chapter: it completes, the second opens, and what was already held counts at once
-        give(player, chapters.get(0));
+        h.assertTrue(done.stream().anyMatch(q -> q.key().equals(later.key())), "a later chapter's quest counts with nothing done before it: " + done);
+        h.assertTrue(Quests.done(player).contains(later.key()), "and is remembered");
+        // Any other quest, in any order: one from the last chapter, and one from the second
+        Quest last = chapters.getLast().quests().get(2);
+        Quest second = chapters.get(1).quests().get(3);
+        player.getInventory().add(new ItemStack(last.item(), last.count()));
+        player.getInventory().add(new ItemStack(second.item(), second.count()));
         List<Quest> more = Quests.check(player);
-        h.assertTrue(more.stream().anyMatch(q -> q.key().equals(later.key())), "the second chapter opens and its held item counts at once: " + more);
-        h.assertTrue(Quests.open(Quests.done(player), 1), "the second chapter is open");
-        h.assertTrue(!Quests.open(Quests.done(player), 3), "the fourth is still closed");
+        h.assertTrue(more.stream().anyMatch(q -> q.key().equals(last.key())) && more.stream().anyMatch(q -> q.key().equals(second.key())),
+                "quests of the last and the second chapter count too, in any order: " + more);
+        // A whole chapter, then nothing is done twice (a random reward can finish a quest too, so the check goes round until nothing is left)
+        give(player, chapters.get(0));
+        Quests.check(player);
+        for (Quest q : chapters.get(0).quests()) h.assertTrue(Quests.done(player).contains(q.key()), "the first chapter's quest " + q.key() + " is done");
         h.assertTrue(Quests.check(player).isEmpty(), "nothing is done twice");
         h.succeed();
     }

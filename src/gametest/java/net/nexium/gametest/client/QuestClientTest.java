@@ -34,7 +34,7 @@ public class QuestClientTest implements FabricClientGameTest {
                     var q = chapters.get(0).quests().get(i);
                     player.getInventory().add(new ItemStack(q.item(), q.count()));
                 }
-                // A later chapter's item, held but not counting yet
+                // A later chapter's item, held: it counts too, nothing is locked
                 var later = chapters.get(1).quests().get(3);
                 player.getInventory().add(new ItemStack(later.item(), later.count()));
                 Quests.check(player);
@@ -43,26 +43,22 @@ public class QuestClientTest implements FabricClientGameTest {
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof QuestScreen), "the quest book opens");
             check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(chapters.get(0).quests().get(0))), "a quest already met is ticked");
-            check(!ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(chapters.get(0).quests().get(5))), "one not met is not");
-            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).isOpen(0)) && !ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).isOpen(1)),
-                    "the first chapter is open and the second locked");
+            // One not met is not ticked (unless a random reward happened to be that very item, which does count)
+            var unmet = chapters.get(0).quests().get(5);
+            boolean holdsIt = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory().countItem(unmet.item()) >= unmet.count());
+            check(holdsIt || !ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(unmet)), "one not met is not ticked");
             System.out.println("[nexus] quests chapter 1: " + ctx.takeScreenshot("nexus_quests_storage"));
 
-            // Finish the first chapter: the second opens and the item already held counts
-            world.getServer().runOnServer(server -> {
-                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-                for (int i = 3; i < chapters.get(0).quests().size(); i++) {
-                    var q = chapters.get(0).quests().get(i);
-                    player.getInventory().add(new ItemStack(q.item(), q.count()));
-                }
-                Quests.check(player);
-                Quests.send(player, false);
-            });
-            ctx.waitTicks(5);
-            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).isOpen(1)), "finishing the first chapter opens the second");
+            // Every chapter can be opened at once, and the item held for a later chapter is ticked there
             ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(1));
             ctx.waitTicks(3);
-            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(chapters.get(1).quests().get(3))), "the item held counts as soon as the chapter opens");
+            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).chapterIndex() == 1), "the second chapter opens with the first unfinished");
+            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(chapters.get(1).quests().get(3))), "the item held counts straight away");
+            ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(chapters.size() - 1));
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).chapterIndex() == chapters.size() - 1), "so does the last");
+            ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(1));
+            ctx.waitTicks(3);
             System.out.println("[nexus] quests chapter 2: " + ctx.takeScreenshot("nexus_quests_power"));
             ctx.runOnClient(mc -> mc.gui.setScreen(null));
         }

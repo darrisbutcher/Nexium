@@ -22,8 +22,8 @@ import java.util.List;
 /**
  * The quests, read from {@code data/nexium/quests.json} in the mod: chapters in order, each a list of quests with a goal (an item, and
  * optionally an item tag whose members count too).
- * Both the server (which checks the goals) and the client (which draws the book) read the same file. A chapter is open once every
- * quest of the one before it is done. Names and descriptions come from the language file:
+ * Both the server (which checks the goals) and the client (which draws the book) read the same file. Nothing is locked: every chapter
+ * and quest is open from the start. Names and descriptions come from the language file:
  * {@code quest.nexium.<chapter>.<quest>} and {@code .desc}.
  */
 public final class QuestBook {

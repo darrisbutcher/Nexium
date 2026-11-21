@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The quest book: the chapters down the left (a lock on those not open yet, with how many quests are done), and the quests of
- * the chosen chapter on the right, each with its item, what to do, a progress bar, and a tick when done. A chapter opens once
- * every quest of the one before it is done. The mouse wheel scrolls a long chapter. Progress comes from the server once a second.
+ * The quest book: the chapters down the left (with how many quests are done), and the quests of the chosen chapter on the right,
+ * each with its item, what to do, a progress bar, and a tick when done. Nothing is locked: any chapter can be opened at any time.
+ * The mouse wheel scrolls a long chapter. Progress comes from the server once a second.
  */
 public class QuestScreen extends Screen {
     private static final int PANEL_W = 400, SIDE = 112, ROW = 40, PAD = 8;
@@ -61,11 +61,6 @@ public class QuestScreen extends Screen {
         refresh();
     }
 
-    public boolean isOpen(int index) {
-        if (index <= 0) return true;
-        return QuestBook.chapters().get(index - 1).quests().stream().allMatch(q -> done(q));
-    }
-
     public boolean done(Quest q) {
         QuestStatePayload.Entry e = state.get(q.key());
         return e != null && e.done();
@@ -97,12 +92,10 @@ public class QuestScreen extends Screen {
         for (int i = 0; i < chapterButtons.size() && i < chapters.size(); i++) {
             Chapter c = chapters.get(i);
             long done = c.quests().stream().filter(this::done).count();
-            boolean open = isOpen(i);
             Button b = chapterButtons.get(i);
-            b.active = open && i != chapter;
+            b.active = i != chapter;
             Component name = Component.translatable(c.nameKey());
-            b.setMessage(open ? Component.literal(name.getString() + "  " + done + "/" + c.quests().size())
-                    : Component.literal(name.getString()).withStyle(ChatFormatting.DARK_GRAY));
+            b.setMessage(Component.literal(name.getString() + "  " + done + "/" + c.quests().size()));
         }
         int total = QuestBook.chapters().get(chapter).quests().size();
         scroll = Mth.clamp(scroll, 0, Math.max(0, total - rows));
@@ -185,15 +178,8 @@ public class QuestScreen extends Screen {
             g.fill(left + PANEL_W - 8, top + 36, left + PANEL_W - 5, top + 36 + trackH, 0xFF2A2A36);
             g.fill(left + PANEL_W - 8, thumbY, left + PANEL_W - 5, thumbY + thumb, 0xFF8C8CAA);
         }
-        // Footer: the reward, and that nothing is locked but later chapters
+        // Footer: the reward, and that nothing is locked
         g.text(font, Component.translatable("screen.nexium.quests.reward", c.tier()), x, top + panelH - 22, GOLD, false);
         g.text(font, font.plainSubstrByWidth(Component.translatable("screen.nexium.quests.hint").getString(), PANEL_W - PAD * 2), left + PAD, top + panelH - 12, DIM, false);
-        // A locked chapter's button explains itself on hover
-        for (int i = 0; i < chapterButtons.size(); i++) {
-            Button b = chapterButtons.get(i);
-            if (!isOpen(i) && b.isHovered() && i > 0) {
-                g.setTooltipForNextFrame(font, Component.translatable("screen.nexium.quests.locked", Component.translatable(chapters.get(i - 1).nameKey())), mouseX, mouseY);
-            }
-        }
     }
 }

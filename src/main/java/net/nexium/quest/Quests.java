@@ -25,9 +25,9 @@ import java.util.Set;
 
 /**
  * The quest system on the server: which quests a player has finished (saved on the player, kept through death), checking
- * the goals once a second, and the rewards: a few random items from the mod for each quest. A chapter is open once every quest of
- * the one before it is done. Quests count what the player has already done (the game's own statistics, or what they hold), so
- * nothing has to be repeated. Recipes are never locked by any of this (every Nexium recipe is unlocked on joining, see {@link RecipeUnlock}).
+ * the goals once a second, and the rewards: a few random items from the mod for each quest. Nothing is locked: every chapter and
+ * every quest is open from the start, in any order. Quests count what the player has already done (the game's own statistics, or
+ * what they hold), so nothing has to be repeated. Recipes are never locked by any of this (every Nexium recipe is unlocked on joining, see {@link RecipeUnlock}).
  */
 public final class Quests {
     private static final AttachmentType<List<String>> DONE = AttachmentRegistry.create(Nexium.id("quests_done"),
@@ -75,13 +75,6 @@ public final class Quests {
         return new LinkedHashSet<>(player.getAttachedOrElse(DONE, List.of()));
     }
 
-    /** Whether chapter number {@code index} is open: the first always, the rest once the one before is complete. */
-    public static boolean open(Set<String> done, int index) {
-        if (index <= 0) return true;
-        Chapter before = QuestBook.chapters().get(index - 1);
-        return before.quests().stream().allMatch(q -> done.contains(q.key()));
-    }
-
     /** How far a player is on a quest, from 0 to its count. */
     public static int progress(ServerPlayer player, Quest quest) {
         // A quest that takes a whole tag (any Drawer) counts every item in it, added together
@@ -93,17 +86,17 @@ public final class Quests {
         return Math.min(quest.count(), Math.max(fromStats, held));
     }
 
-    /** Finishes every quest whose goal is met in an open chapter (and any chapter that opens as a result). Returns the quests finished. */
+    /**
+     * Finishes every quest whose goal is met, in any chapter. Returns the quests finished. It goes round again while a reward finishes
+     * another quest (a random reward can be the very item a quest asks for), so what it returns leaves nothing more to finish.
+     */
     public static List<Quest> check(ServerPlayer player) {
         List<Quest> finished = new ArrayList<>();
         Set<String> done = done(player);
         boolean again = true;
         while (again) {
             again = false;
-            List<Chapter> chapters = QuestBook.chapters();
-            for (int i = 0; i < chapters.size(); i++) {
-                if (!open(done, i)) continue;
-                Chapter chapter = chapters.get(i);
+            for (Chapter chapter : QuestBook.chapters()) {
                 boolean wasComplete = chapter.quests().stream().allMatch(q -> done.contains(q.key()));
                 for (Quest q : chapter.quests()) {
                     if (done.contains(q.key()) || progress(player, q) < q.count()) continue;
@@ -159,12 +152,10 @@ public final class Quests {
     public static void send(ServerPlayer player, boolean open) {
         Set<String> done = done(player);
         List<QuestStatePayload.Entry> entries = new ArrayList<>();
-        List<Chapter> chapters = QuestBook.chapters();
-        for (int i = 0; i < chapters.size(); i++) {
-            boolean chapterOpen = open(done, i);
-            for (Quest q : chapters.get(i).quests()) {
+        for (Chapter chapter : QuestBook.chapters()) {
+            for (Quest q : chapter.quests()) {
                 boolean isDone = done.contains(q.key());
-                entries.add(new QuestStatePayload.Entry(q.key(), isDone ? q.count() : chapterOpen ? progress(player, q) : 0, isDone));
+                entries.add(new QuestStatePayload.Entry(q.key(), isDone ? q.count() : progress(player, q), isDone));
             }
         }
         ServerPlayNetworking.send(player, new QuestStatePayload(open, entries));
