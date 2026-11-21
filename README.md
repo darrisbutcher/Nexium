@@ -15,6 +15,9 @@ that scrolls: words that name another topic are links, recipes are drawn as craf
 page), and "See also" lists related topics. Back and forward work like a browser. In any inventory, hover over an item and
 press **H** to open its page; Escape brings you back. Every item in the mod has a page.
 
+The **inventory key** (E, or whatever you set it to) closes any Nexium window, as Escape does and as it does for vanilla's own windows: the
+Codex, the quest book, the settings, the Conduit Scanner, the Power Meter and the rest. While you are typing in a text box, E types.
+
 The **Nexium advancement tab** (press **L**) is a quick map of everything in the mod: 33 nodes with an icon and a short
 description each, all unlocked from the start. For a bigger, easier-to-read advancements screen, try the optional
 [Better Advancements](https://modrinth.com/mod/Q2OqKxDG) mod: the tab works with it automatically, and Nexium doesn't need it.
