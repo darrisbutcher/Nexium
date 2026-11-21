@@ -122,13 +122,13 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         int barX = kind.hasInput() ? BAR_X : FarmMenu.INPUT_X;
         int barW = kind.hasInput() ? BAR_W : BAR_W + BAR_X - FarmMenu.INPUT_X;
         if (isHovering(barX - 1, BAR_Y - 1, barW + 2, BAR_H + 2, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.farm_progress", Math.round(menu.progress() * 100)),
                     Component.translatable("tooltip.nexium." + kind.lang("makes")).withStyle(ChatFormatting.GRAY),
                     Component.translatable("tooltip.nexium.farm_every", IronFarmItem.time(Math.max(1, menu.cycleTicks() / Overclock.multiplier(menu.overclock())))).withStyle(ChatFormatting.GRAY)
             ), mouseX, mouseY);
         } else if (kind.hasInput() && hoveredSlot != null && hoveredSlot.index == FarmBlockEntity.INPUT_SLOT && !hoveredSlot.hasItem()) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("tooltip.nexium." + kind.lang("input")).withStyle(ChatFormatting.GOLD)
             ), mouseX, mouseY);
         }

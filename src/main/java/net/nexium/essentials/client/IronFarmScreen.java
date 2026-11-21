@@ -91,7 +91,7 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X - 1, BAR_Y - 1, BAR_W + 2, BAR_H + 2, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.iron_farm_next", Math.round(menu.progress() * 100)),
                     Component.translatable("screen.nexium.iron_farm_rate", ironPerHour()).withStyle(ChatFormatting.GRAY)
             ), mouseX, mouseY);

@@ -400,7 +400,7 @@ public class ConduitScannerScreen extends Screen {
         if ((flags & ConduitScan.PAUSED) != 0) lines.add(Component.translatable("screen.nexium.scanner.warn.paused").withStyle(ChatFormatting.RED));
         lines.add(Component.translatable("screen.nexium.scanner.tip.click").withStyle(ChatFormatting.DARK_GRAY));
         List<FormattedCharSequence> wrapped = new ArrayList<>();
-        for (Component line : lines) wrapped.addAll(font.split(line, 230));
+        for (Component line : lines) wrapped.addAll(net.nexium.client.Tooltips.split(font, line));
         g.setTooltipForNextFrame(font, wrapped, mouseX, mouseY);
     }
 }

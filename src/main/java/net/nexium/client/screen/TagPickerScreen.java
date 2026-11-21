@@ -228,7 +228,7 @@ public class TagPickerScreen extends Screen {
         if (hovered >= 0) {
             Entry e = shown.get(scroll + hovered);
             boolean on = selected.contains(e.id());
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.literal("#" + e.id()),
                     Component.translatable("screen.nexium.tag_picker.items", e.count()).withStyle(net.minecraft.ChatFormatting.GRAY),
                     Component.translatable(on ? "screen.nexium.tag_picker.chosen" : "screen.nexium.tag_picker.choose")

@@ -22,7 +22,6 @@ final class SideHints {
     /** Tooltip background and border around the text. */
     private static final int FRAME = 4;
     private static final int GAP = 4;
-    private static final int MAX_WIDTH = 170;
 
     private final Map<AbstractWidget, Component> hints = new LinkedHashMap<>();
 
@@ -36,7 +35,7 @@ final class SideHints {
         int roomRight = screenWidth - panelRight - GAP - 2 * FRAME;
         int roomLeft = panelLeft - GAP - 2 * FRAME;
         boolean right = roomRight >= roomLeft;
-        int wrap = Math.max(40, Math.min(MAX_WIDTH, right ? roomRight : roomLeft));
+        int wrap = Math.max(40, Math.min(net.nexium.client.Tooltips.MAX_WIDTH, right ? roomRight : roomLeft));
         for (Map.Entry<AbstractWidget, Component> e : hints.entrySet()) {
             AbstractWidget widget = e.getKey();
             if (!widget.visible || !widget.isHovered()) continue;

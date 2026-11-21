@@ -60,6 +60,10 @@ public class TooltipsClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(20);
 
+            // The shared wrap: no part wider than the limit, and the colours stay where they were
+            String wrapProblem = ctx.computeOnClient(TooltipsClientTest::checkWrap);
+            check(wrapProblem == null, "Tooltips.wrap keeps every part within the width and keeps the colours: " + wrapProblem);
+
             // Every Nexium item's tooltip: narrow, and no line twice
             List<String> problems = ctx.computeOnClient(TooltipsClientTest::audit);
             check(problems.isEmpty(), "every Nexium tooltip is narrow and has no repeated line:\n" + String.join("\n", problems));
@@ -101,6 +105,27 @@ public class TooltipsClientTest implements FabricClientGameTest {
             System.out.println("[nexus] feeding module tooltip: " + ctx.takeScreenshot("nexus_tooltip_feeding_module"));
             ctx.setScreen(() -> null);
         }
+    }
+
+    /** A long red-then-blue line wrapped: null if every part fits and the red comes before the blue, else what is wrong. */
+    private static String checkWrap(Minecraft mc) {
+        Component mixed = Component.literal("A fairly long red part that goes on and on and on, ").withStyle(net.minecraft.ChatFormatting.RED)
+                .append(Component.literal("followed by a blue part that also goes on for quite a while longer.").withStyle(net.minecraft.ChatFormatting.BLUE));
+        List<Component> parts = Tooltips.wrap(mc.font, mixed, Tooltips.MAX_WIDTH);
+        if (parts.size() < 3) return "only " + parts.size() + " parts";
+        List<String> colours = new ArrayList<>();
+        for (Component part : parts) {
+            int width = mc.font.width(part);
+            if (width > Tooltips.MAX_WIDTH) return "a part is " + width + " wide";
+            part.visit((style, text) -> {
+                if (!text.isBlank() && style.getColor() != null) colours.add(style.getColor().serialize());
+                return java.util.Optional.empty();
+            }, net.minecraft.network.chat.Style.EMPTY);
+        }
+        int firstBlue = colours.indexOf("blue"), lastRed = colours.lastIndexOf("red");
+        if (firstBlue < 0 || lastRed < 0) return "a colour was lost: " + colours;
+        if (lastRed > firstBlue) return "the colours are out of order: " + colours;
+        return null;
     }
 
     /** A Feeding module set to eat at 12 and allowed to waste, so its tooltip has every line it can have. */

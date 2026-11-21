@@ -81,7 +81,7 @@ public class CombustionGeneratorScreen extends AbstractContainerScreen<Combustio
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractTooltip(g, mouseX, mouseY);
         if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
-            g.setComponentTooltipForNextFrame(font, List.of(
+            net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
                     Component.translatable("screen.nexium.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }

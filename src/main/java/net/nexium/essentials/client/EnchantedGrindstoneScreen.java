@@ -160,7 +160,7 @@ public class EnchantedGrindstoneScreen extends BaseScreen<EnchantedGrindstoneMen
         for (int i = scroll; i < Math.min(entries.size(), scroll + VISIBLE_ROWS); i++) {
             if (inside(mouseX, mouseY, leftPos + LIST_X + 1, rowTop(i), rowWidth(), ROW_H)) {
                 Component tip = Component.translatable(menu.hasBook() ? "screen.nexium.grindstone.pull" : "screen.nexium.grindstone.need_book");
-                g.setTooltipForNextFrame(font, font.split(tip, 150), mouseX, mouseY);
+                g.setTooltipForNextFrame(font, net.nexium.client.Tooltips.split(font, tip), mouseX, mouseY);
                 return;
             }
         }

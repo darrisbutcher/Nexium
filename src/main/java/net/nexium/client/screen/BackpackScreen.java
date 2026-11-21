@@ -306,7 +306,7 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
         if (hoveredSlot == menu.trashSlot() && menu.getCarried().isEmpty()) {
             java.util.List<net.minecraft.util.FormattedCharSequence> lines = new java.util.ArrayList<>();
             lines.add(Component.translatable("screen.nexium.backpack.trash").getVisualOrderText());
-            lines.addAll(font.split(Component.translatable("screen.nexium.backpack.trash.tip").withStyle(ChatFormatting.GRAY), 160));
+            lines.addAll(net.nexium.client.Tooltips.split(font, Component.translatable("screen.nexium.backpack.trash.tip").withStyle(ChatFormatting.GRAY)));
             g.setTooltipForNextFrame(font, lines, mouseX, mouseY);
         }
     }
