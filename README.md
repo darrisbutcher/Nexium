@@ -162,6 +162,9 @@ place it or right-click it to outline those chunks for a minute.
 * Every side has an **insert** colour and one or more **extract** colours; what a side extracts goes to insert sides
   of any of its extract colours. In the side's settings the **Out** row is a grid of the 16 colours: click one to switch
   it on or off (at least one stays on). A side has one filter, shared by all its colours.
+* A conduit arm shows an **arrow** for what its side does: out to the block when it inserts, in to the conduit when it
+  extracts, and a double arrow when it does both (whichever conduit types the arm carries). It sits in the room the colour
+  rings leave on the arm, and is left out only when item, fluid and energy conduits all insert and extract on that one arm.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
   facade.

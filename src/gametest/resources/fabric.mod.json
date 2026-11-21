@@ -39,6 +39,7 @@
       "net.nexium.gametest.client.ZoomClientTest",
       "net.nexium.gametest.client.ConduitScannerClientTest",
       "net.nexium.gametest.client.ConduitExtractColoursClientTest",
+      "net.nexium.gametest.client.ConduitArrowsClientTest",
       "net.nexium.gametest.client.FilterTagsClientTest",
       "net.nexium.gametest.client.BigSpongesClientTest",
       "net.nexium.gametest.client.TradeCyclingClientTest",

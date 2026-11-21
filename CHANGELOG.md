@@ -3,6 +3,20 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.6
+
+* **The Advanced Filter can match item tags you choose, anything smeltable, or furnace fuel.** Its editor has two new buttons. **Tags** opens a
+  tag picker: every item tag in the game in a list you can search by name (`minecraft:logs`, `c:ores`), with a click to choose or remove one
+  (up to 32 tags; hovering shows how many items a tag holds). **Match** cycles **Items & tags**, **Smeltable** (anything a furnace, blast
+  furnace or smoker takes) and **Furnace fuel**. Whitelist/Blacklist applies to all of it, so an insert side can allow or refuse a tag, or all
+  smeltables, or all fuel. The Basic Filter and the filters you already have are unchanged. One extractor can now fill a furnace without
+  clogging it: a Smeltable filter on the conduit's top side and a Fuel filter on another side. The filter's tooltip lists its Match and tags,
+  and the Codex Filters page explains them.
+* **A conduit arm shows an arrow for what it does.** A flat arrow on the arm points out to the block when the side inserts, in to the conduit
+  when it extracts, and is a double arrow when it does both, whichever conduit types the arm carries. The coloured rings stay as they were.
+  The arrow goes in the stretch of arm the rings leave free (past them, or between them and the core), shorter if the stretch is short,
+  and is left out only in the one case with no room: item, fluid and energy conduits all inserting and extracting on one arm.
+
 ## 1.25.5
 
 * **A conduit side can extract on several colours at once.** In a conduit's settings the **Out** row is now a grid of the 16 colours:

@@ -40,6 +40,16 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** Each further extract colour is another ring this much farther out, as long as it still fits on the arm. */
     private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.9f / 16;
     private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}, {4.0f / 16, 4.6f / 16}};
+    /**
+     * The direction arrow, one for each arm: a flat arrowhead on each of the arm's four faces, light so it stands out from the dark arm,
+     * that points the way the items go: out to the block when the arm inserts, in to the conduit when it extracts, and a double arrow
+     * when it does both (whichever conduit types it carries). It goes where the rings leave room ({@link ArrowPlacement}).
+     */
+    private static final int ARROW_COLOR = 0xFFE9EEF5;
+    /** A double arrow's heads and shaft as fractions of its length, half the width of a head's base and of the shaft, in blocks. */
+    private static final float HEAD_PART = 0.353f, SHAFT_PART = 0.294f, HEAD_HALF = 0.85f / 16, SHAFT_HALF = 0.25f / 16;
+    /** Half the width of a single arrow's base, the arm's half-width, and how far the arrow floats off the arm's face (blocks). */
+    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 1.25f / 16, ARROW_LIFT = 0.02f / 16;
 
     public static class FacadeState extends BlockEntityRenderState {
         public final BlockModelRenderState facade = new BlockModelRenderState();
@@ -78,8 +88,12 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         }
         int light = state.lightCoords;
         collector.submitCustomGeometry(pose, MARKER, (p, buffer) -> {
-            for (int t = 0; t < state.channels.length; t++) {
-                for (Direction d : Direction.values()) {
+            // The stretches of one arm that the rings cover, in pixels from the centre: at most an insert ring and 16 extract rings per type
+            float[] rings = new float[2 * state.channels.length * 17];
+            for (Direction d : Direction.values()) {
+                int ringCount = 0;
+                boolean inserts = false, extracts = false;
+                for (int t = 0; t < state.channels.length; t++) {
                     int marker = state.channels[t][d.get3DDataValue()];
                     if (marker < 0) continue;
                     SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 4) & 3];
@@ -87,6 +101,10 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
                     // farther out for each further extract colour that is on (as many as fit on the arm).
                     if (mode.inserts()) {
                         ring(p, buffer, d, RING_SPAN[t][0], RING_SPAN[t][1], ConduitConfigScreen.CHANNEL_COLORS[marker & 15], light);
+                        rings[2 * ringCount] = RING_SPAN[t][0] * 16;
+                        rings[2 * ringCount + 1] = RING_SPAN[t][1] * 16;
+                        ringCount++;
+                        inserts = true;
                     }
                     if (mode.extracts()) {
                         int extract = marker >>> 6 & 0xFFFF, shown = 0;
@@ -95,12 +113,66 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
                             float shift = EXTRACT_OFFSET + shown * EXTRACT_STEP;
                             if (shown > 0 && RING_SPAN[t][1] + shift > ARM_END) break;
                             ring(p, buffer, d, RING_SPAN[t][0] + shift, RING_SPAN[t][1] + shift, ConduitConfigScreen.CHANNEL_COLORS[c], light);
+                            rings[2 * ringCount] = (RING_SPAN[t][0] + shift) * 16;
+                            rings[2 * ringCount + 1] = (RING_SPAN[t][1] + shift) * 16;
+                            ringCount++;
                             shown++;
                         }
+                        extracts = true;
                     }
                 }
+                if (inserts || extracts) arrow(p, buffer, d, ArrowPlacement.zone(rings, ringCount, inserts && extracts), inserts, extracts, light);
             }
         });
+    }
+
+    /**
+     * The direction arrow in {@code zone} ({@code {from, to}} in pixels out from the centre, null for none): pointing out to the block
+     * when the arm only inserts, in to the conduit when it only extracts, and a double arrow (a head each way, joined by a short shaft)
+     * when it does both.
+     */
+    private static void arrow(PoseStack.Pose p, VertexConsumer b, Direction d, float @Nullable [] zone, boolean inserts, boolean extracts, int light) {
+        if (zone == null) return;
+        float from = zone[0] / 16, to = zone[1] / 16;
+        if (inserts && extracts) {
+            float length = to - from, head = length * HEAD_PART, shaft = length * SHAFT_PART;
+            decal(p, b, d, from + head, from, HEAD_HALF, 0, light); // the head toward the conduit
+            decal(p, b, d, from + head, from + head + shaft, SHAFT_HALF, SHAFT_HALF, light);
+            decal(p, b, d, from + head + shaft, to, HEAD_HALF, 0, light); // the head toward the block
+        } else if (inserts) {
+            decal(p, b, d, from, to, ARROW_HALF, 0, light);
+        } else {
+            decal(p, b, d, to, from, ARROW_HALF, 0, light);
+        }
+    }
+
+    /**
+     * A flat shape on each of the four faces of the arm on side {@code d}, from {@code from} to {@code to} out from the centre: an edge
+     * of half-width {@code halfFrom} at the first and one of {@code halfTo} at the second (an arrowhead has a point at one end, so a
+     * half-width of 0 there; a shaft has the same at both).
+     */
+    private static void decal(PoseStack.Pose p, VertexConsumer b, Direction d, float from, float to, float halfFrom, float halfTo, int light) {
+        int axis = d.getAxis().ordinal();
+        int step = d.getAxisDirection().getStep();
+        int u = (axis + 1) % 3, v = (axis + 2) % 3;
+        float[] along = {0.5f + step * from, 0.5f + step * from, 0.5f + step * to, 0.5f + step * to};
+        float[] wide = {-halfFrom, halfFrom, halfTo, -halfTo};
+        // Each face has its outward normal along u or v; the shape lies in the plane of the arm face, its width along the other one.
+        for (int face = 0; face < 4; face++) {
+            int normalAxis = face < 2 ? u : v, widthAxis = face < 2 ? v : u;
+            int sign = face % 2 == 0 ? 1 : -1;
+            float plane = 0.5f + sign * (ARM_HALF + ARROW_LIFT);
+            float[][] pts = new float[4][3];
+            for (int i = 0; i < 4; i++) {
+                pts[i][axis] = along[i];
+                pts[i][widthAxis] = 0.5f + wide[i];
+                pts[i][normalAxis] = plane;
+            }
+            float[] n = new float[3];
+            n[normalAxis] = sign;
+            quad(p, b, ARROW_COLOR, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
+                    pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
+        }
     }
 
     /** A box around the arm on side {@code d}, from {@code near} to {@code far} out from the centre. */
