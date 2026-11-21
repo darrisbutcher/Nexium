@@ -19,6 +19,17 @@ final class RealMouse {
     }
 
     static void leftClick(ClientGameTestContext ctx, double guiX, double guiY) {
+        moveTo(ctx, guiX, guiY);
+        ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+        ctx.waitTicks(3);
+    }
+
+    /** Moves the cursor to the screen (GUI) position {@code position}, so it rests there (a hint shows, say). */
+    static void moveTo(ClientGameTestContext ctx, int[] position) {
+        moveTo(ctx, position[0], position[1]);
+    }
+
+    static void moveTo(ClientGameTestContext ctx, double guiX, double guiY) {
         // The mouse works in window pixels; the screen in GUI units, which are that divided by the GUI scale
         double[] pixels = ctx.computeOnClient(mc -> {
             var window = mc.getWindow();
@@ -26,7 +37,5 @@ final class RealMouse {
         });
         ctx.getInput().setCursorPos(pixels[0], pixels[1]);
         ctx.waitTicks(2);
-        ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
-        ctx.waitTicks(3);
     }
 }

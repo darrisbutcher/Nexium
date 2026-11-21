@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.nexium.essentials.NexiumEssentials;
 import net.nexium.essentials.backpack.BackpackContents;
@@ -50,6 +51,14 @@ public final class ModComponents {
     /** The modules installed in a Backpack, one per slot (see BackpackModules). */
     public static final DataComponentType<ItemContainerContents> BACKPACK_MODULES = register("backpack_modules",
             b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+
+    /** On a Feeding module: the hunger level (of 20) it eats at or below. Not stored when it is 19, the default: as soon as any hunger is missing. */
+    public static final DataComponentType<Integer> FEEDING_LEVEL = register("feeding_level",
+            b -> b.persistent(Codec.intRange(1, 19)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** On a Feeding module: it may eat food that restores more than is missing. Absent (the default) it never wastes any. */
+    public static final DataComponentType<Unit> FEEDING_WASTE = register("feeding_waste",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, NexiumEssentials.id(name),

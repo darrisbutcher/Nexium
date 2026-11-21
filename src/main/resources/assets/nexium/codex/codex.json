@@ -1269,7 +1269,8 @@
     },
     "feeding": {
       "pages": [
-        "essentials.feeding"
+        "essentials.feeding",
+        "essentials.feeding2"
       ],
       "icon": "nexium:feeding_module",
       "recipes": [
