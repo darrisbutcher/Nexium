@@ -232,6 +232,62 @@ public class FreeCameraClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> !FreeCamera.active() && mc.getCameraEntity() == mc.player), "and it goes off again");
             ctx.runOnClient(mc -> mc.options.renderDistance().set(normalDistance));
             world.getServer().runOnServer(server -> server.getPlayerList().setViewDistance(serverDistance[0]));
+
+            // Night vision: in a sealed room with no light the player sees next to nothing; the free camera, from the same place, sees the
+            // room as if it were day. Compared by how bright the screenshots are (the interface is hidden for both).
+            world.getServer().runCommand("time set midnight");
+            int[] lab = new int[3];
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                lab[0] = base[0].getX() + 40;
+                lab[1] = base[0].getY() + 12;
+                lab[2] = base[0].getZ();
+                // Stone walls, floor and roof around a 7 x 4 x 7 room with nothing in it, and a few bright blocks on the far wall
+                for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) for (int y = -1; y <= 4; y++) {
+                    boolean inside = Math.abs(x) <= 3 && Math.abs(z) <= 3 && y >= 0 && y <= 3;
+                    player.level().setBlock(new BlockPos(lab[0] + x, lab[1] + y, lab[2] + z),
+                            inside ? Blocks.AIR.defaultBlockState() : Blocks.STONE_BRICKS.defaultBlockState(), 2);
+                }
+                for (int x = -2; x <= 2; x++) {
+                    var block = x % 2 == 0 ? Blocks.GOLD_BLOCK : Blocks.EMERALD_BLOCK;
+                    player.level().setBlock(new BlockPos(lab[0] + x, lab[1] + 1, lab[2] + 3), block.defaultBlockState(), 2);
+                }
+            });
+            // A command, which moves the player on the client too (setting the server's copy alone leaves the player where they were)
+            world.getServer().runCommand("tp @p " + (lab[0] + 0.5) + " " + lab[1] + " " + (lab[2] - 2.5) + " 0 5");
+            ctx.waitTicks(40);
+            ctx.getInput().pressKey(options -> options.keyToggleGui);
+            ctx.waitTicks(10);
+            var dark = ctx.takeScreenshot("nexus_free_camera_dark_room");
+            double darkLevel = brightness(dark);
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(20);
+            check(ctx.computeOnClient(mc -> FreeCamera.active()), "the free camera is on in the dark room");
+            var lit = ctx.takeScreenshot("nexus_free_camera_night_vision");
+            double litLevel = brightness(lit);
+            System.out.println("[nexus] free camera night vision: brightness " + darkLevel + " without, " + litLevel + " with");
+            check(litLevel > darkLevel + 0.08, "the free camera sees a dark room far brighter than the player does: " + litLevel + " against " + darkLevel);
+            ctx.getInput().pressKey(FreeCamera.TOGGLE);
+            ctx.waitTicks(20);
+            check(ctx.computeOnClient(mc -> !FreeCamera.active()), "and it goes off again");
+            double after = brightness(ctx.takeScreenshot("nexus_free_camera_dark_room_again"));
+            check(after < litLevel - 0.08, "and the room is dark again for the player: " + after + " against " + litLevel);
+            ctx.getInput().pressKey(options -> options.keyToggleGui);
+        }
+    }
+
+    /** The average brightness of a screenshot, 0 (black) to 1 (white). */
+    private static double brightness(java.nio.file.Path file) {
+        try {
+            var image = javax.imageio.ImageIO.read(file.toFile());
+            double sum = 0;
+            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                int rgb = image.getRGB(x, y);
+                sum += (0.2126 * ((rgb >> 16) & 0xFF) + 0.7152 * ((rgb >> 8) & 0xFF) + 0.0722 * (rgb & 0xFF)) / 255.0;
+            }
+            return sum / ((double) image.getWidth() * image.getHeight());
+        } catch (java.io.IOException e) {
+            throw new AssertionError("could not read the screenshot " + file, e);
         }
     }
 

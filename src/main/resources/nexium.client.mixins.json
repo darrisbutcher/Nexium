@@ -19,6 +19,7 @@
     "InventoryScreenMixin",
     "ItemStackMixin",
     "LevelExtractorMixin",
+    "LightmapRenderStateExtractorMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
     "WingsLayerMixin"

@@ -78,7 +78,9 @@ public class QuestGameTest {
         Quest first = chapters.get(0).quests().getFirst();
         player.getInventory().add(new ItemStack(first.item(), first.count()));
         List<Quest> done = Quests.check(player);
-        h.assertTrue(done.size() == 1 && done.getFirst().key().equals(first.key()), "the first quest is done: " + done);
+        // A random reward can be the very item another quest of the chapter asks for (any drawer, say), which finishes that quest too
+        h.assertTrue(done.stream().anyMatch(q -> q.key().equals(first.key())) && done.stream().allMatch(q -> q.chapter().equals(first.chapter())),
+                "the first quest is done, and nothing outside its chapter: " + done);
         h.assertTrue(Quests.done(player).contains(first.key()), "and remembered");
         // Everything in the first chapter: it completes, the second opens, and what was already held counts at once
         give(player, chapters.get(0));

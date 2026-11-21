@@ -20,7 +20,8 @@ import org.jspecify.annotations.Nullable;
  * The free camera: a key (K by default) detaches the camera from the player. The player stands where they are, the movement
  * keys and the mouse fly the camera through everything (forward goes where it looks, jump and sneak go up and down, sprint is
  * faster, Left Ctrl and the scroll wheel change the speed), and the key again puts the camera back. Nothing you click reaches the
- * world while it is on, the plain scroll wheel does nothing, and the experience bar is not drawn. It ends by itself if the player is hurt or dies, or the world changes. All on the client; the server is not told.
+ * world while it is on, the plain scroll wheel does nothing, and the experience bar is not drawn. It also has no fog, no cave culling
+ * and night vision (all only in how the world is drawn). It ends by itself if the player is hurt or dies, or the world changes. All on the client; the server is not told.
  */
 public final class FreeCamera {
     /** Switches the free camera on and off. K by default; change it under Controls > Key Binds. */
