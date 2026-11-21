@@ -958,6 +958,87 @@ public class BackpackGameTest {
         h.succeed();
     }
 
+    // ---------------------------------------------------------------- Crafting module: recipe book and recipe viewers
+
+    private static RecipeHolder<?> recipe(GameTestHelper h, String id) {
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, net.minecraft.resources.Identifier.withDefaultNamespace(id));
+        return h.getLevel().recipeAccess().byKey(key).orElseThrow();
+    }
+
+    private static int inInventory(ServerPlayer player, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) if (player.getInventory().getItem(i).is(item)) n += player.getInventory().getItem(i).getCount();
+        return n;
+    }
+
+    private static int inGrid(BackpackMenu menu, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (Slot s : menu.getInputGridSlots()) if (s.getItem().is(item)) n += s.getItem().getCount();
+        return n;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theRecipeBookFillsTheGridFromTheBackpackBeforeTheInventory(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 3));
+        player.getInventory().setItem(0, new ItemStack(Items.OAK_PLANKS, 5));
+        BackpackMenu menu = openScreen(player);
+        // A crafting table is four planks, one in each of four slots
+        menu.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), player.getInventory());
+        h.assertValueEqual(inGrid(menu, Items.OAK_PLANKS), 4, "four planks are in the grid");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 0, "all three of the Backpack's planks were used first");
+        h.assertValueEqual(inInventory(player, Items.OAK_PLANKS), 4, "and one of the inventory's five after them");
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.CRAFTING_TABLE), "so the result slot shows a crafting table");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theRecipeBookNeedsTheModuleAndTheIngredients(GameTestHelper h) {
+        ServerPlayer without = wearing(h, backpackWith());
+        without.getInventory().setItem(0, new ItemStack(Items.OAK_PLANKS, 8));
+        BackpackMenu none = openScreen(without);
+        h.assertTrue(none.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), without.getInventory()) == net.minecraft.world.inventory.RecipeBookMenu.PostPlaceAction.NOTHING
+                && inGrid(none, Items.OAK_PLANKS) == 0, "without the module nothing is placed");
+        without.closeContainer();
+
+        ServerPlayer short1 = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 2));
+        BackpackMenu menu = openScreen(short1);
+        h.assertTrue(menu.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), short1.getInventory())
+                == net.minecraft.world.inventory.RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE, "two planks are not enough for four: the book shows the ghost recipe");
+        h.assertValueEqual(inGrid(menu, Items.OAK_PLANKS), 0, "and nothing is placed");
+        h.assertValueEqual(held(short1, Items.OAK_PLANKS), 2, "the Backpack still has its two");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theRecipeBookCountsWhatTheBackpackHolds(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 4));
+        BackpackMenu menu = openScreen(player);
+        var stacked = new net.minecraft.world.entity.player.StackedItemContents();
+        menu.fillCraftSlotsStackedContents(stacked);
+        h.assertTrue(stacked.canCraft((net.minecraft.world.item.crafting.CraftingRecipe) recipe(h, "crafting_table").value(), null),
+                "four planks only in the Backpack: the recipe book counts the crafting table as makeable");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aRecipeViewerFillsTheGridFromTheBackpackWithMaxItems(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 40));
+        BackpackMenu menu = openScreen(player);
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, net.minecraft.resources.Identifier.withDefaultNamespace("crafting_table"));
+        menu.fillGrid(player, new net.nexium.terminal.FillGridPayload(key, true));
+        // 40 planks make 10 crafting tables: each of the four grid slots gets 10
+        h.assertValueEqual(inGrid(menu, Items.OAK_PLANKS), 40, "the grid holds all 40 planks, 10 in each of four slots");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 0, "taken from the Backpack");
+        h.assertTrue(menu.getResultSlot().getItem().is(Items.CRAFTING_TABLE), "a crafting table in the result slot");
+
+        ServerPlayer none = wearing(h, backpackWith());
+        none.getInventory().setItem(0, new ItemStack(Items.OAK_PLANKS, 8));
+        BackpackMenu off = openScreen(none);
+        off.fillGrid(none, new net.nexium.terminal.FillGridPayload(key, false));
+        h.assertValueEqual(inGrid(off, Items.OAK_PLANKS), 0, "without the module a recipe viewer fills nothing");
+        h.succeed();
+    }
+
     // ---------------------------------------------------------------- Compacting
 
     private static ServerPlayer compactingWith(GameTestHelper h, ItemStack... stacks) {

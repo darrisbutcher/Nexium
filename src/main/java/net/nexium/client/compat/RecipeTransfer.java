@@ -4,9 +4,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.terminal.FillGridPayload;
 import net.nexium.terminal.TerminalMenu;
 import net.nexium.terminal.TerminalSyncPayload;
@@ -16,10 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Shared by the JEI and REI "+" buttons: can the network and inventory make this, and asking the server to fill the grid. */
+/**
+ * Shared by the JEI and REI "+" buttons: can the Crafting Terminal's network (or the Backpack's own slots) and the inventory make this,
+ * and asking the server to fill the grid.
+ */
 public final class RecipeTransfer {
     /** Exact check when the viewer gives us the recipe itself (JEI). */
-    public static boolean canCraft(TerminalMenu menu, Player player, Recipe<?> recipe) {
+    public static boolean canCraft(RecipeBookMenu menu, Player player, Recipe<?> recipe) {
         StackedItemContents contents = new StackedItemContents();
         player.getInventory().fillStackedContents(contents);
         menu.fillCraftSlotsStackedContents(contents);
@@ -30,7 +36,7 @@ public final class RecipeTransfer {
      * Close-enough check from the ingredient lists (REI): every slot needs one of its accepted
      * items, counting what each slot uses up.
      */
-    public static boolean canCraft(TerminalMenu menu, Player player, List<List<Item>> slots) {
+    public static boolean canCraft(AbstractCraftingMenu menu, Player player, List<List<Item>> slots) {
         return missing(menu, player, slots).isEmpty();
     }
 
@@ -38,7 +44,7 @@ public final class RecipeTransfer {
      * Which recipe slots (indices into {@code slots}, each the items it accepts) nothing in the network, the inventory or
      * the grid can fill, counting what each filled slot uses up. Empty slots in the list are skipped.
      */
-    public static List<Integer> missing(TerminalMenu menu, Player player, List<List<Item>> slots) {
+    public static List<Integer> missing(AbstractCraftingMenu menu, Player player, List<List<Item>> slots) {
         Map<Item, Long> available = available(menu, player);
         List<Integer> missing = new ArrayList<>();
         for (int i = 0; i < slots.size(); i++) {
@@ -58,10 +64,14 @@ public final class RecipeTransfer {
         return missing;
     }
 
-    /** What the network (as this client last saw it), the player's inventory and the crafting grid hold, by item. */
-    private static Map<Item, Long> available(TerminalMenu menu, Player player) {
+    /** What the network (as this client last saw it) or the Backpack's own slots, the player's inventory and the crafting grid hold, by item. */
+    private static Map<Item, Long> available(AbstractCraftingMenu menu, Player player) {
         Map<Item, Long> available = new HashMap<>();
-        for (TerminalSyncPayload.ItemEntry e : menu.clientItems()) available.merge(e.stack().getItem(), e.count(), Long::sum);
+        if (menu instanceof TerminalMenu terminal) {
+            for (TerminalSyncPayload.ItemEntry e : terminal.clientItems()) available.merge(e.stack().getItem(), e.count(), Long::sum);
+        } else if (menu instanceof BackpackMenu backpack) {
+            for (ItemStack s : backpack.storedStacks()) if (!s.isEmpty()) available.merge(s.getItem(), (long) s.getCount(), Long::sum);
+        }
         for (ItemStack s : player.getInventory().getNonEquipmentItems()) if (!s.isEmpty()) available.merge(s.getItem(), (long) s.getCount(), Long::sum);
         for (net.minecraft.world.inventory.Slot s : menu.getInputGridSlots()) {
             ItemStack st = s.getItem();

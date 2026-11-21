@@ -63,6 +63,41 @@ public class BackpackCraftingClientTest implements FabricClientGameTest {
             RealMouse.moveTo(ctx, 4, 4); // out of the way, so no hover hint covers the panel
             System.out.println("[nexus] backpack crafting panel: " + shot(ctx, "nexus_backpack_crafting"));
 
+            // The recipe book's button is under the grid. With room for the book beside the screen (a 1920x1080 window at GUI scale 2 is
+            // 960 wide), a real click opens it and the screen slides right to make room
+            ctx.getInput().resizeWindow(1920, 1080);
+            ctx.runOnClient(mc -> { mc.options.guiScale().set(2); mc.resizeGui(); });
+            ctx.waitTicks(10);
+            int leftBefore = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).slotCentre(((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0))[0]);
+            int[] bookButton = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre());
+            check(bookButton != null, "with a Crafting module on there is a recipe book button");
+            RealMouse.leftClick(ctx, bookButton);
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookVisible()), "clicking it opens the recipe book");
+            int leftAfter = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).slotCentre(((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0))[0]);
+            check(leftAfter > leftBefore, "and the screen slides right to make room for it: " + leftBefore + " -> " + leftAfter);
+            RealMouse.moveTo(ctx, 4, 4);
+            System.out.println("[nexus] backpack recipe book: " + shot(ctx, "nexus_backpack_recipe_book"));
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre()));
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).recipeBookVisible()), "clicking it again closes the book");
+            // Without room (GUI scale 4 is 480 wide here, and the book, the screen and the crafting panel need more) the open book covers the screen
+            ctx.runOnClient(mc -> { mc.options.guiScale().set(4); mc.resizeGui(); });
+            ctx.waitTicks(10);
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre()));
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookVisible()), "the book opens on a narrow screen too");
+            RealMouse.moveTo(ctx, 4, 4);
+            System.out.println("[nexus] backpack recipe book, narrow screen: " + shot(ctx, "nexus_backpack_recipe_book_narrow"));
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre() == null ? new int[]{4, 4}
+                    : ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre()));
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).recipeBookVisible()), "and its button, drawn on top, closes it again");
+            // Back to the usual window for the rest
+            ctx.getInput().resizeWindow(1280, 720);
+            ctx.runOnClient(mc -> { mc.options.guiScale().set(0); mc.resizeGui(); });
+            ctx.waitTicks(10);
+
             // Pick the planks up from the Backpack, put one in each of two grid slots with right clicks, put the rest back
             RealMouse.leftClick(ctx, at(ctx, menu -> menu.getSlot(BackpackModules.SLOTS)));
             RealMouse.rightClick(ctx, at(ctx, menu -> menu.getInputGridSlots().get(0)));
@@ -106,6 +141,7 @@ public class BackpackCraftingClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).craftingShown()), "without the Crafting module the panel is gone");
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).recipeBookButtonCentre() == null), "and so is the recipe book's button");
             check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().trashSlot().isActive()), "but the trash slot is still there");
             // Take the sticks out of the trash (a shift-click gives them back), then rest the mouse on the empty slot for its hint
             int trashIndex = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().trashSlot().index);

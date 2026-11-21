@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.nexium.client.compat.RecipeTransfer;
 import net.nexium.client.compat.RecipeViewerSearch;
+import net.nexium.essentials.backpack.BackpackMenu;
 import net.nexium.terminal.TerminalMenu;
 
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * REI's "+" button on crafting recipes fills the Crafting Terminal's grid from the network, and its tooltip lists what is
- * missing; REI's search box and the terminals' stay the same. Only loaded when REI is installed.
+ * REI's "+" button on crafting recipes fills the Crafting Terminal's grid from the network (or the Backpack's grid, with a Crafting
+ * module, from its own slots and then the inventory), and its tooltip lists what is missing; REI's search box and the terminals' stay the same. Only loaded when REI is installed.
  */
 public class NexiumReiPlugin implements REIClientPlugin {
     private static final String CRAFTING_CATEGORY = "minecraft:plugins/crafting";
@@ -41,7 +42,10 @@ public class NexiumReiPlugin implements REIClientPlugin {
     }
 
     private static TransferHandler.Result handle(TransferHandler.Context context) {
-        if (!(context.getMenu() instanceof TerminalMenu menu) || !menu.isCrafting()) return TransferHandler.Result.createNotApplicable();
+        net.minecraft.world.inventory.AbstractCraftingMenu menu;
+        if (context.getMenu() instanceof TerminalMenu terminal && terminal.isCrafting()) menu = terminal;
+        else if (context.getMenu() instanceof BackpackMenu backpack && backpack.craftingActive()) menu = backpack;
+        else return TransferHandler.Result.createNotApplicable();
         if (!CRAFTING_CATEGORY.equals(context.getDisplay().getCategoryIdentifier().toString())) return TransferHandler.Result.createNotApplicable();
         Optional<Identifier> id = context.getDisplay().getDisplayLocation();
         if (id.isEmpty()) return TransferHandler.Result.createNotApplicable();

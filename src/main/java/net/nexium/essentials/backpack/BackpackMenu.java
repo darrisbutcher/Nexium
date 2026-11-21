@@ -10,10 +10,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.core.Holder;
+import net.minecraft.recipebook.PlaceRecipeHelper;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -287,6 +292,106 @@ public class BackpackMenu extends AbstractCraftingMenu {
     @Override
     public RecipeBookType getRecipeBookType() {
         return RecipeBookType.CRAFTING;
+    }
+
+    // ---- The recipe book and recipe viewers: ingredients from the Backpack first, then the inventory -------------------
+
+    /** What the recipe book may craft from: the grid, and the Backpack's own slots (the screen adds the inventory). */
+    @Override
+    public void fillCraftSlotsStackedContents(StackedItemContents stacked) {
+        super.fillCraftSlotsStackedContents(stacked);
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.isEmpty() && Inventory.isUsableForCrafting(stored)) stacked.accountStack(stored);
+        }
+    }
+
+    /** Takes up to {@code amount} of this item (usable for crafting) out of the Backpack's slots. */
+    private ItemStack takeFromBackpack(Item item, int amount) {
+        ItemStack taken = ItemStack.EMPTY;
+        for (int i = 0; i < BackpackContents.SIZE && taken.getCount() < amount; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.is(item) || !Inventory.isUsableForCrafting(stored)) continue;
+            ItemStack part = contents.removeItem(i, Math.min(amount - taken.getCount(), stored.getCount()));
+            if (taken.isEmpty()) taken = part;
+            else taken.grow(part.getCount());
+        }
+        return taken;
+    }
+
+    /**
+     * Fills the grid for a recipe picked in the recipe book, like vanilla's but taking the ingredients from the Backpack's slots first
+     * and from the player's inventory after them.
+     */
+    @Override
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean useMaxItems, boolean allowDroppingItemsToClear, RecipeHolder<?> holder,
+                                                          ServerLevel level, Inventory inventory) {
+        if (!craftingActive() || !(holder.value() instanceof CraftingRecipe recipe)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        StackedItemContents available = new StackedItemContents();
+        inventory.fillStackedContents(available);
+        craftSlots.fillStackedContents(available);
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.isEmpty() && Inventory.isUsableForCrafting(stored)) available.accountStack(stored);
+        }
+        if (!available.canCraft(recipe, null)) {
+            clearGrid();
+            return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+        }
+        boolean alreadyPlaced = recipe.matches(craftSlots.asCraftInput(), level);
+        int amount;
+        if (useMaxItems) {
+            amount = available.getBiggestCraftableStack(recipe, null);
+        } else if (alreadyPlaced) {
+            int smallest = Integer.MAX_VALUE;
+            for (Slot s : gridSlots) if (!s.getItem().isEmpty()) smallest = Math.min(smallest, s.getItem().getCount());
+            amount = smallest == Integer.MAX_VALUE ? 1 : smallest + 1;
+        } else {
+            amount = 1;
+        }
+        List<Holder<Item>> used = new ArrayList<>();
+        if (!available.canCraft(recipe, amount, used::add)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        int clamped = amount;
+        for (Holder<Item> item : used) clamped = Math.min(clamped, new ItemStack(item).getMaxStackSize());
+        if (clamped != amount) {
+            used.clear();
+            if (!available.canCraft(recipe, clamped, used::add)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        }
+        final int perSlot = clamped;
+
+        clearGrid();
+        PlaceRecipeHelper.placeRecipe(3, 3, recipe, recipe.placementInfo().slotsToIngredientIndex(), (ingredientIndex, gridIndex, x, y) -> {
+            if (ingredientIndex == -1) return;
+            Item item = used.get(ingredientIndex).value();
+            ItemStack placed = takeFromBackpack(item, perSlot);
+            // Top up from the player's inventory if the Backpack ran short
+            for (int i = 0; i < inventory.getContainerSize() && placed.getCount() < perSlot; i++) {
+                ItemStack s = inventory.getItem(i);
+                if (!s.is(item) || !Inventory.isUsableForCrafting(s)) continue;
+                ItemStack taken = s.split(perSlot - placed.getCount());
+                if (placed.isEmpty()) placed = taken;
+                else placed.grow(taken.getCount());
+            }
+            gridSlots.get(gridIndex).set(placed);
+        });
+        inventory.setChanged();
+        slotsChanged(craftSlots);
+        return RecipeBookMenu.PostPlaceAction.NOTHING;
+    }
+
+    /** A recipe picked in JEI or REI: fill the grid the same way the recipe book does. */
+    public void fillGrid(ServerPlayer sp, net.nexium.terminal.FillGridPayload payload) {
+        if (!craftingActive()) return;
+        ServerLevel level = (ServerLevel) sp.level();
+        level.recipeAccess().byKey(payload.recipe()).ifPresent(holder -> {
+            handlePlacement(payload.maxItems(), true, holder, level, sp.getInventory());
+            broadcastChanges();
+        });
+    }
+
+    /** A copy of what the Backpack's own slots hold, on either side (for the recipe viewers' "can this be made" check). */
+    public List<ItemStack> storedStacks() {
+        return contentsCopy();
     }
 
     /** The trash slot, and the crafting grid's and result slot's, for the screen and for tests. */

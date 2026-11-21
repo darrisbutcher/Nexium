@@ -386,6 +386,16 @@ vanilla. Endermen never pick up blocks.
   Double Compressed, then Compressed, then stone, an iron block becomes ingots, and what was not needed stays in the Backpack.
   Which block unpacks into what comes from the crafting recipes, as for the Compacting Module (only packs that craft straight
   back), and renamed or enchanted items are never unpacked. It works while the Backpack's screen is open too.
+* **Crafting Module** (iron ingots in the corners, any planks on the four sides, a crafting table in the middle: `IPI / PTP / IPI`):
+  gives the Backpack's screen a **3x3 crafting grid** with a result slot, in a panel at its right (the screen is centred with it).
+  Put items in the grid by hand or open the **recipe book** (its button is under the grid): the book lists what the Backpack's
+  slots and your inventory can make, and a recipe you click, or a recipe viewer's JEI or REI "+", fills the grid from the Backpack
+  first and your inventory after it. After every craft the emptied grid slots refill from the Backpack, so a shift-click on the
+  result crafts all there is. Take the module out or switch it off, or close the screen, and what is in the grid goes back into the
+  Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla.
+* **Trash**: the Backpack's screen always has a trash slot, under the module column (no module needed). Drop an item on it to get
+  rid of it. It keeps the last item you put in until you put another in or close the screen, so you can take it back; shift-click
+  empties it into your inventory.
 
 ### Shulker box preview
 * A shulker box with something in it shows a **9 x 3 grid of what is inside** under its name, in slots the colour of the box, with

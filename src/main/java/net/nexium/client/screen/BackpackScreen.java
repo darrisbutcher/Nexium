@@ -3,9 +3,16 @@ package net.nexium.client.screen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
+import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.nexium.essentials.backpack.BackpackFeeding;
 import net.nexium.essentials.backpack.BackpackMenu;
@@ -23,14 +30,21 @@ import net.nexium.essentials.client.NexiumEssentialsClient;
  * <p>With a Crafting module installed and on, a panel on the right of the screen holds a 3x3 crafting grid and its result slot, and the
  * screen is centred as a whole. The trash slot under the module column is always there; it is drawn as a small bin while it is empty.
  *
+ * <p>The crafting panel has the vanilla recipe book's button (under its grid); the book opens at the left of the screen and slides the
+ * screen to the right, as the Crafting Terminal's does, and the recipes it lists are those the Backpack's slots and your inventory can make.
+ * When the screen is too narrow for the book beside it (the book, a small gap and the whole Backpack screen), the open book covers
+ * the screen instead, as in vanilla.
+ *
  * <p>With a Feeding module installed, a small panel under the module column holds its two settings: the hunger level it eats at
  * (a click steps it lower, shift-click higher) and whether it may waste food.
  */
-public class BackpackScreen extends BaseScreen<BackpackMenu> {
+public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
+    /** RecipeBookComponent's own offset left of centre when there is room, and the gap kept between the book and the screen. */
+    private static final int BOOK_X_OFFSET = 86, BOOK_GAP = 4;
     private static final int TOGGLE_X = BackpackMenu.MODULE_X + 20, TOGGLE_WIDTH = 48;
+    /** The crafting panel's height: its title, the grid, and a row under it for the recipe book's button. */
+    private static final int SIDE_H = BackpackMenu.CRAFT_Y + 3 * 18 + 4 + 18 + 6;
     /** The Feeding panel: its heading, then its level button and its waste button, under the last module row. */
-    /** The crafting panel's height: its title, the grid and a margin. */
-    private static final int SIDE_H = BackpackMenu.CRAFT_Y + 3 * 18 + 10;
     private static final int FEEDING_Y = BackpackMenu.MODULE_Y + BackpackModules.SLOTS * BackpackMenu.MODULE_ROW + 4, FEEDING_WIDTH = 68;
     private final Button[] toggles = new Button[BackpackModules.SLOTS];
     private Button feedingLevel, feedingWaste;
@@ -38,29 +52,103 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     /** Whether the crafting panel is showing (the screen is centred with it, and re-centred when it comes or goes). */
     private boolean craftingShown;
     private final SideHints hints = new SideHints();
+    private final CraftingRecipeBookComponent recipeBook;
 
     public BackpackScreen(BackpackMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, BackpackMenu.WIDTH, BackpackMenu.HEIGHT, BackpackMenu.INVENTORY_Y);
+        this(menu, new CraftingRecipeBookComponent(menu), inventory, title);
+    }
+
+    private BackpackScreen(BackpackMenu menu, CraftingRecipeBookComponent recipeBook, Inventory inventory, Component title) {
+        super(menu, recipeBook, inventory, title);
+        this.recipeBook = recipeBook;
+        // Widened in nexium.accesswidener: the recipe-book screen fixes the size at 176x166
+        this.imageWidth = BackpackMenu.WIDTH;
+        this.imageHeight = BackpackMenu.HEIGHT;
+        this.inventoryLabelY = BackpackMenu.INVENTORY_Y - 11;
         this.titleLabelX = 8;
         this.titleLabelY = 6;
     }
 
+    /** The colours this screen is drawn in: all mod screens match vanilla's dark inventory. */
+    private Palette palette() {
+        return Palette.DARK;
+    }
+
+    /** The whole screen's width: the main panel and, while the Crafting module is on, the crafting panel beside it. */
+    private int totalWidth() {
+        return BackpackMenu.WIDTH + (craftingShown ? BackpackMenu.SIDE_W : 0);
+    }
+
+    /** Where the open recipe book ends. Vanilla puts it left of where a 176-wide screen would be centred, so this is measured from the middle. */
+    private int bookRight() {
+        return (width - RecipeBookComponent.IMAGE_WIDTH) / 2 - BOOK_X_OFFSET + RecipeBookComponent.IMAGE_WIDTH;
+    }
+
+    /** Where the panel goes: a small gap right of the open recipe book, else centred (with the crafting panel). */
+    private int panelLeft() {
+        if (recipeBook.isVisible() && !widthTooNarrow) return bookRight() + BOOK_GAP;
+        return (width - totalWidth()) / 2;
+    }
+
+    /** The vanilla recipe book button, while there is one. */
+    private ImageButton recipeBookButton() {
+        for (var child : children()) if (child instanceof ImageButton b) return b;
+        return null;
+    }
+
+    @Override
+    protected ScreenPosition getRecipeBookButtonPosition() {
+        // Under the crafting grid, at its left
+        return new ScreenPosition(panelLeft() + BackpackMenu.CRAFT_X, topPos + BackpackMenu.CRAFT_Y + 3 * 18 + 4);
+    }
+
+    @Override
+    protected void onRecipeBookButtonClick() {
+        leftPos = panelLeft(); // the screen slides right when the book opens
+        placeWidgets();
+    }
+
+    /** The recipe book's button is only there while the grid is: without a Crafting module the vanilla button is taken off. */
+    private void dropRecipeBookButtonWithoutGrid() {
+        if (craftingShown) return;
+        for (var child : new java.util.ArrayList<>(children())) if (child instanceof ImageButton) removeWidget(child);
+        if (recipeBook.isVisible()) recipeBook.toggleVisibility();
+    }
+
+    /** Puts the module and Feeding buttons where they go for the current {@code leftPos}. */
+    private void placeWidgets() {
+        for (int i = 0; i < BackpackModules.SLOTS; i++) {
+            toggles[i].setPosition(leftPos + TOGGLE_X, topPos + BackpackMenu.MODULE_Y + i * BackpackMenu.MODULE_ROW);
+        }
+        feedingLevel.setPosition(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 13);
+        feedingWaste.setPosition(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 31);
+    }
+
     @Override
     protected void init() {
-        super.init();
         craftingShown = menu.craftingActive();
-        // Centre the screen with the crafting panel, which sits to its right
-        leftPos = (width - BackpackMenu.WIDTH - (craftingShown ? BackpackMenu.SIDE_W : 0)) / 2;
+        super.init();
+        // Vanilla's rule for "too narrow" is for a screen 176 wide: this one is wider, so the book covers it when the whole screen
+        // would not fit to its right
+        boolean tooNarrow = bookRight() + BOOK_GAP + totalWidth() > width;
+        if (tooNarrow != widthTooNarrow) {
+            widthTooNarrow = tooNarrow;
+            recipeBook.init(width, height, minecraft, widthTooNarrow);
+        }
+        // Centred with the crafting panel, which sits to its right (or right of the open recipe book)
+        leftPos = panelLeft();
         for (int i = 0; i < BackpackModules.SLOTS; i++) {
             final int slot = i;
             toggles[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(BackpackMenu.BTN_TOGGLE_MODULE + slot))
-                    .bounds(leftPos + TOGGLE_X, topPos + BackpackMenu.MODULE_Y + i * BackpackMenu.MODULE_ROW, TOGGLE_WIDTH, 16).build());
+                    .bounds(0, 0, TOGGLE_WIDTH, 16).build());
         }
         feedingLevel = addRenderableWidget(Button.builder(Component.empty(),
                         b -> click(minecraft != null && minecraft.hasShiftDown() ? BackpackMenu.BTN_FEEDING_LEVEL_BACK : BackpackMenu.BTN_FEEDING_LEVEL))
-                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 13, FEEDING_WIDTH, 16).build());
+                .bounds(0, 0, FEEDING_WIDTH, 16).build());
         feedingWaste = addRenderableWidget(Button.builder(Component.empty(), b -> click(BackpackMenu.BTN_FEEDING_WASTE))
-                .bounds(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 31, FEEDING_WIDTH, 16).build());
+                .bounds(0, 0, FEEDING_WIDTH, 16).build());
+        placeWidgets();
+        dropRecipeBookButtonWithoutGrid();
         refresh();
     }
 
@@ -69,7 +157,7 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     }
 
     @Override
-    protected void containerTick() {
+    public void containerTick() {
         super.containerTick();
         // The Crafting module came or went: the panel shows or hides, and the screen is centred again
         if (menu.craftingActive() != craftingShown) rebuildWidgets();
@@ -82,6 +170,50 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
         if (craftingShown && mouseX >= xo + BackpackMenu.SIDE_X && mouseX < xo + BackpackMenu.SIDE_X + BackpackMenu.SIDE_W
                 && mouseY >= yo && mouseY < yo + SIDE_H) return false;
         return super.hasClickedOutside(mouseX, mouseY, xo, yo);
+    }
+
+    /** Title and inventory labels in the palette's text colour. */
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        g.text(font, title, titleLabelX, titleLabelY, palette().text(), false);
+        g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, palette().text(), false);
+    }
+
+    @Override
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(g, mouseX, mouseY, partialTick);
+        palette().panel(g, leftPos, topPos, imageWidth, imageHeight);
+        for (Slot s : menu.slots) if (s.isActive()) palette().slot(g, leftPos + s.x, topPos + s.y);
+        renderExtraBg(g, mouseX, mouseY);
+    }
+
+    /** Whether the recipe book is open (for tests). */
+    public boolean recipeBookVisible() {
+        return recipeBook.isVisible();
+    }
+
+    /** The centre of the recipe book's button, in screen coordinates (for tests), or null while there is none. */
+    public int[] recipeBookButtonCentre() {
+        ImageButton b = recipeBookButton();
+        return b == null ? null : new int[]{b.getX() + b.getWidth() / 2, b.getY() + b.getHeight() / 2};
+    }
+
+    /** Whether the open recipe book covers the screen (too narrow for it to sit beside it). */
+    private boolean bookCoversScreen() {
+        return widthTooNarrow && recipeBook.isVisible();
+    }
+
+    /**
+     * Vanilla draws only the book while it covers the screen, and answers every click outside it itself, so the book's own button
+     * could not be pressed to close it: it is drawn on top and let through here.
+     */
+    @Override
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        if (bookCoversScreen() && craftingShown) {
+            ImageButton b = recipeBookButton();
+            if (b != null && b.isMouseOver(event.x(), event.y()) && b.mouseClicked(event, doubleClick)) return true;
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
     /** The centre of a slot of this menu, in screen coordinates (for tests, which click it with the real mouse). */
@@ -157,6 +289,10 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
+        if (bookCoversScreen() && craftingShown) {
+            ImageButton b = recipeBookButton();
+            if (b != null) b.extractRenderState(g, mouseX, mouseY, partialTick);
+        }
         hints.render(g, leftPos, leftPos + imageWidth + (craftingShown ? BackpackMenu.SIDE_W : 0), mouseX, mouseY);
         // The trash slot says what it is, empty or not
         if (hoveredSlot == menu.trashSlot() && menu.getCarried().isEmpty()) {
@@ -167,8 +303,7 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
         }
     }
 
-    @Override
-    protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+    private void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, Component.translatable("screen.nexium.backpack.modules"), leftPos + BackpackMenu.MODULE_X, topPos + 6, palette().text(), false);
         if (hasFeeding) {
             g.text(font, Component.translatable("screen.nexium.backpack.feeding"), leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y, palette().text(), false);
@@ -210,8 +345,10 @@ public class BackpackScreen extends BaseScreen<BackpackMenu> {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        // The same key closes it again
-        if (NexiumEssentialsClient.OPEN_BACKPACK.matches(event)) {
+        // The same key closes it again, except while it is being typed into the recipe book's search
+        EditBox bookSearch = recipeBook.searchBox;
+        boolean typing = bookSearch != null && recipeBook.isVisible() && bookSearch.isFocused();
+        if (!typing && NexiumEssentialsClient.OPEN_BACKPACK.matches(event)) {
             onClose();
             return true;
         }
