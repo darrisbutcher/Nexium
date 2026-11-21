@@ -7,15 +7,31 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.RecipeBookMenu;
+import net.minecraft.world.inventory.RecipeBookType;
+import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.core.Holder;
+import net.minecraft.recipebook.PlaceRecipeHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Prediction;
 import net.nexium.essentials.registry.ModMenus;
 import net.nexium.essentials.slots.ExtraSlots;
-import net.nexium.util.BaseMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A Backpack's screen: its {@value BackpackModules#SLOTS} module slots (each with an on/off switch), its
@@ -25,8 +41,13 @@ import java.util.List;
  * screen is open.
  *
  * <p>Every stackable item stacks to {@value BackpackContents#STACK_MAX} in the Backpack's slots.
+ *
+ * <p>With a Crafting module installed and on, a panel to the right of the screen has a 3x3 crafting grid and its result slot. The
+ * grid refills from the Backpack's own slots after every craft, and what is left in it goes back into the Backpack when the module
+ * is taken out or switched off, or the screen closes. A trash slot (always there, no module) holds the last item put in it until
+ * another goes in or the screen closes.
  */
-public class BackpackMenu extends BaseMenu {
+public class BackpackMenu extends AbstractCraftingMenu {
     /** Button id of the first module's on/off switch; module slot {@code n} is {@code BTN_TOGGLE_MODULE + n}. */
     public static final int BTN_TOGGLE_MODULE = 0;
     /** Button ids of the Feeding module's settings: its level one step lower (or higher), and its never-waste switch. */
@@ -37,8 +58,20 @@ public class BackpackMenu extends BaseMenu {
     /** The player's inventory sits below the Backpack's rows. */
     public static final int INVENTORY_Y = 104;
     public static final int WIDTH = 256, HEIGHT = INVENTORY_Y + 82;
+    /** The Crafting module's panel, right of the main one: where it starts, how wide it is, its grid and its result slot. */
+    public static final int SIDE_X = WIDTH, SIDE_W = 108;
+    public static final int CRAFT_X = SIDE_X + 8, CRAFT_Y = 18, RESULT_X = SIDE_X + 84, RESULT_Y = CRAFT_Y + 18;
+    /** The trash slot: right under the module column, at its right-hand side. */
+    public static final int TRASH_X = MODULE_X + 50, TRASH_Y = MODULE_Y + BackpackModules.SLOTS * MODULE_ROW - 2;
 
     private final Player player;
+    /** How many slots before the player's inventory are the menu's own (modules and storage), and where the player's inventory starts. */
+    private int customSlotCount, playerSlotStart = -1;
+    private final Slot resultSlot;
+    private final List<Slot> gridSlots = new ArrayList<>();
+    private final Slot trashSlot;
+    /** What the trash slot holds: the last item put in, until another goes in or the screen closes. */
+    private final SimpleContainer trash = new SimpleContainer(1);
     /** {@link Backpacks#EQUIPPED}, or the inventory slot the Backpack was opened from. */
     private final int source;
     /** Server only: the Backpack stack the menu was opened for, so it closes if that stack is replaced. */
@@ -74,7 +107,7 @@ public class BackpackMenu extends BaseMenu {
 
     /** Both sides: {@code source} is {@link Backpacks#EQUIPPED} or the inventory slot the Backpack was opened from. */
     public BackpackMenu(int id, Inventory inventory, Integer source) {
-        super(ModMenus.BACKPACK, id);
+        super(ModMenus.BACKPACK, id, 3, 3);
         this.player = inventory.player;
         this.source = source;
         this.opened = player.level().isClientSide() ? ItemStack.EMPTY : backpack();
@@ -120,6 +153,250 @@ public class BackpackMenu extends BaseMenu {
             });
         }
         addPlayerSlots(inventory, GRID_X, INVENTORY_Y);
+        // After the player's slots, so every slot number above is the same as it always was
+        resultSlot = addSlot(new BackpackResultSlot(player, RESULT_X, RESULT_Y));
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) gridSlots.add(addSlot(new GridSlot(craftSlots, col + row * 3, CRAFT_X + col * 18, CRAFT_Y + row * 18)));
+        }
+        trashSlot = addSlot(new Slot(trash, 0, TRASH_X, TRASH_Y));
+    }
+
+    private Slot addCustomSlot(Slot slot) {
+        customSlotCount++;
+        return addSlot(slot);
+    }
+
+    private void addPlayerSlots(Inventory inventory, int left, int top) {
+        playerSlotStart = slots.size();
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, left + col * 18, top + row * 18));
+        }
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, left + col * 18, top + 58));
+    }
+
+    // ---- The Crafting module ------------------------------------------------------------------------------------
+
+    /** Whether a Crafting module is installed and switched on, so the grid is there. Works on both sides: the module slots are synced. */
+    public boolean craftingActive() {
+        for (int i = 0; i < BackpackModules.SLOTS; i++) {
+            ItemStack module = modules.getItem(i);
+            if (module.getItem() instanceof BackpackModuleItem item && item.type() == BackpackModuleType.CRAFTING
+                    && !module.has(net.nexium.registry.ModComponents.MODULE_OFF)) return true;
+        }
+        return false;
+    }
+
+    /** A slot of the crafting grid: only there while the Crafting module is. */
+    private class GridSlot extends Slot {
+        GridSlot(Container container, int index, int x, int y) {
+            super(container, index, x, y);
+        }
+
+        @Override
+        public boolean isActive() {
+            return craftingActive();
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return craftingActive();
+        }
+
+        @Override
+        public boolean mayPickup(Player player) {
+            return craftingActive();
+        }
+    }
+
+    /** The result slot: after a craft it refills the grid's emptied slots from the Backpack's own slots. */
+    private class BackpackResultSlot extends ResultSlot {
+        BackpackResultSlot(Player player, int x, int y) {
+            super(player, craftSlots, resultSlots, 0, x, y);
+        }
+
+        @Override
+        public boolean isActive() {
+            return craftingActive();
+        }
+
+        @Override
+        public boolean mayPickup(Player player) {
+            return craftingActive();
+        }
+
+        @Override
+        public void onTake(Player p, ItemStack stack) {
+            ItemStack[] before = new ItemStack[9];
+            for (int i = 0; i < 9; i++) before[i] = craftSlots.getItem(i).copy();
+            super.onTake(p, stack);
+            if (p.level().isClientSide()) return;
+            refillGrid(before);
+            slotsChanged(craftSlots);
+        }
+    }
+
+    /** Puts one of the same item (from the Backpack's slots) back in each grid slot a craft emptied. */
+    private void refillGrid(ItemStack[] before) {
+        for (int i = 0; i < 9; i++) {
+            if (!craftSlots.getItem(i).isEmpty() || before[i].isEmpty()) continue;
+            for (int j = 0; j < BackpackContents.SIZE; j++) {
+                ItemStack stored = contents.getItem(j);
+                if (stored.isEmpty() || !ItemStack.isSameItemSameComponents(stored, before[i])) continue;
+                craftSlots.setItem(i, contents.removeItem(j, 1));
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+        if (container == craftSlots && player instanceof ServerPlayer sp) {
+            ServerLevel level = (ServerLevel) sp.level();
+            CraftingInput input = craftSlots.asCraftInput();
+            Optional<RecipeHolder<CraftingRecipe>> recipe = craftingActive() ? level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level) : Optional.empty();
+            resultSlots.setItem(0, recipe.map(r -> r.value().assemble(input)).orElse(ItemStack.EMPTY));
+            broadcastChanges();
+        }
+    }
+
+    /** Server: puts the grid's contents back in the Backpack's slots (what does not fit goes to the inventory, then the ground). */
+    private void clearGrid() {
+        NonNullList<ItemStack> stored = contentsCopy();
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = craftSlots.removeItemNoUpdate(i);
+            if (stack.isEmpty()) continue;
+            ItemStack rest = BackpackContents.insert(stored, stack);
+            if (!rest.isEmpty()) player.getInventory().placeItemBackInInventory(rest, false, Prediction.SERVER_ONLY);
+        }
+        replaceContents(stored);
+        resultSlots.clearContent();
+        slotsChanged(craftSlots);
+    }
+
+    @Override
+    public Slot getResultSlot() {
+        return resultSlot;
+    }
+
+    @Override
+    public List<Slot> getInputGridSlots() {
+        return gridSlots;
+    }
+
+    @Override
+    protected Player owner() {
+        return player;
+    }
+
+    @Override
+    public RecipeBookType getRecipeBookType() {
+        return RecipeBookType.CRAFTING;
+    }
+
+    // ---- The recipe book and recipe viewers: ingredients from the Backpack first, then the inventory -------------------
+
+    /** What the recipe book may craft from: the grid, and the Backpack's own slots (the screen adds the inventory). */
+    @Override
+    public void fillCraftSlotsStackedContents(StackedItemContents stacked) {
+        super.fillCraftSlotsStackedContents(stacked);
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.isEmpty() && Inventory.isUsableForCrafting(stored)) stacked.accountStack(stored);
+        }
+    }
+
+    /** Takes up to {@code amount} of this item (usable for crafting) out of the Backpack's slots. */
+    private ItemStack takeFromBackpack(Item item, int amount) {
+        ItemStack taken = ItemStack.EMPTY;
+        for (int i = 0; i < BackpackContents.SIZE && taken.getCount() < amount; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.is(item) || !Inventory.isUsableForCrafting(stored)) continue;
+            ItemStack part = contents.removeItem(i, Math.min(amount - taken.getCount(), stored.getCount()));
+            if (taken.isEmpty()) taken = part;
+            else taken.grow(part.getCount());
+        }
+        return taken;
+    }
+
+    /**
+     * Fills the grid for a recipe picked in the recipe book, like vanilla's but taking the ingredients from the Backpack's slots first
+     * and from the player's inventory after them.
+     */
+    @Override
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean useMaxItems, boolean allowDroppingItemsToClear, RecipeHolder<?> holder,
+                                                          ServerLevel level, Inventory inventory) {
+        if (!craftingActive() || !(holder.value() instanceof CraftingRecipe recipe)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        StackedItemContents available = new StackedItemContents();
+        inventory.fillStackedContents(available);
+        craftSlots.fillStackedContents(available);
+        for (int i = 0; i < BackpackContents.SIZE; i++) {
+            ItemStack stored = contents.getItem(i);
+            if (!stored.isEmpty() && Inventory.isUsableForCrafting(stored)) available.accountStack(stored);
+        }
+        if (!available.canCraft(recipe, null)) {
+            clearGrid();
+            return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+        }
+        boolean alreadyPlaced = recipe.matches(craftSlots.asCraftInput(), level);
+        int amount;
+        if (useMaxItems) {
+            amount = available.getBiggestCraftableStack(recipe, null);
+        } else if (alreadyPlaced) {
+            int smallest = Integer.MAX_VALUE;
+            for (Slot s : gridSlots) if (!s.getItem().isEmpty()) smallest = Math.min(smallest, s.getItem().getCount());
+            amount = smallest == Integer.MAX_VALUE ? 1 : smallest + 1;
+        } else {
+            amount = 1;
+        }
+        List<Holder<Item>> used = new ArrayList<>();
+        if (!available.canCraft(recipe, amount, used::add)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        int clamped = amount;
+        for (Holder<Item> item : used) clamped = Math.min(clamped, new ItemStack(item).getMaxStackSize());
+        if (clamped != amount) {
+            used.clear();
+            if (!available.canCraft(recipe, clamped, used::add)) return RecipeBookMenu.PostPlaceAction.NOTHING;
+        }
+        final int perSlot = clamped;
+
+        clearGrid();
+        PlaceRecipeHelper.placeRecipe(3, 3, recipe, recipe.placementInfo().slotsToIngredientIndex(), (ingredientIndex, gridIndex, x, y) -> {
+            if (ingredientIndex == -1) return;
+            Item item = used.get(ingredientIndex).value();
+            ItemStack placed = takeFromBackpack(item, perSlot);
+            // Top up from the player's inventory if the Backpack ran short
+            for (int i = 0; i < inventory.getContainerSize() && placed.getCount() < perSlot; i++) {
+                ItemStack s = inventory.getItem(i);
+                if (!s.is(item) || !Inventory.isUsableForCrafting(s)) continue;
+                ItemStack taken = s.split(perSlot - placed.getCount());
+                if (placed.isEmpty()) placed = taken;
+                else placed.grow(taken.getCount());
+            }
+            gridSlots.get(gridIndex).set(placed);
+        });
+        inventory.setChanged();
+        slotsChanged(craftSlots);
+        return RecipeBookMenu.PostPlaceAction.NOTHING;
+    }
+
+    /** A recipe picked in JEI or REI: fill the grid the same way the recipe book does. */
+    public void fillGrid(ServerPlayer sp, net.nexium.terminal.FillGridPayload payload) {
+        if (!craftingActive()) return;
+        ServerLevel level = (ServerLevel) sp.level();
+        level.recipeAccess().byKey(payload.recipe()).ifPresent(holder -> {
+            handlePlacement(payload.maxItems(), true, holder, level, sp.getInventory());
+            broadcastChanges();
+        });
+    }
+
+    /** A copy of what the Backpack's own slots hold, on either side (for the recipe viewers' "can this be made" check). */
+    public List<ItemStack> storedStacks() {
+        return contentsCopy();
+    }
+
+    /** The trash slot, and the crafting grid's and result slot's, for the screen and for tests. */
+    public Slot trashSlot() {
+        return trashSlot;
     }
 
     /** The Backpack at this source (or an empty stack): the worn one, or whatever sits in that inventory slot. */
@@ -197,6 +474,8 @@ public class BackpackMenu extends BaseMenu {
 
     private void onModulesChanged() {
         saveModules();
+        // The module was taken out or switched off: its grid goes with it, so what is in it goes back in the Backpack
+        if (valid() && !craftingActive()) clearGrid();
     }
 
     /** The slot index (in this menu) of the inventory slot the Backpack was opened from, or -1 if it is the worn one (or the offhand). */
@@ -210,13 +489,42 @@ public class BackpackMenu extends BaseMenu {
         // The Backpack stays where it is: no clicking it, and no number-key (or offhand) swaps into its slot
         if (slotIndex >= 0 && slotIndex == lockedMenuSlot()) return;
         if (input == ContainerInput.SWAP && (button == source || (button == 40 && source == Inventory.SLOT_OFFHAND))) return;
+        // The trash slot keeps the last item put in it: what is carried goes in and replaces (destroys) what was there
+        if (input == ContainerInput.PICKUP && slotIndex >= 0 && slotIndex < slots.size() && slots.get(slotIndex) == trashSlot && !getCarried().isEmpty()) {
+            trash.setItem(0, getCarried().copy());
+            setCarried(ItemStack.EMPTY);
+            return;
+        }
         super.clicked(slotIndex, button, input, player);
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         if (index == lockedMenuSlot()) return ItemStack.EMPTY;
-        return super.quickMoveStack(player, index);
+        Slot slot = slots.get(index);
+        if (!slot.hasItem()) return ItemStack.EMPTY;
+        int playerEnd = playerSlotStart + 36;
+        ItemStack stack = slot.getItem();
+        ItemStack original = stack.copy();
+        if (slot == resultSlot) {
+            // Craft: the result goes to the player's inventory (the grid refills from the Backpack, so this can go on)
+            stack.getItem().onCraftedBy(stack, player);
+            if (!moveItemStackTo(stack, playerSlotStart, playerEnd, true)) return ItemStack.EMPTY;
+            slot.onQuickCraft(stack, original);
+        } else if (index < playerSlotStart) {
+            if (!moveItemStackTo(stack, playerSlotStart, playerEnd, true)) return ItemStack.EMPTY;
+        } else if (index < playerEnd) {
+            // From the player's slots to the Backpack's (modules and storage), never the grid or the trash
+            if (customSlotCount == 0 || !moveItemStackTo(stack, 0, playerSlotStart, false)) return ItemStack.EMPTY;
+        } else if (!moveItemStackTo(stack, playerSlotStart, playerEnd, false)) {
+            return ItemStack.EMPTY; // the grid and the trash give their items back
+        }
+        if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
+        else slot.setChanged();
+        if (stack.getCount() == original.getCount()) return ItemStack.EMPTY;
+        slot.onTake(player, stack);
+        if (slot == resultSlot) player.drop(stack, false, Prediction.SERVER_ONLY);
+        return original;
     }
 
     @Override
@@ -258,6 +566,10 @@ public class BackpackMenu extends BaseMenu {
 
     @Override
     public void removed(Player player) {
+        if (!player.level().isClientSide()) {
+            clearGrid(); // what is left in the crafting grid goes back in the Backpack
+            trash.clearContent(); // and the trash is emptied
+        }
         if (valid()) {
             saveContents();
             saveModules();

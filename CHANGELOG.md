@@ -3,6 +3,21 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.9
+
+* **A Crafting module for the Backpack: a 3x3 crafting grid in its screen.** Make it with iron ingots in the corners, any planks on the four
+  sides and a crafting table in the middle. With it installed and switched on, a panel at the right of the Backpack's screen has a 3x3
+  grid and a result slot (the screen is centred with it). Put items in the grid by hand, or use the **recipe book** (its button is under
+  the grid) or the **+ button of JEI or REI**: the grid fills from what the Backpack holds first and your inventory after it. After every
+  craft the emptied grid slots refill from the Backpack, so a **shift-click on the result crafts all there is**. Take the module out or
+  switch it off, or close the screen, and what is in the grid goes back into the Backpack. When the screen is too narrow for the recipe book
+  beside it, the open book covers the screen, as in vanilla, and its button still closes it. It is the fifth module, so it uses the last
+  module slot. The Codex has pages for it, there is a quest for it in the Backpack chapter, and its icon is a crafting table in the
+  module frame.
+* **A trash slot in the Backpack's screen.** It is under the module column and always there, with no module. Drop an item on it to get rid of it:
+  it keeps the last item you put in until you put another in or close the screen, so you can take it back (a shift-click on it moves it
+  into your inventory). Shift-clicking an item from your inventory never puts it in the trash or the grid.
+
 ## 1.25.8
 
 * **You can set when the Feeding module eats.** With a Feeding module in the Backpack, its screen has a small **Feeding** panel under the

@@ -69,6 +69,7 @@ public final class ModPayloads {
         });
         ServerPlayNetworking.registerGlobalReceiver(FillGridPayload.TYPE, (payload, context) -> {
             if (context.player().containerMenu instanceof TerminalMenu menu) menu.fillGrid(context.player(), payload);
+            else if (context.player().containerMenu instanceof net.nexium.essentials.backpack.BackpackMenu menu) menu.fillGrid(context.player(), payload);
         });
         ServerPlayNetworking.registerGlobalReceiver(RenameLinkPayload.TYPE, (payload, context) -> {
             if (context.player().containerMenu instanceof DimensionalMenu menu) {
