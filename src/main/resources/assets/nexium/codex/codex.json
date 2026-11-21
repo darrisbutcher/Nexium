@@ -159,6 +159,7 @@
       "icon": "nexium:bedrock_breaker_elixir",
       "topics": [
         "enchant_levels",
+        "enchanted_grindstone",
         "elixir"
       ]
     },
@@ -1753,6 +1754,30 @@
         "enchantment levels"
       ],
       "see": [
+        "librarian",
+        "elytra"
+      ]
+    },
+    "enchanted_grindstone": {
+      "pages": [
+        "essentials.enchanted_grindstone",
+        "essentials.enchanted_grindstone2"
+      ],
+      "icon": "nexium:enchanted_grindstone",
+      "recipes": [
+        "enchanted_grindstone"
+      ],
+      "items": [
+        "nexium:enchanted_grindstone"
+      ],
+      "aliases": [
+        "Enchanted Grindstone",
+        "disenchanting",
+        "separate enchantments",
+        "enchanted books"
+      ],
+      "see": [
+        "enchant_levels",
         "librarian",
         "elytra"
       ]

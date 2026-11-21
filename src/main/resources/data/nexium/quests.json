@@ -188,6 +188,12 @@
           "goal": "get",
           "item": "nexium:iron_builder",
           "count": 1
+        },
+        {
+          "id": "grindstone",
+          "goal": "get",
+          "item": "nexium:enchanted_grindstone",
+          "count": 1
         }
       ]
     },

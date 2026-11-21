@@ -21,6 +21,9 @@ public final class ModMenus {
     public static final ExtendedMenuType<FarmAssemblerMenu, BlockPos> FARM_ASSEMBLER = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("farm_assembler"), new ExtendedMenuType<>(FarmAssemblerMenu::new, BlockPos.STREAM_CODEC));
 
+    public static final ExtendedMenuType<net.nexium.essentials.grindstone.EnchantedGrindstoneMenu, BlockPos> ENCHANTED_GRINDSTONE = Registry.register(BuiltInRegistries.MENU,
+            NexiumEssentials.id("enchanted_grindstone"), new ExtendedMenuType<>(net.nexium.essentials.grindstone.EnchantedGrindstoneMenu::new, BlockPos.STREAM_CODEC));
+
     /** Opening data: {@code Backpacks.EQUIPPED}, or the inventory slot holding the Backpack. */
     public static final ExtendedMenuType<net.nexium.essentials.backpack.BackpackMenu, Integer> BACKPACK = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("backpack"), new ExtendedMenuType<>(net.nexium.essentials.backpack.BackpackMenu::new, net.minecraft.network.codec.ByteBufCodecs.VAR_INT));

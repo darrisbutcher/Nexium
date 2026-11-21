@@ -21,7 +21,7 @@ import java.util.Set;
 public final class ModTab {
     public enum Group { STORAGE, TOOLS, FARMS_AND_POWER }
 
-    private static final Set<String> TOOLS = Set.of("magnet", "bedrock_breaker_elixir", "elevator", "dimensional_anchor",
+    private static final Set<String> TOOLS = Set.of("magnet", "bedrock_breaker_elixir", "enchanted_grindstone", "elevator", "dimensional_anchor",
             "nexus_link_module", "area_mining_module", "nexium_ingot", "nexium_block", "reinforced_glass", "nexium_sword", "nexium_pickaxe", "nexium_axe",
             "nexium_shovel", "nexium_hoe", "nexium_spear", "nexium_helmet", "nexium_chestplate", "nexium_leggings", "nexium_boots", "nexium_dog_armor");
 

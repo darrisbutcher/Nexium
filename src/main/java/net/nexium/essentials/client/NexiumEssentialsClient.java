@@ -77,6 +77,7 @@ public final class NexiumEssentialsClient {
         MenuScreens.register(ModMenus.XP_FARM, XpFarmScreen::new);
         MenuScreens.register(ModMenus.FARM, FarmScreen::new);
         MenuScreens.register(ModMenus.FARM_ASSEMBLER, FarmAssemblerScreen::new);
+        MenuScreens.register(ModMenus.ENCHANTED_GRINDSTONE, EnchantedGrindstoneScreen::new);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);
