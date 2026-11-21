@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.8
+
+* **You can set when the Feeding module eats.** With a Feeding module in the Backpack, its screen has a small **Feeding** panel under the
+  module slots, with two settings kept on that module (so they stay with it, and each Backpack has its own). **Eats at N** is the hunger
+  level (of 20) it eats at or below: it starts at 19, which is how it always worked (as soon as any hunger is missing); each click steps
+  it lower (18, 16, 14, 12, 10, 8, 6, 4, 2, then back to 19) and a shift-click steps it higher, so it waits until you are hungrier.
+  **No waste** (the default) keeps it eating only food that restores no more than is missing; **May waste** makes it eat once you are at the
+  level whatever is missing, the best-fitting food or, if every food is bigger than what is missing, the smallest one. Foods with side
+  effects are still never eaten. Hovering a button explains it, and a module that is not at the defaults says so in its tooltip.
+  A Feeding module you already have is unchanged: it starts at 19 with No waste. The Codex has a second Feeding page for the settings.
+
 ## 1.25.7
 
 * **Left clicks work in the tag picker and in the conduit's Out colour grid.** In this version of the game the left mouse button is

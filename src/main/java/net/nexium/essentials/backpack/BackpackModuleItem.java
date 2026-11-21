@@ -31,6 +31,15 @@ public class BackpackModuleItem extends Item {
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         tooltip.accept(Component.translatable("item.nexium." + type.id() + "_module.desc").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltip.nexium.backpack_module_use").withStyle(ChatFormatting.DARK_GRAY));
+        if (type == BackpackModuleType.FEEDING) {
+            // What it has been set to, when that is not the default
+            if (BackpackFeeding.level(stack) != BackpackFeeding.DEFAULT_LEVEL) {
+                tooltip.accept(Component.translatable("tooltip.nexium.feeding_level", BackpackFeeding.level(stack)).withStyle(ChatFormatting.AQUA));
+            }
+            if (BackpackFeeding.allowsWaste(stack)) {
+                tooltip.accept(Component.translatable("tooltip.nexium.feeding_waste").withStyle(ChatFormatting.GOLD));
+            }
+        }
         if (stack.has(ModComponents.MODULE_OFF)) {
             tooltip.accept(Component.translatable("tooltip.nexium.module_off").withStyle(ChatFormatting.DARK_GRAY));
         }

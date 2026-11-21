@@ -367,7 +367,11 @@ vanilla. Endermen never pick up blocks.
 * **Feeding Module** (4 bread around a golden carrot, with iron ingots in the corners): eats for you. Once a second it
   checks how much of your hunger bar is missing and eats the food in the Backpack that restores the most without any of it
   being wasted. It never eats foods with side effects (rotten flesh, pufferfish, golden apples, chorus fruit and the like),
-  and does nothing in creative mode. It works while the Backpack's screen is open too.
+  and does nothing in creative mode. It works while the Backpack's screen is open too. A **Feeding** panel under the module
+  slots in the Backpack's screen sets when it eats, for that module: **Eats at N** is the hunger level (of 20) it eats at or
+  below, 19 at first (as soon as any hunger is missing); a click steps it lower (18, 16, 14 ... 2, then back to 19) and a
+  shift-click steps it higher. **No waste** (the default) eats only food that restores no more than is missing; **May waste**
+  eats at that level whatever is missing: the best-fitting food, or the smallest if every food is bigger than what is missing.
 * **Compacting Module** (4 pistons around a crafting table, with iron ingots in the corners): packs what the Backpack
   holds into storage blocks once a second: 9 iron ingots into an iron block, 9 nuggets into an ingot, 9 wheat into a hay
   bale. It finds what packs into what from the crafting recipes, the way the Compacting Drawer does, and only uses packs that

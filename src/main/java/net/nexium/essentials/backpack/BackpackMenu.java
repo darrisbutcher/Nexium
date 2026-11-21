@@ -29,6 +29,8 @@ import java.util.List;
 public class BackpackMenu extends BaseMenu {
     /** Button id of the first module's on/off switch; module slot {@code n} is {@code BTN_TOGGLE_MODULE + n}. */
     public static final int BTN_TOGGLE_MODULE = 0;
+    /** Button ids of the Feeding module's settings: its level one step lower (or higher), and its never-waste switch. */
+    public static final int BTN_FEEDING_LEVEL = 10, BTN_FEEDING_LEVEL_BACK = 11, BTN_FEEDING_WASTE = 12;
 
     public static final int MODULE_X = 182, MODULE_Y = 18, MODULE_ROW = 20;
     public static final int GRID_X = 8, GRID_Y = 18;
@@ -220,6 +222,10 @@ public class BackpackMenu extends BaseMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (!(player instanceof ServerPlayer serverPlayer)) return true;
+        if (id >= BTN_FEEDING_LEVEL && id <= BTN_FEEDING_WASTE) {
+            changeFeeding(id);
+            return true;
+        }
         int slot = id - BTN_TOGGLE_MODULE;
         if (slot < 0 || slot >= BackpackModules.SLOTS || !valid()) return true;
         ItemStack module = modules.getItem(slot);
@@ -232,6 +238,22 @@ public class BackpackMenu extends BaseMenu {
         serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.backpack_module_on" : "message.nexium.backpack_module_off",
                 changed.getHoverName()).withStyle(nowOn ? ChatFormatting.GREEN : ChatFormatting.GRAY));
         return true;
+    }
+
+    /** Server: one click on the Feeding module's level or never-waste button, on the module wherever it sits in the slots. */
+    private void changeFeeding(int id) {
+        if (!valid()) return;
+        for (int i = 0; i < BackpackModules.SLOTS; i++) {
+            ItemStack module = modules.getItem(i);
+            if (!(module.getItem() instanceof BackpackModuleItem item) || item.type() != BackpackModuleType.FEEDING) continue;
+            ItemStack changed = switch (id) {
+                case BTN_FEEDING_LEVEL -> BackpackFeeding.withLevel(module, BackpackFeeding.nextLevel(BackpackFeeding.level(module), false));
+                case BTN_FEEDING_LEVEL_BACK -> BackpackFeeding.withLevel(module, BackpackFeeding.nextLevel(BackpackFeeding.level(module), true));
+                default -> BackpackFeeding.withWaste(module, !BackpackFeeding.allowsWaste(module));
+            };
+            modules.setItem(i, changed);
+            return;
+        }
     }
 
     @Override

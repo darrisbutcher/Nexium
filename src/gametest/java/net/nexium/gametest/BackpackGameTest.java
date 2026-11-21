@@ -686,6 +686,146 @@ public class BackpackGameTest {
         h.succeed();
     }
 
+    // ---------------------------------------------------------------- Feeding settings
+
+    /** A Backpack with a Feeding module in slot 0 set to this level and waste setting. */
+    private static ItemStack feedingBackpack(int level, boolean waste) {
+        ItemStack backpack = backpackWith(BackpackModuleType.FEEDING);
+        List<ItemStack> slots = new ArrayList<>(BackpackModules.slots(backpack));
+        slots.set(0, BackpackFeeding.withWaste(BackpackFeeding.withLevel(slots.get(0), level), waste));
+        BackpackModules.setSlots(backpack, slots);
+        return backpack;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingWaitsUntilTheFoodBarIsAtItsLevel(GameTestHelper h) {
+        ItemStack backpack = feedingBackpack(14, false);
+        fill(backpack, new ItemStack(Items.APPLE, 4)); // 4 points
+        ServerPlayer player = wearing(h, backpack);
+        player.getFoodData().setFoodLevel(15);
+        h.assertTrue(!BackpackFeeding.feed(player), "level 14, food 15: not hungry enough yet, though an apple would fit");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.APPLE), 4, "nothing was eaten");
+        player.getFoodData().setFoodLevel(14);
+        h.assertTrue(BackpackFeeding.feed(player), "level 14, food 14: it eats");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 18, "an apple restores 4");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.APPLE), 3, "one apple gone");
+        player.getFoodData().setFoodLevel(3);
+        h.assertTrue(BackpackFeeding.feed(player), "well below the level it eats too");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingMayWasteOnceAtItsLevel(GameTestHelper h) {
+        // Only an 8-point food, and 2 points missing: with never waste on nothing is eaten, with it off the food is eaten
+        ItemStack strict = feedingBackpack(19, false);
+        fill(strict, new ItemStack(Items.COOKED_BEEF, 4));
+        ServerPlayer player = wearing(h, strict);
+        player.getFoodData().setFoodLevel(18);
+        h.assertTrue(!BackpackFeeding.feed(player), "never waste: 2 missing does not fit 8, so nothing is eaten");
+
+        ItemStack lenient = feedingBackpack(19, true);
+        fill(lenient, new ItemStack(Items.COOKED_BEEF, 4));
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, lenient);
+        h.assertTrue(BackpackFeeding.feed(player), "may waste: it eats the beef though only 2 points are missing");
+        h.assertValueEqual(player.getFoodData().getFoodLevel(), 20, "the bar is full (the rest of the food is lost)");
+        h.assertValueEqual(BackpackContents.count(ExtraSlots.of(player).backpack(), Items.COOKED_BEEF), 3, "one beef eaten");
+
+        // And the level still applies: level 10 with waste allowed waits until the bar is at 10
+        ItemStack both = feedingBackpack(10, true);
+        fill(both, new ItemStack(Items.COOKED_BEEF, 4));
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, both);
+        player.getFoodData().setFoodLevel(11);
+        h.assertTrue(!BackpackFeeding.feed(player), "level 10, food 11: not yet, waste allowed or not");
+        player.getFoodData().setFoodLevel(10);
+        h.assertTrue(BackpackFeeding.feed(player), "level 10, food 10: it eats");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingWithWasteAllowedPicksTheBestFitThenTheSmallest(GameTestHelper h) {
+        var foods = List.of(new BackpackFeeding.Food(0, 4, 2.4F), new BackpackFeeding.Food(1, 5, 6.0F), new BackpackFeeding.Food(2, 8, 12.8F),
+                new BackpackFeeding.Food(3, 4, 9.0F), new BackpackFeeding.Food(4, 0, 1.0F));
+        h.assertValueEqual(BackpackFeeding.pick(6, foods, true), 1, "something fits: the best fit as before (5 of 6)");
+        h.assertValueEqual(BackpackFeeding.pick(3, foods, true), 3, "nothing fits 3: the smallest, 4, and of the two with 4 the one with more saturation");
+        h.assertValueEqual(BackpackFeeding.pick(3, foods, false), -1, "never waste: nothing");
+        h.assertValueEqual(BackpackFeeding.pick(1, List.of(new BackpackFeeding.Food(0, 8, 12.8F)), true), 0, "only a big food: it is eaten");
+        h.assertValueEqual(BackpackFeeding.pick(3, List.of(new BackpackFeeding.Food(0, 0, 5.0F)), true), -1, "a food that restores nothing is never picked, waste or not");
+        h.assertValueEqual(BackpackFeeding.pick(5, List.of(), true), -1, "no food at all");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void feedingLevelStepsThroughItsListBothWays(GameTestHelper h) {
+        int[] list = {19, 18, 16, 14, 12, 10, 8, 6, 4, 2};
+        int level = 19;
+        for (int i = 1; i <= list.length; i++) {
+            level = BackpackFeeding.nextLevel(level, false);
+            h.assertValueEqual(level, list[i % list.length], "stepping lower, step " + i + " (and round to 19 after the last)");
+        }
+        for (int i = 1; i <= list.length; i++) {
+            level = BackpackFeeding.nextLevel(level, true);
+            h.assertValueEqual(level, list[(list.length - i) % list.length], "stepping higher, step " + i + " (the other way round the list)");
+        }
+        h.assertValueEqual(BackpackFeeding.nextLevel(15, false), 14, "a level between two in the list goes on to the lower one");
+        h.assertValueEqual(BackpackFeeding.nextLevel(15, true), 16, "or back to the higher one");
+        h.assertValueEqual(BackpackFeeding.nextLevel(1, false), 19, "below the list it wraps round");
+        h.assertValueEqual(BackpackFeeding.nextLevel(1, true), 2, "or comes back up to the lowest");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aModuleLeftAloneStoresNothingAndStacksWithANewOne(GameTestHelper h) {
+        ItemStack fresh = module(BackpackModuleType.FEEDING);
+        h.assertValueEqual(BackpackFeeding.level(fresh), 19, "a new module eats at 19");
+        h.assertTrue(!BackpackFeeding.allowsWaste(fresh), "and never wastes");
+        ItemStack set = BackpackFeeding.withWaste(BackpackFeeding.withLevel(fresh, 12), true);
+        h.assertValueEqual(BackpackFeeding.level(set), 12, "the level is kept on the module");
+        h.assertTrue(BackpackFeeding.allowsWaste(set), "and so is the waste switch");
+        ItemStack back = BackpackFeeding.withWaste(BackpackFeeding.withLevel(set, 19), false);
+        h.assertTrue(ItemStack.isSameItemSameComponents(back, fresh), "set back to the defaults it is the same as a new module again");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theScreenButtonsChangeTheModulesSettingsAndTheyAreSaved(GameTestHelper h) {
+        ItemStack backpack = backpackWith(BackpackModuleType.COMPACTING, BackpackModuleType.FEEDING); // Feeding is not in the first slot
+        ServerPlayer player = wearing(h, backpack);
+        BackpackMenu menu = openScreen(player);
+        java.util.function.Supplier<ItemStack> saved = () -> BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.FEEDING);
+
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_LEVEL);
+        h.assertValueEqual(BackpackFeeding.level(saved.get()), 18, "a click on the level button lowers it one step, and the Backpack has it saved");
+        h.assertValueEqual(BackpackFeeding.level(menu.getSlot(1).getItem()), 18, "the screen's module slot shows the same");
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_LEVEL);
+        h.assertValueEqual(BackpackFeeding.level(saved.get()), 16, "and another");
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_LEVEL_BACK);
+        h.assertValueEqual(BackpackFeeding.level(saved.get()), 18, "the back button raises it again");
+
+        h.assertTrue(!BackpackFeeding.allowsWaste(saved.get()), "never waste to begin with");
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_WASTE);
+        h.assertTrue(BackpackFeeding.allowsWaste(saved.get()), "the waste button allows it");
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_WASTE);
+        h.assertTrue(!BackpackFeeding.allowsWaste(saved.get()), "and switches it off again");
+
+        h.assertTrue(BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.COMPACTING).getComponents()
+                .equals(module(BackpackModuleType.COMPACTING).getComponents()), "the other module was not touched");
+        player.closeContainer();
+        h.assertValueEqual(BackpackFeeding.level(saved.get()), 18, "closing the screen keeps it");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theScreenButtonsDoNothingWithoutAFeedingModule(GameTestHelper h) {
+        ServerPlayer player = wearing(h, backpackWith(BackpackModuleType.COMPACTING));
+        BackpackMenu menu = openScreen(player);
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_LEVEL);
+        menu.clickMenuButton(player, BackpackMenu.BTN_FEEDING_WASTE);
+        h.assertTrue(BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.FEEDING).isEmpty(), "no Feeding module appeared");
+        h.assertTrue(BackpackModules.find(ExtraSlots.of(player).backpack(), BackpackModuleType.COMPACTING).getComponents()
+                .equals(module(BackpackModuleType.COMPACTING).getComponents()), "and the Compacting module has no settings put on it");
+        h.succeed();
+    }
+
     // ---------------------------------------------------------------- Compacting
 
     private static ServerPlayer compactingWith(GameTestHelper h, ItemStack... stacks) {
