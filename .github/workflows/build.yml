@@ -23,29 +23,38 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      # Compiles the mod, runs the unit tests and the in-game tests (src/gametest) on a headless server
-      - run: ./gradlew build --no-daemon
+      # On a pull request: compiles the mod, runs the unit tests and the in-game tests (src/gametest) on a headless server
+      - name: Build and test
+        if: github.event_name == 'pull_request'
+        run: ./gradlew build --no-daemon
+      # After a merge to main the change has already passed all of that on its pull request, so this only builds the jar
+      # (the release job publishes it): the tests are not run a second time
+      - name: Build the jar
+        if: github.event_name == 'push'
+        run: ./gradlew build -x test -x runGameTest --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: nexium
           path: build/libs/*.jar
 
   client-test:
+    # Pull requests only: after a merge to main the same tests have just passed on the pull request, so they are not run again.
+    if: github.event_name == 'pull_request'
     # Opens a real game client on a virtual display (Xvfb) and runs the client tests in src/gametest: the terminal
     # grid, the trinket and wings slots, the magnet on the Key Binds screen, and barrels keeping their items through
     # save and quit. Their screenshots are kept as an artifact.
     # There is no GPU: Minecraft can't get an OpenGL window from Xvfb ("Couldn't find matching GLX visual"), so it
     # falls back to Vulkan, which Mesa's software driver (lavapipe, in mesa-vulkan-drivers) provides.
-    # The client tests are split over three jobs that run side by side: job i runs every third test starting at i
-    # (see ShardedClientTests), so together they run each test once in about a third of the time.
+    # The client tests are split over five jobs that run side by side: job i runs every fifth test starting at i
+    # (see ShardedClientTests), so together they run each test once in about a fifth of the time.
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2]
+        shard: [0, 1, 2, 3, 4]
     env:
-      NEXIUM_SHARD: ${{ matrix.shard }}/3
+      NEXIUM_SHARD: ${{ matrix.shard }}/5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -72,10 +81,10 @@ jobs:
   release:
     # Publishes a GitHub Release (tag, jar and notes) when main gets a mod_version that has no release yet, so a release
     # needs no tag and no manual run: raise mod_version in gradle.properties, add the "## <version>" section to
-    # CHANGELOG.md and merge. The release appears once the build and the client tests have passed. A merge that keeps
-    # the same mod_version publishes nothing, and this job never runs on pull requests.
+    # CHANGELOG.md and merge. The release appears once the build has finished (the tests ran on the pull request). A merge that
+    # keeps the same mod_version publishes nothing, and this job never runs on pull requests.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build, client-test]
+    needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: write # to create the tag and the release
