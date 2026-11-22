@@ -101,7 +101,7 @@ public class FilterTagsClientTest implements FabricClientGameTest {
         world.getServer().runOnServer(server -> {
             ServerPlayer player = server.getPlayerList().getPlayers().get(0);
             ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-            Menus.open(player, stack.getHoverName(), InteractionHand.MAIN_HAND.ordinal(), (id, inv, p) -> new FilterMenu(id, inv, InteractionHand.MAIN_HAND.ordinal()));
+            Menus.open(player, stack.getHoverName(), new FilterMenu.OpenData(InteractionHand.MAIN_HAND.ordinal(), ItemStack.EMPTY), (id, inv, p) -> new FilterMenu(id, inv, InteractionHand.MAIN_HAND.ordinal()));
         });
         ctx.waitFor(mc -> mc.gui.screen() instanceof FilterScreen);
         ctx.waitTicks(10);
