@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.17
+
+* **Quest rewards no longer include Compressed blocks or drawers.** A reward is still a random item from the mod, but the Compressed, Double
+  Compressed and Triple Compressed blocks and every drawer (the wooden drawers, the Fluid Drawer, the Compacting Drawer and the Drawer
+  Controller) are left out of the pool, so the rewards are the mod's tools, machines, farms and other gear.
+
 ## 1.25.16
 
 * **The AIOT's readout and 3x3 outline stay up while you mine.** They showed for 20 seconds after switching to the AIOT or pressing X, Z or the
