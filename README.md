@@ -40,7 +40,7 @@ Put the jar and **Fabric API** for 26.3 in your `mods` folder. It is needed on b
 The jar ends up in `build/libs/nexium-<version>.jar` (not the `-sources` one). Any Java 17+ starts the build; Gradle
 fetches JDK 25 itself. `./gradlew runGameTest` runs the in-game tests on a headless server and
 `./gradlew runClientGameTest` runs the client tests (they need a window or Xvfb); set `NEXIUM_SHARD=i/n` to run only every n-th
-test starting at i (CI runs three shares side by side with `0/3`, `1/3` and `2/3`). Config lives in
+test starting at i (CI runs five shares side by side with `0/5` to `4/5`, on pull requests only). Config lives in
 `config/nexium.json`.
 
 ## Storage

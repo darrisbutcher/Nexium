@@ -21,5 +21,6 @@ The owner's standing preferences for Claude sessions on this repository.
 ## Checks before pushing
 
 - `./gradlew build --no-daemon` runs the unit tests and every game test.
-- `xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --no-daemon` runs the client tests in a real game;
-  screenshots land in `build/run/clientGameTest/screenshots`.
+- Run only the client tests that cover what you changed, in a real game (`NEXIUM_ONLY=SomeClientTest xvfb-run -a -s "-screen 0 1920x1080x24"
+  ./gradlew runClientGameTest --no-daemon`); screenshots land in `build/run/clientGameTest/screenshots`. Don't run the whole client suite
+  before pushing: CI runs all of it on the pull request, in five jobs side by side, and a merge to main only builds and releases.
