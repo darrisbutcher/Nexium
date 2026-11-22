@@ -8,6 +8,9 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 * **3x3 mining is built into every AIOT,** with no module. It is off on a new AIOT; switch it on with the 3x3 key (X) or the new
   **3x3 mining** button in the tool menu, as before. The tunnel length (the tool menu button, or the tunnel key with the scroll
   wheel), the outline and the HUD line all work as they did, now on the AIOT itself, and tunnelling no longer needs the module either.
+* **Vein, 3x3 and tunnel swings drop everything where you broke the first block,** instead of each block dropping its items where it
+  was, so the whole haul lands in one place. A new setting, `aiotDropsAtFirstBlock` (on by default, also in the settings screen), turns it
+  off to bring back drops at each block. A Nexus Link, which sends the swing's drops to the network, is not affected.
 * **The 3x3 Mining Module is retired,** like the Vein Mining Module: its recipe is gone, it is out of the creative tab and the quest book,
   and it stays registered under its old id so that nothing holding one fails to load. An AIOT that still has one keeps its 3x3 on/off
   setting and tunnel length, and opening its tool menu hands the module back as what it was made from (4 iron ingots, 4 redstone and a

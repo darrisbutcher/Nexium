@@ -56,9 +56,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 ItemStack aiot = player.getMainHandItem();
-                var slots = AiotModules.slots(aiot);
-                slots.get(0).remove(ModComponents.TUNNEL_LENGTH);
-                AiotModules.setSlots(aiot, slots);
+                aiot.remove(ModComponents.TUNNEL_LENGTH);
             });
             ctx.waitTicks(10);
             int plain = ctx.computeOnClient(mc -> AiotPreview.outlined().size());

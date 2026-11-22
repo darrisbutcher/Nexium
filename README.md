@@ -875,6 +875,7 @@ nothing you typed is lost; fix it there and copy it back.
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or the vein key; 0 keeps them up |
+| `aiotDropsAtFirstBlock` | `true` | The extra blocks of a vein, 3x3 or tunnel swing drop their items where you broke the first block, not each where it was |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |

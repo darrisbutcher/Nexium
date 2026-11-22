@@ -48,6 +48,13 @@ public final class AiotMining {
 
     /** Set while mining the extra blocks, so they don't set off more of their own. */
     private static boolean busy;
+    /** While mining the extra blocks with {@code aiotDropsAtFirstBlock} on: the first block's position, where their drops appear. */
+    private static @org.jspecify.annotations.Nullable BlockPos dropOrigin;
+
+    /** Where the drops of the blocks being mined along with the first appear, or null (each drops where it was). */
+    public static @org.jspecify.annotations.Nullable BlockPos dropOrigin() {
+        return dropOrigin;
+    }
 
     public static void init() {
         VeinKey.init();
@@ -62,6 +69,7 @@ public final class AiotMining {
         if (extra.isEmpty()) return;
         Item item = tool.getItem();
         busy = true;
+        if (NexusConfig.get().aiotDropsAtFirstBlock) dropOrigin = pos.immutable();
         try {
             // A Nexus Link sends the whole swing's drops to the network in one go
             NexusLink.batch(player, () -> {
@@ -75,6 +83,7 @@ public final class AiotMining {
             });
         } finally {
             busy = false;
+            dropOrigin = null;
         }
     }
 

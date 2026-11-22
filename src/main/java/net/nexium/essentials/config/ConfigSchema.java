@@ -119,6 +119,7 @@ public final class ConfigSchema {
         blocks("items", "connectorBlacklist"),
         bool("items", "anvilNoCostLimit"),
         bool("tools", "aiotVeinMining"),
+        bool("tools", "aiotDropsAtFirstBlock"),
         number("tools", "aiotVeinMaxBlocks", 1, 512),
         blocks("tools", "veinBlacklist"),
         bool("tools", "aiotAreaMining"),

@@ -261,6 +261,32 @@ public class ModuleGameTest {
     }
 
     @GameTest
+    public void aSwingDropsEverythingWhereTheFirstBlockWasBrokenUnlessTheSettingIsOff(GameTestHelper h) {
+        var config = net.nexium.essentials.config.NexusConfig.get();
+        boolean saved = config.aiotDropsAtFirstBlock;
+        try {
+            for (boolean atFirst : new boolean[]{true, false}) {
+                config.aiotDropsAtFirstBlock = atFirst;
+                // A line of iron ore along x; the player mines the one at one end with the vein key held
+                for (int x = 1; x <= 6; x++) h.setBlock(new BlockPos(x, 1, 1), Blocks.IRON_ORE);
+                for (ItemEntity e : h.getLevel().getEntitiesOfClass(ItemEntity.class, h.getBounds().inflate(2))) e.discard();
+                ServerPlayer player = miner(h);
+                mine(h, player, new BlockPos(1, 1, 1));
+                for (int x = 1; x <= 6; x++) h.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, 1));
+                Vec3 first = Vec3.atCenterOf(h.absolutePos(new BlockPos(1, 1, 1)));
+                List<ItemEntity> drops = h.getLevel().getEntitiesOfClass(ItemEntity.class, h.getBounds().inflate(2));
+                h.assertValueEqual(drops.stream().mapToInt(e -> e.getItem().getCount()).sum(), 6, "six raw iron dropped");
+                double farthest = drops.stream().mapToDouble(e -> e.position().distanceTo(first)).max().orElse(0);
+                if (atFirst) h.assertTrue(farthest < 1.5, "with the setting on, everything drops at the first block, farthest " + farthest);
+                else h.assertTrue(farthest > 3.5, "with the setting off, each block drops its own, farthest " + farthest);
+            }
+        } finally {
+            config.aiotDropsAtFirstBlock = saved;
+        }
+        h.succeed();
+    }
+
+    @GameTest
     public void veinMiningStopsAtTheLimit(GameTestHelper h) {
         // A 5x5x4 block of coal ore (100 blocks): vein mining takes 64
         for (int x = 0; x < 5; x++) for (int y = 1; y <= 4; y++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, y, z), Blocks.COAL_ORE);
