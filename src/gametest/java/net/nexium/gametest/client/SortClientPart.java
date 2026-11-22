@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -18,13 +17,12 @@ import net.nexium.client.SortClient;
  * The sort key in a real game: R over the chest sorts only the chest, R over the inventory sorts only the main
  * inventory, R over the hotbar does nothing, and a second press steps to the next order.
  */
-public class SortClientTest implements FabricClientGameTest {
+public class SortClientPart {
     private SimpleContainer chest;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(20);
             world.getServer().runOnServer(server -> {

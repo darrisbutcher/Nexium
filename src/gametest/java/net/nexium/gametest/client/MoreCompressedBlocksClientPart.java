@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -17,16 +16,15 @@ import java.util.List;
  * its picture in the inventory (a missing texture or model shows up in the screenshots). Takes screenshots of the wall of blocks
  * and of the inventory.
  */
-public class MoreCompressedBlocksClientTest implements FabricClientGameTest {
+public class MoreCompressedBlocksClientPart {
     private static final CompressedBlocks.Base[] NEW = {CompressedBlocks.Base.CALCITE, CompressedBlocks.Base.DRIPSTONE_BLOCK, CompressedBlocks.Base.SMOOTH_BASALT,
             CompressedBlocks.Base.TERRACOTTA, CompressedBlocks.Base.SANDSTONE, CompressedBlocks.Base.RED_SANDSTONE, CompressedBlocks.Base.OBSIDIAN,
             CompressedBlocks.Base.MAGMA_BLOCK, CompressedBlocks.Base.MUD, CompressedBlocks.Base.CLAY, CompressedBlocks.Base.SOUL_SAND,
             CompressedBlocks.Base.SOUL_SOIL, CompressedBlocks.Base.SNOW_BLOCK};
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode creative @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,13 +21,12 @@ import java.util.stream.Stream;
  * The scroll wheel over a stack moves one item at a time: down sends it to the other inventory, up pulls a matching one
  * in. It works between a chest and the player's inventory and hotbar, and not in the player's own inventory screen.
  */
-public class ScrollTransferClientTest implements FabricClientGameTest {
+public class ScrollTransferClientPart {
     private SimpleContainer chest;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(20);
             openChest(ctx, world);

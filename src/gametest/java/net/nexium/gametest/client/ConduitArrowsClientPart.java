@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -17,13 +16,12 @@ import java.util.function.Consumer;
  * The direction arrows on a conduit's arm: an extracting side shows an arrow pointing in to the conduit, an inserting side one pointing
  * out to the block, and a side that does both shows the two. Sets up each case beside a barrel and takes a screenshot of it close up.
  */
-public class ConduitArrowsClientTest implements FabricClientGameTest {
+public class ConduitArrowsClientPart {
     private static final int ORANGE = 1, LIGHT_BLUE = 3, LIME = 5;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

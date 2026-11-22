@@ -1,7 +1,6 @@
 package net.nexium.gametest.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,15 +28,14 @@ import java.util.List;
  * and their switches, a stack of 512 torches sent to the client in full, the four modules, and the Torch Stack switch putting the extra torches
  * back. Takes screenshots of the inventory and of the screen.
  */
-public class BackpackClientTest implements FabricClientGameTest {
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
+public class BackpackClientPart {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
         ctx.runOnClient(mc -> {
             check(Arrays.asList(mc.options.keyMappings).contains(NexiumEssentialsClient.OPEN_BACKPACK), "the Open Backpack key is in the game's key list");
             check(NexiumEssentialsClient.OPEN_BACKPACK.getDefaultKey().getValue() == InputConstants.KEY_B, "it defaults to B");
         });
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");
