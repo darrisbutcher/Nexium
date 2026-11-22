@@ -13,7 +13,7 @@ import net.nexium.util.BaseMenu;
  * ({@code nexium:installed_cell}); this screen's slot is a window on it, kept in step with the item both ways.
  */
 public class CellMenu extends BaseMenu {
-    public static final int INVENTORY_TOP = 84;
+    public static final int INVENTORY_TOP = 96;
     public static final int CELL_X = 80, CELL_Y = 30;
 
     private final int source;

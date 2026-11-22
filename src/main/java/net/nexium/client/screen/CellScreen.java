@@ -16,7 +16,7 @@ public class CellScreen extends BaseScreen<CellMenu> {
     private static final int ENERGY = 0xFFE02828, ENERGY_TOP = 0xFFFF7A6A, BAR_BACK = 0xFF1E1E22;
 
     public CellScreen(CellMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 176, 166, CellMenu.INVENTORY_TOP);
+        super(menu, inventory, title, 176, 178, CellMenu.INVENTORY_TOP);
     }
 
     @Override

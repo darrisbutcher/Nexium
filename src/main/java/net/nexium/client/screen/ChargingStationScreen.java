@@ -16,7 +16,7 @@ public class ChargingStationScreen extends BaseScreen<ChargingStationMenu> {
     private static final int ENERGY = 0xFFE02828, ENERGY_TOP = 0xFFFF7A6A, BAR_BACK = 0xFF1E1E22;
 
     public ChargingStationScreen(ChargingStationMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 176, 166, ChargingStationMenu.INVENTORY_TOP);
+        super(menu, inventory, title, 176, 178, ChargingStationMenu.INVENTORY_TOP);
     }
 
     @Override

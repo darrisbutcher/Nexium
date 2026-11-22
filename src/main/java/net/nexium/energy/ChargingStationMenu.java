@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 
 /** The Charging Station's screen: its four slots, what it holds, and the player inventory. */
 public class ChargingStationMenu extends BaseMenu {
-    public static final int INVENTORY_TOP = 84;
+    public static final int INVENTORY_TOP = 96;
     public static final int SLOT_Y = 24;
     /** Screen values travel as 16-bit numbers, so the stored amount is sent as two halves of 15 bits. */
     private static final int D_STORED = 0, D_COUNT = 2;
