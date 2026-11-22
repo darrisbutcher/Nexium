@@ -3,6 +3,20 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.12
+
+* **The Trash Can destroys items.** Craft it from a **Cauldron and a Hopper** (shapeless). A hopper, a dropper, an Item Conduit or an
+  Import/Export Bus pointing at it, from any side, empties into it, and it never fills up. Right-click it for a screen with one slot:
+  drop an item on the slot and the whole stack is destroyed (a right click destroys one). A shift-click moves nothing there, so an item is
+  only destroyed by dropping it on the slot on purpose. It takes items only, no fluids or energy. It is on `#nexium:machines`, so a Storage
+  Connector never adopts it as network storage and nothing on a storage network can reach it. It has a Codex topic and a quest in the
+  Storage chapter.
+* **The Farm Assembler links to a storage network.** Touch it with a Storage Connector, an Inventory Cable or any other network block
+  (the connectors link it without taking it for storage), and its new **From network** button, under Add from inventory, takes what
+  the chosen target still needs out of the network: spawn eggs or Captured Mobs, blocks, everything on its list. It pulls only when you
+  press the button, only what is still needed, and the finished item stays in the output slot as before. The button is greyed out, with a
+  hint, until a network touches the Assembler.
+
 ## 1.25.11
 
 * **The inventory key (E) closes every Nexium window,** as Escape does and as it closes vanilla's own windows. The Codex, the quest book,

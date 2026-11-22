@@ -3,9 +3,11 @@ package net.nexium.essentials.assembler;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.InsertionOnlyStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,11 +23,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.nexium.essentials.registry.ModBlockEntities;
+import net.nexium.network.StorageNetwork;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Farm Assembler: pick what to make, put in what it needs (from the screen, by shift-clicking, or with hoppers and
@@ -86,6 +90,13 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         return Math.max(0, Math.min(stack.getCount(), reqs.get(i).needed() - counts()[i]));
     }
 
+    /** How many more of what this stack is the target still needs (not limited by the stack's own size), 0 if it is not a material. */
+    private int stillNeeded(ItemStack stack) {
+        List<Requirement> reqs = target.requirements();
+        int i = indexOf(reqs, stack);
+        return i < 0 ? 0 : Math.max(0, reqs.get(i).needed() - counts()[i]);
+    }
+
     /** Takes as much of {@code stack} as it needs (the stack itself is not changed). Returns how many it took. */
     public int accept(ItemStack stack) {
         int n = room(stack);
@@ -130,6 +141,48 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
             }
         }
         if (moved > 0) inventory.setChanged();
+        return moved;
+    }
+
+    /**
+     * The storage network this assembler touches (a Storage Connector, an Inventory Cable or any other network block against it), or
+     * null. The connectors do not take the assembler for a storage inventory (it is a machine), so touching one links it.
+     */
+    public @Nullable StorageNetwork network() {
+        if (level == null) return null;
+        for (Direction side : Direction.values()) {
+            StorageNetwork found = StorageNetwork.find(level, worldPosition.relative(side));
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    /**
+     * Takes what the target still needs out of the storage network it touches: spawn eggs or Captured Mobs, blocks, everything on its
+     * list, nothing more than it needs, and nothing it does not ask for. Returns how many items it took (0 when it touches no network).
+     */
+    public int addFromNetwork() {
+        StorageNetwork network = network();
+        if (network == null) return 0;
+        int moved = 0;
+        for (Map.Entry<ItemVariant, Long> entry : network.listItems().entrySet()) {
+            ItemVariant variant = entry.getKey();
+            ItemStack sample = variant.toStack(1);
+            long want = Math.min(entry.getValue(), stillNeeded(sample));
+            while (want > 0) {
+                int batch = (int) Math.min(want, sample.getMaxStackSize());
+                try (Transaction tx = Transaction.openOuter()) {
+                    long got = network.extractItem(variant, batch, tx);
+                    if (got <= 0) break;
+                    int took = accept(variant.toStack((int) got));
+                    if (took < got) network.insertItem(variant, got - took, tx); // it took less than it asked for: hand the rest back
+                    tx.commit();
+                    if (took <= 0) break;
+                    moved += took;
+                    want -= took;
+                }
+            }
+        }
         return moved;
     }
 

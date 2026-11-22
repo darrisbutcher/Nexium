@@ -30,6 +30,11 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.STONE)
                     .pushReaction(net.minecraft.world.level.material.PushReaction.IMMOVEABLE));
 
+    /** Destroys every item piped into it, or dropped on the slot of its screen. Made from a Cauldron and a Hopper. */
+    public static final net.nexium.essentials.trash.TrashCanBlock TRASH_CAN = register("trash_can",
+            net.nexium.essentials.trash.TrashCanBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
+
     /**
      * Made at the Farm Assembler from 140 hostile mobs. A pickaxe mines it faster, but it drops with any tool, because losing one
      * would cost all those mobs.

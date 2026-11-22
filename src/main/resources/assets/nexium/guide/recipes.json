@@ -86,6 +86,7 @@
     "restocking_module": {"type": "shaped", "pattern": ["IHI", "CDC", "IHI"], "key": {"C": "minecraft:chest", "D": "minecraft:diamond", "H": "minecraft:hopper", "I": "minecraft:iron_ingot"}, "result": {"id": "nexium:restocking_module"}},
     "feeding_module": {"type": "shaped", "pattern": ["IBI", "BGB", "IBI"], "key": {"B": "minecraft:bread", "G": "minecraft:golden_carrot", "I": "minecraft:iron_ingot"}, "result": {"id": "nexium:feeding_module"}},
     "compacting_module": {"type": "shaped", "pattern": ["IPI", "PTP", "IPI"], "key": {"I": "minecraft:iron_ingot", "P": "minecraft:piston", "T": "minecraft:crafting_table"}, "result": {"id": "nexium:compacting_module"}},
+    "trash_can": {"type": "shapeless", "ingredients": ["minecraft:cauldron", "minecraft:hopper"], "result": {"id": "nexium:trash_can"}},
     "enchanted_grindstone": {"type": "shapeless", "ingredients": ["minecraft:grindstone", "minecraft:book", "minecraft:lapis_lazuli"], "result": {"id": "nexium:enchanted_grindstone"}},
     "crafting_module": {"type": "shaped", "pattern": ["IPI", "PTP", "IPI"], "key": {"I": "minecraft:iron_ingot", "P": "#minecraft:planks", "T": "minecraft:crafting_table"}, "result": {"id": "nexium:crafting_module"}},
     "compressed_cobblestone": {"type": "shaped", "pattern": ["BBB", "BBB", "BBB"], "key": {"B": "minecraft:cobblestone"}, "result": {"id": "nexium:compressed_cobblestone"}},

@@ -47,6 +47,12 @@
           "goal": "get",
           "item": "nexium:drawer_controller",
           "count": 1
+        },
+        {
+          "id": "trash",
+          "goal": "get",
+          "item": "nexium:trash_can",
+          "count": 1
         }
       ]
     },

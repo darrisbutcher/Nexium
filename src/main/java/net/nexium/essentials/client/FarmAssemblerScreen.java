@@ -149,6 +149,9 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
         }
         button(g, leftPos + LIST_X, topPos + ADD_Y, LIST_W, Component.translatable("screen.nexium.assembler.add"), true,
                 inside(mouseX, mouseY, leftPos + LIST_X, topPos + ADD_Y, LIST_W, BUTTON_H));
+        // Under it, "from network": only when a storage network touches the assembler
+        button(g, leftPos + LIST_X, topPos + NETWORK_Y, NETWORK_W, Component.translatable("screen.nexium.assembler.network"), menu.linked(),
+                menu.linked() && inside(mouseX, mouseY, leftPos + LIST_X, topPos + NETWORK_Y, NETWORK_W, BUTTON_H));
 
         // The chosen one: what it is, and what it needs
         int rx = leftPos + RIGHT_X, rw = RIGHT_W;
@@ -199,6 +202,14 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
             net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.assembler.add_tip").withStyle(ChatFormatting.GRAY),
                     Component.translatable("screen.nexium.assembler.add_tip2").withStyle(ChatFormatting.DARK_GRAY)), mouseX, mouseY);
+            return;
+        }
+        if (inside(mouseX, mouseY, lx, topPos + NETWORK_Y, NETWORK_W, BUTTON_H)) {
+            net.nexium.client.Tooltips.show(g, font, menu.linked()
+                    ? List.of(Component.translatable("screen.nexium.assembler.network_tip").withStyle(ChatFormatting.GRAY),
+                            Component.translatable("screen.nexium.assembler.network_tip2").withStyle(ChatFormatting.DARK_GRAY))
+                    : List.of(Component.translatable("screen.nexium.assembler.network_none").withStyle(ChatFormatting.RED),
+                            Component.translatable("screen.nexium.assembler.network_none2").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
             return;
         }
         if (inside(mouseX, mouseY, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, BUTTON_H)) {
@@ -252,12 +263,21 @@ public class FarmAssemblerScreen extends AbstractContainerScreen<FarmAssemblerMe
                 press(BUTTON_ADD);
                 return true;
             }
+            if (menu.linked() && inside(mx, my, lx, topPos + NETWORK_Y, NETWORK_W, BUTTON_H)) {
+                press(BUTTON_ADD_NETWORK);
+                return true;
+            }
             if (menu.complete() && !menu.outputFull() && inside(mx, my, leftPos + BUILD_X, topPos + HEADER_Y + 1, BUILD_W, BUTTON_H)) {
                 press(BUTTON_BUILD);
                 return true;
             }
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    /** The centre of the "From network" button, in screen coordinates (for tests, which click it with the real mouse). */
+    public int[] networkButtonCentre() {
+        return new int[]{leftPos + LIST_X + NETWORK_W / 2, topPos + NETWORK_Y + BUTTON_H / 2};
     }
 
     private void press(int id) {

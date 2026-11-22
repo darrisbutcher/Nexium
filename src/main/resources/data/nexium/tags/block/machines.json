@@ -34,6 +34,7 @@
     "nexium:iron_battery",
     "nexium:gold_battery",
     "nexium:diamond_battery",
-    "nexium:power_meter"
+    "nexium:power_meter",
+    "nexium:trash_can"
   ]
 }
