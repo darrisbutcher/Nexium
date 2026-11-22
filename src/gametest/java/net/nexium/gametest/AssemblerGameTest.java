@@ -305,6 +305,85 @@ public class AssemblerGameTest {
         h.succeed();
     }
 
+    // ---------------------------------------------------------------- the storage network
+
+    private static int inChest(net.minecraft.world.level.block.entity.ChestBlockEntity chest, Item item) {
+        int n = 0;
+        for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(item)) n += chest.getItem(i).getCount();
+        return n;
+    }
+
+    /** A chest, a Storage Connector beside it and the assembler beside that: the assembler touches a network that holds the chest. */
+    private static net.minecraft.world.level.block.entity.ChestBlockEntity networkedChest(GameTestHelper h) {
+        h.setBlock(AT.west(2), Blocks.CHEST);
+        h.setBlock(AT.west(), net.nexium.registry.ModBlocks.STORAGE_CONNECTOR);
+        return h.getBlockEntity(AT.west(2), net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aLinkedAssemblerTakesWhatTheTargetNeedsFromTheNetwork(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var chest = networkedChest(h);
+        chest.setItem(0, new ItemStack(Items.EXPERIENCE_BOTTLE, 64));
+        chest.setItem(1, new ItemStack(Items.EXPERIENCE_BOTTLE, 36));
+        chest.setItem(2, new ItemStack(Items.STICK, 30));
+        a.select(AssemblyTarget.XP_FARM, null);
+        h.assertTrue(a.network() != null, "a Storage Connector against it links it to the network");
+        h.assertValueEqual(a.addFromNetwork(), 64, "it takes the 64 Bottles o' Enchanting it needs, from two stacks");
+        h.assertTrue(a.isComplete(), "and is complete");
+        h.assertValueEqual(inChest(chest, Items.EXPERIENCE_BOTTLE), 36, "36 bottles are left in the network");
+        h.assertValueEqual(inChest(chest, Items.STICK), 30, "what it does not need is left alone");
+        h.assertValueEqual(a.addFromNetwork(), 0, "and a second press takes nothing more");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theNetworkFillsMobsAsSpawnEggsAndCapturedMobsAndLeavesTheOthers(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var chest = networkedChest(h);
+        chest.setItem(0, captured(EntityTypes.CREEPER));
+        chest.setItem(1, captured(EntityTypes.SKELETON));
+        chest.setItem(2, captured(EntityTypes.COW));
+        chest.setItem(3, new ItemStack(Items.ZOMBIE_SPAWN_EGG, 10));
+        chest.setItem(4, new ItemStack(Items.COW_SPAWN_EGG, 10));
+        a.select(AssemblyTarget.HOSTILE_SWITCH, null);
+        h.assertValueEqual(a.addFromNetwork(), 12, "two Captured Mobs and ten spawn eggs of hostile mobs");
+        h.assertValueEqual(a.counts()[0], 12, "counted towards the 140");
+        h.assertTrue(chest.getItem(2).is(net.minecraft.world.item.Items.AIR) == false && IronFarmRecipe.mobOf(chest.getItem(2)) == EntityTypes.COW, "the Captured Cow is left in the network");
+        h.assertValueEqual(inChest(chest, Items.COW_SPAWN_EGG), 10, "and the cow spawn eggs");
+        h.assertValueEqual(inChest(chest, Items.ZOMBIE_SPAWN_EGG), 0, "the zombie eggs were taken");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void anAssemblerAwayFromTheNetworkTakesNothing(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        h.setBlock(AT.west(2), Blocks.CHEST);
+        h.getBlockEntity(AT.west(2), net.minecraft.world.level.block.entity.ChestBlockEntity.class).setItem(0, new ItemStack(Items.EXPERIENCE_BOTTLE, 64));
+        a.select(AssemblyTarget.XP_FARM, null);
+        h.assertTrue(a.network() == null, "a chest is not a network: nothing links it");
+        h.assertValueEqual(a.addFromNetwork(), 0, "so there is nothing to take");
+        h.setBlock(AT.west(), net.nexium.registry.ModBlocks.STORAGE_CONNECTOR);
+        h.assertTrue(a.network() != null, "the connector put between them links it");
+        h.assertValueEqual(a.addFromNetwork(), 64, "and now it can");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theMenuButtonTakesFromTheNetworkAndKnowsWhetherItIsLinked(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        net.nexium.essentials.assembler.FarmAssemblerMenu menu = new net.nexium.essentials.assembler.FarmAssemblerMenu(5, player.getInventory(), a);
+        h.assertFalse(menu.linked(), "alone, it says it is not linked");
+        var chest = networkedChest(h);
+        chest.setItem(0, new ItemStack(Items.EXPERIENCE_BOTTLE, 64));
+        a.select(AssemblyTarget.XP_FARM, null);
+        h.assertTrue(menu.linked(), "beside a network, it says it is");
+        h.assertTrue(menu.clickMenuButton(player, net.nexium.essentials.assembler.FarmAssemblerMenu.BUTTON_ADD_NETWORK), "the button works");
+        h.assertTrue(a.isComplete(), "and filled it");
+        h.succeed();
+    }
+
     // ---------------------------------------------------------------- building
 
     @GameTest(environment = EssentialsEnvironment.ID)
