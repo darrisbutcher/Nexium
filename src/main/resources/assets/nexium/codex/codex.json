@@ -76,7 +76,8 @@
         "diagonal",
         "free_camera",
         "villagers",
-        "mending"
+        "mending",
+        "diamond_nugget"
       ]
     },
     {
@@ -977,6 +978,23 @@
       "see": [
         "area",
         "tunnels",
+        "aiot"
+      ]
+    },
+    "diamond_nugget": {
+      "pages": [
+        "diamond_nugget.nugget"
+      ],
+      "icon": "nexium:diamond_nugget",
+      "items": [
+        "nexium:diamond_nugget"
+      ],
+      "aliases": [
+        "Diamond Nugget",
+        "Diamond Nuggets",
+        "Smelting diamond tools"
+      ],
+      "see": [
         "aiot"
       ]
     },

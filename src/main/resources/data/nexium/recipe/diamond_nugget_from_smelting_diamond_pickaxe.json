@@ -1,0 +1,11 @@
+{
+  "type": "nexium:durability_smelting",
+  "category": "misc",
+  "ingredient": "minecraft:diamond_pickaxe",
+  "result": {
+    "id": "nexium:diamond_nugget",
+    "count": 27
+  },
+  "experience": 0.5,
+  "cookingtime": 200
+}

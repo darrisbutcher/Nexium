@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget",
+    "nexium:diamond_nugget"
+  ],
+  "result": {
+    "id": "minecraft:diamond"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "nexium:durability_smelting",
+  "category": "misc",
+  "ingredient": "minecraft:diamond_boots",
+  "result": {
+    "id": "nexium:diamond_nugget",
+    "count": 36
+  },
+  "experience": 0.5,
+  "cookingtime": 200
+}
