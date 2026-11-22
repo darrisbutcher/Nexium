@@ -992,6 +992,35 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void theCraftingGridCanBeHiddenAndTheBackpackRemembersIt(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 8));
+        BackpackMenu menu = openScreen(player);
+        h.assertTrue(menu.craftingActive() && !menu.craftingHidden(), "the grid starts showing");
+        menu.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), player.getInventory());
+        h.assertValueEqual(inGrid(menu, Items.OAK_PLANKS), 4, "with four planks in it");
+
+        h.assertTrue(menu.clickMenuButton(player, BackpackMenu.BTN_CRAFTING_HIDE), "the hide button works");
+        h.assertTrue(menu.craftingHidden() && !menu.craftingActive() && menu.craftingModuleOn(), "the grid is hidden, the module still on");
+        h.assertValueEqual(inGrid(menu, Items.OAK_PLANKS), 0, "what was in the grid went back");
+        h.assertValueEqual(held(player, Items.OAK_PLANKS), 8, "into the Backpack");
+        h.assertFalse(menu.getInputGridSlots().get(0).isActive() || menu.getResultSlot().isActive(), "no grid slot is there");
+        h.assertFalse(menu.getInputGridSlots().get(0).mayPlace(new ItemStack(Items.OAK_PLANKS)), "and the grid takes nothing");
+        h.assertTrue(menu.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), player.getInventory())
+                == net.minecraft.world.inventory.RecipeBookMenu.PostPlaceAction.NOTHING && inGrid(menu, Items.OAK_PLANKS) == 0, "the recipe book places nothing in a hidden grid");
+
+        // The Backpack remembers: a new menu opens with the grid hidden
+        BackpackMenu again = openScreen(player);
+        h.assertTrue(again.craftingHidden() && !again.craftingActive(), "reopened, it is still hidden");
+
+        // Show it again
+        h.assertTrue(again.clickMenuButton(player, BackpackMenu.BTN_CRAFTING_HIDE), "the same button shows it");
+        h.assertTrue(again.craftingActive() && !again.craftingHidden(), "the grid is back");
+        again.handlePlacement(false, true, recipe(h, "crafting_table"), h.getLevel(), player.getInventory());
+        h.assertValueEqual(inGrid(again, Items.OAK_PLANKS), 4, "and works");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void theRecipeBookNeedsTheModuleAndTheIngredients(GameTestHelper h) {
         ServerPlayer without = wearing(h, backpackWith());
         without.getInventory().setItem(0, new ItemStack(Items.OAK_PLANKS, 8));

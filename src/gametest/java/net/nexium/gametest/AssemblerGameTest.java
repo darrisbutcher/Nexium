@@ -17,6 +17,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -258,6 +261,11 @@ public class AssemblerGameTest {
                 for (int i = 0; i < 9; i++) { add(list, Items.GLASS, 32); add(list, i % 2 == 0 ? Items.STAINED_GLASS.red() : Items.TINTED_GLASS, 32); }
             }
             case XP_FARM -> add(list, Items.EXPERIENCE_BOTTLE, AssemblyTarget.XP_FARM_BOTTLES);
+            case STONE_AIOT -> { add(list, Items.COBBLESTONE, AssemblyTarget.AIOT_MATERIAL); add(list, Items.STICK, AssemblyTarget.AIOT_STICKS); }
+            case COPPER_AIOT -> { add(list, Items.COPPER_INGOT, AssemblyTarget.AIOT_MATERIAL); add(list, Items.STICK, AssemblyTarget.AIOT_STICKS); }
+            case IRON_AIOT -> { add(list, Items.IRON_INGOT, AssemblyTarget.AIOT_MATERIAL); add(list, Items.STICK, AssemblyTarget.AIOT_STICKS); }
+            case GOLDEN_AIOT -> { add(list, Items.GOLD_INGOT, AssemblyTarget.AIOT_MATERIAL); add(list, Items.STICK, AssemblyTarget.AIOT_STICKS); }
+            case DIAMOND_AIOT -> { add(list, Items.DIAMOND, AssemblyTarget.AIOT_MATERIAL); add(list, Items.STICK, AssemblyTarget.AIOT_STICKS); }
             case LIBRARIAN -> mobs(list, capturedMobs, 12, EntityTypes.VILLAGER, Items.VILLAGER_SPAWN_EGG);
             case HOSTILE_SWITCH -> {
                 // Any hostile mob counts: a mix of kinds as Captured Mobs, or spawn eggs of two kinds
@@ -419,7 +427,7 @@ public class AssemblerGameTest {
         // Every farm asks 9 stacks of its filler block (the Tree Farm 18 of logs)
         Map<AssemblyTarget, Integer> filler = new java.util.EnumMap<>(AssemblyTarget.class);
         for (AssemblyTarget target : AssemblyTarget.values()) {
-            if (target != AssemblyTarget.LIBRARIAN && target != AssemblyTarget.XP_FARM && target != AssemblyTarget.HOSTILE_SWITCH) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
+            if (target != AssemblyTarget.LIBRARIAN && target != AssemblyTarget.XP_FARM && target != AssemblyTarget.HOSTILE_SWITCH && !target.id().endsWith("_aiot")) filler.put(target, target == AssemblyTarget.TREE ? 1152 : 576);
         }
         filler.forEach((target, amount) -> {
             List<Requirement> reqs = target.requirements();
@@ -740,4 +748,54 @@ public class AssemblerGameTest {
         h.succeed();
     }
 
+
+    // ---------------------------------------------------------------- raw AIOTs and the Assembler's own recipe
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void anAiotComesFromTheRawMaterialsOfItsFiveTools(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        net.nexium.aiot.AiotTier[] tiers = {net.nexium.aiot.AiotTier.STONE, net.nexium.aiot.AiotTier.COPPER, net.nexium.aiot.AiotTier.IRON,
+                net.nexium.aiot.AiotTier.GOLDEN, net.nexium.aiot.AiotTier.DIAMOND};
+        AssemblyTarget[] targets = {AssemblyTarget.STONE_AIOT, AssemblyTarget.COPPER_AIOT, AssemblyTarget.IRON_AIOT, AssemblyTarget.GOLDEN_AIOT, AssemblyTarget.DIAMOND_AIOT};
+        h.assertValueEqual(AssemblyTarget.AIOT_MATERIAL, 11, "a pickaxe and an axe 3, a hoe and a sword 2, a shovel 1");
+        h.assertValueEqual(AssemblyTarget.AIOT_STICKS, 9, "2 sticks each for four tools and 1 for the sword");
+        for (int i = 0; i < targets.length; i++) {
+            AssemblyTarget target = targets[i];
+            h.assertValueEqual(target.requirements().size(), 2, target + " has the material and the sticks");
+            h.assertValueEqual(target.requirements().get(0).needed(), 11, target + " takes 11 of its material");
+            h.assertValueEqual(target.requirements().get(1).needed(), 9, "and 9 sticks");
+            a.select(target, null);
+            for (ItemStack stack : materials(target, false)) h.assertValueEqual(a.accept(stack), stack.getCount(), target + " takes " + stack);
+            h.assertTrue(a.isComplete(), target + " is complete from raw materials alone");
+            h.assertTrue(a.build(h.getLevel()), target + " builds");
+            ItemStack made = a.output().removeItemNoUpdate(0);
+            h.assertTrue(made.is(net.nexium.registry.ModItems.AIOTS.get(tiers[i])), target + " makes the " + tiers[i].id() + " AIOT, got " + made);
+            h.assertTrue(made.getEnchantments().isEmpty(), "a plain one, with no enchantments");
+        }
+        // A stone AIOT takes any stone tool material
+        a.select(AssemblyTarget.STONE_AIOT, null);
+        h.assertValueEqual(a.accept(new ItemStack(Items.BLACKSTONE, 4)), 4, "blackstone counts");
+        h.assertValueEqual(a.accept(new ItemStack(Items.COBBLED_DEEPSLATE, 4)), 4, "so does cobbled deepslate");
+        h.assertValueEqual(a.accept(new ItemStack(Items.STONE, 4)), 0, "plain stone does not");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theAssemblerIsMadeFromFourCraftingTables(GameTestHelper h) {
+        CraftingInput four = CraftingInput.of(3, 3, List.of(new ItemStack(Items.CRAFTING_TABLE), ItemStack.EMPTY, new ItemStack(Items.CRAFTING_TABLE),
+                ItemStack.EMPTY, new ItemStack(Items.CRAFTING_TABLE), ItemStack.EMPTY, ItemStack.EMPTY, new ItemStack(Items.CRAFTING_TABLE), ItemStack.EMPTY));
+        boolean makes = false;
+        for (RecipeHolder<?> holder : h.getLevel().getServer().getRecipeManager().getRecipes()) {
+            if (holder.value() instanceof CraftingRecipe recipe && recipe.matches(four, h.getLevel()) && recipe.assemble(four).is(ModItems.FARM_ASSEMBLER)) makes = true;
+        }
+        h.assertTrue(makes, "four crafting tables, in any places, make a Farm Assembler");
+        CraftingInput three = CraftingInput.of(3, 3, List.of(new ItemStack(Items.CRAFTING_TABLE), new ItemStack(Items.CRAFTING_TABLE), new ItemStack(Items.CRAFTING_TABLE),
+                ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY));
+        for (RecipeHolder<?> holder : h.getLevel().getServer().getRecipeManager().getRecipes()) {
+            if (holder.value() instanceof CraftingRecipe recipe && recipe.matches(three, h.getLevel())) {
+                h.assertFalse(recipe.assemble(three).is(ModItems.FARM_ASSEMBLER), "not from three");
+            }
+        }
+        h.succeed();
+    }
 }

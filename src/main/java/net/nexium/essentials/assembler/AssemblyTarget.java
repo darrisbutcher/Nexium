@@ -4,6 +4,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.ItemTags;
+import net.nexium.aiot.AiotTier;
 import net.nexium.essentials.config.NexusConfig;
 import net.nexium.essentials.farm.FarmKind;
 import net.nexium.essentials.farm.FarmRecipe;
@@ -17,9 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** What the Farm Assembler can make: the one-block farms (the Experience Farm too), the Master Librarian and the Hostile Mob Switch, in the order its screen lists them. */
+/**
+ * What the Farm Assembler can make: the one-block farms (the Experience Farm too), the Master Librarian, the Hostile Mob Switch and
+ * the Stone to Diamond AIOTs from raw materials, in the order its screen lists them.
+ */
 public enum AssemblyTarget {
-    IRON_FARM(null),
+    IRON_FARM((FarmKind) null),
     VILLAGER_BREEDER(FarmKind.VILLAGER_BREEDER),
     PIGLIN_BARTER(FarmKind.PIGLIN_BARTER),
     ZOMBIFIED_PIGLIN(FarmKind.ZOMBIFIED_PIGLIN),
@@ -41,9 +46,20 @@ public enum AssemblyTarget {
     MOSS(FarmKind.MOSS),
     FROGLIGHT(FarmKind.FROGLIGHT),
     TREE(FarmKind.TREE),
-    XP_FARM(null),
-    LIBRARIAN(null),
-    HOSTILE_SWITCH(null);
+    XP_FARM((FarmKind) null),
+    LIBRARIAN((FarmKind) null),
+    HOSTILE_SWITCH((FarmKind) null),
+    /** An AIOT from what its five tools cost in raw materials: 11 of the tier's material and 9 sticks. */
+    STONE_AIOT(AiotTier.STONE),
+    COPPER_AIOT(AiotTier.COPPER),
+    IRON_AIOT(AiotTier.IRON),
+    GOLDEN_AIOT(AiotTier.GOLDEN),
+    DIAMOND_AIOT(AiotTier.DIAMOND);
+
+    /** What the five tools of an AIOT cost together: a pickaxe and an axe take 3 of the material, a hoe and a sword 2, a shovel 1. */
+    public static final int AIOT_MATERIAL = 3 + 3 + 1 + 2 + 2;
+    /** ... and sticks: 2 each for the pickaxe, axe, shovel and hoe, 1 for the sword. */
+    public static final int AIOT_STICKS = 2 + 2 + 2 + 2 + 1;
 
     /** The Experience Farm takes a stack of Bottles o' Enchanting and nothing else. */
     public static final int XP_FARM_BOTTLES = 64;
@@ -52,9 +68,16 @@ public enum AssemblyTarget {
     public static final int MAX_REQUIREMENTS = 8;
 
     private final @Nullable FarmKind kind;
+    private final @Nullable AiotTier tier;
 
     AssemblyTarget(@Nullable FarmKind kind) {
         this.kind = kind;
+        this.tier = null;
+    }
+
+    AssemblyTarget(AiotTier tier) {
+        this.kind = null;
+        this.tier = tier;
     }
 
     public String id() {
@@ -86,6 +109,10 @@ public enum AssemblyTarget {
         } else if (this == HOSTILE_SWITCH) {
             list.add(new Requirement(Component.translatable("message.nexium.hostile_switch_part.mobs"), HostileMobSwitch.MOBS_NEEDED,
                     HostileMobSwitch::isHostileMob, Items.ZOMBIE_SPAWN_EGG, true));
+        } else if (tier != null) {
+            // The raw materials of the five tools (a stone AIOT takes any of the stone tool materials)
+            list.add(new Requirement(aiotMaterialName(), AIOT_MATERIAL, aiotMaterial(), aiotMaterialIcon(), false));
+            list.add(new Requirement(Items.STICK.getDefaultInstance().getHoverName(), AIOT_STICKS, s -> s.is(Items.STICK), Items.STICK, false));
         } else if (this == LIBRARIAN) {
             list.add(new Requirement(IronFarmRecipe.Part.VILLAGERS.displayName(), NexusConfig.get().librarianVillagers,
                     s -> IronFarmRecipe.partOf(s) == IronFarmRecipe.Part.VILLAGERS, Items.VILLAGER_SPAWN_EGG, true));
@@ -95,6 +122,28 @@ public enum AssemblyTarget {
             list.add(of(recipe.filler()));
         }
         return list;
+    }
+
+    private java.util.function.Predicate<ItemStack> aiotMaterial() {
+        return switch (tier) {
+            case STONE -> s -> s.is(ItemTags.STONE_TOOL_MATERIALS);
+            default -> s -> s.is(aiotMaterialIcon());
+        };
+    }
+
+    private net.minecraft.world.item.Item aiotMaterialIcon() {
+        return switch (tier) {
+            case STONE -> Items.COBBLESTONE;
+            case COPPER -> Items.COPPER_INGOT;
+            case IRON -> Items.IRON_INGOT;
+            case GOLDEN -> Items.GOLD_INGOT;
+            case DIAMOND -> Items.DIAMOND;
+            default -> throw new IllegalStateException("no raw recipe for " + tier);
+        };
+    }
+
+    private Component aiotMaterialName() {
+        return tier == AiotTier.STONE ? Component.translatable("message.nexium.aiot_part.stone_material") : aiotMaterialIcon().getDefaultInstance().getHoverName();
     }
 
     private static Requirement of(FarmRecipe.Part part) {
@@ -107,6 +156,7 @@ public enum AssemblyTarget {
         if (this == XP_FARM) return new ItemStack(ModItems.XP_FARM);
         if (this == LIBRARIAN) return new ItemStack(Items.VILLAGER_SPAWN_EGG);
         if (this == HOSTILE_SWITCH) return new ItemStack(ModItems.HOSTILE_MOB_SWITCH);
+        if (tier != null) return new ItemStack(net.nexium.registry.ModItems.AIOTS.get(tier));
         return new ItemStack(ModItems.FARMS.get(kind));
     }
 

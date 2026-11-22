@@ -397,7 +397,8 @@ vanilla. Endermen never pick up blocks.
   Put items in the grid by hand or open the **recipe book** (its button is under the grid): the book lists what the Backpack's
   slots and your inventory can make, and a recipe you click, or a recipe viewer's JEI or REI "+", fills the grid from the Backpack
   first and your inventory after it. After every craft the emptied grid slots refill from the Backpack, so a shift-click on the
-  result crafts all there is. Take the module out or switch it off, or close the screen, and what is in the grid goes back into the
+  result crafts all there is. The **x** in the panel's corner **hides the grid** (what is in it goes back in the Backpack, and the screen
+  is its plain width) and a small **Craft** button beside the title shows it again; the Backpack remembers which. Take the module out or switch it off, or close the screen, and what is in the grid goes back into the
   Backpack. When the screen is too narrow for the recipe book beside it, the open book covers the screen, as in vanilla. JEI and REI keep their item lists clear of the crafting panel (it sticks out to the right of the screen).
 * **Trash**: the Backpack's screen always has a trash slot, under the module column (no module needed). Drop an item on it to get
   rid of it. It keeps the last item you put in until you put another in or close the screen, so you can take it back; shift-click
@@ -666,9 +667,13 @@ Crafting and loot changes that need no setup. They add recipes (to the vanilla o
   Silk Touch (the AIOT's Silk Touch too).
 
 ### Farm Assembler
-Makes the one-block farms below, the Master Librarian and the Hostile Mob Switch. **Recipe**: a crafting table in the middle, 4 iron ingots on the
-sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
+Makes the one-block farms below, the Master Librarian, the Hostile Mob Switch and the **Stone, Copper, Iron, Golden and Diamond AIOTs from raw materials**. **Recipe**: 4 crafting tables (shapeless: anywhere in the
+crafting grid).
 
+* The **Stone, Copper, Iron, Golden and Diamond AIOTs** are targets too: **11 of the tier's material** (cobblestone, blackstone or cobbled
+  deepslate for Stone; copper, iron or gold ingots; diamonds) and **9 sticks**, exactly what their five tools cost, but with no tools to
+  make first. They come out as plain AIOTs; the merge recipe (five tools, which keeps their enchantments) still works, and the Netherite
+  and Nexium AIOTs still come from upgrading a Diamond one.
 * Right-click it, pick what to make from the list on the left, and put in what it needs. The right side shows how much of
   each material is in, with a bar and a tick for each line that is done.
 * **Add from inventory** moves everything it still needs out of your inventory. Shift-clicking items, or hoppers and pipes

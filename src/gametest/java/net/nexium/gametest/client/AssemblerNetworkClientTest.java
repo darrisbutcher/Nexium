@@ -117,6 +117,21 @@ public class AssemblerNetworkClientTest implements FabricClientGameTest {
             check(state[1] == 0, "the Assembler holds no bucket items, only the water: " + state[1]);
             RealMouse.moveTo(ctx, 4, 4);
             System.out.println("[nexus] assembler, water bucket line filled from fluid: " + shot(ctx, "nexus_assembler_network_water_filled"));
+
+            // A raw-material AIOT: 11 diamonds and 9 sticks, with no tools to make first
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                var assembler = (FarmAssemblerBlockEntity) player.level().getBlockEntity(base[0].offset(2, 0, 3));
+                assembler.select(AssemblyTarget.DIAMOND_AIOT, null);
+                assembler.accept(new ItemStack(Items.DIAMOND, 11));
+                assembler.accept(new ItemStack(Items.STICK, 4));
+            });
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().target()) == AssemblyTarget.DIAMOND_AIOT, "the Diamond AIOT is chosen");
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().count(0)) == 11, "its 11 diamonds are in");
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().count(1)) == 4, "and 4 of its 9 sticks");
+            RealMouse.moveTo(ctx, 4, 4);
+            System.out.println("[nexus] assembler, a Diamond AIOT from raw materials: " + shot(ctx, "nexus_assembler_diamond_aiot"));
         }
     }
 

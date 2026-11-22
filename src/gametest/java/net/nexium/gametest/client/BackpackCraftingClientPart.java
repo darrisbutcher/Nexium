@@ -61,6 +61,19 @@ public class BackpackCraftingClientPart {
             RealMouse.moveTo(ctx, 4, 4); // out of the way, so no hover hint covers the panel
             System.out.println("[nexus] backpack crafting panel: " + shot(ctx, "nexus_backpack_crafting"));
 
+            // The panel's close button hides the grid (the screen goes back to its plain width), a small button brings it back
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).hideCraftingCentre()));
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> !((BackpackScreen) mc.gui.screen()).craftingShown()), "the close button hides the crafting panel");
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).showCraftingCentre() != null), "and a button to show it again appears");
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).getMenu().craftingModuleOn()), "the Crafting module is still on");
+            RealMouse.moveTo(ctx, 4, 4);
+            System.out.println("[nexus] backpack crafting hidden: " + shot(ctx, "nexus_backpack_crafting_hidden"));
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).showCraftingCentre()));
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).craftingShown()), "the small button shows the grid again");
+            RealMouse.moveTo(ctx, 4, 4);
+
             // The recipe book's button is under the grid. With room for the book beside the screen (a 1920x1080 window at GUI scale 2 is
             // 960 wide), a real click opens it and the screen slides right to make room
             ctx.getInput().resizeWindow(1920, 1080);

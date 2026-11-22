@@ -3,6 +3,18 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.18
+
+* **The Backpack's crafting grid can be hidden.** The crafting panel has a close button (an x in its corner): it hides the whole panel, so
+  the Backpack's screen is back to its plain width, and what was in the grid goes back in the Backpack. A small Craft button beside the
+  title brings the grid back. The Backpack remembers whether it is hidden, so it opens the same way next time. The Crafting module stays on
+  while the grid is hidden.
+* **The Stone, Copper, Iron, Golden and Diamond AIOTs can be made at the Farm Assembler from raw materials,** with no tools to craft first:
+  11 of the tier's material (cobblestone, blackstone or cobbled deepslate for Stone; copper, iron or gold ingots; diamonds) and 9 sticks,
+  exactly what their five tools cost. The result is a plain AIOT; the merge recipe (five tools, keeping their enchantments) still works, and
+  the Netherite and Nexium AIOTs still come from upgrading a Diamond one. From network works for them too.
+* **The Farm Assembler is cheaper to craft: four crafting tables** (shapeless), instead of a crafting table with 4 iron ingots and 4 lapis lazuli.
+
 ## 1.25.17
 
 * **Quest rewards no longer include Compressed blocks or drawers.** A reward is still a random item from the mod, but the Compressed, Double
