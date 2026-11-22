@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "nexium:block/charging_station_top",
+    "bottom": "nexium:block/charging_station_bottom",
+    "side": "nexium:block/charging_station_side",
+    "front": "nexium:block/charging_station_front"
+  }
+}

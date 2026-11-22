@@ -2323,6 +2323,8 @@
         "power.thermal",
         "power.reactor",
         "power.battery",
+        "power.cells",
+        "power.station",
         "power.conduit",
         "power.meter"
       ],
@@ -2337,6 +2339,10 @@
         "iron_battery",
         "gold_battery",
         "diamond_battery",
+        "iron_cell",
+        "gold_cell",
+        "diamond_cell",
+        "charging_station",
         "energy_conduit",
         "ender_energy_conduit",
         "power_meter"
@@ -2354,7 +2360,11 @@
         "nexium:spent_fuel_rod",
         "nexium:iron_battery",
         "nexium:gold_battery",
-        "nexium:diamond_battery"
+        "nexium:diamond_battery",
+        "nexium:iron_cell",
+        "nexium:gold_cell",
+        "nexium:diamond_cell",
+        "nexium:charging_station"
       ],
       "aliases": [
         "Nexus Energy",

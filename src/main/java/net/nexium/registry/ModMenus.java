@@ -56,6 +56,8 @@ public final class ModMenus {
             new ExtendedMenuType<>(net.nexium.energy.RedstoneReactorMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.nexium.energy.NexusFurnaceMenu, BlockPos> NEXUS_FURNACE = register("nexus_furnace",
             new ExtendedMenuType<>(net.nexium.energy.NexusFurnaceMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.nexium.energy.ChargingStationMenu, BlockPos> CHARGING_STATION = register("charging_station",
+            new ExtendedMenuType<>(net.nexium.energy.ChargingStationMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.nexium.energy.BatteryMenu, BlockPos> BATTERY = register("battery",
             new ExtendedMenuType<>(net.nexium.energy.BatteryMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.nexium.energy.CombustionGeneratorMenu, BlockPos> COMBUSTION_GENERATOR = register("combustion_generator",

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "C": "nexium:iron_cell"
+  },
+  "pattern": [
+    "III",
+    "RCR",
+    "III"
+  ],
+  "result": {
+    "id": "nexium:charging_station"
+  }
+}

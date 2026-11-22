@@ -21,6 +21,7 @@ public final class ModStorageLookups {
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.SOLAR_PANEL);
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.THERMAL_GENERATOR);
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.BATTERY);
+        net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.CHARGING_STATION);
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((be, dir) -> be.energy(), ModBlockEntities.REDSTONE_REACTOR);
         ItemStorage.SIDED.registerForBlockEntity((be, dir) -> net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage.of(be, dir), ModBlockEntities.REDSTONE_REACTOR);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank(), ModBlockEntities.THERMAL_GENERATOR);
