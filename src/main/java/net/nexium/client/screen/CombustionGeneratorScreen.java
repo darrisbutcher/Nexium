@@ -37,9 +37,12 @@ public class CombustionGeneratorScreen extends AbstractContainerScreen<Combustio
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
         g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(CombustionGeneratorBlockEntity.CAPACITY)),
                 BAR_X, BAR_Y + BAR_H + 4, TEXT, false);
-        Component status = menu.burn() > 0
+        boolean full = menu.energy() >= CombustionGeneratorBlockEntity.CAPACITY;
+        Component status = menu.burn() > 0 && full
+                ? Component.translatable("screen.nexium.generator.burning_full")
+                : menu.burn() > 0
                 ? Component.translatable("screen.nexium.generator.making", CombustionGeneratorBlockEntity.OUTPUT)
-                : menu.energy() >= CombustionGeneratorBlockEntity.CAPACITY
+                : full
                 ? Component.translatable("screen.nexium.generator.full")
                 : Component.translatable("screen.nexium.generator.no_fuel");
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 16, MUTED, false);

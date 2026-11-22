@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.14
+
+* **The Combustion Generator's screen tells the truth when its buffer is full.** It said "Making 20 NE/t" whenever fuel burned, even with
+  a full buffer and nothing taking the power. It now says "Full: burning, power is wasted" then. Fuel use is unchanged.
+
 ## 1.25.13
 
 * **The Farm Assembler's From network button uses the network's water and lava.** The farms that ask for water or lava buckets (Sugar Cane,
