@@ -159,6 +159,16 @@ public final class ModItems {
     public static final Item IRON_CELL = register("iron_cell", p -> new net.nexium.energy.BatteryCellItem(p, 250_000), new Item.Properties().stacksTo(1));
     public static final Item GOLD_CELL = register("gold_cell", p -> new net.nexium.energy.BatteryCellItem(p, 1_000_000), new Item.Properties().stacksTo(1));
     public static final Item DIAMOND_CELL = register("diamond_cell", p -> new net.nexium.energy.BatteryCellItem(p, 10_000_000), new Item.Properties().stacksTo(1));
+    /**
+     * Flies on a battery cell kept in its own screen. Worn in the wings slot (or the chest slot): its equipment asset draws it on the back,
+     * and it takes the armor enchantments an elytra does.
+     */
+    public static final Item JETPACK = register("jetpack", net.nexium.jetpack.JetpackItem::new, new Item.Properties().stacksTo(1).enchantable(15)
+            .component(net.minecraft.core.component.DataComponents.EQUIPPABLE,
+                    net.minecraft.world.item.equipment.Equippable.builder(net.minecraft.world.entity.EquipmentSlot.CHEST)
+                            .setEquipSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON)
+                            .setAsset(net.minecraft.resources.ResourceKey.create(net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID, net.nexium.Nexium.id("jetpack")))
+                            .setDamageOnHurt(false).build()));
     /** A ninth of a diamond: what worn diamond tools and armor smelt down to. */
     public static final Item DIAMOND_NUGGET = register("diamond_nugget", Item::new, new Item.Properties());
     public static final Item NEXIUM_INGOT = register("nexium_ingot", Item::new, new Item.Properties().fireResistant());

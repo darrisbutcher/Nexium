@@ -37,6 +37,10 @@ public final class NexiumEssentialsClient {
     public static final KeyMapping OPEN_BACKPACK = new KeyMapping("key.nexium.open_backpack",
             InputConstants.KEY_B, CATEGORY);
 
+    /** Opens the screen of the Jetpack you wear, to change its battery cell. J by default; change it under Controls > Key Binds. */
+    public static final KeyMapping OPEN_JETPACK = new KeyMapping("key.nexium.open_jetpack",
+            InputConstants.KEY_J, CATEGORY);
+
     /**
      * In a villager's trading screen, gives a villager nobody has traded with a new set of trades. C by default; change it under
      * Controls > Key Binds.
@@ -54,6 +58,7 @@ public final class NexiumEssentialsClient {
     public static void init() {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         KeyMappingHelper.registerKeyMapping(OPEN_BACKPACK);
+        KeyMappingHelper.registerKeyMapping(OPEN_JETPACK);
         KeyMappingHelper.registerKeyMapping(DIAGONAL_PLACE);
         KeyMappingHelper.registerKeyMapping(CYCLE_TRADES);
         // The Cycle Trades key in a trading screen asks the server for new trades (it says no if the villager has been traded with)
@@ -83,6 +88,9 @@ public final class NexiumEssentialsClient {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);
+            }
+            while (OPEN_JETPACK.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(ModPayloads.OpenJetpack.INSTANCE);
             }
             while (OPEN_BACKPACK.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(ModPayloads.OpenBackpack.INSTANCE);

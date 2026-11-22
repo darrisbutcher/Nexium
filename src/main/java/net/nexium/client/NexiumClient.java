@@ -62,6 +62,7 @@ public class NexiumClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.NEXUS_FURNACE, net.nexium.client.screen.NexusFurnaceScreen::new);
         MenuScreens.register(ModMenus.THERMAL_GENERATOR, net.nexium.client.screen.ThermalGeneratorScreen::new);
         MenuScreens.register(ModMenus.CHARGING_STATION, net.nexium.client.screen.ChargingStationScreen::new);
+        MenuScreens.register(ModMenus.CELL, net.nexium.client.screen.CellScreen::new);
         MenuScreens.register(ModMenus.BATTERY, net.nexium.client.screen.BatteryScreen::new);
         MenuScreens.register(ModMenus.COMBUSTION_GENERATOR, net.nexium.client.screen.CombustionGeneratorScreen::new);
         FreezerTint.init();

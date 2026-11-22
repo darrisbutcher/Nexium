@@ -17,11 +17,20 @@ public final class ElytraEnchanting {
     public static void init() {
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, context) ->
                 isProtection(enchantment) && appliesTo(target) ? TriState.TRUE : TriState.DEFAULT);
+        // A Jetpack takes the other armor enchantments too (Thorns, the curses), but not the ones that need durability, which it has none of
+        EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, context) ->
+                target.getItem() instanceof net.nexium.jetpack.JetpackItem && takesAsArmor(enchantment) ? TriState.TRUE : TriState.DEFAULT);
     }
 
     /** The armor-exclusive set: the four protection enchantments. */
     public static boolean isProtection(Holder<Enchantment> enchantment) {
         return enchantment.is(EnchantmentTags.ARMOR_EXCLUSIVE);
+    }
+
+    /** Whether chest armor takes this enchantment, other than the ones that only wear-and-tear items use. */
+    private static boolean takesAsArmor(Holder<Enchantment> enchantment) {
+        if (enchantment.is(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING) || enchantment.is(net.minecraft.world.item.enchantment.Enchantments.MENDING)) return false;
+        return enchantment.value().isSupportedItem(new ItemStack(net.minecraft.world.item.Items.NETHERITE_CHESTPLATE));
     }
 
     public static boolean appliesTo(ItemStack stack) {

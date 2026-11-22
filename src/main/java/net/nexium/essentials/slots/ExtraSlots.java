@@ -112,12 +112,12 @@ public final class ExtraSlots extends SimpleContainer {
     }
 
     public static boolean isWings(ItemStack stack) {
-        return stack.has(DataComponents.GLIDER);
+        return stack.has(DataComponents.GLIDER) || stack.getItem() instanceof net.nexium.jetpack.JetpackItem;
     }
 
     /** Same rule as vanilla elytra: a glider stops working one point before it breaks. */
     public static boolean canGlideWith(ItemStack stack) {
-        return isWings(stack) && !stack.nextDamageWillBreak();
+        return stack.has(DataComponents.GLIDER) && !stack.nextDamageWillBreak();
     }
 
     /** Curse of Binding keeps an item in the slot, as it does in armor slots. */

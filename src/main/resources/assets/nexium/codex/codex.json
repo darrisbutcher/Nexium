@@ -77,7 +77,8 @@
         "free_camera",
         "villagers",
         "mending",
-        "diamond_nugget"
+        "diamond_nugget",
+        "jetpack"
       ]
     },
     {
@@ -979,6 +980,27 @@
         "area",
         "tunnels",
         "aiot"
+      ]
+    },
+    "jetpack": {
+      "pages": [
+        "jetpack.jetpack"
+      ],
+      "icon": "nexium:jetpack",
+      "recipes": [
+        "jetpack"
+      ],
+      "items": [
+        "nexium:jetpack"
+      ],
+      "aliases": [
+        "Jetpack",
+        "Flying",
+        "Fly"
+      ],
+      "see": [
+        "power",
+        "backpack"
       ]
     },
     "diamond_nugget": {
