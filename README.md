@@ -299,6 +299,17 @@ is placed as one and uses two slabs.
   helmet 45, leggings 63), and wear takes its share off (half worn, about half), never fewer than one. A stack holds 64, so the
   chestplate (72) and the AIOT (99) give 64.
 
+### Jetpack, battery cells and the Charging Station
+* **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, the sizes of the Batteries) keep their charge in the
+  item; a bar under the item shows it. The **Charging Station** holds four of them (or a Jetpack or Tablet with a cell in it) and
+  charges each at up to 1,000 NE a tick from what it takes in from touching Energy Conduits and Batteries.
+* **Jetpack**: right-click to wear it in the **wings slot** (or the chest slot), so a chestplate can be worn too. Sneak and right-click it
+  (or press **J**, Controls > Key Binds > Open Jetpack, while it is worn) to put a battery cell in. Jump in the air to take off; then
+  jump rises, letting go **hovers** and sneaking sinks. It uses 8 NE a tick thrusting and 4 hovering, and when the cell runs out the
+  flight ends. It takes the armor enchantments an elytra does (all four Protections at once) plus Thorns and the curses, and does not glide.
+* **Crafting Storage Tablet**: now needs a battery cell (sneak and right-click it): opening the linked terminal costs 100 NE (1,000 from
+  another dimension) and the open screen 2 NE a tick; without enough charge it will not open.
+
 ### Nexium
 * **Nexium Ingot**: a diamond, an emerald and a netherite ingot in a crafting table make
   **3 ingots**. Nine make a **Block of Nexium** (a beacon base).

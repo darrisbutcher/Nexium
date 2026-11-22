@@ -3,6 +3,20 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.0
+
+* **Jetpack.** Worn in the wings slot (or the chest slot), so a chestplate can be worn too. It flies on a battery cell kept in its own
+  screen (sneak and right-click it, or the new **Open Jetpack** key, J by default). Jump in the air to take off; then jump rises,
+  letting go hovers and sneaking sinks. It uses 8 NE a tick thrusting and 4 hovering, and when the cell is empty you fall. It takes the
+  armor enchantments an elytra does (all four Protections at once, Thorns, the curses) and does not glide. It uses the game's own
+  flight, so servers do not kick for it.
+* **Battery cells** (Iron 250,000, Gold 1,000,000 and Diamond 10,000,000 NE, like the Batteries) keep their charge in the item.
+* **Charging Station.** Four slots for cells, or for a Jetpack or Tablet with a cell in it. It charges each slot at up to 1,000 NE a tick
+  from the energy it takes in from touching Energy Conduits and Batteries.
+* **The Crafting Storage Tablet needs power.** It runs on a battery cell in its own screen (sneak and right-click): opening the linked
+  terminal costs 100 NE (1,000 from another dimension) and the open screen costs 2 NE a tick; with too little charge it will not open.
+* **Restocking leaves torches alone while the Auto Torch module is on**, so Auto Torch keeps the torches in the Backpack.
+
 ## 1.25.20
 
 * **Diamond Nugget, and smelting diamond gear down to it.** Nine nuggets make a diamond and a diamond makes nine. Diamond tools, weapons,

@@ -105,6 +105,7 @@
       "net.nexium.gametest.HarvestGameTest",
       "net.nexium.gametest.BuilderGameTest",
       "net.nexium.gametest.DiskGameTest",
+      "net.nexium.gametest.TabletPowerGameTest",
       "net.nexium.gametest.JetpackGameTest",
       "net.nexium.gametest.BatteryCellGameTest",
       "net.nexium.gametest.DiamondNuggetGameTest",
