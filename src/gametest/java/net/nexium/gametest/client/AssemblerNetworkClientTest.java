@@ -79,6 +79,44 @@ public class AssemblerNetworkClientTest implements FabricClientGameTest {
             check(left == 40, "40 bottles are left in the network: " + left);
             RealMouse.moveTo(ctx, 4, 4);
             System.out.println("[nexus] assembler, filled from the network: " + shot(ctx, "nexus_assembler_network_filled"));
+
+            // A target with a line of water buckets: the network holds water as fluid in a Fluid Drawer, no buckets at all
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                player.level().setBlockAndUpdate(base[0].offset(1, 0, 4), net.nexium.registry.ModBlocks.FLUID_DRAWER_1X1.defaultBlockState());
+                var drawer = (net.nexium.fluid.FluidDrawerBlockEntity) player.level().getBlockEntity(base[0].offset(1, 0, 4));
+                try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+                    drawer.slot(0).insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.WATER),
+                            10 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, tx);
+                    tx.commit();
+                }
+                ((FarmAssemblerBlockEntity) player.level().getBlockEntity(base[0].offset(2, 0, 3))).select(AssemblyTarget.SUGAR_CANE, null);
+            });
+            ctx.waitTicks(10);
+            int water = -1;
+            for (int i = 0; i < AssemblyTarget.SUGAR_CANE.requirements().size(); i++) {
+                if (AssemblyTarget.SUGAR_CANE.requirements().get(i).icon() == Items.WATER_BUCKET) water = i;
+            }
+            final int waterLine = water;
+            check(waterLine >= 0, "the Sugar Cane Farm has a line of water buckets");
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().count(waterLine)) == 0, "no water yet");
+            RealMouse.moveTo(ctx, ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).networkButtonCentre()));
+            ctx.waitTicks(10);
+            System.out.println("[nexus] assembler, water in the network, hint on the button: " + shot(ctx, "nexus_assembler_network_water_hint"));
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).networkButtonCentre()));
+            ctx.waitTicks(5);
+            check(ctx.computeOnClient(mc -> ((FarmAssemblerScreen) mc.gui.screen()).getMenu().count(waterLine)) == 4, "the click filled the 4 water buckets from the network's water");
+            long[] state = world.getServer().computeOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                var drawer = (net.nexium.fluid.FluidDrawerBlockEntity) player.level().getBlockEntity(base[0].offset(1, 0, 4));
+                var assembler = (FarmAssemblerBlockEntity) player.level().getBlockEntity(base[0].offset(2, 0, 3));
+                long buckets = assembler.materials().stream().filter(m -> m.is(Items.WATER_BUCKET)).mapToLong(ItemStack::getCount).sum();
+                return new long[]{drawer.slot(0).getAmount() / net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, buckets};
+            });
+            check(state[0] == 6, "6 buckets of water are left in the network: " + state[0]);
+            check(state[1] == 0, "the Assembler holds no bucket items, only the water: " + state[1]);
+            RealMouse.moveTo(ctx, 4, 4);
+            System.out.println("[nexus] assembler, water bucket line filled from fluid: " + shot(ctx, "nexus_assembler_network_water_filled"));
         }
     }
 

@@ -1,5 +1,8 @@
 package net.nexium.essentials.assembler;
 
+import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.InsertionOnlyStorage;
@@ -9,6 +12,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,10 +21,12 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.nexium.essentials.registry.ModBlockEntities;
 import net.nexium.network.StorageNetwork;
@@ -28,6 +34,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +42,16 @@ import java.util.Map;
  * The Farm Assembler: pick what to make, put in what it needs (from the screen, by shift-clicking, or with hoppers and
  * anything else that inserts items), and build it. It only takes what the chosen target still needs, so it can never
  * hold too much. Choosing another target hands back what it held; breaking it drops everything.
+ * A line of water or lava buckets can also be met with fluid from a storage network (see {@link #addFromNetwork()}): the
+ * assembler then holds that as fluid, one bucket's worth for each bucket, and gives it back as fluid.
  */
 public class FarmAssemblerBlockEntity extends BlockEntity {
     private AssemblyTarget target = AssemblyTarget.IRON_FARM;
     /** What has been put in, as the stacks it came in (Captured Mobs keep their mob). */
     private List<ItemStack> materials = new ArrayList<>();
+    /** Fluid it holds towards the lines of water or lava buckets, in droplets (whole buckets only), taken from a storage network. */
+    private Map<Fluid, Long> fluids = new LinkedHashMap<>();
+    private static final Codec<Map<Fluid, Long>> FLUIDS_CODEC = Codec.unboundedMap(BuiltInRegistries.FLUID.byNameCodec(), Codec.LONG);
     /** The finished farm, waiting to be taken. */
     private final SimpleContainer output = new SimpleContainer(1) {
         @Override
@@ -60,6 +72,9 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
 
     public SimpleContainer output() { return output; }
 
+    /** How much fluid it holds (taken from a network for a line of water or lava buckets), in droplets. */
+    public long fluid(Fluid fluid) { return fluids.getOrDefault(fluid, 0L); }
+
     /** Where hoppers and other mods put items in. Nothing can be taken out this way. */
     public Storage<ItemVariant> storage() { return storage; }
 
@@ -72,6 +87,11 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         for (ItemStack m : materials) {
             int i = indexOf(reqs, m);
             if (i >= 0) counts[i] += m.getCount();
+        }
+        // Fluid held for a line of water or lava buckets counts a bucket's worth at a time
+        for (int i = 0; i < reqs.size(); i++) {
+            Fluid fluid = reqs.get(i).fluid();
+            if (fluid != null) counts[i] += (int) (fluid(fluid) / FluidConstants.BUCKET);
         }
         return counts;
     }
@@ -159,7 +179,9 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
 
     /**
      * Takes what the target still needs out of the storage network it touches: spawn eggs or Captured Mobs, blocks, everything on its
-     * list, nothing more than it needs, and nothing it does not ask for. Returns how many items it took (0 when it touches no network).
+     * list, nothing more than it needs, and nothing it does not ask for. A line of water or lava buckets takes real buckets from the
+     * network first, then makes up the rest from the network's water or lava, a bucket's worth for each bucket (whole buckets only), and
+     * holds that as fluid. Returns how many items and buckets it took (0 when it touches no network).
      */
     public int addFromNetwork() {
         StorageNetwork network = network();
@@ -183,7 +205,63 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
                 }
             }
         }
+        moved += addFluidFromNetwork(network);
         return moved;
+    }
+
+    /** Makes up what the lines of water and lava buckets still miss from the network's fluid, in whole buckets. Returns how many buckets. */
+    private int addFluidFromNetwork(StorageNetwork network) {
+        List<Requirement> reqs = target.requirements();
+        int moved = 0;
+        for (int i = 0; i < reqs.size(); i++) {
+            Fluid fluid = reqs.get(i).fluid();
+            if (fluid == null) continue;
+            long missing = reqs.get(i).needed() - counts()[i];
+            FluidVariant variant = FluidVariant.of(fluid);
+            long buckets = Math.min(missing, network.countFluid(variant) / FluidConstants.BUCKET);
+            if (buckets <= 0) continue;
+            try (Transaction tx = Transaction.openOuter()) {
+                long got = network.extractFluid(variant, buckets * FluidConstants.BUCKET, tx);
+                long whole = got / FluidConstants.BUCKET * FluidConstants.BUCKET;
+                if (whole <= 0) continue; // not even a bucket: nothing is taken (the transaction is not committed)
+                if (got > whole) network.insertFluid(variant, got - whole, tx); // only whole buckets are kept: hand a part bucket back
+                fluids.merge(fluid, whole, Long::sum);
+                tx.commit();
+                moved += (int) (whole / FluidConstants.BUCKET);
+            }
+        }
+        if (moved > 0) setChanged();
+        return moved;
+    }
+
+    /**
+     * Gives back the fluid it holds: into the storage network if one still touches it and has room, and what that does not take as
+     * filled buckets, to the player (or dropped on the assembler with no player).
+     */
+    private void returnFluids(@Nullable Player player) {
+        if (fluids.isEmpty()) return;
+        StorageNetwork network = network();
+        for (Map.Entry<Fluid, Long> held : fluids.entrySet()) {
+            long left = held.getValue();
+            if (network != null) {
+                try (Transaction tx = Transaction.openOuter()) {
+                    left -= network.insertFluid(FluidVariant.of(held.getKey()), left, tx);
+                    tx.commit();
+                }
+            }
+            giveBuckets(held.getKey(), left, player);
+        }
+        fluids = new LinkedHashMap<>();
+    }
+
+    /** {@code droplets} of {@code fluid} as filled buckets (whole ones), to the player or dropped on the assembler. */
+    private void giveBuckets(Fluid fluid, long droplets, @Nullable Player player) {
+        Item bucket = fluid.getBucket();
+        for (long n = droplets / FluidConstants.BUCKET; n > 0; n--) {
+            ItemStack stack = new ItemStack(bucket);
+            if (player != null) player.getInventory().placeItemBackInInventory(stack, false, Prediction.SERVER_ONLY);
+            else if (level != null) Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), stack);
+        }
     }
 
     /**
@@ -197,6 +275,7 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
             else if (level != null) Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), m);
         }
         materials = new ArrayList<>();
+        returnFluids(player);
         target = next;
         setChanged();
     }
@@ -207,6 +286,7 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         ItemStack made = target.build(level);
         if (made.isEmpty()) return false;
         materials = new ArrayList<>();
+        fluids = new LinkedHashMap<>();
         output.setItem(0, made);
         double x = worldPosition.getX() + 0.5, y = worldPosition.getY() + 1.0, z = worldPosition.getZ() + 0.5;
         level.sendParticles(ParticleTypes.HAPPY_VILLAGER, x, y, z, 20, 0.4, 0.2, 0.4, 0.02);
@@ -222,8 +302,14 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         super.preRemoveSideEffects(pos, state);
         if (level == null) return;
         for (ItemStack m : materials) Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), m);
+        for (Map.Entry<Fluid, Long> held : fluids.entrySet()) {
+            for (long n = held.getValue() / FluidConstants.BUCKET; n > 0; n--) {
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(held.getKey().getBucket()));
+            }
+        }
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), output.removeItemNoUpdate(0));
         materials = new ArrayList<>();
+        fluids = new LinkedHashMap<>();
     }
 
     @Override
@@ -231,6 +317,7 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         super.saveAdditional(out);
         out.putString("target", target.id());
         out.store("materials", ItemStack.CODEC.listOf(), List.copyOf(materials));
+        if (!fluids.isEmpty()) out.store("fluids", FLUIDS_CODEC, Map.copyOf(fluids));
         out.store("output", ItemStack.OPTIONAL_CODEC, output.getItem(0));
     }
 
@@ -239,6 +326,7 @@ public class FarmAssemblerBlockEntity extends BlockEntity {
         super.loadAdditional(in);
         target = AssemblyTarget.byId(in.getStringOr("target", AssemblyTarget.IRON_FARM.id()));
         materials = new ArrayList<>(in.read("materials", ItemStack.CODEC.listOf()).orElse(List.of()));
+        fluids = new LinkedHashMap<>(in.read("fluids", FLUIDS_CODEC).orElse(Map.of()));
         output.setItem(0, in.read("output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 

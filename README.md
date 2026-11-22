@@ -675,6 +675,12 @@ sides and 4 lapis lazuli in the corners (`LIL / ICI / LIL`).
   the Assembler for storage, they just link it). The button is greyed out until a network touches it. It pulls only what the target
   still needs (spawn eggs or Captured Mobs, blocks, everything on its list), only when you press it, and the finished item stays in
   the output slot as before.
+  * **Water and lava buckets** (the Sugar Cane, Bamboo, Nether Wart and other farms ask for them) can come from **fluid** in the
+    network (a Fluid Drawer, a Fluid Tank, a fluid disk): real buckets in the network are used first, then it makes up the rest from the
+    network's water or lava, a bucket's worth (1,000 mB) for each bucket, whole buckets only. The Assembler **holds that as fluid**, not
+    as buckets, and the line counts it (4 / 4). Picking another target **gives it back to the network** as fluid, and what the network
+    has no room for (or all of it, if no network touches it any more) comes back as filled buckets. Building uses it up; breaking the
+    Assembler drops it as filled buckets.
 * **Build** makes it once everything is in; take it from the slot next to the button. Picking something else hands back
   what was in, and breaking the Assembler drops it.
 * The farms cost what their old renamed double chests did: the materials plus the filler block the chest's other slots
