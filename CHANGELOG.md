@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.20
+
+* **Diamond Nugget, and smelting diamond gear down to it.** Nine nuggets make a diamond and a diamond makes nine. Diamond tools, weapons,
+  armor, horse armor and the Diamond AIOT can be smelted (furnace, blast furnace or Nexus Furnace) into nuggets: a whole one gives what
+  its diamonds are worth (pickaxe 27, sword 18, boots 36, leggings 63), and wear takes its share off, never fewer than one. A stack
+  holds 64, so the chestplate (72) and the AIOT (99) give 64.
+
 ## 1.25.19
 
 * **Filters can be edited where they sit.** Beside the filter slot of a conduit side, the Import/Export Bus, the Connectors and the Disk

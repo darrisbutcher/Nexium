@@ -292,6 +292,13 @@ is placed as one and uses two slabs.
   are left alone.
 * If a builder breaks, the module in it drops at your feet.
 
+### Diamond Nugget
+* Nine **Diamond Nuggets** make a diamond and a diamond makes nine.
+* **Smelting diamond gear**: a diamond tool, weapon, armor piece, horse armor or the Diamond AIOT smelts (furnace, blast furnace or
+  Nexus Furnace) into nuggets. A whole one gives what its diamonds are worth (pickaxe 27, sword 18, shovel 9, hoe 18, boots 36,
+  helmet 45, leggings 63), and wear takes its share off (half worn, about half), never fewer than one. A stack holds 64, so the
+  chestplate (72) and the AIOT (99) give 64.
+
 ### Nexium
 * **Nexium Ingot**: a diamond, an emerald and a netherite ingot in a crafting table make
   **3 ingots**. Nine make a **Block of Nexium** (a beacon base).

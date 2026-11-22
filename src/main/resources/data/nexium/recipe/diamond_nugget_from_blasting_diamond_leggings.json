@@ -1,0 +1,11 @@
+{
+  "type": "nexium:durability_blasting",
+  "category": "misc",
+  "ingredient": "minecraft:diamond_leggings",
+  "result": {
+    "id": "nexium:diamond_nugget",
+    "count": 63
+  },
+  "experience": 0.5,
+  "cookingtime": 100
+}
