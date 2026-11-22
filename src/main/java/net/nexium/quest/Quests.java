@@ -38,7 +38,7 @@ public final class Quests {
 
     private static List<Item> pool;
 
-    /** Every item the mod shows in its creative tabs (so not the retired ones), less the few that are not gifts. */
+    /** Every item the mod shows in its creative tabs (so not the retired ones), less the few that are not gifts, the Compressed blocks and the drawers. */
     public static synchronized List<Item> rewardPool() {
         if (pool == null) {
             List<Item> out = new ArrayList<>();
@@ -51,7 +51,11 @@ public final class Quests {
 
     private static void add(List<Item> out, Item item) {
         var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
-        if (!NOT_REWARDS.contains(id.getPath()) && !out.contains(item)) out.add(item);
+        String path = id.getPath();
+        // Bulk blocks make poor gifts: no Compressed, Double and Triple Compressed blocks, and no drawers (the wooden ones, the Fluid
+        // Drawer, the Compacting Drawer and the Drawer Controller)
+        if (path.contains("compressed") || path.contains("drawer")) return;
+        if (!NOT_REWARDS.contains(path) && !out.contains(item)) out.add(item);
     }
 
     public static void init() {

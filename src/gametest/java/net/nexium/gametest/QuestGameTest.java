@@ -115,11 +115,13 @@ public class QuestGameTest {
     @GameTest
     public void theRewardPoolIsTheModsItemsWithoutTheOddOnes(GameTestHelper h) {
         List<Item> pool = Quests.rewardPool();
-        h.assertTrue(pool.size() > 150, "a big pool: " + pool.size());
+        h.assertTrue(pool.size() > 100, "a big pool: " + pool.size());
         for (Item item : pool) {
             var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
             h.assertTrue(id.getNamespace().equals("nexium"), "only the mod's own items: " + id);
             h.assertTrue(!java.util.Set.of("guide", "captured_mob", "spent_fuel_rod").contains(id.getPath()), "not " + id);
+            h.assertTrue(!id.getPath().contains("compressed"), "no Compressed blocks: " + id);
+            h.assertTrue(!id.getPath().contains("drawer"), "no drawers: " + id);
         }
         h.assertTrue(pool.contains(ModItems.NEXIUM_INGOT) && pool.contains(ModItems.NEXIUM_BLOCK), "Nexium items are among them");
         h.succeed();
