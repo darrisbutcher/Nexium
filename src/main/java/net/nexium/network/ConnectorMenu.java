@@ -11,11 +11,15 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.filter.FilterItem;
+import net.nexium.filter.FilterMenu;
+import net.nexium.util.Menus;
 import net.nexium.registry.ModMenus;
 import net.nexium.util.BaseMenu;
 
 /** Priority buttons for both connectors, plus the filter slot on the Filtered Connector. */
 public class ConnectorMenu extends BaseMenu {
+    /** Opens the editor for the filter in the filter slot. */
+    public static final int BTN_EDIT_FILTER = 10;
     public static final int BTN_MINUS_10 = 0, BTN_MINUS_1 = 1, BTN_PLUS_1 = 2, BTN_PLUS_10 = 3;
     private static final int PRIORITY_OFFSET = 1000;
 
@@ -50,6 +54,13 @@ public class ConnectorMenu extends BaseMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (be == null) return true;
+        if (id == BTN_EDIT_FILTER) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                FilterMenu.openFor(sp, () -> be.filterContainer().getItem(0), this::stillValid, () -> be.filterContainer().setChanged(),
+                        () -> Menus.open(sp, be.getBlockState().getBlock().getName(), be.getBlockPos(), (id2, inv, p) -> new ConnectorMenu(id2, inv, be)));
+            }
+            return true;
+        }
         int delta = switch (id) {
             case BTN_MINUS_10 -> -10;
             case BTN_MINUS_1 -> -1;

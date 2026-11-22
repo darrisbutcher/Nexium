@@ -17,6 +17,7 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
     private static final int SELECTED = 0xFFFFFF55;
 
     private Button modeButton;
+    private Button editFilter;
     private final Button[] faceButtons = new Button[6];
 
     public NetworkBusScreen(NetworkBusMenu menu, Inventory inventory, Component title) {
@@ -38,7 +39,20 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
                 }
             }).bounds(leftPos + FACE_X + i * (FACE_W + FACE_GAP), topPos + FACE_Y, FACE_W, FACE_H).build());
         }
+        editFilter = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.edit_filter"), b -> click(NetworkBusMenu.BTN_EDIT_FILTER))
+                .bounds(leftPos + 140, topPos + 36, 32, 12).build());
+        editFilter.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.nexium.edit_filter.tip")));
+        editFilter.active = hasFilter();
         updateFaceButtons();
+    }
+
+    private void click(int id) {
+        if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
+    }
+
+    /** The Edit button is only usable with a filter in the filter slot. */
+    private boolean hasFilter() {
+        return menu.getSlot(0).getItem().getItem() instanceof net.nexium.filter.FilterItem;
     }
 
     private BlockState state() {
@@ -87,6 +101,7 @@ public class NetworkBusScreen extends BaseScreen<NetworkBusMenu> {
     protected void containerTick() {
         super.containerTick();
         modeButton.setMessage(modeLabel());
+        editFilter.active = hasFilter();
         updateFaceButtons();
     }
 

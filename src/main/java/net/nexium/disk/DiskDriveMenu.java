@@ -14,6 +14,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.filter.FilterItem;
+import net.nexium.filter.FilterMenu;
+import net.nexium.util.Menus;
 import net.nexium.registry.ModMenus;
 import net.nexium.util.BaseMenu;
 import org.jspecify.annotations.Nullable;
@@ -23,7 +25,9 @@ import java.util.Locale;
 
 /** The Disk Drive's screen: its 8 disks, priority, filter, Move to disks and Move up (lower tier disks onto higher tier ones). */
 public class DiskDriveMenu extends BaseMenu {
-    public static final int BTN_MINUS_1 = 0, BTN_PLUS_1 = 1, BTN_MINUS_10 = 2, BTN_PLUS_10 = 3, BTN_MOVE = 4, BTN_MOVE_UP = 5;
+    public static final int BTN_MINUS_1 = 0, BTN_PLUS_1 = 1, BTN_MINUS_10 = 2, BTN_PLUS_10 = 3, BTN_MOVE = 4, BTN_MOVE_UP = 5, BTN_MOVE_OUT = 6;
+    /** Opens the editor for the filter in the filter slot. */
+    public static final int BTN_EDIT_FILTER = 10;
     public static final int FILTER_X = 88, FILTER_Y = 48, INVENTORY_Y = 139;
     private static final int PRIORITY_OFFSET = 1000;
 
@@ -76,6 +80,12 @@ public class DiskDriveMenu extends BaseMenu {
             case BTN_PLUS_1 -> be.setPriority(be.priority() + 1);
             case BTN_MINUS_10 -> be.setPriority(be.priority() - 10);
             case BTN_PLUS_10 -> be.setPriority(be.priority() + 10);
+            case BTN_EDIT_FILTER -> {
+                if (player instanceof ServerPlayer sp) {
+                    FilterMenu.openFor(sp, () -> be.filterContainer().getItem(0), this::stillValid, () -> be.filterContainer().setChanged(),
+                            () -> Menus.open(sp, be.getBlockState().getBlock().getName(), be.getBlockPos(), (id2, inv, p) -> new DiskDriveMenu(id2, inv, be)));
+                }
+            }
             case BTN_MOVE -> {
                 DiskDriveBlockEntity.Moved moved = be.moveToDisks();
                 if (player instanceof ServerPlayer sp) {
@@ -83,6 +93,16 @@ public class DiskDriveMenu extends BaseMenu {
                     sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
                             ? Component.translatable("message.nexium.disk.nothing_moved")
                             : Component.translatable("message.nexium.disk.moved", f.format(moved.items()),
+                            f.format(moved.fluid() / FluidConstants.BUCKET)));
+                }
+            }
+            case BTN_MOVE_OUT -> {
+                DiskDriveBlockEntity.Moved moved = be.moveToDrawers();
+                if (player instanceof ServerPlayer sp) {
+                    NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
+                    sp.sendOverlayMessage(moved.items() == 0 && moved.fluid() == 0
+                            ? Component.translatable("message.nexium.disk.nothing_moved_out")
+                            : Component.translatable("message.nexium.disk.moved_out", f.format(moved.items()),
                             f.format(moved.fluid() / FluidConstants.BUCKET)));
                 }
             }

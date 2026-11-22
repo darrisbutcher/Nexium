@@ -7,6 +7,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.nexium.network.ConnectorMenu;
 
 public class ConnectorScreen extends BaseScreen<ConnectorMenu> {
+    private Button editFilter;
+
     public ConnectorScreen(ConnectorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, 133, 51);
     }
@@ -19,7 +21,23 @@ public class ConnectorScreen extends BaseScreen<ConnectorMenu> {
         addRenderableWidget(Button.builder(Component.literal("-10"), b -> click(ConnectorMenu.BTN_MINUS_10)).bounds(leftPos + 8, y, 24, 14).build());
         addRenderableWidget(Button.builder(Component.literal("-1"), b -> click(ConnectorMenu.BTN_MINUS_1)).bounds(leftPos + 34, y, 20, 14).build());
         addRenderableWidget(Button.builder(Component.literal("+1"), b -> click(ConnectorMenu.BTN_PLUS_1)).bounds(leftPos + 90, y, 20, 14).build());
+        editFilter = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.edit_filter"), b -> click(ConnectorMenu.BTN_EDIT_FILTER))
+                .bounds(leftPos + 140, topPos + 38, 32, 12).build());
+        editFilter.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.nexium.edit_filter.tip")));
+        editFilter.active = hasFilter();
         addRenderableWidget(Button.builder(Component.literal("+10"), b -> click(ConnectorMenu.BTN_PLUS_10)).bounds(leftPos + 112, y, 24, 14).build());
+    }
+
+
+    /** The Edit button is only usable with a filter in the filter slot. */
+    private boolean hasFilter() {
+        return menu.getSlot(0).getItem().getItem() instanceof net.nexium.filter.FilterItem;
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        editFilter.active = hasFilter();
     }
 
     private void click(int id) {

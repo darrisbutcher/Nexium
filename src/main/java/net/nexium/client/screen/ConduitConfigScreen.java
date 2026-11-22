@@ -26,7 +26,7 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
 
     private final Button[] sideButtons = new Button[6];
     private final Button[] typeButtons = new Button[TYPE_KEYS.length];
-    private Button modeButton, redstoneButton, rrButton;
+    private Button modeButton, redstoneButton, rrButton, editFilter;
     private final Button[] insertPicker = new Button[2];
     /**
      * Channel pickers: the insert colour (arrows and a swatch) on the row under the mode button, and under it the extract colours: a
@@ -70,11 +70,20 @@ public class ConduitConfigScreen extends BaseScreen<ConduitConfigMenu> {
                 .bounds(leftPos + 48, topPos + 126, 12, 12).build());
         rrButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ConduitConfigMenu.BTN_ROUND_ROBIN))
                 .bounds(leftPos + 64, topPos + 126, 72, 12).build());
+        editFilter = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.edit_filter"), b -> click(ConduitConfigMenu.BTN_EDIT_FILTER))
+                .bounds(leftPos + 140, topPos + 49, 32, 12).build());
+        editFilter.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("screen.nexium.edit_filter.tip")));
         inventoryLabelY = 10_000;
         updateLabels();
     }
 
+    /** The Edit button is only usable with a filter in the selected side's filter slot. */
+    private boolean hasFilter() {
+        return menu.getSlot(0).getItem().getItem() instanceof net.nexium.filter.FilterItem;
+    }
+
     private void updateLabels() {
+        editFilter.active = hasFilter();
         int side = menu.get(ConduitConfigMenu.D_SIDE);
         int type = menu.get(ConduitConfigMenu.D_TYPE);
         int types = menu.get(ConduitConfigMenu.D_TYPES);

@@ -12,12 +12,16 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.filter.FilterItem;
+import net.nexium.filter.FilterMenu;
+import net.nexium.util.Menus;
 import net.nexium.registry.ModMenus;
 import net.nexium.util.BaseMenu;
 import org.jetbrains.annotations.Nullable;
 
 /** Mode button, the six face buttons and the filter slot of an Import/Export Bus. */
 public class NetworkBusMenu extends BaseMenu {
+    /** Opens the editor for the filter in the filter slot. */
+    public static final int BTN_EDIT_FILTER = 10;
     public static final int BTN_MODE = 0;
     /** The buttons from here on turn the bus: {@code BTN_FACE + direction.get3DDataValue()}. */
     public static final int BTN_FACE = 1;
@@ -64,7 +68,12 @@ public class NetworkBusMenu extends BaseMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (be == null) return true;
-        if (id == BTN_MODE) be.toggleMode();
+        if (id == BTN_EDIT_FILTER) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                FilterMenu.openFor(sp, () -> be.filterContainer().getItem(0), this::stillValid, () -> be.filterContainer().setChanged(),
+                        () -> Menus.open(sp, be.getBlockState().getBlock().getName(), be.getBlockPos(), (id2, inv, p) -> new NetworkBusMenu(id2, inv, be)));
+            }
+        } else if (id == BTN_MODE) be.toggleMode();
         else if (id >= BTN_FACE && id < BTN_FACE + 6) be.face(Direction.from3DDataValue(id - BTN_FACE));
         return true;
     }

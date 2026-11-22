@@ -135,6 +135,29 @@ public class FilterTagsGameTest {
         h.succeed();
     }
 
+    /** A filter sitting in a block's filter slot is edited in place: the same stack, saved and announced, with a hidden slot carrying it. */
+    @GameTest(maxTicks = 40)
+    public void aFilterInABlockSlotIsEditedInPlace(GameTestHelper h) {
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        net.minecraft.world.SimpleContainer slot = new net.minecraft.world.SimpleContainer(1);
+        slot.setItem(0, new ItemStack(ModItems.ADVANCED_FILTER));
+        int[] changes = {0};
+        FilterMenu menu = new FilterMenu(1, player.getInventory(), slot, p -> true, () -> changes[0]++, () -> {});
+        h.assertTrue(menu.advanced(), "it knows it is an Advanced Filter");
+        ItemStack inSlot = slot.getItem(0);
+        menu.clickMenuButton(player, FilterMenu.BTN_WHITELIST);
+        h.assertTrue(slot.getItem(0) == inSlot, "the filter never leaves its slot");
+        h.assertTrue(!inSlot.get(ModComponents.FILTER).whitelist(), "the whitelist button flips the filter in the slot");
+        menu.setTags(List.of(Identifier.parse("minecraft:logs")));
+        h.assertTrue(inSlot.get(ModComponents.FILTER).tags().equals(List.of(Identifier.parse("minecraft:logs"))), "tags are saved to it");
+        h.assertTrue(changes[0] == 2, "the block is told after each change: " + changes[0]);
+        h.assertTrue(menu.tags().equals(List.of(Identifier.parse("minecraft:logs"))), "the menu reads them back");
+        h.assertTrue(menu.stillValid(player), "it stays open while the filter is there");
+        slot.setItem(0, ItemStack.EMPTY);
+        h.assertTrue(!menu.stillValid(player), "and closes once the filter is taken out");
+        h.succeed();
+    }
+
     @GameTest(maxTicks = 400)
     public void oneChestFeedsAFurnaceItsInputAndItsFuel(GameTestHelper h) {
         // Chest A - bundle 1 - bundle 2 - bundle 3, with the furnace under bundle 1 (its top) and beside bundle 3 (its side)

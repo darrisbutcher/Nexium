@@ -992,6 +992,15 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void theResultSlotIsNeverPartOfADoubleClickPickUpAll(GameTestHelper h) {
+        ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 8));
+        BackpackMenu menu = openScreen(player);
+        h.assertFalse(menu.canTakeItemForPickAll(ItemStack.EMPTY, menu.getResultSlot()), "the result slot is left out, so a quick second click crafts again");
+        h.assertTrue(menu.canTakeItemForPickAll(ItemStack.EMPTY, menu.getSlot(BackpackModules.SLOTS)), "an ordinary slot still takes part");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void theCraftingGridCanBeHiddenAndTheBackpackRemembersIt(GameTestHelper h) {
         ServerPlayer player = craftingWith(h, new ItemStack(Items.OAK_PLANKS, 8));
         BackpackMenu menu = openScreen(player);

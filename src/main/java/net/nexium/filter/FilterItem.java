@@ -40,7 +40,7 @@ public class FilterItem extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer sp) {
             ItemStack stack = player.getItemInHand(hand);
-            Menus.open(sp, stack.getHoverName(), hand.ordinal(), (id, inv, p) -> new FilterMenu(id, inv, hand.ordinal()));
+            Menus.open(sp, stack.getHoverName(), new FilterMenu.OpenData(hand.ordinal(), net.minecraft.world.item.ItemStack.EMPTY), (id, inv, p) -> new FilterMenu(id, inv, hand.ordinal()));
         }
         return InteractionResult.SUCCESS;
     }

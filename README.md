@@ -147,6 +147,9 @@ Digital storage for the network, counted like Refined Storage: a disk holds a nu
   higher item disks and fluid disks onto higher fluid disks, never one kind onto the other. Each disk's contents go to the biggest
   disk first and then the next biggest, as far as there is room, so swapping a 16k disk for a 64k one is one click; disks of the same
   tier are left alone, and what does not fit stays where it was.
+* **Move to drawers** (the wide button under them) pushes what **that drive's disks** hold, items and fluids, into the drawers of a
+  Drawer Controller on the drive's network. Only what a drawer already holds or is locked to goes in (locks are respected), and
+  whatever no drawer takes stays on the disks.
 * No power and no channels, like the rest of the network.
 
 ### Tablets
@@ -177,7 +180,9 @@ place it or right-click it to outline those chunks for a minute.
   a tag picker: search every item tag by name and tick any of them (up to 32), and its **Match** button adds
   **Smeltable** (anything a furnace, blast furnace or smoker takes) or **Furnace fuel**. Whitelist/blacklist applies to all of
   it. On a furnace, a Smeltable filter on the conduit's top side and a Fuel filter on another side let one extractor fill
-  both the input and the fuel slot without clogging either.
+  both the input and the fuel slot without clogging either. A filter sitting in a conduit side, the Import/Export Bus, a Connector or
+  the Disk Drive is edited in place with the **Edit** button beside its slot (it never leaves the slot, and closing the editor returns
+  to that screen).
 * **Conduit Scanner** (spyglass, comparator, 2 iron ingots, redstone): right-click any conduit with it to see everything on
   that conduit network. For each block touching a conduit it shows the side, whether that side takes **Out**, puts **In** or
   both, its channel colours, and its priority and filter. There is a tab for each conduit type the network carries (Item,

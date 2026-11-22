@@ -88,6 +88,15 @@ public class TerminalGameTest {
     }
 
     @GameTest
+    public void theResultSlotIsNeverPartOfADoubleClickPickUpAll(GameTestHelper h) {
+        TerminalMenu menu = craftingTerminal(h, player(h), 10);
+        h.assertFalse(menu.canTakeItemForPickAll(net.minecraft.world.item.ItemStack.EMPTY, menu.getResultSlot()),
+                "the result slot is left out, so a second click on it within a quarter of a second crafts again instead of picking up all");
+        h.assertTrue(menu.canTakeItemForPickAll(net.minecraft.world.item.ItemStack.EMPTY, menu.getInputGridSlots().get(0)), "the grid slots still take part");
+        h.succeed();
+    }
+
+    @GameTest
     public void recipeBookShowsGhostWhenIngredientsMissing(GameTestHelper h) {
         ServerPlayer player = player(h);
         TerminalMenu menu = craftingTerminal(h, player, 3);
