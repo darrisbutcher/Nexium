@@ -27,9 +27,7 @@ public class TunnelScrollClientTest implements FabricClientGameTest {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 player.getInventory().clearContent();
                 ItemStack aiot = new ItemStack(ModItems.AIOTS.get(AiotTier.DIAMOND));
-                var slots = AiotModules.slots(aiot);
-                slots.set(0, new ItemStack(ModItems.MODULES.get(ModuleType.AREA_MINING)));
-                AiotModules.setSlots(aiot, slots);
+                AiotModules.toggleArea(aiot); // 3x3 on
                 player.getInventory().setItem(0, aiot);
                 player.getInventory().setItem(1, new ItemStack(Items.STONE, 5));
                 player.getInventory().setSelectedSlot(0);

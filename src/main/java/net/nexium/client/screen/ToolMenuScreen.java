@@ -30,7 +30,7 @@ import net.nexium.registry.ModComponents;
 public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
     private static final int BUTTON_X = 8, BUTTON_WIDTH = 160, MODULE_BUTTON_X = 28, MODULE_BUTTON_WIDTH = 140;
     private static final int MODULES_LABEL_Y = ToolMenuMenu.MODULE_SLOT_Y - 12;
-    private Button modeButton, hasteButton, armorButton, veinButton, tunnelButton;
+    private Button modeButton, hasteButton, armorButton, veinButton, tunnelButton, areaButton;
     private final Button[] moduleButtons = new Button[AiotModules.SLOTS];
     private final SideHints hints = new SideHints();
 
@@ -53,6 +53,8 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
                 .bounds(leftPos + BUTTON_X, topPos + 58, half, 16).build());
         tunnelButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TUNNEL))
                 .bounds(leftPos + BUTTON_X + half + 2, topPos + 58, half, 16).build());
+        areaButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_AREA))
+                .bounds(leftPos + BUTTON_X, topPos + 76, BUTTON_WIDTH, 16).build());
         for (int i = 0; i < AiotModules.SLOTS; i++) {
             final int slot = i;
             moduleButtons[i] = addRenderableWidget(Button.builder(Component.empty(), b -> click(ToolMenuMenu.BTN_TOGGLE_MODULE + slot))
@@ -65,6 +67,11 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
             minecraft.gui.setScreen(new ArmorMenuScreen());
         }).bounds(leftPos + imageWidth - 8 - 44, topPos + 5, 44, 16).build());
         refresh();
+    }
+
+    /** The 3x3 button (for the client test, which clicks it). */
+    public Button areaButton() {
+        return areaButton;
     }
 
     private void click(int id) {
@@ -98,17 +105,12 @@ public class ToolMenuScreen extends BaseScreen<ToolMenuMenu> {
         boolean aiot = tool.getItem() instanceof AiotItem;
         veinButton.visible = aiot;
         tunnelButton.visible = aiot;
-        ItemStack area = ItemStack.EMPTY;
-        for (int i = 0; i < AiotModules.SLOTS; i++) {
-            if (menu.getSlot(i).getItem().getItem() instanceof ModuleItem m && m.type() == ModuleType.AREA_MINING) area = menu.getSlot(i).getItem();
-        }
-        if (area.isEmpty()) {
-            set(tunnelButton, false, Component.translatable("screen.nexium.tool_menu.tunnel_none"), "screen.nexium.tool_menu.tunnel_none.tooltip");
-        } else {
-            int length = Math.max(1, Math.min(menu.tunnelMax(), area.getOrDefault(ModComponents.TUNNEL_LENGTH, 1)));
-            set(tunnelButton, true, Component.translatable(length == 1 ? "screen.nexium.tool_menu.tunnel_off"
-                    : "screen.nexium.tool_menu.tunnel_length", length), "screen.nexium.tool_menu.tunnel.tooltip");
-        }
+        areaButton.visible = aiot;
+        set(areaButton, aiot, Component.translatable(AiotModules.areaOn(tool) ? "screen.nexium.tool_menu.area_on" : "screen.nexium.tool_menu.area_off"),
+                "screen.nexium.tool_menu.area.tooltip");
+        int length = Math.max(1, Math.min(menu.tunnelMax(), AiotModules.tunnelLength(tool)));
+        set(tunnelButton, aiot, Component.translatable(length == 1 ? "screen.nexium.tool_menu.tunnel_off"
+                : "screen.nexium.tool_menu.tunnel_length", length), "screen.nexium.tool_menu.tunnel.tooltip");
         int max = menu.veinMax(); // the server's limit, synced with the menu
         int size = Math.max(1, Math.min(max, tool.getOrDefault(ModComponents.VEIN_SIZE, max)));
         set(veinButton, aiot, Component.translatable("screen.nexium.tool_menu.vein_size", size),

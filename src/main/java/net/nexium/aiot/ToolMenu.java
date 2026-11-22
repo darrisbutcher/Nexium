@@ -71,7 +71,7 @@ public final class ToolMenu {
         return true;
     }
 
-    /** Steps the 3x3 Mining module's tunnel length. Returns false if the tool has no such module. */
+    /** Steps the AIOT's tunnel length. Returns false if the tool is not an AIOT. */
     public static boolean cycleTunnelLength(ServerPlayer player, ItemStack stack) {
         int length = AiotModules.cycleTunnelLength(stack);
         if (length == 0) return false;
@@ -91,36 +91,33 @@ public final class ToolMenu {
     }
 
     /**
-     * The 3x3 key: switches the 3x3 Mining Module of the AIOT in the main hand on or off, with a message above the
-     * hotbar. Does nothing when the main hand holds something else, and says so when the AIOT has no such module.
+     * The 3x3 key (and the tool menu's 3x3 button): switches 3x3 mining of the AIOT in the main hand on or off, with a message
+     * above the hotbar. Does nothing when the main hand holds something else.
      */
     public static void toggleArea(ServerPlayer player) {
         ItemStack tool = player.getMainHandItem();
         if (!(tool.getItem() instanceof AiotItem)) return;
-        var slots = AiotModules.slots(tool);
-        for (int slot = 0; slot < slots.size(); slot++) {
-            if (slots.get(slot).getItem() instanceof ModuleItem item && item.type() == ModuleType.AREA_MINING) {
-                toggleModule(player, tool, slot);
-                return;
-            }
-        }
-        player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.needs_area").withStyle(ChatFormatting.RED));
+        toggleArea(player, tool);
+    }
+
+    /** Switches 3x3 mining of this AIOT on or off. Returns false if it is not an AIOT. */
+    public static boolean toggleArea(ServerPlayer player, ItemStack tool) {
+        Boolean nowOn = AiotModules.toggleArea(tool);
+        if (nowOn == null) return false;
+        player.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.tool_menu.area_on" : "message.nexium.tool_menu.area_off"));
+        return true;
     }
 
     /**
      * The tunnel key held with the scroll wheel: moves the tunnel length of the AIOT in the main hand one step up (a
      * positive direction) or down along off, 2, 3, 8, 16, 24, 32 (up to the server's limit), with a message above the
-     * hotbar. It stops at the ends. Does nothing when the main hand holds something else, and says so when the AIOT has no
-     * 3x3 Mining module.
+     * hotbar. It stops at the ends. Does nothing when the main hand holds something else.
      */
     public static void stepTunnel(ServerPlayer player, int direction) {
         ItemStack tool = player.getMainHandItem();
         if (!(tool.getItem() instanceof AiotItem)) return;
         int length = AiotModules.stepTunnelLength(tool, direction);
-        if (length == 0) {
-            player.sendOverlayMessage(Component.translatable("message.nexium.tool_menu.needs_area").withStyle(ChatFormatting.RED));
-            return;
-        }
+        if (length == 0) return;
         player.sendOverlayMessage(length == 1 ? Component.translatable("message.nexium.tool_menu.tunnel_off")
                 : Component.translatable("message.nexium.tool_menu.tunnel", length));
     }

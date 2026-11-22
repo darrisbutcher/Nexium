@@ -890,7 +890,7 @@
       "pages": [
         "aiot.modules"
       ],
-      "icon": "nexium:area_mining_module",
+      "icon": "nexium:nexus_link_module",
       "aliases": [
         "module",
         "modules",
@@ -928,10 +928,7 @@
       "pages": [
         "aiot.area"
       ],
-      "icon": "nexium:area_mining_module",
-      "recipes": [
-        "m_area"
-      ],
+      "icon": "nexium:diamond_aiot",
       "items": [
         "nexium:area_mining_module"
       ],

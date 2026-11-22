@@ -184,12 +184,6 @@
           "count": 1
         },
         {
-          "id": "area",
-          "goal": "get",
-          "item": "nexium:area_mining_module",
-          "count": 1
-        },
-        {
           "id": "link",
           "goal": "get",
           "item": "nexium:nexus_link_module",

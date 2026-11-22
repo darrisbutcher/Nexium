@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.15
+
+* **3x3 mining is built into every AIOT,** with no module. It is off on a new AIOT; switch it on with the 3x3 key (X) or the new
+  **3x3 mining** button in the tool menu, as before. The tunnel length (the tool menu button, or the tunnel key with the scroll
+  wheel), the outline and the HUD line all work as they did, now on the AIOT itself, and tunnelling no longer needs the module either.
+* **The 3x3 Mining Module is retired,** like the Vein Mining Module: its recipe is gone, it is out of the creative tab and the quest book,
+  and it stays registered under its old id so that nothing holding one fails to load. An AIOT that still has one keeps its 3x3 on/off
+  setting and tunnel length, and opening its tool menu hands the module back as what it was made from (4 iron ingots, 4 redstone and a
+  diamond). Right-clicking a retired module does the same. The AIOT's tool menu has one module slot now, for the Nexus Link.
+
 ## 1.25.14
 
 * **The Combustion Generator's screen tells the truth when its buffer is full.** It said "Making 20 NE/t" whenever fuel burned, even with

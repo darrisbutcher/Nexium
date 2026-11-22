@@ -90,7 +90,7 @@ public final class AiotMining {
         if (config.aiotVeinMining && veinKeyHeld && veinable(level, pos, state, tool)) {
             return vein(level, pos, state, aiot ? AiotModules.veinSize(tool) : config.aiotVeinMaxBlocks);
         }
-        if (aiot && config.aiotAreaMining && AiotModules.active(tool, ModuleType.AREA_MINING) && tool.getDestroySpeed(state) > 1.0F) {
+        if (aiot && config.aiotAreaMining && AiotModules.areaOn(tool) && tool.getDestroySpeed(state) > 1.0F) {
             return area(level, player, pos, state, tool, AiotModules.tunnelLength(tool));
         }
         return List.of();

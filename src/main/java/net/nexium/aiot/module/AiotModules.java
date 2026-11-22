@@ -54,14 +54,52 @@ public final class AiotModules {
     }
 
     /**
-     * Takes any retired Vein Mining Module out of this AIOT and returns it (the AIOT keeps the modules it still uses, as
-     * {@link #slots} reads them). Empty when there is none.
+     * Takes any retired module (the Vein Mining Module, the 3x3 Mining Module) out of this AIOT and returns it (the AIOT keeps
+     * the modules it still uses, as {@link #slots} reads them). An old 3x3 Mining Module hands its on/off state and tunnel length
+     * to the AIOT first. Empty when there is none.
      */
     public static List<ItemStack> takeRetired(ItemStack tool) {
         if (!(tool.getItem() instanceof AiotItem)) return List.of();
         List<ItemStack> retired = stored(tool).stream().filter(stack -> stack.getItem() instanceof RetiredModuleItem).toList();
-        if (!retired.isEmpty()) setSlots(tool, slots(tool));
+        if (!retired.isEmpty()) {
+            adoptOldArea(tool);
+            setSlots(tool, slots(tool));
+        }
         return retired;
+    }
+
+    /** The old 3x3 Mining Module still installed in this AIOT, or an empty stack. */
+    private static ItemStack oldArea(ItemStack tool) {
+        for (ItemStack stack : stored(tool)) if (stack.is(net.nexium.registry.ModItems.RETIRED_AREA_MINING_MODULE)) return stack;
+        return ItemStack.EMPTY;
+    }
+
+    /** Copies an old 3x3 Mining Module's on/off state and tunnel length onto the AIOT itself, once (what the AIOT already has is kept). */
+    private static void adoptOldArea(ItemStack tool) {
+        ItemStack old = oldArea(tool);
+        if (old.isEmpty()) return;
+        if (!tool.has(ModComponents.AREA_MINING)) tool.set(ModComponents.AREA_MINING, !old.has(ModComponents.MODULE_OFF));
+        if (!tool.has(ModComponents.TUNNEL_LENGTH) && old.has(ModComponents.TUNNEL_LENGTH)) {
+            tool.set(ModComponents.TUNNEL_LENGTH, old.get(ModComponents.TUNNEL_LENGTH));
+        }
+    }
+
+    /** Whether 3x3 mining is switched on for this AIOT: its own setting, or what an old 3x3 Mining Module in it was set to; off if neither. */
+    public static boolean areaOn(ItemStack tool) {
+        if (!(tool.getItem() instanceof AiotItem)) return false;
+        Boolean on = tool.get(ModComponents.AREA_MINING);
+        if (on != null) return on;
+        ItemStack old = oldArea(tool);
+        return !old.isEmpty() && !old.has(ModComponents.MODULE_OFF);
+    }
+
+    /** Switches 3x3 mining on or off. Returns its new state, or null if this is not an AIOT. */
+    public static @Nullable Boolean toggleArea(ItemStack tool) {
+        if (!(tool.getItem() instanceof AiotItem)) return null;
+        adoptOldArea(tool);
+        boolean now = !areaOn(tool);
+        tool.set(ModComponents.AREA_MINING, now);
+        return now;
     }
 
     public static void setSlots(ItemStack tool, NonNullList<ItemStack> slots) {
@@ -129,66 +167,57 @@ public final class AiotModules {
     /** Tunnel lengths after "off" (a plain 3x3) that the tool menu and the tunnel key's scroll step through, up to the config's limit. */
     private static final int[] TUNNEL_STEPS = {2, 3, 8, 16, 24, 32};
 
-    /** How many 3x3 layers deep one 3x3 Mining swing digs with this AIOT: its module's setting, 1 (a plain 3x3) if unset, never above the config's limit. */
+    /** How many 3x3 layers deep one 3x3 swing digs with this AIOT: its setting, 1 (a plain 3x3) if unset, never above the config's limit. */
     public static int tunnelLength(ItemStack tool) {
         int max = NexusConfig.get().aiotTunnelMaxLength;
-        return Math.max(1, Math.min(max, find(tool, ModuleType.AREA_MINING).getOrDefault(ModComponents.TUNNEL_LENGTH, 1)));
+        Integer own = tool.get(ModComponents.TUNNEL_LENGTH);
+        if (own == null) own = oldArea(tool).getOrDefault(ModComponents.TUNNEL_LENGTH, 1);
+        return Math.max(1, Math.min(max, own));
     }
 
-    /** Steps the installed 3x3 Mining module to its next tunnel length: off, 2, 3, 8, 16, 24, 32 (those within the limit), then off again. Returns it (1 = off), or 0 if there is no such module. */
+    private static void setTunnelLength(ItemStack tool, int length) {
+        if (length <= 1) tool.remove(ModComponents.TUNNEL_LENGTH);
+        else tool.set(ModComponents.TUNNEL_LENGTH, length);
+    }
+
+    /** Steps the AIOT's tunnel length to its next one: off, 2, 3, 8, 16, 24, 32 (those within the limit), then off again. Returns it (1 = off), or 0 if this isn't an AIOT. */
     public static int cycleTunnelLength(ItemStack tool) {
-        NonNullList<ItemStack> slots = slots(tool);
-        for (int i = 0; i < SLOTS; i++) {
-            if (!(slots.get(i).getItem() instanceof ModuleItem item) || item.type() != ModuleType.AREA_MINING) continue;
-            int max = NexusConfig.get().aiotTunnelMaxLength;
-            int current = tunnelLength(tool);
-            int next = 1;
-            for (int step : TUNNEL_STEPS) {
-                if (step > current && step <= max) { next = step; break; }
-            }
-            ItemStack module = slots.get(i).copy();
-            if (next == 1) module.remove(ModComponents.TUNNEL_LENGTH);
-            else module.set(ModComponents.TUNNEL_LENGTH, next);
-            slots.set(i, module);
-            setSlots(tool, slots);
-            return next;
+        if (!(tool.getItem() instanceof AiotItem)) return 0;
+        adoptOldArea(tool);
+        int max = NexusConfig.get().aiotTunnelMaxLength;
+        int current = tunnelLength(tool);
+        int next = 1;
+        for (int step : TUNNEL_STEPS) {
+            if (step > current && step <= max) { next = step; break; }
         }
-        return 0;
+        setTunnelLength(tool, next);
+        return next;
     }
 
     /**
-     * Moves the installed 3x3 Mining module one step along off, 2, 3, 8, 16, 24, 32 (those within the limit): up to the next
-     * longer tunnel, or down to the next shorter one, and no further than either end (off at the bottom, the longest at the
-     * top). A length that is not on the list (an older setting) goes to the nearest step in that direction. Returns the
-     * length now set (1 = off), or 0 if there is no such module.
+     * Moves the AIOT's tunnel length one step along off, 2, 3, 8, 16, 24, 32 (those within the limit): up to the next longer
+     * tunnel, or down to the next shorter one, and no further than either end (off at the bottom, the longest at the top). A length
+     * that is not on the list (an older setting) goes to the nearest step in that direction. Returns the length now set (1 = off),
+     * or 0 if this isn't an AIOT.
      */
     public static int stepTunnelLength(ItemStack tool, int direction) {
-        NonNullList<ItemStack> slots = slots(tool);
-        for (int i = 0; i < SLOTS; i++) {
-            if (!(slots.get(i).getItem() instanceof ModuleItem item) || item.type() != ModuleType.AREA_MINING) continue;
-            int max = NexusConfig.get().aiotTunnelMaxLength;
-            int current = tunnelLength(tool);
-            int next = current;
-            if (direction > 0) {
-                for (int step : TUNNEL_STEPS) {
-                    if (step > current && step <= max) { next = step; break; }
-                }
-            } else if (direction < 0) {
-                next = 1; // off, unless a shorter step is found
-                for (int step : TUNNEL_STEPS) {
-                    if (step < current && step <= max) next = step;
-                }
+        if (!(tool.getItem() instanceof AiotItem)) return 0;
+        adoptOldArea(tool);
+        int max = NexusConfig.get().aiotTunnelMaxLength;
+        int current = tunnelLength(tool);
+        int next = current;
+        if (direction > 0) {
+            for (int step : TUNNEL_STEPS) {
+                if (step > current && step <= max) { next = step; break; }
             }
-            if (next != current) {
-                ItemStack module = slots.get(i).copy();
-                if (next == 1) module.remove(ModComponents.TUNNEL_LENGTH);
-                else module.set(ModComponents.TUNNEL_LENGTH, next);
-                slots.set(i, module);
-                setSlots(tool, slots);
+        } else if (direction < 0) {
+            next = 1; // off, unless a shorter step is found
+            for (int step : TUNNEL_STEPS) {
+                if (step < current && step <= max) next = step;
             }
-            return next;
         }
-        return 0;
+        if (next != current) setTunnelLength(tool, next);
+        return next;
     }
 
     /** Links the AIOT's installed Nexus Link to a terminal. Returns false if it has none. */

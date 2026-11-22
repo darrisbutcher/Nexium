@@ -42,11 +42,8 @@ public class PreviewClientTest implements FabricClientGameTest {
                 }
                 player.snapTo(base.getX() + 0.5, base.getY(), base.getZ() + 0.5, 0.0F, 0.0F);
                 ItemStack aiot = new ItemStack(ModItems.AIOTS.get(AiotTier.DIAMOND));
-                var slots = AiotModules.slots(aiot);
-                ItemStack area = new ItemStack(ModItems.MODULES.get(ModuleType.AREA_MINING));
-                area.set(ModComponents.TUNNEL_LENGTH, 8);
-                slots.set(0, area);
-                AiotModules.setSlots(aiot, slots);
+                AiotModules.toggleArea(aiot); // 3x3 on
+                aiot.set(ModComponents.TUNNEL_LENGTH, 8);
                 player.setItemInHand(InteractionHand.MAIN_HAND, aiot);
             });
             ctx.waitTicks(20);

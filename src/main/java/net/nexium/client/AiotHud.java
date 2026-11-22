@@ -67,14 +67,12 @@ public final class AiotHud {
             var enchantment = client.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(mode.enchantment());
             out.add(new Line(Enchantment.getFullname(enchantment, AiotEnchanting.activeLevel(tool, mode)), MODE));
         }
-        if (!AiotModules.find(tool, ModuleType.AREA_MINING).isEmpty()) {
-            if (!AiotModules.active(tool, ModuleType.AREA_MINING)) {
-                out.add(new Line(Component.translatable("hud.nexium.aiot.area_off"), OFF));
-            } else {
-                int length = AiotModules.tunnelLength(tool);
-                out.add(new Line(length > 1 ? Component.translatable("hud.nexium.aiot.tunnel", length)
-                        : Component.translatable("hud.nexium.aiot.area_on"), ON));
-            }
+        if (!AiotModules.areaOn(tool)) {
+            out.add(new Line(Component.translatable("hud.nexium.aiot.area_off"), OFF));
+        } else {
+            int length = AiotModules.tunnelLength(tool);
+            out.add(new Line(length > 1 ? Component.translatable("hud.nexium.aiot.tunnel", length)
+                    : Component.translatable("hud.nexium.aiot.area_on"), ON));
         }
         if (NexusConfig.get().aiotVeinMining) {
             out.add(new Line(Component.translatable("hud.nexium.aiot.vein", AiotModules.veinSize(tool),
