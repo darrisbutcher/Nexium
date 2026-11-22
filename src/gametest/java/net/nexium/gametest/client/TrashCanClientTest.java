@@ -52,14 +52,12 @@ public class TrashCanClientTest implements FabricClientGameTest {
                 player.snapTo(base[0].getX() + 0.5, base[0].getY(), base[0].getZ() + 0.5, 0.0F, 25.0F);
             });
             ctx.waitTicks(20);
-            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
-            System.out.println("[nexus] trash can beside a cauldron, under a hopper: " + ctx.takeScreenshot("nexus_trash_can_block"));
+            System.out.println("[nexus] trash can beside a cauldron, under a hopper: " + shot(ctx, "nexus_trash_can_block"));
 
             // The item in the inventory
             ctx.getInput().pressKey(options -> options.keyInventory);
             ctx.waitTicks(10);
-            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
-            System.out.println("[nexus] trash can item in the inventory: " + ctx.takeScreenshot("nexus_trash_can_item"));
+            System.out.println("[nexus] trash can item in the inventory: " + shot(ctx, "nexus_trash_can_item"));
             ctx.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE);
             ctx.waitTicks(10);
 
@@ -143,7 +141,10 @@ public class TrashCanClientTest implements FabricClientGameTest {
 
     /** A screenshot with the recipe toasts cleared away, so they are not in the way. */
     private static java.nio.file.Path shot(ClientGameTestContext ctx, String name) {
-        ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+        ctx.runOnClient(mc -> {
+            mc.gui.hud.getChat().clearMessages(true);
+            mc.gui.toastManager().clear();
+        });
         ctx.waitTicks(2);
         return ctx.takeScreenshot(name);
     }

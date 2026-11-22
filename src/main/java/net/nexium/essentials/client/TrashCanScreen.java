@@ -28,11 +28,11 @@ public class TrashCanScreen extends BaseScreen<TrashCanMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        int y = topPos + 46;
+        int y = topPos + 48;
         for (FormattedCharSequence line : font.split(Component.translatable("screen.nexium.trash_can.help"), TrashCanMenu.WIDTH - 20)) {
             g.centeredText(font, line, leftPos + TrashCanMenu.WIDTH / 2, y, MUTED);
             y += 10;
         }
-        g.centeredText(font, Component.translatable("screen.nexium.trash_can.warn"), leftPos + TrashCanMenu.WIDTH / 2, y + 2, WARN);
+        g.centeredText(font, Component.translatable("screen.nexium.trash_can.warn"), leftPos + TrashCanMenu.WIDTH / 2, y + 6, WARN);
     }
 }

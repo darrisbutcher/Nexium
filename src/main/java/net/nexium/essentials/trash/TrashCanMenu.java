@@ -20,8 +20,8 @@ import net.nexium.essentials.registry.ModMenus;
  */
 public class TrashCanMenu extends AbstractContainerMenu {
     // Layout, shared with the screen
-    public static final int WIDTH = 176, HEIGHT = 166;
-    public static final int SLOT_X = 80, SLOT_Y = 24, INVENTORY_X = 8, INVENTORY_Y = 84;
+    public static final int WIDTH = 176, HEIGHT = 184;
+    public static final int SLOT_X = 80, SLOT_Y = 22, INVENTORY_X = 8, INVENTORY_Y = 102;
 
     public static final int TRASH_SLOT = 0;
 
