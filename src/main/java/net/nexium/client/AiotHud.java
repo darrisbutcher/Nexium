@@ -117,6 +117,8 @@ public final class AiotHud {
         // Switched to an AIOT (another slot, or another item in the same slot), or what it says changed
         if (aiot && (slot != lastSlot || !ItemStack.isSameItem(tool, lastTool) || !text.equals(lastLines))) show();
         if (aiot && ToolMenuClient.VEIN_MINE.isDown()) show();
+        // Mining with it keeps the readout and the outline up, so they don't vanish in the middle of a long job
+        if (aiot && client.gui.screen() == null && client.options.keyAttack.isDown()) show();
         lastSlot = slot;
         lastTool = tool.copy();
         lastLines = text;
