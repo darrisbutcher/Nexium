@@ -43,6 +43,7 @@ public final class NexiumEssentials {
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.FARM);
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.IRON_FARM);
         net.nexium.energy.NexusEnergy.SIDED.registerForBlockEntity((farm, direction) -> farm.energy(), ModBlockEntities.XP_FARM);
+        net.nexium.essentials.trash.TrashCanBlock.init();
         ModMenus.init();
         ModPayloads.init();
         ExtraSlotEvents.init();

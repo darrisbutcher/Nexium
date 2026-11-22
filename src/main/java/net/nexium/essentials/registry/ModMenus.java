@@ -24,6 +24,9 @@ public final class ModMenus {
     public static final ExtendedMenuType<net.nexium.essentials.grindstone.EnchantedGrindstoneMenu, BlockPos> ENCHANTED_GRINDSTONE = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("enchanted_grindstone"), new ExtendedMenuType<>(net.nexium.essentials.grindstone.EnchantedGrindstoneMenu::new, BlockPos.STREAM_CODEC));
 
+    public static final ExtendedMenuType<net.nexium.essentials.trash.TrashCanMenu, BlockPos> TRASH_CAN = Registry.register(BuiltInRegistries.MENU,
+            NexiumEssentials.id("trash_can"), new ExtendedMenuType<>(net.nexium.essentials.trash.TrashCanMenu::new, BlockPos.STREAM_CODEC));
+
     public static final ExtendedMenuType<net.nexium.essentials.hostile.HostileMobSwitchMenu, BlockPos> HOSTILE_MOB_SWITCH = Registry.register(BuiltInRegistries.MENU,
             NexiumEssentials.id("hostile_mob_switch"), new ExtendedMenuType<>(net.nexium.essentials.hostile.HostileMobSwitchMenu::new, BlockPos.STREAM_CODEC));
 

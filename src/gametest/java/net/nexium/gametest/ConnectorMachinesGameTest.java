@@ -54,7 +54,7 @@ public class ConnectorMachinesGameTest {
         h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
         List<Block> machines = new ArrayList<>(List.of(ModBlocks.NEXUS_FURNACE, ModBlocks.COMBUSTION_GENERATOR, ModBlocks.FREEZER,
                 ModBlocks.REDSTONE_REACTOR, net.nexium.essentials.registry.ModBlocks.IRON_FARM, net.nexium.essentials.registry.ModBlocks.XP_FARM,
-                net.nexium.essentials.registry.ModBlocks.FARM_ASSEMBLER));
+                net.nexium.essentials.registry.ModBlocks.FARM_ASSEMBLER, net.nexium.essentials.registry.ModBlocks.TRASH_CAN));
         machines.addAll(net.nexium.essentials.registry.ModBlocks.FARMS.values());
         for (Block machine : machines) {
             h.setBlock(MACHINE, machine);

@@ -135,7 +135,7 @@ public class KeepContentsGameTest {
         long ours = h.getLevel().getServer().getRecipeManager().getRecipes().stream()
                 .filter(r -> r.id().identifier().getNamespace().equals("nexium")).count();
         // Every file in data/nexium/recipe: AIOT (nexium:aiot_merge), Nexium, module, Construction Builder and storage disk recipes included
-        h.assertValueEqual(ours, 763L, "nexium recipes loaded");
+        h.assertValueEqual(ours, 764L, "nexium recipes loaded");
         h.succeed();
     }
 

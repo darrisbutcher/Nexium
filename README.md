@@ -534,6 +534,16 @@ one at a time, each onto a book of its own**, for free.
 * A list longer than five scrolls with the mouse wheel. If your inventory is full the new book drops at your feet; closing the screen
   gives back what is in the slots. The plain Grindstone is unchanged: it still wipes enchantments for experience.
 
+### Trash Can
+Craft it from a **Cauldron and a Hopper** (shapeless: anywhere in the crafting grid). It **destroys every item put in it**, and keeps
+nothing, so it never fills up.
+
+* **Pipe items into it**: a hopper, a dropper, an Item Conduit or an Import/Export Bus pointing at it, from any side.
+* **Right-click it** for a screen with one slot: drop an item on the slot to destroy the whole stack (a right click destroys one).
+  Shift-click moves nothing there, so an item is only destroyed by dropping it on the slot on purpose.
+* Items only: it takes no fluids or energy. Storage Connectors never connect to it (it is on `#nexium:machines`), so it cannot take
+  what is on a storage network. Nothing it destroys can be got back.
+
 ### Master Librarian
 At a **Farm Assembler**, pick **Master Librarian**, put in **12 villagers** (spawn eggs or Captured Mobs) and press Build. The
 villagers are used up and a **Master Librarian** comes out as a Captured Mob: right-click a block to let him out.

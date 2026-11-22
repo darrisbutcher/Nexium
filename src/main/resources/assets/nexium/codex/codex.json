@@ -24,7 +24,8 @@
         "controller",
         "barrels",
         "compressed",
-        "sponges"
+        "sponges",
+        "trash_can"
       ]
     },
     {
@@ -1779,6 +1780,31 @@
       "see": [
         "librarian",
         "elytra"
+      ]
+    },
+    "trash_can": {
+      "pages": [
+        "essentials.trash_can",
+        "essentials.trash_can2"
+      ],
+      "icon": "nexium:trash_can",
+      "recipes": [
+        "trash_can"
+      ],
+      "items": [
+        "nexium:trash_can"
+      ],
+      "aliases": [
+        "Trash Can",
+        "bin",
+        "garbage",
+        "void items",
+        "destroy items",
+        "delete items"
+      ],
+      "see": [
+        "lock_void",
+        "conduits"
       ]
     },
     "enchanted_grindstone": {
