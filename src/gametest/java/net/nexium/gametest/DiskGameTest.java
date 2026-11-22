@@ -180,6 +180,36 @@ public class DiskGameTest {
     }
 
     @GameTest
+    public void moveToDrawersPushesOnlyWhatADrawerHolds(GameTestHelper h) {
+        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
+        h.setBlock(new BlockPos(1, 1, 2), ModBlocks.STORAGE_CONNECTOR);
+        h.setBlock(new BlockPos(1, 1, 3), ModBlocks.DRAWER_CONTROLLER);
+        h.setBlock(new BlockPos(1, 1, 4), ModBlocks.DRAWERS.get(DrawerWood.OAK)[0]);
+        try (Transaction tx = Transaction.openOuter()) {
+            ItemStorage.SIDED.find(h.getLevel(), h.absolutePos(new BlockPos(1, 1, 4)), Direction.WEST)
+                    .insert(ItemVariant.of(Items.COBBLESTONE), 10, tx);
+            tx.commit();
+        }
+        DiskDriveBlockEntity be = drive(h, DRIVE, disk(DiskTier.K16));
+        StorageNetwork.clearCache();
+        StorageNetwork net = network(h);
+        insert(net, Items.COBBLESTONE, 50);
+        insert(net, Items.DIRT, 30);
+        StorageNetwork.clearCache();
+        DiskDriveBlockEntity.Moved moved = be.moveToDrawers();
+        h.assertValueEqual(moved.items(), 50L, "only the cobblestone, which a drawer already holds, moves");
+        long cobble = 0, dirt = 0;
+        for (var view : be.itemStorage()) {
+            if (view.getResource().equals(ItemVariant.of(Items.COBBLESTONE))) cobble += view.getAmount();
+            if (view.getResource().equals(ItemVariant.of(Items.DIRT))) dirt += view.getAmount();
+        }
+        h.assertValueEqual(cobble, 0L, "no cobblestone is left on the disk");
+        h.assertValueEqual(dirt, 30L, "the dirt no drawer takes stays on the disk");
+        h.assertValueEqual(be.moveToDrawers().items(), 0L, "a second push moves nothing");
+        h.succeed();
+    }
+
+    @GameTest
     public void anEmptyDiskComesApart(GameTestHelper h) {
         @SuppressWarnings("removal")
         ServerPlayer player = h.makeMockServerPlayerInLevel();

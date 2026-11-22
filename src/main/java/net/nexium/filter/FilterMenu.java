@@ -4,6 +4,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,9 +21,13 @@ import net.minecraft.world.item.ItemStack;
 import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModMenus;
 import net.nexium.util.BaseMenu;
+import net.nexium.util.Menus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /** Ghost-slot editor for filters. Clicking a slot copies the held item (it is not consumed). */
 public class FilterMenu extends BaseMenu {
@@ -26,18 +35,72 @@ public class FilterMenu extends BaseMenu {
     /** Where the player's inventory starts: lower on an Advanced Filter, whose screen has a row more for its tags. */
     public static final int INVENTORY_TOP = 84, ADVANCED_INVENTORY_TOP = 102;
 
-    private final InteractionHand hand;
+    /**
+     * Opening data. {@code hand} is the hand holding the filter, or -1 when the filter sits in a block's filter slot (a conduit side, Network
+     * Bus, Connector or Disk Drive); then {@code stack} is a copy of it, since the client cannot look inside the block.
+     */
+    public record OpenData(int hand, ItemStack stack) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, OpenData::hand,
+                ItemStack.OPTIONAL_STREAM_CODEC, OpenData::stack,
+                OpenData::new);
+    }
+
+    /** The slot of a block that the filter being edited sits in (a live view on the server, a copy on the client); null for a filter in hand. */
+    private final @Nullable Container box;
+    private final @Nullable InteractionHand hand;
+    /** Server only, for a filter in a block: whether the block can still be used, what to run when the filter was changed, and the screen to return to. */
+    private final @Nullable Predicate<Player> blockValid;
+    private final @Nullable Runnable changed;
+    private final @Nullable Runnable onClose;
     private final Player player;
     private final SimpleContainer ghost = new SimpleContainer(FilterData.SIZE);
     private final ContainerData flags;
     private final int lockedSlot;
     private final boolean advanced;
 
+    /** Edits the filter in a hand. */
     public FilterMenu(int id, Inventory inventory, Integer handOrdinal) {
+        this(id, inventory, InteractionHand.values()[handOrdinal], null, null, null, null);
+    }
+
+    /** Client side. */
+    public FilterMenu(int id, Inventory inventory, OpenData open) {
+        this(id, inventory, open.hand() < 0 ? null : InteractionHand.values()[open.hand()],
+                open.hand() < 0 ? new SimpleContainer(open.stack()) : null, null, null, null);
+    }
+
+    /** Edits the filter in a block's filter slot (server side); closing returns to {@code reopen}. */
+    public FilterMenu(int id, Inventory inventory, Container box, Predicate<Player> valid, Runnable changed, Runnable reopen) {
+        this(id, inventory, null, box, valid, changed, reopen);
+    }
+
+    /**
+     * Opens the editor for the filter {@code source} gives, which sits in a block. It stays valid while {@code valid} says so, saving calls
+     * {@code changed} and closing it calls {@code reopen}.
+     */
+    public static void openFor(ServerPlayer player, Supplier<ItemStack> source, Predicate<Player> valid, Runnable changed, Runnable reopen) {
+        ItemStack stack = source.get();
+        if (!(stack.getItem() instanceof FilterItem)) return;
+        Container view = new SimpleContainer(1) {
+            @Override public ItemStack getItem(int slot) { return source.get(); }
+            @Override public void setItem(int slot, ItemStack s) {}
+            @Override public boolean stillValid(Player p) { return true; }
+        };
+        Menus.open(player, stack.getHoverName(), new OpenData(-1, stack.copy()),
+                (id, inv, p) -> new FilterMenu(id, inv, view, valid, changed, reopen));
+    }
+
+    private FilterMenu(int id, Inventory inventory, @Nullable InteractionHand hand, @Nullable Container box,
+                       @Nullable Predicate<Player> valid, @Nullable Runnable changed, @Nullable Runnable onClose) {
         super(ModMenus.FILTER, id);
-        this.hand = InteractionHand.values()[handOrdinal];
+        this.hand = hand;
+        this.box = hand == null ? box : null;
+        this.blockValid = valid;
+        this.changed = changed;
+        this.onClose = onClose;
         this.player = inventory.player;
-        ItemStack stack = player.getItemInHand(hand);
+        ItemStack stack = stack();
         this.advanced = stack.getItem() instanceof FilterItem filterItem && filterItem.isAdvanced();
         FilterData data = stack.getItem() instanceof FilterItem fi ? fi.data(stack) : FilterData.empty(false);
         List<ItemStack> entries = data.toList();
@@ -51,6 +114,13 @@ public class FilterMenu extends BaseMenu {
         }
         addPlayerSlots(inventory, 8, advanced ? ADVANCED_INVENTORY_TOP : INVENTORY_TOP);
         this.lockedSlot = hand == InteractionHand.MAIN_HAND ? playerSlotStart + 27 + inventory.getSelectedSlot() : -1;
+        // For a filter in a block, a hidden slot carries the filter to the client, so it sees the tags and settings as they change
+        if (this.box != null) {
+            addSlot(new Slot(this.box, 0, -2000, -2000) {
+                @Override public boolean mayPlace(ItemStack s) { return false; }
+                @Override public boolean mayPickup(Player p) { return false; }
+            });
+        }
 
         if (player.level().isClientSide()) {
             flags = new SimpleContainerData(3);
@@ -71,14 +141,22 @@ public class FilterMenu extends BaseMenu {
         addDataSlots(flags);
     }
 
+    /** The filter being edited: the one in hand, or the one in the block's slot. */
+    private ItemStack stack() {
+        if (box != null) return box.getItem(0);
+        return hand == null ? ItemStack.EMPTY : player.getItemInHand(hand);
+    }
+
     private FilterData current() {
-        ItemStack stack = player.getItemInHand(hand);
+        ItemStack stack = stack();
         return stack.getItem() instanceof FilterItem fi ? fi.data(stack) : FilterData.empty(false);
     }
 
     private void save(FilterData data) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (stack.getItem() instanceof FilterItem) stack.set(ModComponents.FILTER, data);
+        ItemStack stack = stack();
+        if (!(stack.getItem() instanceof FilterItem)) return;
+        stack.set(ModComponents.FILTER, data);
+        if (changed != null) changed.run();
     }
 
     private void saveGhost() {
@@ -151,6 +229,18 @@ public class FilterMenu extends BaseMenu {
 
     @Override
     public boolean stillValid(Player p) {
-        return p.getItemInHand(hand).getItem() instanceof FilterItem;
+        if (box != null) return stack().getItem() instanceof FilterItem && (blockValid == null || blockValid.test(p));
+        return hand != null && p.getItemInHand(hand).getItem() instanceof FilterItem;
+    }
+
+    /** Closing the editor of a filter in a block goes back to the screen it was opened from (one tick later, once this menu has closed). */
+    @Override
+    public void removed(Player p) {
+        super.removed(p);
+        if (onClose != null && p instanceof ServerPlayer sp && sp.level().getServer() != null) {
+            sp.level().getServer().execute(() -> {
+                if (!sp.hasDisconnected() && sp.isAlive() && sp.containerMenu == sp.inventoryMenu && blockValid != null && blockValid.test(sp)) onClose.run();
+            });
+        }
     }
 }

@@ -23,7 +23,7 @@ import java.util.Locale;
 public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
     private static final int GREEN = 0xFF5DFF6A, YELLOW = 0xFFFFD23A, RED = 0xFFFF4A3A;
     private final SideHints hints = new SideHints();
-    private Button minus, plus, move, moveUp;
+    private Button minus, plus, move, moveUp, moveOut, editFilter;
 
     public DiskDriveScreen(DiskDriveMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, DiskDriveMenu.INVENTORY_Y + 82, DiskDriveMenu.INVENTORY_Y);
@@ -41,10 +41,29 @@ public class DiskDriveScreen extends BaseScreen<DiskDriveMenu> {
                 .bounds(leftPos + 8, topPos + 104, 79, 16).build());
         moveUp = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.disk_drive.up"), b -> click(DiskDriveMenu.BTN_MOVE_UP))
                 .bounds(leftPos + 89, topPos + 104, 79, 16).build());
+        moveOut = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.disk_drive.out"), b -> click(DiskDriveMenu.BTN_MOVE_OUT))
+                .bounds(leftPos + 8, topPos + 121, 160, 14).build());
+        hints.set(moveOut, Component.translatable("screen.nexium.disk_drive.out.tooltip"));
+        inventoryLabelY = 10_000;
+        editFilter = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.edit_filter"), b -> click(DiskDriveMenu.BTN_EDIT_FILTER))
+                .bounds(leftPos + 138, topPos + 49, 32, 14).build());
+        editFilter.active = hasFilter();
+        hints.set(editFilter, Component.translatable("screen.nexium.edit_filter.tip"));
         hints.set(minus, Component.translatable("screen.nexium.disk_drive.priority.tooltip"));
         hints.set(plus, Component.translatable("screen.nexium.disk_drive.priority.tooltip"));
         hints.set(move, Component.translatable("screen.nexium.disk_drive.move.tooltip"));
         hints.set(moveUp, Component.translatable("screen.nexium.disk_drive.up.tooltip"));
+    }
+
+    /** The Edit button is only usable with a filter in the filter slot. */
+    private boolean hasFilter() {
+        return menu.getSlot(DiskDriveBlockEntity.SLOTS).getItem().getItem() instanceof net.nexium.filter.FilterItem;
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        editFilter.active = hasFilter();
     }
 
     private static boolean shift() {

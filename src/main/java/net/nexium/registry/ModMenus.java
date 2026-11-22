@@ -37,8 +37,8 @@ public final class ModMenus {
             new ExtendedMenuType<>(DimensionalMenu::new, DimensionalMenu.OpenData.STREAM_CODEC));
     public static final ExtendedMenuType<ConduitConfigMenu, ConduitConfigMenu.OpenData> CONDUIT_CONFIG = register("conduit_config",
             new ExtendedMenuType<>(ConduitConfigMenu::new, ConduitConfigMenu.OpenData.STREAM_CODEC));
-    public static final ExtendedMenuType<FilterMenu, Integer> FILTER = register("filter",
-            new ExtendedMenuType<>(FilterMenu::new, ByteBufCodecs.VAR_INT));
+    public static final ExtendedMenuType<FilterMenu, FilterMenu.OpenData> FILTER = register("filter",
+            new ExtendedMenuType<>(FilterMenu::new, FilterMenu.OpenData.STREAM_CODEC));
     /** Opening data: the hotbar slot holding the tool. */
     public static final ExtendedMenuType<ToolMenuMenu, Integer> TOOL_MENU = register("tool_menu",
             new ExtendedMenuType<>(ToolMenuMenu::new, ByteBufCodecs.VAR_INT));

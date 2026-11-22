@@ -14,6 +14,8 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.nexium.filter.FilterItem;
+import net.nexium.filter.FilterMenu;
+import net.nexium.util.Menus;
 import net.nexium.registry.ModMenus;
 import net.nexium.upgrade.UpgradeItem;
 import net.nexium.util.BaseMenu;
@@ -36,6 +38,8 @@ public class ConduitConfigMenu extends BaseMenu {
     public static final int BTN_PRIORITY_UP = 24;
     public static final int BTN_PRIORITY_DOWN = 25;
     public static final int BTN_ROUND_ROBIN = 26;
+    /** Opens the editor for the filter in the selected side's filter slot. */
+    public static final int BTN_EDIT_FILTER = 30;
     /** 40..55: switches extract channel 0..15 on or off (a side can extract on several colours at once). */
     public static final int BTN_EXTRACT_TOGGLE = 40;
 
@@ -136,6 +140,19 @@ public class ConduitConfigMenu extends BaseMenu {
             return true;
         }
         if (!be.has(ConduitType.VALUES[type])) return true;
+        if (id == BTN_EDIT_FILTER) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                int editSide = side, editType = type;
+                FilterMenu.openFor(sp, () -> cfg().filter, this::stillValid, be::changed, () -> Menus.open(sp,
+                        net.minecraft.network.chat.Component.translatable("screen.nexium.conduit_config"),
+                        new OpenData(be.getBlockPos(), editSide), (id2, inv, p) -> {
+                            ConduitConfigMenu back = new ConduitConfigMenu(id2, inv, be, editSide);
+                            back.clickMenuButton(p, BTN_TYPE + editType);
+                            return back;
+                        }));
+            }
+            return true;
+        }
         SideConfig c = cfg();
         if (id >= BTN_EXTRACT_TOGGLE && id < BTN_EXTRACT_TOGGLE + 16) {
             c.toggleExtractChannel(id - BTN_EXTRACT_TOGGLE);

@@ -175,6 +175,31 @@ public class DiskDriveBlockEntity extends SyncedBlockEntity {
     }
 
     /**
+     * Pushes what this drive's disks hold out into the drawers of every Drawer Controller on the drive's storage network, but only
+     * what a drawer already holds or is locked to (the controller takes nothing else, and locks are respected). Whatever no drawer
+     * takes, or has no room for, stays on the disks.
+     */
+    public Moved moveToDrawers() {
+        if (!(level instanceof ServerLevel server)) return new Moved(0, 0);
+        StorageNetwork network = StorageNetwork.find(server, worldPosition);
+        if (network == null) return new Moved(0, 0);
+        long items = moveOut(network.itemSources(), itemStorage);
+        long fluid = moveOut(network.fluidSources(), fluidStorage);
+        refreshUsage();
+        sync();
+        return new Moved(items, fluid);
+    }
+
+    private static <T extends TransferVariant<?>> long moveOut(List<StorageNetwork.Source<T>> sources, Storage<T> from) {
+        long moved = 0;
+        for (StorageNetwork.Source<T> s : sources) {
+            if (!s.valid() || !(s.owner() instanceof net.nexium.drawer.DrawerControllerBlockEntity)) continue;
+            moved += StorageUtil.move(from, s.storage(), v -> true, Long.MAX_VALUE, null);
+        }
+        return moved;
+    }
+
+    /**
      * Moves what the lower tier disks of this drive hold onto its higher tier disks, item disks to item disks and fluid disks to fluid
      * disks, as far as the higher ones have room. Each disk's contents go to the biggest disk first, then the next biggest, so
      * everything ends up as high as it fits; disks of the same tier are left alone.
