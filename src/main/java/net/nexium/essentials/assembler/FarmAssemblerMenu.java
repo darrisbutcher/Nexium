@@ -32,10 +32,14 @@ public class FarmAssemblerMenu extends AbstractContainerMenu {
     public static final int INVENTORY_X = (WIDTH - 162) / 2 + 1, INVENTORY_Y = 158;
 
     // Buttons
-    public static final int BUTTON_ADD = 100, BUTTON_BUILD = 101;
+    public static final int BUTTON_ADD = 100, BUTTON_BUILD = 101, BUTTON_ADD_NETWORK = 102;
+    /** "Add from network", under "Add from inventory" (left of the inventory, which starts at x 90). */
+    public static final int NETWORK_Y = ADD_Y + BUTTON_H + 3, NETWORK_W = 80;
 
     private static final int D_TARGET = 0, D_COUNTS = 1, D_NEEDED = D_COUNTS + AssemblyTarget.MAX_REQUIREMENTS;
-    private static final int D_SIZE = D_NEEDED + AssemblyTarget.MAX_REQUIREMENTS;
+    /** 1 when the assembler touches a storage network. */
+    private static final int D_LINKED = D_NEEDED + AssemblyTarget.MAX_REQUIREMENTS;
+    private static final int D_SIZE = D_LINKED + 1;
     private static final int OUTPUT_SLOT = 0, FIRST_PLAYER_SLOT = 1;
 
     private final @Nullable FarmAssemblerBlockEntity assembler;
@@ -53,6 +57,7 @@ public class FarmAssemblerMenu extends AbstractContainerMenu {
             @Override
             public int get(int index) {
                 if (index == D_TARGET) return assembler.target().ordinal();
+                if (index == D_LINKED) return assembler.network() != null ? 1 : 0;
                 List<Requirement> reqs = assembler.target().requirements();
                 if (index < D_NEEDED) {
                     int i = index - D_COUNTS;
@@ -104,6 +109,11 @@ public class FarmAssemblerMenu extends AbstractContainerMenu {
         return data.get(D_NEEDED + i);
     }
 
+    /** Whether the assembler touches a storage network, so "Add from network" works. */
+    public boolean linked() {
+        return data.get(D_LINKED) == 1;
+    }
+
     public boolean complete() {
         int n = target().requirements().size();
         for (int i = 0; i < n; i++) if (count(i) < needed(i)) return false;
@@ -123,6 +133,10 @@ public class FarmAssemblerMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_ADD) {
             assembler.addFrom(player);
+            return true;
+        }
+        if (id == BUTTON_ADD_NETWORK) {
+            assembler.addFromNetwork();
             return true;
         }
         if (id == BUTTON_BUILD && player.level() instanceof ServerLevel level) {
