@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -27,13 +26,12 @@ import java.util.List;
  * shulker box last, the modules where they were); over a module slot it does nothing; over the inventory it sorts only the
  * inventory, and a Backpack opened from an inventory slot stays in that slot with the screen still open.
  */
-public class BackpackSortClientTest implements FabricClientGameTest {
+public class BackpackSortClientPart {
     private static final String SORTED = "apple x5, bread x20, cobblestone x94, diamond x12, ender_pearl x16, iron_pickaxe x1, torch x600";
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

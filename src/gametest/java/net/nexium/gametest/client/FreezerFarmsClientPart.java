@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -31,13 +30,12 @@ import net.nexium.util.Menus;
  * mode button switches what it makes, a farm's screen opens, and the Farm Assembler fills from the inventory and builds a
  * farm. Screenshots show them.
  */
-public class FreezerFarmsClientTest implements FabricClientGameTest {
+public class FreezerFarmsClientPart {
     private static BlockPos base;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

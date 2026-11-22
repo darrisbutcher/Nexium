@@ -1,7 +1,6 @@
 package net.nexium.gametest.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -15,11 +14,10 @@ import net.nexium.essentials.registry.ModBlocks;
 /**
  * The ten newer farms in a real game: their faces in a row, the Gourd and Cactus Farm's screen (no mode button), and the Bee Farm's screen.
  */
-public class MoreFarmsClientTest implements FabricClientGameTest {
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+public class MoreFarmsClientPart {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

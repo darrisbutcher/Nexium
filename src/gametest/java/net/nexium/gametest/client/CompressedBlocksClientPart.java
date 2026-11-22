@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -11,11 +10,10 @@ import net.nexium.essentials.compressed.CompressedBlocks;
  * The compressed blocks as the game draws them: two walls, one for the eight stone-family blocks and one for the other eight,
  * each column the plain block with its Compressed, Double Compressed and Triple Compressed versions above it. A screenshot of each.
  */
-public class CompressedBlocksClientTest implements FabricClientGameTest {
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+public class CompressedBlocksClientPart {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode creative @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

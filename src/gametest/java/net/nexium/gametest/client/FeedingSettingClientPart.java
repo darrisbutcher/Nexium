@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,11 +23,10 @@ import java.util.List;
  * "No waste" and "May waste", the module in the Backpack on the server follows each click, and the panel is gone without the module.
  * Takes screenshots of the panel as it starts, as it is set, and with a hint showing.
  */
-public class FeedingSettingClientTest implements FabricClientGameTest {
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+public class FeedingSettingClientPart {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

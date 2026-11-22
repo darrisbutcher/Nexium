@@ -1,7 +1,6 @@
 package net.nexium.gametest.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -20,13 +19,12 @@ import net.minecraft.world.item.Items;
  * single stack), and shift + left click and drag moves every item the cursor passes over. In the player's own inventory
  * screen the drag moves between the hotbar and the main inventory, and Space + click stays vanilla's.
  */
-public class ShiftTransferClientTest implements FabricClientGameTest {
+public class ShiftTransferClientPart {
     private SimpleContainer chest;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(20);
             open(ctx, world);

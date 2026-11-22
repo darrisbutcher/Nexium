@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -28,11 +27,10 @@ import java.util.List;
  * type the conduit carries, connections grouped under their channel colours (or in a list), warnings, and a click that outlines a
  * connection in the world. Takes screenshots of each.
  */
-public class ConduitScannerClientTest implements FabricClientGameTest {
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+public class ConduitScannerClientPart {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("gamerule doDaylightCycle false");

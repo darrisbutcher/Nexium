@@ -1,6 +1,5 @@
 package net.nexium.gametest.client;
 
-import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
@@ -19,13 +18,12 @@ import net.nexium.util.Menus;
  * The conduit settings screen with several extract colours: under Out there is a grid of the 16 colours, a click switches a colour on
  * or off (the last one left on stays), the server keeps the set, and a side that never extracts ignores the clicks. Takes a screenshot.
  */
-public class ConduitExtractColoursClientTest implements FabricClientGameTest {
+public class ConduitExtractColoursClientPart {
     private static final int ORANGE = 1, LIGHT_BLUE = 3, LIME = 5;
 
-    @Override
-    public void runTest(ClientGameTestContext ctx) {
-        ctx.getInput().resizeWindow(1280, 720);
-        try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+    /** Runs in the world the group's test made (see the All* test); the window is resized and the world is made there. */
+    void part(ClientGameTestContext ctx, TestSingleplayerContext world) {
+        {
             world.getServer().runCommand("gamemode survival @a");
             ctx.waitTicks(20);
             BlockPos[] at = new BlockPos[1];
