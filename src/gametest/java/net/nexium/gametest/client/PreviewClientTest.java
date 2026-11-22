@@ -42,11 +42,8 @@ public class PreviewClientTest implements FabricClientGameTest {
                 }
                 player.snapTo(base.getX() + 0.5, base.getY(), base.getZ() + 0.5, 0.0F, 0.0F);
                 ItemStack aiot = new ItemStack(ModItems.AIOTS.get(AiotTier.DIAMOND));
-                var slots = AiotModules.slots(aiot);
-                ItemStack area = new ItemStack(ModItems.MODULES.get(ModuleType.AREA_MINING));
-                area.set(ModComponents.TUNNEL_LENGTH, 8);
-                slots.set(0, area);
-                AiotModules.setSlots(aiot, slots);
+                AiotModules.toggleArea(aiot); // 3x3 on
+                aiot.set(ModComponents.TUNNEL_LENGTH, 8);
                 player.setItemInHand(InteractionHand.MAIN_HAND, aiot);
             });
             ctx.waitTicks(20);
@@ -59,9 +56,7 @@ public class PreviewClientTest implements FabricClientGameTest {
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 ItemStack aiot = player.getMainHandItem();
-                var slots = AiotModules.slots(aiot);
-                slots.get(0).remove(ModComponents.TUNNEL_LENGTH);
-                AiotModules.setSlots(aiot, slots);
+                aiot.remove(ModComponents.TUNNEL_LENGTH);
             });
             ctx.waitTicks(10);
             int plain = ctx.computeOnClient(mc -> AiotPreview.outlined().size());

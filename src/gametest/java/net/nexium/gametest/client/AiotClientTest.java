@@ -64,12 +64,9 @@ public class AiotClientTest implements FabricClientGameTest {
                         ItemStack silk = stack.copy();
                         AiotEnchanting.normalize(silk, MiningMode.SILK_TOUCH); // blue gem
                         player.getInventory().setItem(SILK_SLOT, silk);
-                        // Modules in the diamond AIOT: Nexus Link on, 3x3 mining off
+                        // The diamond AIOT: Nexus Link module on, and 3x3 mining (built in) off
                         var modules = AiotModules.slots(stack);
                         modules.set(0, new ItemStack(ModItems.MODULES.get(ModuleType.NEXUS_LINK)));
-                        ItemStack area = new ItemStack(ModItems.MODULES.get(ModuleType.AREA_MINING));
-                        area.set(ModComponents.MODULE_OFF, Unit.INSTANCE);
-                        modules.set(1, area);
                         AiotModules.setSlots(stack, modules);
                     }
                     player.getInventory().setItem(tier.ordinal(), stack);
@@ -114,7 +111,7 @@ public class AiotClientTest implements FabricClientGameTest {
             check(tooltip.stream().anyMatch(line -> line.contains("9 Attack Damage")), "9 attack damage, like a diamond axe: " + tooltip);
             check(tooltip.stream().anyMatch(line -> line.contains("1.6 Attack Speed")), "1.6 attack speed, like a sword: " + tooltip);
             check(tooltip.contains("Module: Nexus Link Module"), "the installed Nexus Link is listed: " + tooltip);
-            check(tooltip.contains("Module: 3x3 Mining Module (off)"), "the switched-off 3x3 mining is listed as off: " + tooltip);
+            check(tooltip.contains("3x3 mining (off)"), "the built-in 3x3 mining is listed, off: " + tooltip);
 
             System.out.println("[nexus] AIOT in hand: " + ctx.takeScreenshot("nexus_aiot_in_hand"));
             ctx.getInput().pressKey(options -> options.keyInventory);
@@ -141,6 +138,22 @@ public class AiotClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> mc.player.getMainHandItem().get(ModComponents.MINING_MODE) == MiningMode.SILK_TOUCH),
                     "the menu switched the AIOT to Silk Touch");
             System.out.println("[nexus] tool menu after switching: " + ctx.takeScreenshot("nexus_tool_menu_silk_touch"));
+            // The 3x3 button (built in, no module needed) switches 3x3 mining on with a real click, and off again
+            check(!ctx.computeOnClient(mc -> AiotModules.areaOn(mc.player.getMainHandItem())), "3x3 mining starts off");
+            for (boolean expectOn : new boolean[]{true, false}) {
+                double[] area = ctx.computeOnClient(mc -> {
+                    ToolMenuScreen screen = (ToolMenuScreen) mc.gui.screen();
+                    var widget = screen.areaButton();
+                    double scale = mc.getWindow().getGuiScale();
+                    return new double[]{(widget.getX() + widget.getWidth() / 2.0) * scale, (widget.getY() + widget.getHeight() / 2.0) * scale};
+                });
+                ctx.getInput().setCursorPos(area[0], area[1]);
+                ctx.waitTicks(2);
+                ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+                ctx.waitTicks(10);
+                check(ctx.computeOnClient(mc -> AiotModules.areaOn(mc.player.getMainHandItem())) == expectOn, "the 3x3 button switched 3x3 mining " + (expectOn ? "on" : "off"));
+                if (expectOn) System.out.println("[nexus] tool menu, 3x3 on: " + ctx.takeScreenshot("nexus_tool_menu_area_on"));
+            }
             ctx.getInput().pressKey(options -> ToolMenuClient.TOOL_MENU);
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() == null), "the same key closes it");

@@ -139,6 +139,11 @@ public final class NexusConfig {
     // --- AIOT modules (server-side only)
     /** Vein mining works: with the Vein Mine key held, an AIOT mines a whole vein. Off, the key does nothing. No module is needed. */
     public boolean aiotVeinMining = true;
+    /**
+     * The extra blocks of a vein, 3x3 or tunnel swing drop their items where you broke the first block, so everything lands in one
+     * place. Off, each block drops its own items where it was.
+     */
+    public boolean aiotDropsAtFirstBlock = true;
     /** Most blocks one vein mining swing mines, the first included. Players pick a smaller size per tool in the tool menu. */
     public int aiotVeinMaxBlocks = 256;
     /** Which version of this file wrote it, so a changed default can be carried over once. */

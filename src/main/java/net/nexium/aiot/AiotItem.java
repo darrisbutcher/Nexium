@@ -127,7 +127,10 @@ public class AiotItem extends Item {
             tooltip.accept(Component.translatable("tooltip.nexium.aiot_inactive",
                     Enchantment.getFullname(entry.getKey(), entry.getIntValue())).withStyle(ChatFormatting.DARK_GRAY));
         }
-        // Installed modules, and whether each is on
+        // 3x3 mining (built in), and the installed modules, each with whether it is on
+        boolean area = AiotModules.areaOn(stack);
+        tooltip.accept(Component.translatable(area ? "tooltip.nexium.aiot_area_on" : "tooltip.nexium.aiot_area_off")
+                .withStyle(area ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY));
         for (ItemStack module : AiotModules.slots(stack)) {
             if (module.isEmpty()) continue;
             boolean on = !module.has(ModComponents.MODULE_OFF);

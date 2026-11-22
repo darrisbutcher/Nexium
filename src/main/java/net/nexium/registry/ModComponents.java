@@ -62,7 +62,11 @@ public final class ModComponents {
     public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
             b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
-    /** On a 3x3 Mining module: how many 3x3 layers deep one swing tunnels (1 = a plain 3x3), set in the tool menu. */
+    /** On an AIOT: whether 3x3 mining is switched on (absent: off, or what an old 3x3 Mining Module in it was set to). */
+    public static final DataComponentType<Boolean> AREA_MINING = register("area_mining",
+            b -> b.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    /** On an AIOT: how many 3x3 layers deep one swing tunnels (1 = a plain 3x3), set in the tool menu. */
     public static final DataComponentType<Integer> TUNNEL_LENGTH = register("tunnel_length",
             b -> b.persistent(Codec.intRange(1, 64)).networkSynchronized(ByteBufCodecs.VAR_INT));
 

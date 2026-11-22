@@ -215,25 +215,28 @@ place it or right-click it to outline those chunks for a minute.
 * **Haste II**: turns a Nexium tool's Haste II on or off. The setting is saved on the tool.
 * **Vein size**: steps how many blocks one vein mining swing mines with this AIOT (4, 9, 18, 32 ... up to `aiotVeinMaxBlocks`).
   Vein mining needs no module.
-* **Tunnel**: how many 3x3 layers deep one 3x3 Mining swing digs, away from you: off, 2, 3, 8, 16, 24, 32 (up to
+* **Tunnel**: how many 3x3 layers deep one 3x3 swing digs, away from you: off, 2, 3, 8, 16, 24, 32 (up to
   `aiotTunnelMaxLength`). Click it in the menu to step on (round to off after the deepest), or without opening the menu
   **hold Z** (rebindable) and **scroll the wheel**: up for a deeper tunnel, down for a shallower one. It stops at off and at
   the deepest, and while Z is held with an AIOT in your hand the wheel does not change the hotbar slot. A plain press of Z
   shows the readout.
-* **Modules** (AIOTs only): two slots. Put a module in like any item; the button beside each slot turns it on or off.
+* **3x3 mining** (AIOTs only): switches it on or off. It is built into every AIOT, off until you switch it on (the **X** key does the
+  same without opening the menu).
+* **Modules** (AIOTs only): one slot, for the Nexus Link. Put it in like any item; the button beside the slot turns it on or off.
 * The **Armor** button goes to the armor menu, and its **Tools** button comes back.
 
 ### AIOT modules
 | Module | Recipe | What it does |
 |---|---|---|
 | **Nexus Link** | Dimensional Link Card in the middle, ender pearls on the sides, iron ingots in the corners | What the AIOT mines goes straight into a storage network |
-| **3x3 Mining** | Diamond in the middle, redstone on the sides, iron ingots in the corners | Mines the 3x3 around each block |
 
 * **Nexus Link**: sneak + right-click a Crafting Terminal with the module (or an AIOT that has one) to link it. Drops
   go into that terminal's network in any dimension; what the network can't take drops as usual. **Shulker boxes (any colour) and
   ender chests are never taken**: they drop where they were, in a single swing and in a vein or 3x3 alike.
-* **3x3 Mining**: mines the 3x3 around the block, facing you. Press **X** (rebind under Controls > Key Binds >
-  Nexium) to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
+* **3x3 mining** (no module: built into every AIOT, off until switched on; the old **3x3 Mining Module** is retired, and one still
+  in an AIOT keeps its setting for that AIOT and comes back as its materials, 4 iron ingots, 4 redstone and a diamond, when the tool menu
+  is opened): mines the 3x3 around the block, facing you. Press **X** (rebind under Controls > Key Binds >
+  Nexium), or use the tool menu button, to switch it on or off for the AIOT in your hand. With a **tunnel length** set in the tool menu it digs that
   many 3x3 layers going away from you, one swing, with the same rules for every block. Only blocks the AIOT is made for, at most about twice as
   hard as the block you mined, and never blocks with contents such as chests.
 * **Vein mining** (no module, **any tool or an empty hand**): mining any block, stone included, mines every block of the same
@@ -864,7 +867,7 @@ nothing you typed is lost; fix it there and copy it back.
 | `veinBlacklist` | `[]` | Blocks vein mining never takes: block ids and `#tags`, edited in the settings screen |
 | `connectorBlacklist` | the vanilla machines and `#nexium:machines` | Blocks the Storage Connector and the Filtered Connector never connect to: block ids and `#tags`, edited in the settings screen |
 | `aiotVeinMaxBlocks` | `256` | Most blocks one vein mining swing takes (with any tool), 1 to 512 |
-| `aiotAreaMining` | `true` | The 3x3 Mining module works |
+| `aiotAreaMining` | `true` | 3x3 mining works |
 | `aiotTunnelMaxLength` | `32` | Longest tunnel the 3x3 module can dig, in layers, 1 to 64 |
 | `aiotMiningPreview` | `true` | Client: outline the blocks an AIOT swing would mine |
 | `builderPreview` | `true` | Client: outline where the Construction Builder in your hand would put blocks |
@@ -872,6 +875,7 @@ nothing you typed is lost; fix it there and copy it back.
 | `aiotHud` | `true` | Client: show the held AIOT's mode and module states in the bottom right corner |
 | `terminalSearchSync` | `true` | Client: the terminals' search, the recipe book's and JEI's or REI's stay the same |
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or the vein key; 0 keeps them up |
+| `aiotDropsAtFirstBlock` | `true` | The extra blocks of a vein, 3x3 or tunnel swing drop their items where you broke the first block, not each where it was |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
 | `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
 | `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |

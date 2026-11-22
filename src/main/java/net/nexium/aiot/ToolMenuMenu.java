@@ -24,9 +24,11 @@ public class ToolMenuMenu extends BaseMenu {
     public static final int BTN_SWAP_SILK_TOUCH_FORTUNE = 0, BTN_TOGGLE_HASTE = 1, BTN_TOGGLE_MODULE = 2;
     /** Steps the AIOT's vein size. */
     public static final int BTN_VEIN_SIZE = BTN_TOGGLE_MODULE + AiotModules.SLOTS;
-    /** Steps the 3x3 Mining module's tunnel length. */
+    /** Steps the AIOT's tunnel length. */
     public static final int BTN_TUNNEL = BTN_VEIN_SIZE + 1;
-    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88, MODULE_ROW = 18;
+    /** Switches 3x3 mining on or off. */
+    public static final int BTN_AREA = BTN_TUNNEL + 1;
+    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 108, MODULE_ROW = 18;
     /** The player inventory sits below the module rows. */
     public static final int INVENTORY_Y = MODULE_SLOT_Y + AiotModules.SLOTS * MODULE_ROW + 13;
 
@@ -54,9 +56,9 @@ public class ToolMenuMenu extends BaseMenu {
         this.toolSlot = toolSlot;
         if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             // An AIOT saved with the retired Vein Mining Module hands it back as its materials
-            int retired = AiotModules.takeRetired(tool()).size();
-            if (retired > 0) {
-                RetiredModuleItem.refund(serverPlayer, retired);
+            var retired = AiotModules.takeRetired(tool());
+            if (!retired.isEmpty()) {
+                for (ItemStack module : retired) RetiredModuleItem.refund(serverPlayer, module);
                 serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.nexium.retired_module_returned"));
             }
         }
@@ -155,12 +157,9 @@ public class ToolMenuMenu extends BaseMenu {
         } else if (id == BTN_VEIN_SIZE) {
             ToolMenu.cycleVeinSize(serverPlayer, tool());
         } else if (id == BTN_TUNNEL) {
-            if (ToolMenu.cycleTunnelLength(serverPlayer, tool())) {
-                loading = true;
-                NonNullList<ItemStack> installed = AiotModules.slots(tool());
-                for (int i = 0; i < AiotModules.SLOTS; i++) modules.setItem(i, installed.get(i));
-                loading = false;
-            }
+            ToolMenu.cycleTunnelLength(serverPlayer, tool());
+        } else if (id == BTN_AREA) {
+            ToolMenu.toggleArea(serverPlayer, tool());
         } else if (id >= BTN_TOGGLE_MODULE && id < BTN_TOGGLE_MODULE + AiotModules.SLOTS) {
             int slot = id - BTN_TOGGLE_MODULE;
             if (ToolMenu.toggleModule(serverPlayer, tool(), slot)) {

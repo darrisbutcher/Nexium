@@ -135,11 +135,19 @@ public final class ModItems {
      * What is left of the Vein Mining Module: vein mining needs no module now. Kept under its old id so AIOTs and
      * containers that still hold one load as before; it can't be crafted and isn't in the creative tab.
      */
-    public static final RetiredModuleItem RETIRED_VEIN_MINING_MODULE = register("vein_mining_module", RetiredModuleItem::new,
+    public static final RetiredModuleItem RETIRED_VEIN_MINING_MODULE = register("vein_mining_module", p -> new RetiredModuleItem(p, net.minecraft.world.item.Items.LAPIS_LAZULI),
+            new Item.Properties().stacksTo(1));
+
+    /**
+     * What is left of the 3x3 Mining Module: 3x3 mining is built into every AIOT now. Kept under its old id like the Vein Mining
+     * Module; an AIOT that still holds one keeps its 3x3 setting and tunnel length and hands the module back as its materials.
+     */
+    public static final RetiredModuleItem RETIRED_AREA_MINING_MODULE = register("area_mining_module", p -> new RetiredModuleItem(p, net.minecraft.world.item.Items.REDSTONE),
             new Item.Properties().stacksTo(1));
 
     static {
         TAB_ORDER.remove(RETIRED_VEIN_MINING_MODULE);
+        TAB_ORDER.remove(RETIRED_AREA_MINING_MODULE);
     }
 
     // Nexium: the tier above netherite (see NexiumMaterials). Everything Nexium survives fire and lava.
