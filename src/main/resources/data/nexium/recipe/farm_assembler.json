@@ -1,15 +1,11 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "key": {
-    "C": "minecraft:crafting_table",
-    "I": "minecraft:iron_ingot",
-    "L": "minecraft:lapis_lazuli"
-  },
-  "pattern": [
-    "LIL",
-    "ICI",
-    "LIL"
+  "ingredients": [
+    "minecraft:crafting_table",
+    "minecraft:crafting_table",
+    "minecraft:crafting_table",
+    "minecraft:crafting_table"
   ],
   "result": {
     "id": "nexium:farm_assembler"

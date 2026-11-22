@@ -52,6 +52,8 @@ public class BackpackMenu extends AbstractCraftingMenu {
     public static final int BTN_TOGGLE_MODULE = 0;
     /** Button ids of the Feeding module's settings: its level one step lower (or higher), and its never-waste switch. */
     public static final int BTN_FEEDING_LEVEL = 10, BTN_FEEDING_LEVEL_BACK = 11, BTN_FEEDING_WASTE = 12;
+    /** Hides or shows the crafting grid (the panel's close button, and the small button that brings it back). */
+    public static final int BTN_CRAFTING_HIDE = 13;
 
     public static final int MODULE_X = 182, MODULE_Y = 18, MODULE_ROW = 20;
     public static final int GRID_X = 8, GRID_Y = 18;
@@ -176,14 +178,29 @@ public class BackpackMenu extends AbstractCraftingMenu {
 
     // ---- The Crafting module ------------------------------------------------------------------------------------
 
-    /** Whether a Crafting module is installed and switched on, so the grid is there. Works on both sides: the module slots are synced. */
-    public boolean craftingActive() {
+    /** Whether a Crafting module is installed and switched on, whether or not its grid is hidden. Works on both sides: the module slots are synced. */
+    public boolean craftingModuleOn() {
         for (int i = 0; i < BackpackModules.SLOTS; i++) {
             ItemStack module = modules.getItem(i);
             if (module.getItem() instanceof BackpackModuleItem item && item.type() == BackpackModuleType.CRAFTING
                     && !module.has(net.nexium.registry.ModComponents.MODULE_OFF)) return true;
         }
         return false;
+    }
+
+    /** Whether the Crafting module's grid is hidden (remembered on the module, so per Backpack). */
+    public boolean craftingHidden() {
+        for (int i = 0; i < BackpackModules.SLOTS; i++) {
+            ItemStack module = modules.getItem(i);
+            if (module.getItem() instanceof BackpackModuleItem item && item.type() == BackpackModuleType.CRAFTING
+                    && module.has(net.nexium.registry.ModComponents.CRAFTING_HIDDEN)) return true;
+        }
+        return false;
+    }
+
+    /** Whether the crafting grid is there to use: the Crafting module is on and its grid is not hidden. A hidden grid is empty and takes nothing. */
+    public boolean craftingActive() {
+        return craftingModuleOn() && !craftingHidden();
     }
 
     /** A slot of the crafting grid: only there while the Crafting module is. */
@@ -475,7 +492,7 @@ public class BackpackMenu extends AbstractCraftingMenu {
     private void onModulesChanged() {
         saveModules();
         // The module was taken out or switched off: its grid goes with it, so what is in it goes back in the Backpack
-        if (valid() && !craftingActive()) clearGrid();
+        if (valid() && !craftingActive()) clearGrid(); // switched off, taken out or hidden
     }
 
     /** The slot index (in this menu) of the inventory slot the Backpack was opened from, or -1 if it is the worn one (or the offhand). */
@@ -534,6 +551,10 @@ public class BackpackMenu extends AbstractCraftingMenu {
             changeFeeding(id);
             return true;
         }
+        if (id == BTN_CRAFTING_HIDE) {
+            toggleCraftingHidden();
+            return true;
+        }
         int slot = id - BTN_TOGGLE_MODULE;
         if (slot < 0 || slot >= BackpackModules.SLOTS || !valid()) return true;
         ItemStack module = modules.getItem(slot);
@@ -546,6 +567,20 @@ public class BackpackMenu extends AbstractCraftingMenu {
         serverPlayer.sendOverlayMessage(Component.translatable(nowOn ? "message.nexium.backpack_module_on" : "message.nexium.backpack_module_off",
                 changed.getHoverName()).withStyle(nowOn ? ChatFormatting.GREEN : ChatFormatting.GRAY));
         return true;
+    }
+
+    /** Server: hides the crafting grid (what is in it goes back in the Backpack) or shows it again, on the Crafting module. */
+    private void toggleCraftingHidden() {
+        if (!valid()) return;
+        for (int i = 0; i < BackpackModules.SLOTS; i++) {
+            ItemStack module = modules.getItem(i);
+            if (!(module.getItem() instanceof BackpackModuleItem item) || item.type() != BackpackModuleType.CRAFTING) continue;
+            ItemStack changed = module.copy();
+            if (changed.has(net.nexium.registry.ModComponents.CRAFTING_HIDDEN)) changed.remove(net.nexium.registry.ModComponents.CRAFTING_HIDDEN);
+            else changed.set(net.nexium.registry.ModComponents.CRAFTING_HIDDEN, net.minecraft.util.Unit.INSTANCE);
+            modules.setItem(i, changed);
+            return;
+        }
     }
 
     /** Server: one click on the Feeding module's level or never-waste button, on the module wherever it sits in the slots. */

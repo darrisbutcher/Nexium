@@ -25,6 +25,11 @@ final class SideHints {
 
     private final Map<AbstractWidget, Component> hints = new LinkedHashMap<>();
 
+    /** Forgets every hint (a screen that rebuilds its widgets does this first, so the old widgets are not hovered for ever). */
+    void clear() {
+        hints.clear();
+    }
+
     void set(AbstractWidget widget, Component hint) {
         hints.put(widget, hint);
     }

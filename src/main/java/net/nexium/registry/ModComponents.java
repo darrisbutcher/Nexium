@@ -62,6 +62,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
             b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a Backpack's Crafting module: the crafting grid is hidden (the button on its panel), so the screen is its plain width. */
+    public static final DataComponentType<Unit> CRAFTING_HIDDEN = register("crafting_hidden",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
+
     /** On an AIOT: whether 3x3 mining is switched on (absent: off, or what an old 3x3 Mining Module in it was set to). */
     public static final DataComponentType<Boolean> AREA_MINING = register("area_mining",
             b -> b.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));

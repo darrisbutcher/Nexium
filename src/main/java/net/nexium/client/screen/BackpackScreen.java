@@ -41,13 +41,15 @@ import net.nexium.essentials.client.NexiumEssentialsClient;
 public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
     /** RecipeBookComponent's own offset left of centre when there is room, and the gap kept between the book and the screen. */
     private static final int BOOK_X_OFFSET = 86, BOOK_GAP = 4;
-    private static final int TOGGLE_X = BackpackMenu.MODULE_X + 20, TOGGLE_WIDTH = 48;
+    private static final int TOGGLE_X = BackpackMenu.MODULE_X + 20, TOGGLE_WIDTH = 48, SHOW_W = 34;
     /** The crafting panel's height: its title, the grid, and a row under it for the recipe book's button. */
     private static final int SIDE_H = BackpackMenu.CRAFT_Y + 3 * 18 + 4 + 18 + 6;
     /** The Feeding panel: its heading, then its level button and its waste button, under the last module row. */
     private static final int FEEDING_Y = BackpackMenu.MODULE_Y + BackpackModules.SLOTS * BackpackMenu.MODULE_ROW + 4, FEEDING_WIDTH = 68;
     private final Button[] toggles = new Button[BackpackModules.SLOTS];
     private Button feedingLevel, feedingWaste;
+    /** The crafting panel's close button, and the small one that brings the grid back while it is hidden. */
+    private Button hideCrafting, showCrafting;
     private boolean hasFeeding;
     /** Whether the crafting panel is showing (the screen is centred with it, and re-centred when it comes or goes). */
     private boolean craftingShown;
@@ -122,10 +124,13 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
         }
         feedingLevel.setPosition(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 13);
         feedingWaste.setPosition(leftPos + BackpackMenu.MODULE_X, topPos + FEEDING_Y + 31);
+        hideCrafting.setPosition(leftPos + BackpackMenu.SIDE_X + BackpackMenu.SIDE_W - 20, topPos + 4);
+        showCrafting.setPosition(leftPos + BackpackMenu.MODULE_X - SHOW_W - 6, topPos + 4);
     }
 
     @Override
     protected void init() {
+        hints.clear();
         craftingShown = menu.craftingActive();
         super.init();
         // Vanilla's rule for "too narrow" is for a screen 176 wide: this one is wider, so the book covers it when the whole screen
@@ -147,6 +152,10 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
                 .bounds(0, 0, FEEDING_WIDTH, 16).build());
         feedingWaste = addRenderableWidget(Button.builder(Component.empty(), b -> click(BackpackMenu.BTN_FEEDING_WASTE))
                 .bounds(0, 0, FEEDING_WIDTH, 16).build());
+        hideCrafting = addRenderableWidget(Button.builder(Component.literal("x"), b -> click(BackpackMenu.BTN_CRAFTING_HIDE))
+                .bounds(0, 0, 14, 12).build());
+        showCrafting = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.backpack.crafting_show"), b -> click(BackpackMenu.BTN_CRAFTING_HIDE))
+                .bounds(0, 0, SHOW_W, 12).build());
         placeWidgets();
         dropRecipeBookButtonWithoutGrid();
         refresh();
@@ -253,6 +262,20 @@ public class BackpackScreen extends AbstractRecipeBookScreen<BackpackMenu> {
                     .append(Component.translatable("screen.nexium.backpack.module_click").withStyle(ChatFormatting.GRAY)));
         }
         refreshFeeding();
+        // The close button is in the crafting panel; once the grid is hidden a small button in its place brings it back
+        hideCrafting.visible = craftingShown;
+        showCrafting.visible = !craftingShown && menu.craftingModuleOn();
+        hints.set(showCrafting, Component.translatable("screen.nexium.backpack.crafting_show.tip"));
+    }
+
+    /** The centre of the button that hides the crafting grid, in screen coordinates (for tests), or null while it is not showing. */
+    public int[] hideCraftingCentre() {
+        return hideCrafting.visible ? new int[]{hideCrafting.getX() + hideCrafting.getWidth() / 2, hideCrafting.getY() + hideCrafting.getHeight() / 2} : null;
+    }
+
+    /** The centre of the button that brings the hidden crafting grid back (for tests), or null while it is not showing. */
+    public int[] showCraftingCentre() {
+        return showCrafting.visible ? new int[]{showCrafting.getX() + showCrafting.getWidth() / 2, showCrafting.getY() + showCrafting.getHeight() / 2} : null;
     }
 
     /** The Feeding panel shows while a Feeding module is installed, and reads its settings. */
