@@ -238,9 +238,11 @@ public class FilterMenu extends BaseMenu {
     public void removed(Player p) {
         super.removed(p);
         if (onClose != null && p instanceof ServerPlayer sp && sp.level().getServer() != null) {
-            sp.level().getServer().execute(() -> {
+            // Queued, never run on the spot (execute can run at once): the player's open menu is only replaced after this call returns
+            var server = sp.level().getServer();
+            server.schedule(new net.minecraft.server.TickTask(server.getTickCount(), () -> {
                 if (!sp.hasDisconnected() && sp.isAlive() && sp.containerMenu == sp.inventoryMenu && blockValid != null && blockValid.test(sp)) onClose.run();
-            });
+            }));
         }
     }
 }

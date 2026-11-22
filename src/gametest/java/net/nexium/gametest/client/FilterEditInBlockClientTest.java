@@ -50,7 +50,7 @@ public class FilterEditInBlockClientTest implements FabricClientGameTest {
                 BlockPos base = player.blockPosition();
                 at[0] = base.offset(3, 2, 3);
                 at[1] = base.offset(6, 2, 3);
-                at[2] = base.offset(9, 2, 3);
+                at[2] = base.offset(-3, 2, 3);
                 level.setBlockAndUpdate(at[0].west(), Blocks.CHEST.defaultBlockState());
                 level.setBlockAndUpdate(at[0], ModBlocks.NETWORK_BUS.defaultBlockState().setValue(NetworkBusBlock.FACING, Direction.WEST));
                 ((NetworkBusBlockEntity) level.getBlockEntity(at[0])).filterContainer().setItem(0, filter(true));
@@ -91,6 +91,10 @@ public class FilterEditInBlockClientTest implements FabricClientGameTest {
                         new ConduitConfigMenu.OpenData(at[2], Direction.EAST.get3DDataValue()),
                         (id, inv, p) -> new ConduitConfigMenu(id, inv, conduit, Direction.EAST.get3DDataValue()));
             });
+            ctx.waitTicks(10);
+            String serverSide = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).containerMenu.getClass().getSimpleName()
+                    + " " + server.overworld().getBlockEntity(at[2]));
+            System.out.println("[nexus] probe: " + serverSide + " " + ctx.computeOnClient(mc -> String.valueOf(mc.gui.screen())));
             ctx.waitFor(mc -> mc.gui.screen() instanceof ConduitConfigScreen);
             ctx.waitTicks(10);
             roundTrip(ctx, world, ConduitConfigScreen.class, "conduit", () -> filterIn(world, at[2], 2));
@@ -117,7 +121,7 @@ public class FilterEditInBlockClientTest implements FabricClientGameTest {
         });
         ctx.getInput().setCursorPos(edit[0], edit[1]);
         ctx.waitTicks(3);
-        ctx.getInput().pressMouse(org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        ctx.getInput().pressMouse(com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT);
         ctx.waitFor(mc -> mc.gui.screen() instanceof FilterScreen);
         ctx.waitTicks(10);
         ctx.runOnClient(mc -> mc.gui.toastManager().clear());
@@ -136,7 +140,7 @@ public class FilterEditInBlockClientTest implements FabricClientGameTest {
         });
         ctx.getInput().setCursorPos(white[0], white[1]);
         ctx.waitTicks(3);
-        ctx.getInput().pressMouse(org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        ctx.getInput().pressMouse(com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT);
         ctx.waitTicks(8);
         check(read.read().whitelist() != before, "the editor's first button changed the filter that sits in the " + name + " slot");
         check(!read.read().toList().get(0).isEmpty(), "the filter's items are untouched");
@@ -151,8 +155,8 @@ public class FilterEditInBlockClientTest implements FabricClientGameTest {
         ctx.getInput().setCursorPos(0, 0);
         ctx.waitTicks(3);
         System.out.println("[nexus] " + name + " screen after: " + ctx.takeScreenshot("nexus_filter_edit_" + name + "_back"));
-        ctx.runOnClient(mc -> mc.gui.setScreen(null));
-        ctx.waitTicks(5);
+        ctx.getInput().pressKey(options -> options.keyInventory); // closes the menu on the server too
+        ctx.waitTicks(10);
     }
 
     private static FilterData filterIn(TestSingleplayerContext world, BlockPos pos, int kind) {
