@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.16
+
+* **The AIOT's readout and 3x3 outline stay up while you mine.** They showed for 20 seconds after switching to the AIOT or pressing X, Z or the
+  vein key, and mining did not renew that, so they disappeared in the middle of a long job. Holding the mine button with an AIOT (or a Builder)
+  in hand keeps them up now; they fade after the usual time once you stop.
+
 ## 1.25.15
 
 * **3x3 mining is built into every AIOT,** with no module. It is off on a new AIOT; switch it on with the 3x3 key (X) or the new

@@ -98,6 +98,22 @@ public class PreviewClientTest implements FabricClientGameTest {
             check(hudOff.startsWith("3x3: off"), "and it reads the 3x3 switched off, got: " + hudOff);
             ctx.waitTicks(30);
             check(!ctx.computeOnClient(mc -> AiotHud.visible()), "hidden again");
+            // Mining keeps the readout up past its time (1 second here), and it fades after the usual time once the button is let go
+            ctx.getInput().holdKey(options -> options.keyAttack);
+            ctx.waitTicks(60);
+            check(ctx.computeOnClient(mc -> AiotHud.visible()), "the readout stays up while the mine button is held");
+            ctx.getInput().releaseKey(options -> options.keyAttack);
+            ctx.waitTicks(40);
+            check(!ctx.computeOnClient(mc -> AiotHud.visible()), "and fades once mining stops");
+            // Mining dug into the wall: put the dirt back for the vein checks below
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                BlockPos base = player.blockPosition();
+                for (int x = -4; x <= 4; x++) for (int y = -1; y <= 5; y++) for (int z = 3; z <= 12; z++) {
+                    player.level().setBlockAndUpdate(base.offset(x, y, z), Blocks.DIRT.defaultBlockState());
+                }
+            });
+            ctx.waitTicks(5);
             ctx.getInput().holdKey(ToolMenuClient.VEIN_MINE);
             ctx.waitTicks(40);
             check(ctx.computeOnClient(mc -> AiotHud.visible()), "the readout stays up while the vein key is held");
