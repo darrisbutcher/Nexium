@@ -104,6 +104,41 @@ public class RestockingGameTest {
         h.succeed();
     }
 
+    /** A Backpack with the Restocking module and an Auto Torch module (on or off), and torches in it. */
+    private static ItemStack backpackWithAutoTorch(boolean autoTorchOn, int torches) {
+        ItemStack backpack = backpack(true, new ItemStack(Items.TORCH, torches));
+        ItemStack autoTorch = new ItemStack(ModItems.BACKPACK_MODULES.get(BackpackModuleType.AUTO_TORCH));
+        if (!autoTorchOn) autoTorch.set(ModComponents.MODULE_OFF, net.minecraft.util.Unit.INSTANCE);
+        List<ItemStack> modules = new ArrayList<>(BackpackModules.slots(backpack));
+        modules.set(1, autoTorch);
+        BackpackModules.setSlots(backpack, modules);
+        return backpack;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void torchesAreNotRestockedWhileAutoTorchIsOn(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        wear(player, backpackWithAutoTorch(true, 200));
+        player.getInventory().setItem(3, new ItemStack(Items.TORCH, 64));
+        BackpackRestocking.tick(player);
+        useDownTo(player, 3, 8);
+        h.assertValueEqual(player.getInventory().getItem(3).getCount(), 8, "the torches are not topped up: Auto Torch uses them");
+        h.assertValueEqual(stored(player, Items.TORCH), 200, "and every torch is still in the Backpack");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void torchesAreRestockedWhenAutoTorchIsOff(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        wear(player, backpackWithAutoTorch(false, 200));
+        player.getInventory().setItem(3, new ItemStack(Items.TORCH, 64));
+        BackpackRestocking.tick(player);
+        useDownTo(player, 3, 8);
+        h.assertValueEqual(player.getInventory().getItem(3).getCount(), 64, "with Auto Torch off the torches are topped up");
+        h.assertValueEqual(stored(player, Items.TORCH), 200 - 56, "from the Backpack");
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID)
     public void theLastOneUsedRefillsTheSlotAndTheOffhandIsWatchedToo(GameTestHelper h) {
         ServerPlayer player = player(h);

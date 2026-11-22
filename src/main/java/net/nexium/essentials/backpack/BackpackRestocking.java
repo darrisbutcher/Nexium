@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.nexium.drawer.CompactingRecipes;
 import net.nexium.essentials.config.NexusConfig;
 
@@ -31,6 +32,7 @@ import java.util.function.Function;
  * Compressed stone becomes Double Compressed, then Compressed, then stone, and what is not needed goes back into the
  * Backpack. Which blocks unpack into what comes from the game's own crafting recipes, as for the Compacting module (a pack
  * that crafts straight back into the same items), so the Compressed blocks, an iron block and modded blocks all work.
+ * Torches are left out while the Auto Torch module is on: it places them from the Backpack itself.
  * Renamed, enchanted and other customised items are restocked from stacks just like them, and never unpacked. It works
  * while the Backpack's screen is open too, through the screen's slots.
  */
@@ -94,6 +96,8 @@ public final class BackpackRestocking {
 
     private static void restockSlot(ServerPlayer player, ItemStack backpack, int slot, ItemStack before) {
         if (before.isEmpty() || before.getMaxStackSize() <= 1) return;
+        // Torches are the Auto Torch module's to use: it places them from the Backpack, so they are not handed back out to the hotbar
+        if (before.is(Items.TORCH) && !Backpacks.activeFor(player, BackpackModuleType.AUTO_TORCH).isEmpty()) return;
         ItemStack now = get(player, slot);
         boolean same = ItemStack.isSameItemSameComponents(now, before);
         int used = before.getCount() - (same ? now.getCount() : 0);
