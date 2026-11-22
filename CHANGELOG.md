@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.13
+
+* **The Farm Assembler's From network button uses the network's water and lava.** The farms that ask for water or lava buckets (Sugar Cane,
+  Bamboo, Nether Wart, and the others with such a line) only ever looked for bucket items, so water and lava stored in a network as fluid
+  (in a Fluid Drawer, a Fluid Tank or a fluid disk) was ignored. Now a line of water or lava buckets takes real buckets from the network
+  first and makes up the rest from the network's water or lava, a bucket's worth for each bucket and whole buckets only. The Assembler holds
+  it as fluid, not as buckets (so no buckets are made from nothing), and the line counts it (4 / 4). Picking another target gives the fluid
+  back to the network, and what the network has no room for, or all of it if no network touches the Assembler any more, comes back as filled
+  buckets. Building uses it up, and breaking the Assembler drops it as filled buckets. It is saved with the block.
+
 ## 1.25.12
 
 * **The Trash Can destroys items.** Craft it from a **Cauldron and a Hopper** (shapeless). A hopper, a dropper, an Item Conduit or an

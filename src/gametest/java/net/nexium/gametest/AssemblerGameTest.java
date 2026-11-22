@@ -280,6 +280,11 @@ public class AssemblerGameTest {
         throw new AssertionError("no requirement shown as " + icon);
     }
 
+    /** How many of {@code item} the assembler holds as items (not counting fluid held for a line of buckets). */
+    private static int heldItems(FarmAssemblerBlockEntity a, Item item) {
+        return a.materials().stream().filter(m -> m.is(item)).mapToInt(ItemStack::getCount).sum();
+    }
+
     private static int inInventory(ServerPlayer player, Item item) {
         int n = 0;
         for (int i = 0; i < Inventory.INVENTORY_SIZE; i++) if (player.getInventory().getItem(i).is(item)) n += player.getInventory().getItem(i).getCount();
@@ -552,4 +557,187 @@ public class AssemblerGameTest {
         h.assertTrue(drops.stream().anyMatch(e -> e.getItem().is(ModItems.IRON_FARM)), "the finished farm drops");
         h.succeed();
     }
+
+    // ---------------------------------------------------------------- fluid in the storage network
+
+    /** A Fluid Drawer on the network (the connector beside the assembler touches it) holding {@code droplets} of {@code fluid}. */
+    private static net.nexium.fluid.FluidDrawerBlockEntity networkedFluid(GameTestHelper h, net.minecraft.world.level.material.Fluid fluid, long droplets) {
+        h.setBlock(AT.west(), net.nexium.registry.ModBlocks.STORAGE_CONNECTOR);
+        BlockPos at = AT.west().north();
+        h.setBlock(at, net.nexium.registry.ModBlocks.FLUID_DRAWER_1X1);
+        net.nexium.fluid.FluidDrawerBlockEntity drawer = h.getBlockEntity(at, net.nexium.fluid.FluidDrawerBlockEntity.class);
+        insertFluid(drawer, fluid, droplets);
+        return drawer;
+    }
+
+    private static void insertFluid(net.nexium.fluid.FluidDrawerBlockEntity drawer, net.minecraft.world.level.material.Fluid fluid, long droplets) {
+        try (Transaction tx = Transaction.openOuter()) {
+            drawer.slot(0).insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(fluid), droplets, tx);
+            tx.commit();
+        }
+    }
+
+    /** The index of the line of {@code bucket}s among the target's requirements. */
+    private static int lineOf(AssemblyTarget target, Item bucket) {
+        List<Requirement> reqs = target.requirements();
+        for (int i = 0; i < reqs.size(); i++) if (reqs.get(i).icon() == bucket) return i;
+        throw new AssertionError(target + " has no line of " + bucket);
+    }
+
+    private static final long BUCKET = net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void waterInTheNetworkFillsALineOfWaterBuckets(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        int water = lineOf(AssemblyTarget.SUGAR_CANE, Items.WATER_BUCKET);
+        h.assertValueEqual(a.counts()[water], 0, "nothing in yet");
+        h.assertValueEqual(a.addFromNetwork(), 4, "it takes 4 buckets' worth of water for the 4 water buckets it needs");
+        h.assertValueEqual(a.counts()[water], 4, "the line counts them");
+        h.assertValueEqual(heldItems(a, Items.WATER_BUCKET), 0, "no bucket items were made: it holds the water as fluid");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.WATER), 4 * BUCKET, "4 buckets of water held");
+        h.assertValueEqual(drawer.slot(0).getAmount(), 6 * BUCKET, "6 are left in the network");
+        h.assertValueEqual(a.addFromNetwork(), 0, "a second press takes nothing more");
+        h.assertValueEqual(drawer.slot(0).getAmount(), 6 * BUCKET, "and the network keeps its 6");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void realBucketsInTheNetworkAreUsedBeforeFluid(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var chest = networkedChest(h);
+        chest.setItem(0, new ItemStack(Items.WATER_BUCKET));
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.BAMBOO, null);
+        int water = lineOf(AssemblyTarget.BAMBOO, Items.WATER_BUCKET);
+        h.assertValueEqual(a.addFromNetwork(), 4, "one real bucket and three buckets' worth of water");
+        h.assertValueEqual(heldItems(a, Items.WATER_BUCKET), 1, "the real bucket was taken");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.WATER), 3 * BUCKET, "and water for the other three");
+        h.assertValueEqual(a.counts()[water], 4, "4 of 4");
+        h.assertValueEqual(inChest(chest, Items.WATER_BUCKET), 0, "the chest's bucket is gone");
+        h.assertValueEqual(drawer.slot(0).getAmount(), 7 * BUCKET, "only three buckets of water left the network");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void onlyWholeBucketsOfFluidAreTaken(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, BUCKET + BUCKET / 2);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        h.assertValueEqual(a.addFromNetwork(), 1, "a bucket and a half of water is one bucket");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.WATER), BUCKET, "held as one whole bucket");
+        h.assertValueEqual(drawer.slot(0).getAmount(), BUCKET / 2, "the half bucket stays in the network");
+        h.assertFalse(a.isComplete(), "it is not complete");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void lavaFillsLavaBucketsAndOnlyThoseLines(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.NETHER_WART, null);
+        h.assertValueEqual(a.addFromNetwork(), 0, "water does not fill a line of lava buckets");
+        a.select(AssemblyTarget.XP_FARM, null);
+        h.assertValueEqual(a.addFromNetwork(), 0, "and a target with no bucket line takes no fluid");
+        h.assertValueEqual(drawer.slot(0).getAmount(), 10 * BUCKET, "the network keeps all its water");
+
+        h.getLevel().setBlock(h.absolutePos(AT.west().north()), Blocks.AIR.defaultBlockState(), 3); // the water drawer goes, a lava one takes its place
+        var lava = networkedFluid(h, net.minecraft.world.level.material.Fluids.LAVA, 6 * BUCKET);
+        a.select(AssemblyTarget.NETHER_WART, null);
+        h.assertValueEqual(a.addFromNetwork(), 4, "lava fills the 4 lava buckets");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.LAVA), 4 * BUCKET, "held as lava");
+        h.assertValueEqual(lava.slot(0).getAmount(), 2 * BUCKET, "2 buckets of lava are left");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void switchingTargetGivesTheFluidBackToTheNetwork(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        a.addFromNetwork();
+        h.assertValueEqual(drawer.slot(0).getAmount(), 6 * BUCKET, "4 buckets went to the assembler");
+        a.select(AssemblyTarget.BAMBOO, player);
+        h.assertValueEqual(drawer.slot(0).getAmount(), 10 * BUCKET, "switching gave all 4 back to the network as fluid");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.WATER), 0L, "the assembler holds none");
+        h.assertValueEqual(inInventory(player, Items.WATER_BUCKET), 0, "and no buckets came to the player: no free buckets");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void whatTheNetworkCannotTakeBackComesAsFilledBuckets(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 32 * BUCKET); // a Fluid Drawer holds 32 buckets
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        a.addFromNetwork();
+        insertFluid(drawer, net.minecraft.world.level.material.Fluids.WATER, 2 * BUCKET); // room for two of the four
+        h.assertValueEqual(drawer.slot(0).getAmount(), 30 * BUCKET, "the drawer has room for two buckets");
+        a.select(AssemblyTarget.BAMBOO, player);
+        h.assertValueEqual(drawer.slot(0).getAmount(), 32 * BUCKET, "two buckets went back as fluid");
+        h.assertValueEqual(inInventory(player, Items.WATER_BUCKET), 2, "and the two it could not take came as filled buckets");
+
+        // With no network touching it at all, all of it comes as filled buckets
+        player.getInventory().clearContent();
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        a.addFromNetwork();
+        h.getLevel().setBlock(h.absolutePos(AT.west()), Blocks.AIR.defaultBlockState(), 3);
+        h.assertTrue(a.network() == null, "no network touches it now");
+        a.select(AssemblyTarget.BAMBOO, player);
+        h.assertValueEqual(inInventory(player, Items.WATER_BUCKET), 4, "so all 4 came as filled buckets");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void buildingUsesTheFluidUp(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        var drawer = networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        for (ItemStack stack : materials(AssemblyTarget.SUGAR_CANE, false)) if (!stack.is(Items.WATER_BUCKET)) a.accept(stack);
+        h.assertFalse(a.isComplete(), "without the water it is not complete");
+        a.addFromNetwork();
+        h.assertTrue(a.isComplete(), "with the network's water it is");
+        h.assertTrue(a.build(h.getLevel()), "it builds");
+        h.assertTrue(ItemStack.isSameItem(a.output().removeItemNoUpdate(0), AssemblyTarget.SUGAR_CANE.icon()), "a Sugar Cane Farm comes out");
+        h.assertValueEqual(a.fluid(net.minecraft.world.level.material.Fluids.WATER), 0L, "the water is used up");
+        h.assertValueEqual(drawer.slot(0).getAmount(), 6 * BUCKET, "and the network is not refunded");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theFluidIsKeptWhenSavedAndDropsAsFilledBucketsWhenBroken(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        a.addFromNetwork();
+        CompoundTag saved = a.saveWithFullMetadata(h.getLevel().registryAccess());
+        BlockEntity loaded = BlockEntity.loadStatic(a.getBlockPos(), a.getBlockState(), saved, h.getLevel().registryAccess());
+        FarmAssemblerBlockEntity b = (FarmAssemblerBlockEntity) loaded;
+        h.assertValueEqual(b.fluid(net.minecraft.world.level.material.Fluids.WATER), 4 * BUCKET, "the 4 buckets of water are kept");
+        h.assertValueEqual(b.counts()[lineOf(AssemblyTarget.SUGAR_CANE, Items.WATER_BUCKET)], 4, "and still count");
+
+        h.getLevel().destroyBlock(h.absolutePos(AT), true);
+        List<ItemEntity> drops = h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(h.absolutePos(AT)).inflate(2));
+        h.assertValueEqual(drops.stream().filter(e -> e.getItem().is(Items.WATER_BUCKET)).count(), 4L, "breaking it drops the 4 buckets of water as filled buckets");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void theMenuCountsFluidAsBuckets(GameTestHelper h) {
+        FarmAssemblerBlockEntity a = assembler(h);
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        net.nexium.essentials.assembler.FarmAssemblerMenu menu = new net.nexium.essentials.assembler.FarmAssemblerMenu(5, player.getInventory(), a);
+        networkedFluid(h, net.minecraft.world.level.material.Fluids.WATER, 10 * BUCKET);
+        a.select(AssemblyTarget.SUGAR_CANE, null);
+        int water = lineOf(AssemblyTarget.SUGAR_CANE, Items.WATER_BUCKET);
+        h.assertTrue(menu.clickMenuButton(player, net.nexium.essentials.assembler.FarmAssemblerMenu.BUTTON_ADD_NETWORK), "the From network button works");
+        h.assertValueEqual(menu.count(water), 4, "the screen's water bucket line shows 4 of 4");
+        h.assertValueEqual(menu.needed(water), 4, "of 4 needed");
+        h.succeed();
+    }
+
 }
