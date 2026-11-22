@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.25.19
+
+* **Clicking the result of the Crafting Terminal quickly crafts every time.** Two clicks on one slot within a quarter of a second are a
+  double-click, which the game turns into "pick up all" and which crafted nothing, so fast clicking on the result missed clicks and felt
+  unresponsive (vanilla's crafting table leaves its result slot out of it). The terminal's result slot, and the Backpack's crafting
+  grid's, are left out of it now.
+
 ## 1.25.18
 
 * **The Backpack's crafting grid can be hidden.** The crafting panel has a close button (an x in its corner): it hides the whole panel, so

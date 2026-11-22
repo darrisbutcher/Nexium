@@ -481,6 +481,15 @@ public class TerminalMenu extends AbstractCraftingMenu {
         }
     }
 
+    /**
+     * The result slot is never part of a double-click's "pick up all", as in vanilla's crafting table. Without this, a second click on
+     * the result within a quarter of a second counted as a double-click and crafted nothing, so crafting by clicking quickly did not respond.
+     */
+    @Override
+    public boolean canTakeItemForPickAll(ItemStack carried, Slot slot) {
+        return slot != resultSlot && super.canTakeItemForPickAll(carried, slot);
+    }
+
     // ---- Recipe book -----------------------------------------------------------------------------
 
     @Override

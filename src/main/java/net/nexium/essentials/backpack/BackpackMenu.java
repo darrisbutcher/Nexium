@@ -225,6 +225,12 @@ public class BackpackMenu extends AbstractCraftingMenu {
         }
     }
 
+    /** The result slot is never part of a double-click's "pick up all" (as in vanilla's crafting table), so clicking it quickly crafts each time. */
+    @Override
+    public boolean canTakeItemForPickAll(ItemStack carried, Slot slot) {
+        return slot != getResultSlot() && super.canTakeItemForPickAll(carried, slot);
+    }
+
     /** The result slot: after a craft it refills the grid's emptied slots from the Backpack's own slots. */
     private class BackpackResultSlot extends ResultSlot {
         BackpackResultSlot(Player player, int x, int y) {

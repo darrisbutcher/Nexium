@@ -32,6 +32,7 @@
       "net.nexium.gametest.client.ShulkerPreviewClientTest",
       "net.nexium.gametest.client.AllCompressedBlocksClientTest",
       "net.nexium.gametest.client.AllBackpackClientTest",
+      "net.nexium.gametest.client.TerminalRapidCraftClientTest",
       "net.nexium.gametest.client.EnchantedGrindstoneClientTest",
       "net.nexium.gametest.client.HostileMobSwitchClientTest",
       "net.nexium.gametest.client.TrashCanClientTest",
