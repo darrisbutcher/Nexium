@@ -83,6 +83,23 @@ public class PowerMeterGameTest {
         });
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 300)
+    public void theMeterListsAChargingStationAsAConsumer(GameTestHelper h) {
+        build(h);
+        h.setBlock(FARM, ModBlocks.CHARGING_STATION);
+        h.getBlockEntity(FARM, net.nexium.energy.ChargingStationBlockEntity.class).slots().setItem(0, new ItemStack(net.nexium.registry.ModItems.IRON_CELL));
+        BlockPos meter = h.absolutePos(METER), stationPos = h.absolutePos(FARM);
+        h.succeedWhen(() -> {
+            EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), meter);
+            h.assertTrue(network != null, "the meter has a network");
+            EnergyNetwork.Report r = network.report(h.getLevel());
+            EnergyNetwork.Endpoint use = r.endpoints().stream().filter(e -> e.pos().equals(stationPos)).findFirst().orElse(null);
+            h.assertTrue(use != null, "the Charging Station is listed: " + r.endpoints());
+            h.assertValueEqual(use.role(), EnergyNetwork.Role.CONSUMER, "as a consumer");
+            h.assertTrue(use.perTick() > 0, "and the meter sees it taking power: " + use.perTick());
+        });
+    }
+
     /** The meter's row for the generator at {@code GENERATOR}, once a full second has been counted; null before that. */
     private static EnergyNetwork.Endpoint generatorRow(GameTestHelper h) {
         EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), h.absolutePos(METER));
