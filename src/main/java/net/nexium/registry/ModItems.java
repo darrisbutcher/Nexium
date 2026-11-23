@@ -167,7 +167,6 @@ public final class ModItems {
             .component(net.minecraft.core.component.DataComponents.EQUIPPABLE,
                     net.minecraft.world.item.equipment.Equippable.builder(net.minecraft.world.entity.EquipmentSlot.CHEST)
                             .setEquipSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON)
-                            .setAsset(net.minecraft.resources.ResourceKey.create(net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID, net.nexium.Nexium.id("jetpack")))
                             .setDamageOnHurt(false).build()));
     /** A ninth of a diamond: what worn diamond tools and armor smelt down to. */
     public static final Item DIAMOND_NUGGET = register("diamond_nugget", Item::new, new Item.Properties());

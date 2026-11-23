@@ -56,6 +56,18 @@ public final class NexiumEssentialsClient {
     }
 
     public static void init() {
+        // The Jetpack on the back: its own model, drawn on the torso
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(net.nexium.client.jetpack.JetpackModel.LAYER,
+                net.nexium.client.jetpack.JetpackModel::createLayer);
+        net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
+            if (renderer instanceof net.minecraft.client.renderer.entity.player.AvatarRenderer<?>) {
+                @SuppressWarnings("unchecked")
+                net.minecraft.client.renderer.entity.RenderLayerParent<net.minecraft.client.renderer.entity.state.AvatarRenderState,
+                        net.minecraft.client.model.player.PlayerModel> parent = (net.minecraft.client.renderer.entity.RenderLayerParent<
+                        net.minecraft.client.renderer.entity.state.AvatarRenderState, net.minecraft.client.model.player.PlayerModel>) renderer;
+                helper.register(new net.nexium.client.jetpack.JetpackLayer(parent, context.getModelSet()));
+            }
+        });
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         KeyMappingHelper.registerKeyMapping(OPEN_BACKPACK);
         KeyMappingHelper.registerKeyMapping(OPEN_JETPACK);
