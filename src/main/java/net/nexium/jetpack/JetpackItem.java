@@ -51,6 +51,8 @@ public class JetpackItem extends Item implements CellHolder {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> lines, TooltipFlag flag) {
         NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
+        if (stack.has(net.nexium.registry.ModComponents.JETPACK_ENGINE_OFF)) lines.accept(Component.translatable("tooltip.nexium.jetpack.engine_off"));
+        if (stack.has(net.nexium.registry.ModComponents.JETPACK_HOVER_OFF)) lines.accept(Component.translatable("tooltip.nexium.jetpack.hover_off"));
         long capacity = ItemEnergy.capacity(stack);
         lines.accept(capacity <= 0 ? Component.translatable("tooltip.nexium.jetpack.no_cell")
                 : Component.translatable("tooltip.nexium.cell", f.format(ItemEnergy.stored(stack)), f.format(capacity)));

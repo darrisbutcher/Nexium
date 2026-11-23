@@ -41,6 +41,14 @@ public final class NexiumEssentialsClient {
     public static final KeyMapping OPEN_JETPACK = new KeyMapping("key.nexium.open_jetpack",
             InputConstants.KEY_J, CATEGORY);
 
+    /** Switches the worn Jetpack's engine off and on. Unbound by default; set it under Controls > Key Binds. */
+    public static final KeyMapping JETPACK_ENGINE = new KeyMapping("key.nexium.jetpack_engine",
+            InputConstants.UNKNOWN.getValue(), CATEGORY);
+
+    /** Switches the worn Jetpack's hover off and on. Unbound by default; set it under Controls > Key Binds. */
+    public static final KeyMapping JETPACK_HOVER = new KeyMapping("key.nexium.jetpack_hover",
+            InputConstants.UNKNOWN.getValue(), CATEGORY);
+
     /**
      * In a villager's trading screen, gives a villager nobody has traded with a new set of trades. C by default; change it under
      * Controls > Key Binds.
@@ -71,6 +79,8 @@ public final class NexiumEssentialsClient {
         KeyMappingHelper.registerKeyMapping(TOGGLE_MAGNET);
         KeyMappingHelper.registerKeyMapping(OPEN_BACKPACK);
         KeyMappingHelper.registerKeyMapping(OPEN_JETPACK);
+        KeyMappingHelper.registerKeyMapping(JETPACK_ENGINE);
+        KeyMappingHelper.registerKeyMapping(JETPACK_HOVER);
         KeyMappingHelper.registerKeyMapping(DIAGONAL_PLACE);
         KeyMappingHelper.registerKeyMapping(CYCLE_TRADES);
         // The Cycle Trades key in a trading screen asks the server for new trades (it says no if the villager has been traded with)
@@ -100,6 +110,12 @@ public final class NexiumEssentialsClient {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLE_MAGNET.consumeClick()) {
                 if (client.player != null) ClientPlayNetworking.send(ModPayloads.ToggleMagnet.INSTANCE);
+            }
+            while (JETPACK_ENGINE.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(new ModPayloads.JetpackSwitch(net.nexium.jetpack.JetpackFlight.ENGINE));
+            }
+            while (JETPACK_HOVER.consumeClick()) {
+                if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(new ModPayloads.JetpackSwitch(net.nexium.jetpack.JetpackFlight.HOVER_SWITCH));
             }
             while (OPEN_JETPACK.consumeClick()) {
                 if (client.player != null && client.gui.screen() == null) ClientPlayNetworking.send(ModPayloads.OpenJetpack.INSTANCE);

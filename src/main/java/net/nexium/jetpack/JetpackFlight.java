@@ -20,11 +20,12 @@ import java.util.UUID;
 /**
  * Flying with a Jetpack, on the game's own flight (the creative kind), so the client moves smoothly and a server does not kick for it:
  * with a Jetpack that has charge worn (wings or chest slot), a player in survival or adventure may fly. A jump while in the air starts it;
- * then jump rises, nothing hovers and sneak sinks. It costs {@link #THRUST} NE a tick while jump is held and {@link #HOVER} the rest of
+ * then jump rises, nothing hovers and sneak sinks (with hover switched off, flight lasts only while jump is held). It costs {@link #THRUST} NE a tick while jump is held and {@link #HOVER} the rest of
  * the time, and when the cell is empty the flight ends and you fall.
  */
 public final class JetpackFlight {
-    public static final long THRUST = 8, HOVER = 4;
+    public static final long THRUST = 4, HOVER = 2;
+    public static final int ENGINE = 0, HOVER_SWITCH = 1;
 
     /** Players whose flight this module switched on, so only that is switched off again. */
     private static final Set<UUID> GRANTED = new HashSet<>();
@@ -66,7 +67,8 @@ public final class JetpackFlight {
             return;
         }
         ItemStack jetpack = worn(player);
-        boolean powered = !jetpack.isEmpty() && player.isAlive() && ItemEnergy.stored(jetpack) >= HOVER;
+        boolean engineOn = !jetpack.isEmpty() && !jetpack.has(net.nexium.registry.ModComponents.JETPACK_ENGINE_OFF);
+        boolean powered = engineOn && player.isAlive() && ItemEnergy.stored(jetpack) >= HOVER;
         var abilities = player.getAbilities();
         if (!powered) {
             if (GRANTED.remove(player.getUUID())) {
@@ -87,6 +89,12 @@ public final class JetpackFlight {
             abilities.flying = true;
             player.onUpdateAbilities();
         }
+        // With hover off, flight lasts only while jump is held: let go and you drop (a jump in the air takes off again)
+        boolean hover = !jetpack.has(net.nexium.registry.ModComponents.JETPACK_HOVER_OFF);
+        if (abilities.flying && !hover && !input.jump()) {
+            abilities.flying = false;
+            player.onUpdateAbilities();
+        }
         if (!abilities.flying) return;
         long cost = input.jump() ? THRUST : HOVER;
         if (ItemEnergy.extract(jetpack, cost, false) < cost) {
@@ -101,6 +109,19 @@ public final class JetpackFlight {
             level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.7, player.getZ(), 1, 0.12, 0.0, 0.12, 0.01);
             if (input.jump()) level.sendParticles(ParticleTypes.SMOKE, player.getX(), player.getY() + 0.6, player.getZ(), 1, 0.12, 0.0, 0.12, 0.01);
         }
+    }
+
+    /** Switches the worn Jetpack's engine or hover (the keys), with a message saying what it is now. */
+    public static void toggle(ServerPlayer player, int which) {
+        ItemStack jetpack = worn(player);
+        if (jetpack.isEmpty()) return;
+        var type = which == ENGINE ? net.nexium.registry.ModComponents.JETPACK_ENGINE_OFF : net.nexium.registry.ModComponents.JETPACK_HOVER_OFF;
+        boolean nowOn = jetpack.has(type);
+        if (nowOn) jetpack.remove(type);
+        else jetpack.set(type, net.minecraft.util.Unit.INSTANCE);
+        player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable(
+                which == ENGINE ? (nowOn ? "message.nexium.jetpack.engine_on" : "message.nexium.jetpack.engine_off")
+                        : (nowOn ? "message.nexium.jetpack.hover_on" : "message.nexium.jetpack.hover_off")));
     }
 
     /** Opens the screen of the Jetpack this player wears, if any (the Open Jetpack key). */
