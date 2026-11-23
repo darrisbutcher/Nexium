@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.1
+
+* **The Jetpack looks like a jetpack.** Worn, it is now a pack of its own on the back (two tanks with a red band, a battery light, a strap
+  and glowing nozzles, like its icon) instead of the elytra's wings. It is drawn in the wings slot and the chest slot alike.
+
 ## 1.26.0
 
 * **Jetpack.** Worn in the wings slot (or the chest slot), so a chestplate can be worn too. It flies on a battery cell kept in its own
