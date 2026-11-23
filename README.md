@@ -305,8 +305,10 @@ is placed as one and uses two slabs.
   charges each at up to 1,000 NE a tick from what it takes in from touching Energy Conduits and Batteries.
 * **Jetpack**: right-click to wear it in the **wings slot** (or the chest slot), so a chestplate can be worn too. Sneak and right-click it
   (or press **J**, Controls > Key Binds > Open Jetpack, while it is worn) to put a battery cell in. Jump in the air to take off; then
-  jump rises, letting go **hovers** and sneaking sinks. It uses 8 NE a tick thrusting and 4 hovering, and when the cell runs out the
+  jump rises, letting go **hovers** and sneaking sinks. It uses 4 NE a tick thrusting and 2 hovering, and when the cell runs out the
   flight ends. It takes the armor enchantments an elytra does (all four Protections at once) plus Thorns and the curses, and does not glide.
+* **Jetpack keys** (unbound until you set them under Controls > Key Binds): **Jetpack Engine On/Off** (off: no flight and no power use)
+  and **Jetpack Hover On/Off**. With hover off, hold jump to thrust and rise, and let go to drop; jumping in the air takes off again.
 * **Crafting Storage Tablet**: now needs a battery cell (sneak and right-click it): opening the linked terminal costs 100 NE (1,000 from
   another dimension) and the open screen 2 NE a tick; without enough charge it will not open.
 

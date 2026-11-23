@@ -65,7 +65,18 @@ public class JetpackClientTest implements FabricClientGameTest {
             ctx.getInput().releaseKey(options -> options.keyJump);
             check(flying, "holding jump in the air takes off");
             check(y > startY[0] + 2, "it rises (from " + startY[0] + " to " + y + ")");
-            check(charge < 600_000L && charge > 599_000L, "the cell paid about 8 NE a tick: " + charge);
+            check(charge < 600_000L && charge > 599_000L, "the cell paid about 4 NE a tick: " + charge);
+            // Hover on: letting go of jump hovers. Switch hover off: with jump let go, the flight ends and you drop
+            ctx.waitTicks(5);
+            check(world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getAbilities().flying), "with hover on, letting go of jump keeps hovering");
+            world.getServer().runOnServer(server -> net.nexium.jetpack.JetpackFlight.toggle(server.getPlayerList().getPlayers().get(0), net.nexium.jetpack.JetpackFlight.HOVER_SWITCH));
+            ctx.waitTicks(10);
+            check(!world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getAbilities().flying), "with hover off, letting go of jump ends the flight");
+            double dropFrom = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getY());
+            ctx.waitTicks(10);
+            double droppedTo = world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getY());
+            check(droppedTo < dropFrom - 0.5, "and the player drops (from " + dropFrom + " to " + droppedTo + ")");
+            world.getServer().runOnServer(server -> net.nexium.jetpack.JetpackFlight.toggle(server.getPlayerList().getPlayers().get(0), net.nexium.jetpack.JetpackFlight.HOVER_SWITCH));
             ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 
             // The cell screen

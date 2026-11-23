@@ -58,6 +58,14 @@ public final class ModComponents {
     public static final DataComponentType<Unit> MODULE_OFF = register("module_off",
             b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
 
+    /** On a Jetpack: its engine is switched off (no flight, no power use). */
+    public static final DataComponentType<Unit> JETPACK_ENGINE_OFF = register("jetpack_engine_off",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
+
+    /** On a Jetpack: hover is switched off (jump thrusts and lifts, and letting go drops). */
+    public static final DataComponentType<Unit> JETPACK_HOVER_OFF = register("jetpack_hover_off",
+            b -> b.persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC));
+
     /** On an AIOT: most blocks one vein mining swing mines, set in its tool menu (up to the config's limit). */
     public static final DataComponentType<Integer> VEIN_SIZE = register("vein_size",
             b -> b.persistent(Codec.intRange(1, 512)).networkSynchronized(ByteBufCodecs.VAR_INT));

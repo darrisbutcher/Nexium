@@ -65,10 +65,10 @@ public class JetpackGameTest {
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
         h.assertTrue(player.getAbilities().flying, "a jump in the air takes off");
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 92L, "thrusting costs 8 NE a tick");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 96L, "thrusting costs 4 NE a tick");
         player.setLastClientInput(NONE);
         JetpackFlight.tick(player);
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 88L, "hovering costs 4");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 94L, "hovering costs 2");
         h.assertTrue(player.getAbilities().flying, "and it keeps flying");
         h.succeed();
     }
@@ -76,16 +76,59 @@ public class JetpackGameTest {
     @GameTest
     public void whenTheCellRunsOutFlightEndsAndYouFall(GameTestHelper h) {
         ServerPlayer player = player(h);
-        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpackWith(9));
+        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpackWith(5));
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
-        h.assertTrue(player.getAbilities().flying, "it takes off with 9 NE");
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 1L, "8 used");
+        h.assertTrue(player.getAbilities().flying, "it takes off with 5 NE");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 1L, "4 used");
         JetpackFlight.tick(player);
         h.assertTrue(!player.getAbilities().flying && !player.getAbilities().mayfly, "with 1 NE left, flight ends");
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
         h.assertTrue(!player.getAbilities().mayfly, "and cannot start again without charge");
+        h.succeed();
+    }
+
+    @GameTest
+    public void withHoverOffFlightLastsOnlyWhileJumpIsHeld(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ItemStack jetpack = jetpackWith(1_000);
+        jetpack.set(ModComponents.JETPACK_HOVER_OFF, net.minecraft.util.Unit.INSTANCE);
+        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpack);
+        player.setLastClientInput(JUMP);
+        JetpackFlight.tick(player);
+        h.assertTrue(player.getAbilities().flying, "holding jump lifts off");
+        h.assertValueEqual(ItemEnergy.stored(jetpack), 996L, "thrusting costs 4");
+        player.setLastClientInput(NONE);
+        JetpackFlight.tick(player);
+        h.assertTrue(!player.getAbilities().flying, "letting go ends the flight: you drop");
+        h.assertValueEqual(ItemEnergy.stored(jetpack), 996L, "and nothing is used while dropping");
+        h.assertTrue(player.getAbilities().mayfly, "but the Jetpack is still ready");
+        player.setLastClientInput(JUMP);
+        JetpackFlight.tick(player);
+        h.assertTrue(player.getAbilities().flying, "a jump in the air takes off again");
+        h.succeed();
+    }
+
+    @GameTest
+    public void withTheEngineOffThereIsNoFlightAndNoDrain(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpackWith(1_000));
+        ItemStack jetpack = ExtraSlots.of(player).wings();
+        JetpackFlight.toggle(player, JetpackFlight.ENGINE);
+        h.assertTrue(jetpack.has(ModComponents.JETPACK_ENGINE_OFF), "the engine key switches it off");
+        player.setLastClientInput(JUMP);
+        JetpackFlight.tick(player);
+        h.assertTrue(!player.getAbilities().mayfly && !player.getAbilities().flying, "no flight with the engine off");
+        h.assertValueEqual(ItemEnergy.stored(jetpack), 1_000L, "and no power used");
+        JetpackFlight.toggle(player, JetpackFlight.ENGINE);
+        h.assertTrue(!jetpack.has(ModComponents.JETPACK_ENGINE_OFF), "the key switches it back on");
+        JetpackFlight.tick(player);
+        h.assertTrue(player.getAbilities().flying, "and a jump in the air flies again");
+        JetpackFlight.toggle(player, JetpackFlight.HOVER_SWITCH);
+        h.assertTrue(jetpack.has(ModComponents.JETPACK_HOVER_OFF), "the hover key switches hover off");
+        JetpackFlight.toggle(player, JetpackFlight.HOVER_SWITCH);
+        h.assertTrue(!jetpack.has(ModComponents.JETPACK_HOVER_OFF), "and on again");
         h.succeed();
     }
 
