@@ -40,6 +40,18 @@ public final class ModPayloads {
         }
     }
 
+    /** Client to server: the Open Jetpack key was pressed. */
+    public record OpenJetpack() implements CustomPacketPayload {
+        public static final OpenJetpack INSTANCE = new OpenJetpack();
+        public static final Type<OpenJetpack> TYPE = new Type<>(NexiumEssentials.id("open_jetpack"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenJetpack> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     /** Server to client: what another player wears in their wings slot, so it can be drawn on them. */
     public record WingsSync(int entityId, ItemStack wings) implements CustomPacketPayload {
         public static final Type<WingsSync> TYPE = new Type<>(NexiumEssentials.id("wings_sync"));
@@ -57,6 +69,7 @@ public final class ModPayloads {
     public static void init() {
         PayloadTypeRegistry.serverboundPlay().register(ToggleMagnet.TYPE, ToggleMagnet.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(OpenBackpack.TYPE, OpenBackpack.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(OpenJetpack.TYPE, OpenJetpack.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(DiagonalPlacePayload.TYPE, DiagonalPlacePayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(CycleTradesPayload.TYPE, CycleTradesPayload.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(WingsSync.TYPE, WingsSync.STREAM_CODEC);
@@ -64,6 +77,7 @@ public final class ModPayloads {
                 DiagonalPlacement.place(context.player(), payload.hand(), payload.pos(), payload.face(), payload.hit()));
         ServerPlayNetworking.registerGlobalReceiver(CycleTradesPayload.TYPE, (payload, context) -> TradeCycling.cycle(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(OpenBackpack.TYPE, (payload, context) -> Backpacks.openEquipped(context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(OpenJetpack.TYPE, (payload, context) -> net.nexium.jetpack.JetpackFlight.openWorn(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(ToggleMagnet.TYPE, (payload, context) -> MagnetLogic.toggle(context.player()));
     }
 

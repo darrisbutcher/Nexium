@@ -117,6 +117,10 @@ public final class ModBlocks {
     public static final net.nexium.energy.BatteryBlock DIAMOND_BATTERY = register("diamond_battery", p -> new net.nexium.energy.BatteryBlock(p, 10_000_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
 
+    /** Charges battery cells, and the cells in a Jetpack or Tablet, from Nexus Energy. */
+    public static final net.nexium.energy.ChargingStationBlock CHARGING_STATION = register("charging_station", net.nexium.energy.ChargingStationBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+
     /** Eight smelting slots at once on Nexus Energy. */
     public static final net.nexium.energy.NexusFurnaceBlock NEXUS_FURNACE = register("nexus_furnace", net.nexium.energy.NexusFurnaceBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5f, 6.0f).sound(SoundType.METAL)

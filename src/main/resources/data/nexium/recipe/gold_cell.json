@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "C": "nexium:iron_cell",
+    "R": "minecraft:redstone_block"
+  },
+  "pattern": [
+    " G ",
+    "GCG",
+    "GRG"
+  ],
+  "result": {
+    "id": "nexium:gold_cell"
+  }
+}

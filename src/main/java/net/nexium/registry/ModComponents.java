@@ -140,6 +140,10 @@ public final class ModComponents {
     public static final DataComponentType<Long> BATTERY_CHARGE = register("battery_charge",
             b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
 
+    /** The battery cell inside a Jetpack or a Crafting Storage Tablet (the cell's own charge is in its {@code battery_charge}). */
+    public static final DataComponentType<net.minecraft.world.item.ItemStackTemplate> INSTALLED_CELL = register("installed_cell",
+            b -> b.persistent(net.minecraft.world.item.ItemStackTemplate.CODEC).networkSynchronized(net.minecraft.world.item.ItemStackTemplate.STREAM_CODEC));
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> op) {
         return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Nexium.id(name),
                 op.apply(DataComponentType.builder()).build());

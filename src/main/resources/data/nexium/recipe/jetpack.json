@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone_block",
+    "B": "minecraft:blast_furnace",
+    "F": "minecraft:firework_rocket",
+    "H": "minecraft:hopper"
+  },
+  "pattern": [
+    "IRI",
+    "IBI",
+    "FHF"
+  ],
+  "result": {
+    "id": "nexium:jetpack"
+  }
+}

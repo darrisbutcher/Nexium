@@ -72,6 +72,7 @@ public final class ExtraSlotEvents {
     private static InteractionResult equipWings(Player player, InteractionHand hand) {
         ItemStack inHand = player.getItemInHand(hand);
         if (!ExtraSlots.isWings(inHand) || player.isSpectator()) return InteractionResult.PASS;
+        if (player.isShiftKeyDown() && inHand.getItem() instanceof net.nexium.jetpack.JetpackItem) return InteractionResult.PASS;
         ExtraSlots slots = ExtraSlots.of(player);
         ItemStack worn = slots.wings();
         if (ExtraSlots.isBound(worn, player) || ItemStack.isSameItemSameComponents(inHand, worn)) return InteractionResult.PASS;
