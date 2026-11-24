@@ -281,6 +281,10 @@ public class SaveLoadGameTest {
                 part(net.nexium.energy.RedstoneReactorBlockEntity.class, "coolant", be -> be.setItem(10, new ItemStack(Items.BLUE_ICE, 9))),
                 part(net.nexium.energy.RedstoneReactorBlockEntity.class, "depth", be -> be.setDepth(4)),
                 part(net.nexium.energy.RedstoneReactorBlockEntity.class, "heat", be -> be.setHeat(0.42)),
+                part(net.nexium.energy.RedstoneReactorBlockEntity.class, "water", be -> {
+                    be.tank().variant = net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.WATER);
+                    be.tank().amount = 5 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
+                }),
                 part(net.nexium.energy.RedstoneReactorBlockEntity.class, "energy", be -> be.energy().set(7777)))));
         cases.add(new Case("Nexus Furnace", ModBlocks.NEXUS_FURNACE, List.of(
                 part(net.nexium.energy.NexusFurnaceBlockEntity.class, "inputs", be -> { be.setItem(2, new ItemStack(Items.IRON_ORE, 12)); be.setItem(5, new ItemStack(Items.SAND, 3)); }),

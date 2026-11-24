@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.4
+
+* **The Redstone Reactor holds water.** A 16 bucket tank (fill it with a bucket, a Fluid Intake or a fluid conduit) cools the core only
+  above 59.9% heat, taking off just what is needed to hold it there and using up to a bucket every 30 seconds (less when less cooling is
+  needed). Three slots of blue ice and water together hold nine rods at Inserted 2 at 59.9% heat and the full 2,700 NE/t. A bar
+  under the rods shows the water.
+* **Ice lasts longer the better it is**: a piece of ice 30 seconds while cooling (as before), packed ice a minute (was 30 seconds), blue
+  ice two minutes (was 30 seconds).
+
 ## 1.26.2
 
 * **Jetpack power use is halved**: 4 NE a tick thrusting and 2 hovering (was 8 and 4).

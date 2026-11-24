@@ -816,7 +816,10 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   the default depth (1,800 with nine); it runs on any one to nine rods. The **In** and **Out** buttons set one depth for all
   the rods: -2, -1, 0 (the default), +1 and +2 make 100, 150, 200, 250 and 300 NE/t a rod, with
   0.25x, 0.5x, 1x, 1.6x and 2.25x the heat and 0.5x to 1.5x the rod wear. Ice takes the heat away once it passes 25% (blue
-  ice best; three slots of blue ice hold nine default rods). Output is full to 60% heat, falls steadily to 10% at 90%, and
+  ice best; three slots of blue ice hold nine default rods). A piece of ice lasts 30 seconds while cooling, packed ice a minute and
+  blue ice two minutes. The **water tank** (16 buckets: fill it with a bucket, a Fluid Intake or a fluid conduit) cools only above
+  59.9% heat, taking off just what is needed to hold the core there, and at most uses a bucket every 30 seconds: with three slots of
+  blue ice and water, nine rods at +2 settle at 59.9% heat and make the full 2,700 NE/t. Output is full to 60% heat, falls steadily to 10% at 90%, and
   at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 96 hours at the default depth and
   leaves a **Spent Fuel Rod**.
 * **Recipes**: Redstone Fuel Rod: 8 redstone blocks around a Nexium ingot; a Spent Fuel Rod with 8 redstone blocks around it
