@@ -37,6 +37,7 @@ public record PowerReportPayload(BlockPos meter, boolean open, EnergyNetwork.Rep
             buf.writeFloat(e.perTick());
             buf.writeByte(e.priority());
             buf.writeBoolean(e.paused());
+            buf.writeBoolean(e.direct());
         }
         buf.writeVarInt(r.producedHistory().length);
         for (float f : r.producedHistory()) buf.writeFloat(f);
@@ -57,7 +58,7 @@ public record PowerReportPayload(BlockPos meter, boolean open, EnergyNetwork.Rep
         for (int i = 0; i < n; i++) {
             BlockPos pos = BlockPos.STREAM_CODEC.decode(buf);
             EnergyNetwork.Role role = roles[Math.floorMod(buf.readByte(), roles.length)];
-            endpoints.add(new EnergyNetwork.Endpoint(pos, role, buf.readFloat(), buf.readByte(), buf.readBoolean()));
+            endpoints.add(new EnergyNetwork.Endpoint(pos, role, buf.readFloat(), buf.readByte(), buf.readBoolean(), buf.readBoolean()));
         }
         int h = Math.min(buf.readVarInt(), 4096);
         float[] pHist = new float[h], uHist = new float[h];

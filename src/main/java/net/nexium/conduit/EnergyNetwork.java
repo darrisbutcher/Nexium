@@ -41,8 +41,15 @@ public final class EnergyNetwork {
     // ---- What the Power Meter shows: counted as the network runs, read once a second ----
     public enum Role { PRODUCER, CONSUMER, BATTERY }
 
-    /** One block on the network. {@code perTick} is NE per tick over the last second: what a producer made, a consumer took, or (battery) charged minus given. */
-    public record Endpoint(BlockPos pos, Role role, float perTick, int priority, boolean paused) {}
+    /**
+     * One block on the network. {@code direct} is a machine that no conduit touches but a Battery on the network feeds by touching it:
+     * it is listed with what it takes, but its priority and switch are not the network's to set.
+     * {@code perTick} is NE per tick over the last second: what a producer made, a consumer took, or (battery) charged minus given. */
+    public record Endpoint(BlockPos pos, Role role, float perTick, int priority, boolean paused, boolean direct) {
+        public Endpoint(BlockPos pos, Role role, float perTick, int priority, boolean paused) {
+            this(pos, role, perTick, priority, paused, false);
+        }
+    }
 
     /** The network over the last second, and a minute of history (oldest first, NE per tick). */
     public record Report(long stored, long capacity, long batteryStored, long batteryCapacity, float produced, float used,
@@ -57,6 +64,8 @@ public final class EnergyNetwork {
         Direction dir;
         int priority;
         boolean paused;
+        /** Fed by a Battery touching it, not by a conduit side. */
+        boolean direct;
         /** What the block had taken in and given out when this second began, to tell how much moved by every route (-1: it does not count). */
         long baseIn = -1, baseOut = -1;
     }
@@ -176,6 +185,24 @@ public final class EnergyNetwork {
         return found;
     }
 
+    /** The machines a Battery on the network feeds by touching them, for the Power Meter: they are not on a conduit side, so nothing else sees them. */
+    private void addDirect(Level level, BlockPos battery) {
+        for (Direction d : Direction.values()) {
+            BlockPos next = battery.relative(d);
+            if (seen.containsKey(next)) continue;
+            var be = level.getBlockEntity(next);
+            if (be instanceof ConduitBundleBlockEntity || be instanceof BatteryBlockEntity) continue;
+            NexusEnergy there = NexusEnergy.SIDED.find(level, next, d.getOpposite());
+            if (there == null || !there.takesIn()) continue;
+            Seen s = new Seen();
+            s.dir = d;
+            s.direct = true;
+            s.baseIn = there.totalIn();
+            s.baseOut = there.totalOut();
+            seen.put(next, s);
+        }
+    }
+
     private void addFlow(BlockPos pos, long in, long out) {
         long[] f = flow.computeIfAbsent(pos, k -> new long[2]);
         f[0] += in;
@@ -218,7 +245,7 @@ public final class EnergyNetwork {
                 case CONSUMER -> used += perTick;
                 case BATTERY -> batteryNet += perTick;
             }
-            endpoints.add(new Endpoint(pos, role, perTick, s.priority, s.paused));
+            endpoints.add(new Endpoint(pos, role, perTick, s.priority, s.paused, s.direct));
         }
         // Producers first, then consumers by priority, then batteries
         endpoints.sort(Comparator.comparingInt((Endpoint e) -> e.role().ordinal()).thenComparingInt(e -> -e.priority())
@@ -269,6 +296,8 @@ public final class EnergyNetwork {
                     seen.put(next, s);
                 }
                 s.dir = d;
+                s.direct = false;
+                if (battery) addDirect(level, next);
                 s.priority = cfg.priority;
                 s.paused = cfg.paused;
                 if (cfg.paused) continue;

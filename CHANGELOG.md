@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.3
+
+* **The Power Meter lists the machines a Battery feeds directly.** A Charging Station, farm or other machine touching a Battery on the
+  network, with no conduit of its own, was invisible to the meter. It now shows with what it takes, marked "fed by a Battery"; its
+  priority and On/Off cannot be set from the meter, since no conduit side feeds it.
+
 ## 1.26.2
 
 * **Jetpack power use is halved**: 4 NE a tick thrusting and 2 hovering (was 8 and 4).
