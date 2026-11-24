@@ -20,7 +20,7 @@ public class RedstoneReactorMenu extends AbstractContainerMenu {
     public static final int ROD_X = 8, ROD_Y = 20, COOLANT_X = 72;
     public static final int BTN_RETRACT = 0, BTN_INSERT = 1;
     /** Screen values travel as 16-bit numbers, so the energy is sent as two halves of 15 bits. */
-    private static final int D_DEPTH = 0, D_HEAT = 1, D_OUTPUT = 2, D_ENERGY = 3, D_FLAGS = 5, D_COUNT = 6;
+    private static final int D_DEPTH = 0, D_HEAT = 1, D_OUTPUT = 2, D_ENERGY = 3, D_FLAGS = 5, D_WATER = 6, D_COUNT = 7;
     private static final int FIRST_PLAYER_SLOT = RedstoneReactorBlockEntity.SIZE;
 
     private final Container container;
@@ -67,6 +67,7 @@ public class RedstoneReactorMenu extends AbstractContainerMenu {
                     case D_ENERGY -> (int) (reactor.energy().stored() & 0x7FFF);
                     case D_ENERGY + 1 -> (int) (reactor.energy().stored() >> 15);
                     case D_FLAGS -> reactor.isShutDown() ? 1 : 0;
+                    case D_WATER -> (int) (reactor.water() / (net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 1000));
                     default -> 0;
                 };
             }
@@ -88,6 +89,8 @@ public class RedstoneReactorMenu extends AbstractContainerMenu {
     public int output() { return data.get(D_OUTPUT); }
     public int energy() { return data.get(D_ENERGY) | data.get(D_ENERGY + 1) << 15; }
     public boolean shutDown() { return data.get(D_FLAGS) != 0; }
+    /** Water in the tank in millibuckets. */
+    public int water() { return data.get(D_WATER); }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {

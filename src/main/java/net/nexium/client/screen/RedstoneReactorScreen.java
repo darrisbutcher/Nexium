@@ -23,6 +23,7 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
     private static final int HEAT_COOL = 0xFF48B44A, HEAT_WARM = 0xFFE0B83A, HEAT_HOT = 0xFFE0402A, MARK = 0xFFFFFFFF;
     private static final int HEAT_X = 96, HEAT_Y = 20, HEAT_W = 72, HEAT_H = 10;
     private static final int BAR_X = 8, BAR_Y = 86, BAR_W = 160, BAR_H = 6;
+    private static final int WATER_Y = 77, WATER_H = 5, WATER = 0xFF3F76E4, WATER_TOP = 0xFF7FB2FF;
 
     public RedstoneReactorScreen(RedstoneReactorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, RedstoneReactorMenu.WIDTH, RedstoneReactorMenu.HEIGHT);
@@ -82,6 +83,16 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
         }
         g.fill(hx + Math.round(HEAT_W * 0.9F), hy - 1, hx + Math.round(HEAT_W * 0.9F) + 1, hy + HEAT_H + 1, MARK);
 
+        // The water tank: a thin blue bar over the energy bar
+        int wx = leftPos + BAR_X, wy = topPos + WATER_Y;
+        g.fill(wx - 1, wy - 1, wx + BAR_W + 1, wy + WATER_H + 1, SLOT_DARK);
+        g.fill(wx, wy, wx + BAR_W, wy + WATER_H, SLOT_FILL);
+        int wfull = Math.round(BAR_W * Math.min(1.0F, menu.water() / (float) (RedstoneReactorBlockEntity.TANK_BUCKETS * 1000)));
+        if (wfull > 0) {
+            g.fill(wx, wy, wx + wfull, wy + WATER_H, WATER);
+            g.fill(wx, wy, wx + wfull, wy + 1, WATER_TOP);
+        }
+
         int bx = leftPos + BAR_X, by = topPos + BAR_Y;
         g.fill(bx - 1, by - 1, bx + BAR_W + 1, by + BAR_H + 1, SLOT_DARK);
         g.fill(bx, by, bx + BAR_W, by + BAR_H, SLOT_FILL);
@@ -99,6 +110,10 @@ public class RedstoneReactorScreen extends AbstractContainerScreen<RedstoneReact
             net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.reactor.heat_tip1").withStyle(ChatFormatting.GRAY),
                     Component.translatable("screen.nexium.reactor.heat_tip2").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+        } else if (isHovering(BAR_X, WATER_Y, BAR_W, WATER_H, mouseX, mouseY)) {
+            net.nexium.client.Tooltips.show(g, font, List.of(
+                    Component.translatable("screen.nexium.reactor.water", number(menu.water()), number(RedstoneReactorBlockEntity.TANK_BUCKETS * 1000L)),
+                    Component.translatable("screen.nexium.reactor.water_tip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             net.nexium.client.Tooltips.show(g, font, List.of(
                     Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(RedstoneReactorBlockEntity.CAPACITY))), mouseX, mouseY);

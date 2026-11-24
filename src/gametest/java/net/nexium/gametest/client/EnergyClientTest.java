@@ -173,11 +173,14 @@ public class EnergyClientTest implements FabricClientGameTest {
                 reactor.setItem(9, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BLUE_ICE, 32));
                 reactor.setItem(10, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.PACKED_ICE, 16));
                 reactor.setHeat(0.7);
+                reactor.tank().variant = net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.WATER);
+                reactor.tank().amount = 6 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
                 reactor.energy().set(61_000);
                 player.openMenu(reactor);
             });
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof net.nexium.client.screen.RedstoneReactorScreen), "the reactor's screen opens");
+            check(ctx.computeOnClient(mc -> ((net.nexium.energy.RedstoneReactorMenu) mc.player.containerMenu).water() > 5000), "the screen knows the tank holds about 6,000 mB (a little goes cooling the 70% core)");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
             ctx.getInput().setCursorPos(0, 0);
             ctx.waitTicks(3);

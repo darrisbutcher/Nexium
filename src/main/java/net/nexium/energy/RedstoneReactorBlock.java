@@ -37,6 +37,19 @@ public class RedstoneReactorBlock extends BaseEntityBlock {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.REDSTONE_REACTOR, RedstoneReactorBlockEntity::serverTick);
     }
 
+    /** A bucket of water fills the tank; anything else opens the screen. */
+    @Override
+    protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                          net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+        if (stack.isEmpty() || !(level.getBlockEntity(pos) instanceof RedstoneReactorBlockEntity reactor)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+        var held = net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext.withConstant(stack).find(net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.ITEM);
+        if (held == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
+        if (!level.isClientSide()) {
+            net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil.interactWithFluidStorage(reactor.tank(), player, hand);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof RedstoneReactorBlockEntity reactor) player.openMenu(reactor);

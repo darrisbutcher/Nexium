@@ -310,6 +310,83 @@ public class EnergyGameTest {
         h.succeed();
     }
 
+    private static void fillWater(net.nexium.energy.RedstoneReactorBlockEntity r) {
+        r.tank().variant = net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.WATER);
+        r.tank().amount = net.nexium.energy.RedstoneReactorBlockEntity.TANK;
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void enoughBlueIceAndWaterHoldNineRodsAtInserted2AtFullOutput(GameTestHelper h) {
+        reactorSlot = 0;
+        var r = reactor(h, 9);
+        r.setDepth(4);
+        for (int c = 0; c < 3; c++) r.setItem(9 + c, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BLUE_ICE, 64));
+        fillWater(r);
+        double maxHeat = 0;
+        int minOutput = Integer.MAX_VALUE;
+        for (int i = 0; i < 6000; i++) {
+            r.energy().set(0);
+            net.nexium.energy.RedstoneReactorBlockEntity.serverTick(h.getLevel(), r.getBlockPos(), r.getBlockState(), r);
+            maxHeat = Math.max(maxHeat, r.heat());
+            if (i > 100) minOutput = Math.min(minOutput, r.output());
+        }
+        h.assertTrue(maxHeat <= 0.599 + 1e-9, "the heat never goes past 59.9%: " + maxHeat);
+        h.assertTrue(r.heat() > 0.59, "it climbs to it and is held there: " + r.heat());
+        h.assertValueEqual(minOutput, 2700, "and the output stays at the full 2,700 NE/t");
+        h.assertTrue(r.water() > 0 && r.water() < net.nexium.energy.RedstoneReactorBlockEntity.TANK, "using some of the water: " + r.water());
+        // The same reactor without water goes past it
+        var dry = reactor(h, 9);
+        dry.setDepth(4);
+        for (int c = 0; c < 3; c++) dry.setItem(9 + c, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BLUE_ICE, 64));
+        double dryMax = 0;
+        for (int i = 0; i < 6000; i++) {
+            dry.energy().set(0);
+            net.nexium.energy.RedstoneReactorBlockEntity.serverTick(h.getLevel(), dry.getBlockPos(), dry.getBlockState(), dry);
+            dryMax = Math.max(dryMax, dry.heat());
+        }
+        h.assertTrue(dryMax > 0.6, "without water the heat gets away from blue ice alone: it reached " + dryMax);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void waterIsUsedAtABucketEvery30SecondsAtMostAndOnlyAbove599(GameTestHelper h) {
+        reactorSlot = 0;
+        var r = reactor(h, 0);
+        fillWater(r);
+        r.setHeat(0.8);
+        long before = r.water();
+        run(h, r, 600);
+        long used = before - r.water();
+        long bucket = net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
+        h.assertTrue(Math.abs(used - bucket) <= bucket / 100, "full cooling for 600 ticks used a bucket: " + used + " of " + bucket);
+        // Below 59.9% it is not used
+        var cool = reactor(h, 0);
+        fillWater(cool);
+        cool.setHeat(0.55);
+        run(h, cool, 200);
+        h.assertValueEqual(cool.water(), net.nexium.energy.RedstoneReactorBlockEntity.TANK, "no water is used while the core is below 59.9%");
+        // Only water goes in the tank
+        h.assertTrue(cool.tank().insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.LAVA), 1, null) == 0, "lava does not");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void iceLasts30SecondsPackedIceAMinuteAndBlueIceTwoMinutes(GameTestHelper h) {
+        reactorSlot = 0;
+        var items = new net.minecraft.world.item.Item[] {net.minecraft.world.item.Items.ICE, net.minecraft.world.item.Items.PACKED_ICE, net.minecraft.world.item.Items.BLUE_ICE};
+        int[] ticks = {600, 1200, 2400};
+        for (int k = 0; k < 3; k++) {
+            var r = reactor(h, 0);
+            r.setHeat(0.8);
+            r.setItem(9, new net.minecraft.world.item.ItemStack(items[k], 2));
+            run(h, r, ticks[k]);
+            h.assertValueEqual(r.getItem(9).getCount(), 1, items[k] + ": the first piece is still cooling after " + ticks[k] + " ticks");
+            run(h, r, 1);
+            h.assertValueEqual(r.getItem(9).getCount(), 0, items[k] + ": and the next one is taken straight after");
+        }
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID)
     public void aRodWearsOutIntoASpentRod(GameTestHelper h) {
         reactorSlot = 0;
