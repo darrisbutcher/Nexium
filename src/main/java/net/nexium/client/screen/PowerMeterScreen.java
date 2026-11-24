@@ -95,13 +95,13 @@ public class PowerMeterScreen extends Screen {
     }
 
     private void cyclePriority(Endpoint e) {
-        if (e == null || e.role() != EnergyNetwork.Role.CONSUMER) return;
+        if (e == null || e.role() != EnergyNetwork.Role.CONSUMER || e.direct()) return;
         int next = e.priority() == 0 ? 5 : e.priority() > 0 ? -5 : 0;
         ClientPlayNetworking.send(new PowerControlPayload(meter, e.pos(), next, e.paused()));
     }
 
     private void togglePower(Endpoint e) {
-        if (e == null) return;
+        if (e == null || e.direct()) return;
         ClientPlayNetworking.send(new PowerControlPayload(meter, e.pos(), e.priority(), !e.paused()));
     }
 
@@ -113,8 +113,10 @@ public class PowerMeterScreen extends Screen {
             shown[i] = e;
             priority[i].visible = power[i].visible = e != null;
             if (e == null) continue;
-            priority[i].active = e.role() == EnergyNetwork.Role.CONSUMER;
-            priority[i].setMessage(Component.translatable(e.role() != EnergyNetwork.Role.CONSUMER ? "screen.nexium.power.priority.none"
+            priority[i].active = e.role() == EnergyNetwork.Role.CONSUMER && !e.direct();
+            power[i].active = !e.direct();
+            priority[i].setMessage(Component.translatable(e.direct() ? "screen.nexium.power.priority.battery"
+                    : e.role() != EnergyNetwork.Role.CONSUMER ? "screen.nexium.power.priority.none"
                     : e.priority() > 0 ? "screen.nexium.power.priority.high"
                     : e.priority() < 0 ? "screen.nexium.power.priority.low" : "screen.nexium.power.priority.normal"));
             power[i].setMessage(Component.translatable(e.paused() ? "screen.nexium.power.off" : "screen.nexium.power.on")
@@ -217,7 +219,7 @@ public class PowerMeterScreen extends Screen {
             int color = e.paused() ? DIM : e.role() == EnergyNetwork.Role.PRODUCER ? GREEN : e.role() == EnergyNetwork.Role.CONSUMER ? ORANGE : 0xFF3FB8FF;
             g.text(font, rateText, listX + 20, ry + 11, color, false);
             Component roleName = Component.translatable("screen.nexium.power.role." + e.role().name().toLowerCase(Locale.ROOT));
-            g.text(font, roleName, listX + 20 + font.width(rateText) + 6, ry + 11, DIM, false);
+            g.text(font, e.direct() ? Component.translatable("screen.nexium.power.role.direct") : roleName, listX + 20 + font.width(rateText) + 6, ry + 11, DIM, false);
         }
         if (r.endpoints().size() > ROWS) {
             int trackH = ROWS * ROW, thumb = Math.max(10, trackH * ROWS / r.endpoints().size());

@@ -100,6 +100,27 @@ public class PowerMeterGameTest {
         });
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 300)
+    public void theMeterListsAMachineThatOnlyABatteryFeeds(GameTestHelper h) {
+        build(h);
+        BlockPos batteryAt = new BlockPos(3, 2, 3), stationAt = new BlockPos(3, 2, 4);
+        h.setBlock(batteryAt, ModBlocks.IRON_BATTERY);
+        h.getBlockEntity(batteryAt, net.nexium.energy.BatteryBlockEntity.class).energy().set(100_000);
+        h.setBlock(stationAt, ModBlocks.CHARGING_STATION);
+        h.getBlockEntity(stationAt, net.nexium.energy.ChargingStationBlockEntity.class).slots().setItem(0, new ItemStack(net.nexium.registry.ModItems.IRON_CELL));
+        BlockPos meter = h.absolutePos(METER), station = h.absolutePos(stationAt);
+        h.succeedWhen(() -> {
+            EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), meter);
+            h.assertTrue(network != null, "the meter has a network");
+            EnergyNetwork.Report r = network.report(h.getLevel());
+            EnergyNetwork.Endpoint use = r.endpoints().stream().filter(e -> e.pos().equals(station)).findFirst().orElse(null);
+            h.assertTrue(use != null, "the station only the Battery touches is listed: " + r.endpoints());
+            h.assertTrue(use.direct() && use.role() == EnergyNetwork.Role.CONSUMER, "as a machine fed by a Battery");
+            h.assertTrue(use.perTick() > 0, "and the meter sees it taking power: " + use.perTick());
+            h.assertTrue(!network.control(h.getLevel(), station, 5, false), "its priority is not the network's to set");
+        });
+    }
+
     /** The meter's row for the generator at {@code GENERATOR}, once a full second has been counted; null before that. */
     private static EnergyNetwork.Endpoint generatorRow(GameTestHelper h) {
         EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), h.absolutePos(METER));
@@ -163,7 +184,8 @@ public class PowerMeterGameTest {
     public void aReportSurvivesTheJourneyToTheScreen(GameTestHelper h) {
         EnergyNetwork.Report report = new EnergyNetwork.Report(1234, 10_000, 500, 250_000, 12.5f, 20f, -7.5f, true, 90,
                 java.util.List.of(new EnergyNetwork.Endpoint(new BlockPos(1, 2, 3), EnergyNetwork.Role.CONSUMER, 20f, -5, true),
-                        new EnergyNetwork.Endpoint(new BlockPos(4, 5, 6), EnergyNetwork.Role.BATTERY, -7.5f, 0, false)),
+                        new EnergyNetwork.Endpoint(new BlockPos(4, 5, 6), EnergyNetwork.Role.BATTERY, -7.5f, 0, false),
+                        new EnergyNetwork.Endpoint(new BlockPos(7, 8, 9), EnergyNetwork.Role.CONSUMER, 3f, 0, false, true)),
                 new float[EnergyNetwork.HISTORY], new float[EnergyNetwork.HISTORY]);
         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), h.getLevel().registryAccess());
         PowerReportPayload.STREAM_CODEC.encode(buf, new PowerReportPayload(new BlockPos(9, 9, 9), true, report));
