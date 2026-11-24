@@ -808,7 +808,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   comparator reads it. A broken Battery keeps its charge in the item.
 * **Power Meter** (`IGI / RCR / III`: iron ingots, glass, redstone, a comparator): put it against an Energy Conduit and right-click it
   for a dashboard of that conduit's whole network: what it makes and uses, what is stored and how long it lasts, a minute of history,
-  and every generator, machine and battery on it with its rate. Each machine has a **priority** (High, Normal, Low: Low goes without
+  and every generator, machine and battery on it with its rate (a machine that only a Battery touches is listed too, marked "fed by a Battery", without the priority and switch). Each machine has a **priority** (High, Normal, Low: Low goes without
   first when power runs short) and an **On/Off** switch, which set the conduit sides that feed it.
   A generator's row shows everything it makes, including what it hands straight to a Battery or machine touching it (not only what the
   conduit takes from it), and a machine's row everything it takes in, however it arrives.
