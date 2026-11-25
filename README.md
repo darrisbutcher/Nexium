@@ -137,8 +137,8 @@ Digital storage for the network, counted like Refined Storage: a disk holds a nu
   16,384 buckets. What a disk holds is saved with the world under the disk's id, so it stays with the disk when it is
   moved, dropped or put in another drive; the tooltip shows how full it is.
 * **Making disks**: a **Disk Casing** (`GRG / G G / III`, makes 2) and a **Storage Part**. A 16k part is
-  `RCR / CLC / RCR` (redstone, copper, lapis; a bucket in the middle for a fluid part). Three parts plus a gold ingot,
-  diamond, emerald or Nexium ingot make the next size. Sneak + right-click an empty disk to take it apart again.
+  `RCR / CLC / RCR` (redstone, **copper nuggets**, lapis; a bucket in the middle for a fluid part). Three parts plus a **gold nugget**,
+  a **diamond nugget**, an emerald or a Nexium ingot make the next size. Sneak + right-click an empty disk to take it apart again.
 * **Priority**: drives start at **10**, above chests (0), so new items go to disks first. The screen has a priority
   (shift-click for steps of 10) and a filter slot for a Basic or Advanced Filter.
 * **Move to disks** (in the drive's screen) moves everything the network's chests and barrels hold onto the disks, as
@@ -302,10 +302,11 @@ is placed as one and uses two slabs.
 ### Jetpack, battery cells and the Charging Station
 * **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, the sizes of the Batteries) keep their charge in the
   item; a bar under the item shows it. The **Charging Station** holds four of them (or a Jetpack or Tablet with a cell in it) and
-  charges each at up to 1,000 NE a tick from what it takes in from touching Energy Conduits and Batteries.
+  charges them from what it takes in from touching Energy Conduits and Batteries, 4,000 NE a tick in all, shared by the cells that are
+  charging (one cell gets 4,000, two get 2,000 each, all four 1,000 each).
 * **Jetpack**: right-click to wear it in the **wings slot** (or the chest slot), so a chestplate can be worn too. Sneak and right-click it
   (or press **J**, Controls > Key Binds > Open Jetpack, while it is worn) to put a battery cell in. Jump in the air to take off; then
-  jump rises, letting go **hovers** and sneaking sinks. It uses 4 NE a tick thrusting and 2 hovering, and when the cell runs out the
+  jump rises, letting go **hovers** and sneaking sinks. It uses 8 NE a tick thrusting and 4 hovering, and when the cell runs out the
   flight ends. It takes the armor enchantments an elytra does (all four Protections at once) plus Thorns and the curses, and does not glide.
 * **Jetpack keys** (unbound until you set them under Controls > Key Binds): **Jetpack Engine On/Off** (off: no flight and no power use)
   and **Jetpack Hover On/Off**. With hover off, hold jump to thrust and rise, and let go to drop; jumping in the air takes off again.

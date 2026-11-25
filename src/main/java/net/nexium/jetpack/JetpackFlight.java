@@ -24,7 +24,7 @@ import java.util.UUID;
  * the time, and when the cell is empty the flight ends and you fall.
  */
 public final class JetpackFlight {
-    public static final long THRUST = 4, HOVER = 2;
+    public static final long THRUST = 8, HOVER = 4;
     public static final int ENGINE = 0, HOVER_SWITCH = 1;
 
     /** Players whose flight this module switched on, so only that is switched off again. */

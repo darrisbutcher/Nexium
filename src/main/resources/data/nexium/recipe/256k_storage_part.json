@@ -5,7 +5,7 @@
     "nexium:64k_storage_part",
     "nexium:64k_storage_part",
     "nexium:64k_storage_part",
-    "minecraft:diamond"
+    "nexium:diamond_nugget"
   ],
   "result": {
     "id": "nexium:256k_storage_part"

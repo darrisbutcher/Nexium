@@ -36,7 +36,7 @@ public class ChargingStationScreen extends BaseScreen<ChargingStationMenu> {
         NumberFormat f = NumberFormat.getIntegerInstance(Locale.ROOT);
         g.text(font, Component.translatable("screen.nexium.station.stored", f.format(menu.stored()), f.format(ChargingStationBlockEntity.BUFFER)),
                 leftPos + 8, topPos + 56, palette().text(), false);
-        g.text(font, Component.translatable("screen.nexium.station.rate", f.format(ChargingStationBlockEntity.RATE)),
+        g.text(font, Component.translatable("screen.nexium.station.rate", f.format(ChargingStationBlockEntity.TOTAL)),
                 leftPos + 8, topPos + 68, palette().text(), false);
     }
 }
