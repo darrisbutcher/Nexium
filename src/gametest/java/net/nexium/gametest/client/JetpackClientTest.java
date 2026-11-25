@@ -65,7 +65,7 @@ public class JetpackClientTest implements FabricClientGameTest {
             ctx.getInput().releaseKey(options -> options.keyJump);
             check(flying, "holding jump in the air takes off");
             check(y > startY[0] + 2, "it rises (from " + startY[0] + " to " + y + ")");
-            check(charge < 600_000L && charge > 599_000L, "the cell paid about 4 NE a tick: " + charge);
+            check(charge < 600_000L && charge > 598_000L, "the cell paid about 8 NE a tick: " + charge);
             // Hover on: letting go of jump hovers. Switch hover off: with jump let go, the flight ends and you drop
             ctx.waitTicks(5);
             check(world.getServer().computeOnServer(server -> server.getPlayerList().getPlayers().get(0).getAbilities().flying), "with hover on, letting go of jump keeps hovering");

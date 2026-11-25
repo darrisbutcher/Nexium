@@ -42,6 +42,38 @@ public class BatteryCellGameTest {
     }
 
     @GameTest
+    public void theChargingStationSharesItsTotalAmongTheCellsThatAreCharging(GameTestHelper h) {
+        h.assertValueEqual(ChargingStationBlockEntity.TOTAL, 4_000L, "4,000 NE a tick in all");
+        h.assertValueEqual(ChargingStationBlockEntity.RATE, 1_000L, "which is 1,000 a slot with all four in use");
+        long[] expected = {4_000, 2_000, 1_333, 1_000};
+        for (int cells = 1; cells <= 4; cells++) {
+            BlockPos pos = new BlockPos(cells, 1, 1);
+            h.setBlock(pos, ModBlocks.CHARGING_STATION);
+            ChargingStationBlockEntity station = h.getBlockEntity(pos, ChargingStationBlockEntity.class);
+            for (int i = 0; i < cells; i++) station.slots().setItem(i, new ItemStack(ModItems.DIAMOND_CELL));
+            station.energy().set(ChargingStationBlockEntity.BUFFER);
+            h.assertValueEqual(station.charging(), cells, cells + " cells are charging");
+            station.charge();
+            for (int i = 0; i < cells; i++) {
+                h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(i)), expected[cells - 1], cells + " cell(s): each takes its share");
+            }
+        }
+        // A full cell is not charging, so it does not take a share
+        BlockPos pos = new BlockPos(5, 1, 1);
+        h.setBlock(pos, ModBlocks.CHARGING_STATION);
+        ChargingStationBlockEntity station = h.getBlockEntity(pos, ChargingStationBlockEntity.class);
+        ItemStack full = new ItemStack(ModItems.IRON_CELL);
+        ItemEnergy.insert(full, 1_000_000, false);
+        station.slots().setItem(0, full);
+        station.slots().setItem(1, new ItemStack(ModItems.IRON_CELL));
+        station.energy().set(ChargingStationBlockEntity.BUFFER);
+        h.assertValueEqual(station.charging(), 1, "a full cell does not count");
+        station.charge();
+        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), 4_000L, "so the other one gets all 4,000");
+        h.succeed();
+    }
+
+    @GameTest
     public void theChargingStationChargesEachSlotFromWhatItHolds(GameTestHelper h) {
         BlockPos pos = new BlockPos(1, 1, 1);
         h.setBlock(pos, ModBlocks.CHARGING_STATION);
@@ -51,13 +83,14 @@ public class BatteryCellGameTest {
         station.slots().setItem(2, new ItemStack(net.minecraft.world.item.Items.STICK));
         station.energy().insert(10_000, false);
         station.charge();
-        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(0)), ChargingStationBlockEntity.RATE, "the first slot takes up to the rate in a tick");
-        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), ChargingStationBlockEntity.RATE, "so does the second");
-        h.assertValueEqual(station.energy().stored(), 10_000L - 2 * ChargingStationBlockEntity.RATE, "and the station's energy pays for both");
+        long half = ChargingStationBlockEntity.TOTAL / 2;
+        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(0)), half, "with two cells charging, each takes half the total in a tick");
+        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), half, "so does the second");
+        h.assertValueEqual(station.energy().stored(), 10_000L - 2 * half, "and the station's energy pays for both");
         station.energy().set(500);
         station.charge();
-        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(0)), ChargingStationBlockEntity.RATE + 500, "with little left, the first slot takes it all");
-        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), ChargingStationBlockEntity.RATE, "and the second gets nothing more");
+        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(0)), half + 500, "with little left, the first slot takes it all");
+        h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), half, "and the second gets nothing more");
         h.succeed();
     }
 }

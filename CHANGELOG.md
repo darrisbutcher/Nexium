@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.5
+
+* **The Charging Station charges faster with fewer cells.** It charges 4,000 NE a tick in all, shared by the cells that are charging: one
+  cell takes 4,000, two take 2,000 each, three about 1,333 each and all four 1,000 each (as before). A cell that is already full takes no share.
+* **Storage and fluid parts are cheaper**: the 16k parts take copper nuggets (not ingots), the 64k parts a gold nugget (not an ingot), and the
+  256k parts a diamond nugget (not a diamond). The 1M parts still take an emerald and the Nexium parts a Nexium ingot.
+* **The Jetpack's power use is back to 8 NE a tick thrusting and 4 hovering** (it was halved in 1.26.2).
+
 ## 1.26.4
 
 * **The Redstone Reactor holds water.** A 16 bucket tank (fill it with a bucket, a Fluid Intake or a fluid conduit) cools the core only

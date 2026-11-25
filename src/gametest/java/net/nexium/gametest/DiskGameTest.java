@@ -272,15 +272,25 @@ public class DiskGameTest {
     @GameTest
     public void recipes(GameTestHelper h) {
         ItemStack g = new ItemStack(Items.GLASS), r = new ItemStack(Items.REDSTONE), i = new ItemStack(Items.IRON_INGOT),
-                c = new ItemStack(Items.COPPER_INGOT), e = ItemStack.EMPTY;
+                c = new ItemStack(Items.COPPER_NUGGET), e = ItemStack.EMPTY;
         ItemStack casing = craft(h, List.of(g, r, g, g, e, g, i, i, i));
         h.assertTrue(casing.is(ModItems.DISK_CASING) && casing.getCount() == 2, "glass, redstone and iron make 2 casings");
         ItemStack part = craft(h, List.of(r, c, r, c, new ItemStack(Items.LAPIS_LAZULI), c, r, c, r));
-        h.assertTrue(part.is(ModItems.STORAGE_PARTS.get(DiskTier.K16)), "redstone, copper and lapis make a 16k part");
+        h.assertTrue(part.is(ModItems.STORAGE_PARTS.get(DiskTier.K16)), "redstone, copper nuggets and lapis make a 16k part");
         ItemStack fluidPart = craft(h, List.of(r, c, r, c, new ItemStack(Items.BUCKET), c, r, c, r));
         h.assertTrue(fluidPart.is(ModItems.FLUID_PARTS.get(DiskTier.K16)), "with a bucket, a 16k fluid part");
-        ItemStack p64 = craft(h, List.of(part, part, part, new ItemStack(Items.GOLD_INGOT)));
-        h.assertTrue(p64.is(ModItems.STORAGE_PARTS.get(DiskTier.K64)), "3 parts and gold make a 64k part");
+        ItemStack p64 = craft(h, List.of(part, part, part, new ItemStack(Items.GOLD_NUGGET)));
+        h.assertTrue(p64.is(ModItems.STORAGE_PARTS.get(DiskTier.K64)), "3 parts and a gold nugget make a 64k part");
+        ItemStack p256 = craft(h, List.of(p64, p64, p64, new ItemStack(ModItems.DIAMOND_NUGGET)));
+        h.assertTrue(p256.is(ModItems.STORAGE_PARTS.get(DiskTier.K256)), "3 of those and a diamond nugget make a 256k part");
+        ItemStack f64 = craft(h, List.of(fluidPart, fluidPart, fluidPart, new ItemStack(Items.GOLD_NUGGET)));
+        ItemStack f256 = craft(h, List.of(f64, f64, f64, new ItemStack(ModItems.DIAMOND_NUGGET)));
+        h.assertTrue(f64.is(ModItems.FLUID_PARTS.get(DiskTier.K64)) && f256.is(ModItems.FLUID_PARTS.get(DiskTier.K256)), "the fluid parts take the same nuggets");
+        // The ingot and the diamond no longer do
+        h.assertTrue(craft(h, List.of(r, new ItemStack(Items.COPPER_INGOT), r, new ItemStack(Items.COPPER_INGOT), new ItemStack(Items.LAPIS_LAZULI),
+                new ItemStack(Items.COPPER_INGOT), r, new ItemStack(Items.COPPER_INGOT), r)).isEmpty(), "copper ingots no longer make a 16k part");
+        h.assertTrue(craft(h, List.of(part, part, part, new ItemStack(Items.GOLD_INGOT))).isEmpty(), "nor a gold ingot a 64k part");
+        h.assertTrue(craft(h, List.of(p64, p64, p64, new ItemStack(Items.DIAMOND))).isEmpty(), "nor a diamond a 256k part");
         ItemStack pN = craft(h, List.of(new ItemStack(ModItems.STORAGE_PARTS.get(DiskTier.M1)), new ItemStack(ModItems.STORAGE_PARTS.get(DiskTier.M1)),
                 new ItemStack(ModItems.STORAGE_PARTS.get(DiskTier.M1)), new ItemStack(ModItems.NEXIUM_INGOT)));
         h.assertTrue(pN.is(ModItems.STORAGE_PARTS.get(DiskTier.NEXIUM)), "and a Nexium ingot the Nexium part");

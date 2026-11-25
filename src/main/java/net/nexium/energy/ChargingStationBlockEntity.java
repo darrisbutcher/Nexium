@@ -21,13 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Holds up to {@link #SLOTS} battery cells (or Jetpacks and Tablets with a cell in them) and charges each one a tick at up to
- * {@link #RATE} NE, from the energy its buffer takes in from touching Energy Conduits and Batteries.
+ * Holds up to {@link #SLOTS} battery cells (or Jetpacks and Tablets with a cell in them) and charges them from the energy its buffer takes
+ * in from touching Energy Conduits and Batteries: {@link #TOTAL} NE a tick shared by the cells that are charging, so one cell charges at
+ * {@link #TOTAL}, two at half that each, and all four at {@link #RATE} each.
  */
 public class ChargingStationBlockEntity extends BlockEntity implements ExtendedMenuProvider<BlockPos> {
     public static final int SLOTS = 4;
-    /** NE a tick, for each slot. */
+    /** NE a tick for each slot with all four slots charging; with fewer, the same total is shared out, up to {@value #TOTAL} for one. */
     public static final long RATE = 1_000;
+    public static final long TOTAL = RATE * SLOTS;
     public static final long BUFFER = 20_000;
 
     private final EnergyBuffer energy = EnergyBuffer.machine(BUFFER, this::setChanged);
@@ -50,13 +52,26 @@ public class ChargingStationBlockEntity extends BlockEntity implements ExtendedM
         station.charge();
     }
 
-    /** One tick: each slot takes what it can of the buffer, up to the rate. */
+    /** How many slots hold something that can still take charge. */
+    public int charging() {
+        int n = 0;
+        for (int i = 0; i < SLOTS; i++) {
+            ItemStack stack = slots.getItem(i);
+            if (!stack.isEmpty() && ItemEnergy.chargeable(stack) && ItemEnergy.stored(stack) < ItemEnergy.capacity(stack)) n++;
+        }
+        return n;
+    }
+
+    /** One tick: the cells that are charging share {@link #TOTAL} NE between them, and each takes what it can of its share. */
     public void charge() {
         if (energy.stored() <= 0) return;
+        int charging = charging();
+        if (charging == 0) return;
+        long share = TOTAL / charging;
         for (int i = 0; i < SLOTS && energy.stored() > 0; i++) {
             ItemStack stack = slots.getItem(i);
             if (stack.isEmpty() || !ItemEnergy.chargeable(stack)) continue;
-            long room = ItemEnergy.insert(stack, Math.min(RATE, energy.stored()), true);
+            long room = ItemEnergy.insert(stack, Math.min(share, energy.stored()), true);
             if (room <= 0) continue;
             // Energy leaving the buffer for a cell is used up here: remove, not extract (it is no output to the outside)
             long taken = energy.remove(room, false);

@@ -65,10 +65,10 @@ public class JetpackGameTest {
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
         h.assertTrue(player.getAbilities().flying, "a jump in the air takes off");
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 96L, "thrusting costs 4 NE a tick");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 92L, "thrusting costs 8 NE a tick");
         player.setLastClientInput(NONE);
         JetpackFlight.tick(player);
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 94L, "hovering costs 2");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 88L, "hovering costs 4");
         h.assertTrue(player.getAbilities().flying, "and it keeps flying");
         h.succeed();
     }
@@ -76,11 +76,11 @@ public class JetpackGameTest {
     @GameTest
     public void whenTheCellRunsOutFlightEndsAndYouFall(GameTestHelper h) {
         ServerPlayer player = player(h);
-        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpackWith(5));
+        ExtraSlots.of(player).setItem(ExtraSlots.WINGS, jetpackWith(9));
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
-        h.assertTrue(player.getAbilities().flying, "it takes off with 5 NE");
-        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 1L, "4 used");
+        h.assertTrue(player.getAbilities().flying, "it takes off with 9 NE");
+        h.assertValueEqual(ItemEnergy.stored(ExtraSlots.of(player).wings()), 1L, "8 used");
         JetpackFlight.tick(player);
         h.assertTrue(!player.getAbilities().flying && !player.getAbilities().mayfly, "with 1 NE left, flight ends");
         player.setLastClientInput(JUMP);
@@ -98,11 +98,11 @@ public class JetpackGameTest {
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
         h.assertTrue(player.getAbilities().flying, "holding jump lifts off");
-        h.assertValueEqual(ItemEnergy.stored(jetpack), 996L, "thrusting costs 4");
+        h.assertValueEqual(ItemEnergy.stored(jetpack), 992L, "thrusting costs 8");
         player.setLastClientInput(NONE);
         JetpackFlight.tick(player);
         h.assertTrue(!player.getAbilities().flying, "letting go ends the flight: you drop");
-        h.assertValueEqual(ItemEnergy.stored(jetpack), 996L, "and nothing is used while dropping");
+        h.assertValueEqual(ItemEnergy.stored(jetpack), 992L, "and nothing is used while dropping");
         h.assertTrue(player.getAbilities().mayfly, "but the Jetpack is still ready");
         player.setLastClientInput(JUMP);
         JetpackFlight.tick(player);
