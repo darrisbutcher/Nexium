@@ -5,6 +5,8 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 ## 1.26.9
 
+* **Power Meter tabs**: the dashboard's list now has three tabs, **Generation**, **Batteries** and **Using power**, each listing only its own
+  blocks. The priority button shows on the Using power tab, the On/Off switch on all of them, and the dashboard reopens on the tab you used last.
 * **A Power Meter used as a conduit facade works as a meter.** Put the Power Meter on a conduit as its facade and right-click it with an
   empty hand for the dashboard, just like a meter placed against the conduit. It reports on its own network when it carries Energy,
   otherwise on an Energy Conduit beside it. Sneak + right-click (or the wrench) still opens the conduit's side menu.
