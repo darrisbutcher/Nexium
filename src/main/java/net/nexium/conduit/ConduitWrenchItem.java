@@ -60,11 +60,15 @@ public class ConduitWrenchItem extends Item {
 
     /** The arm that was clicked, or the clicked face if the core was hit. */
     static Direction targetSide(UseOnContext context, int mask) {
-        Vec3 local = context.getClickLocation().subtract(Vec3.atLowerCornerOf(context.getClickedPos()));
+        return targetSide(context.getClickLocation(), context.getClickedPos(), context.getClickedFace(), mask);
+    }
+
+    static Direction targetSide(Vec3 click, BlockPos pos, Direction face, int mask) {
+        Vec3 local = click.subtract(Vec3.atLowerCornerOf(pos));
         for (Direction d : Direction.values()) {
             if ((mask & (1 << d.get3DDataValue())) == 0) continue;
             if (ConduitBundleBlock.SHAPES.arm(d).bounds().inflate(0.01).contains(local)) return d;
         }
-        return context.getClickedFace();
+        return face;
     }
 }

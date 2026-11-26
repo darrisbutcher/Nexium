@@ -119,6 +119,19 @@ public class ConduitBundleBlock extends BaseEntityBlock {
 
     // ---- Facades ----------------------------------------------------------------------------
 
+    /** An empty hand opens the side configuration, like the wrench does when sneaking. */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!(level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity be)) return InteractionResult.PASS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+        net.minecraft.core.Direction side = ConduitWrenchItem.targetSide(hit.getLocation(), pos, hit.getDirection(), mask(state));
+        net.nexium.util.Menus.open((net.minecraft.server.level.ServerPlayer) player,
+                net.minecraft.network.chat.Component.translatable("screen.nexium.conduit_config"),
+                new ConduitConfigMenu.OpenData(pos, side.get3DDataValue()),
+                (id, inv, p) -> new ConduitConfigMenu(id, inv, be, side.get3DDataValue()));
+        return InteractionResult.SUCCESS;
+    }
+
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
