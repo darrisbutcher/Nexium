@@ -1,74 +1,74 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "nexium:block/conduit_core",
-    "all": "nexium:block/conduit_core"
+    "particle": "nexium:block/conduit_hub_t2",
+    "all": "nexium:block/conduit_hub_t2"
   },
   "elements": [
     {
       "from": [
-        6.5,
-        6.5,
-        6.5
+        5,
+        5,
+        5
       ],
       "to": [
-        9.5,
-        9.5,
-        9.5
+        11,
+        11,
+        11
       ],
       "faces": {
         "north": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         },
         "south": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         },
         "east": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         },
         "west": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         },
         "up": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         },
         "down": {
           "texture": "#all",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            5,
+            5,
+            11,
+            11
           ]
         }
       }

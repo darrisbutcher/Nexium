@@ -42,7 +42,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     public static final IntegerProperty ITEM_TIER = IntegerProperty.create("item_tier", 0, 2);
     public static final IntegerProperty FLUID_TIER = IntegerProperty.create("fluid_tier", 0, 2);
     public static final IntegerProperty ENERGY_TIER = IntegerProperty.create("energy_tier", 0, 2);
-    public static final PipeShapes SHAPES = new PipeShapes(6.5, 9.5); // half-size conduits
+    public static final PipeShapes SHAPES = new PipeShapes(5, 11, 5.75, 10.25); // a 6 px collar, three strands 4.5 px wide and 1.5 px tall
 
     public ConduitBundleBlock(Properties properties) {
         super(properties);

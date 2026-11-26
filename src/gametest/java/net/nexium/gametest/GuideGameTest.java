@@ -97,6 +97,7 @@ public class GuideGameTest {
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier id = BuiltInRegistries.ITEM.getKey(item);
             if (!id.getNamespace().equals("nexium") && !id.getNamespace().equals("nexium")) continue;
+            if (item instanceof net.nexium.conduit.LegacyConduitItem) continue; // the six old conduits are hidden and convert when carried
             boolean found = false;
             for (GuideData.Topic topic : data.topics().values()) {
                 for (String ref : topic.items()) found |= refers(ref, item);

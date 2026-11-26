@@ -18,6 +18,7 @@ import net.nexium.aiot.module.ModuleType;
 import net.nexium.barrel.BarrelTier;
 import net.nexium.barrel.BarrelUpgradeItem;
 import net.nexium.conduit.ConduitItem;
+import net.nexium.conduit.LegacyConduitItem;
 import net.nexium.conduit.ConduitType;
 import net.nexium.conduit.ConduitWrenchItem;
 import net.nexium.dimension.DimensionalLinkCardItem;
@@ -64,12 +65,18 @@ public final class ModItems {
     public static final StorageTabletItem CRAFTING_TABLET = register("crafting_storage_tablet", p -> new StorageTabletItem(p), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DimensionalLinkCardItem LINK_CARD = register("dimensional_link_card", DimensionalLinkCardItem::new, new Item.Properties().stacksTo(1));
 
-    public static final ConduitItem ITEM_CONDUIT = register("item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 1), new Item.Properties());
-    public static final ConduitItem ENDER_ITEM_CONDUIT = register("ender_item_conduit", p -> new ConduitItem(p, ConduitType.ITEM, 2), new Item.Properties());
-    public static final ConduitItem FLUID_CONDUIT = register("fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 1), new Item.Properties());
-    public static final ConduitItem ENDER_FLUID_CONDUIT = register("ender_fluid_conduit", p -> new ConduitItem(p, ConduitType.FLUID, 2), new Item.Properties());
-    public static final ConduitItem ENERGY_CONDUIT = register("energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 1), new Item.Properties());
-    public static final ConduitItem ENDER_ENERGY_CONDUIT = register("ender_energy_conduit", p -> new ConduitItem(p, ConduitType.ENERGY, 2), new Item.Properties());
+    /** The Conduit: one item that carries items, fluids and energy together. */
+    public static final ConduitItem CONDUIT = register("conduit", ConduitItem::new, new Item.Properties());
+    /** Makes a placed conduit Tier 2. */
+    public static final net.nexium.conduit.ConduitUpgradeItem ADVANCED_CONDUIT_UPGRADE = register("advanced_conduit_upgrade",
+            net.nexium.conduit.ConduitUpgradeItem::new, new Item.Properties());
+    // The six conduits from before the Conduit became one item: not in the creative tab, converted when carried
+    public static final LegacyConduitItem ITEM_CONDUIT = legacy("item_conduit", ConduitType.ITEM, 1);
+    public static final LegacyConduitItem ENDER_ITEM_CONDUIT = legacy("ender_item_conduit", ConduitType.ITEM, 2);
+    public static final LegacyConduitItem FLUID_CONDUIT = legacy("fluid_conduit", ConduitType.FLUID, 1);
+    public static final LegacyConduitItem ENDER_FLUID_CONDUIT = legacy("ender_fluid_conduit", ConduitType.FLUID, 2);
+    public static final LegacyConduitItem ENERGY_CONDUIT = legacy("energy_conduit", ConduitType.ENERGY, 1);
+    public static final LegacyConduitItem ENDER_ENERGY_CONDUIT = legacy("ender_energy_conduit", ConduitType.ENERGY, 2);
     public static final ConduitWrenchItem CONDUIT_WRENCH = register("conduit_wrench", ConduitWrenchItem::new, new Item.Properties().stacksTo(1));
     /** Shows everything on a conduit's network in a window; changes nothing. */
     public static final net.nexium.conduit.ConduitScannerItem CONDUIT_SCANNER = register("conduit_scanner", net.nexium.conduit.ConduitScannerItem::new, new Item.Properties().stacksTo(1));
@@ -219,7 +226,14 @@ public final class ModItems {
         TAB_ORDER.add(0, GUIDE); // the guide comes first
     }
 
-    public static ConduitItem conduitFor(ConduitType type, int tier) {
+    private static LegacyConduitItem legacy(String name, ConduitType type, int tier) {
+        LegacyConduitItem item = register(name, p -> new LegacyConduitItem(p, type, tier), new Item.Properties());
+        TAB_ORDER.remove(item);
+        return item;
+    }
+
+    /** The old per-type conduit item, for naming a conduit that has only some of the three types. */
+    public static LegacyConduitItem conduitFor(ConduitType type, int tier) {
         return switch (type) {
             case ITEM -> tier >= 2 ? ENDER_ITEM_CONDUIT : ITEM_CONDUIT;
             case FLUID -> tier >= 2 ? ENDER_FLUID_CONDUIT : FLUID_CONDUIT;

@@ -25,33 +25,26 @@ import net.nexium.conduit.ConduitType;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Draws a conduit bundle's facade, or, without one, a small ring on each connected arm in
- * that side's colour channels: an inner ring in the insert colour and an outer ring, nearer the
- * block, in the extract colour (item rings before fluid rings). Conduit-to-conduit arms have none.
+ * Draws a conduit bundle's facade, or, without one, a plate on each arm that meets a machine. The plate shows, for each of the three
+ * strands (energy, item, fluid, top lane first), what that side does: a direction mark (a triangle pointing in toward the strand for
+ * Insert, out for Extract, one each way for Both), the insert colour as one pip, and the extract colours as up to four pips.
+ * Conduit-to-conduit arms have no plate.
  */
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
     private static final RenderType MARKER = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
-    /** Ring cross-section, just wider than an arm (6.75-9.25 px). */
-    private static final float RING_MIN = 6.6f / 16, RING_MAX = 9.4f / 16;
-    /** Distance from the block centre along the arm, per conduit type (px). */
-    /** How much further out the extract ring sits than the insert ring. */
-    private static final float EXTRACT_OFFSET = 2.6f / 16;
-    /** Each further extract colour is another ring this much farther out, as long as it still fits on the arm. */
-    private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.9f / 16;
-    private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}, {4.0f / 16, 4.6f / 16}};
-    /**
-     * The direction arrow, one for each arm: a flat arrowhead on each of the arm's four faces, light so it stands out from the dark arm,
-     * that points the way the items go: out to the block when the arm inserts, in to the conduit when it extracts, and a double arrow
-     * when it does both (whichever conduit types it carries). It goes where the rings leave room ({@link ArrowPlacement}).
-     */
-    private static final int ARROW_COLOR = 0xFFE9EEF5;
-    /** A double arrow's heads and shaft as fractions of its length, half the width of a head's base and of the shaft, in blocks. */
-    private static final float HEAD_PART = 0.353f, SHAFT_PART = 0.294f, HEAD_HALF = 0.85f / 16, SHAFT_HALF = 0.25f / 16;
-    /** Half the width of a single arrow's base, the arm's half-width, and how far the arrow floats off the arm's face (blocks). */
-    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 1.25f / 16, ARROW_LIFT = 0.02f / 16;
+    /** The plate sits on the machine's face: from {@code PLATE_NEAR} to the block edge, covering the whole face. */
+    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 7.9f / 16;
+    /** How far apart the strands are (their height), measured along the lane axis. */
+    private static final float LANE_STEP = 1.5f / 16;
+    private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
+    /** Which conduit type each strand carries, top lane first. */
+    private static final int[] LANE_TYPE = {ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()};
+    private static final int EMPTY_PIP = 0xFF2A2A32, WHITE = 0xFFE9EEF5;
 
     public static class FacadeState extends BlockEntityRenderState {
+        /** Whether the conduit is Tier 2 (silver plates). */
+        public boolean tier2;
         public final BlockModelRenderState facade = new BlockModelRenderState();
         /** [type][side] colour channel, -1 for none. */
         public final int[][] channels = new int[ConduitType.VALUES.length][6];
@@ -76,6 +69,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         if (facade != null) blockModels.update(state.facade, facade, DISPLAY_CONTEXT);
         else state.facade.clear();
         long now = be.getLevel() != null ? be.getLevel().getGameTime() : 0;
+        state.tier2 = false;
+        for (ConduitType t : ConduitType.VALUES) state.tier2 |= be.tier(t) >= 2;
         int[][] markers = be.channelMarkers(now);
         for (int t = 0; t < markers.length; t++) System.arraycopy(markers[t], 0, state.channels[t], 0, 6);
     }
@@ -88,102 +83,104 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         }
         int light = state.lightCoords;
         collector.submitCustomGeometry(pose, MARKER, (p, buffer) -> {
-            // The stretches of one arm that the rings cover, in pixels from the centre: at most an insert ring and 16 extract rings per type
-            float[] rings = new float[2 * state.channels.length * 17];
             for (Direction d : Direction.values()) {
-                int ringCount = 0;
-                boolean inserts = false, extracts = false;
-                for (int t = 0; t < state.channels.length; t++) {
-                    int marker = state.channels[t][d.get3DDataValue()];
-                    if (marker < 0) continue;
-                    SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 4) & 3];
-                    // Inner ring: the insert colour. Outer ring, nearer the block: the extract colour, and one more ring
-                    // farther out for each further extract colour that is on (as many as fit on the arm).
-                    if (mode.inserts()) {
-                        ring(p, buffer, d, RING_SPAN[t][0], RING_SPAN[t][1], ConduitConfigScreen.CHANNEL_COLORS[marker & 15], light);
-                        rings[2 * ringCount] = RING_SPAN[t][0] * 16;
-                        rings[2 * ringCount + 1] = RING_SPAN[t][1] * 16;
-                        ringCount++;
-                        inserts = true;
-                    }
-                    if (mode.extracts()) {
-                        int extract = marker >>> 6 & 0xFFFF, shown = 0;
-                        for (int c = 0; c < 16; c++) {
-                            if ((extract >> c & 1) == 0) continue;
-                            float shift = EXTRACT_OFFSET + shown * EXTRACT_STEP;
-                            if (shown > 0 && RING_SPAN[t][1] + shift > ARM_END) break;
-                            ring(p, buffer, d, RING_SPAN[t][0] + shift, RING_SPAN[t][1] + shift, ConduitConfigScreen.CHANNEL_COLORS[c], light);
-                            rings[2 * ringCount] = (RING_SPAN[t][0] + shift) * 16;
-                            rings[2 * ringCount + 1] = (RING_SPAN[t][1] + shift) * 16;
-                            ringCount++;
-                            shown++;
-                        }
-                        extracts = true;
-                    }
-                }
-                if (inserts || extracts) arrow(p, buffer, d, ArrowPlacement.zone(rings, ringCount, inserts && extracts), inserts, extracts, light);
+                boolean connected = false;
+                for (int t = 0; t < 3; t++) connected |= state.channels[t][d.get3DDataValue()] >= 0;
+                if (connected) plate(p, buffer, Arm.of(d), state, light);
             }
         });
     }
 
-    /**
-     * The direction arrow in {@code zone} ({@code {from, to}} in pixels out from the centre, null for none): pointing out to the block
-     * when the arm only inserts, in to the conduit when it only extracts, and a double arrow (a head each way, joined by a short shaft)
-     * when it does both.
-     */
-    private static void arrow(PoseStack.Pose p, VertexConsumer b, Direction d, float @Nullable [] zone, boolean inserts, boolean extracts, int light) {
-        if (zone == null) return;
-        float from = zone[0] / 16, to = zone[1] / 16;
-        if (inserts && extracts) {
-            float length = to - from, head = length * HEAD_PART, shaft = length * SHAFT_PART;
-            decal(p, b, d, from + head, from, HEAD_HALF, 0, light); // the head toward the conduit
-            decal(p, b, d, from + head, from + head + shaft, SHAFT_HALF, SHAFT_HALF, light);
-            decal(p, b, d, from + head + shaft, to, HEAD_HALF, 0, light); // the head toward the block
-        } else if (inserts) {
-            decal(p, b, d, from, to, ARROW_HALF, 0, light);
-        } else {
-            decal(p, b, d, to, from, ARROW_HALF, 0, light);
+    /** Axis bookkeeping for one arm: the arm axis, the axis the strands stack along, the other one, and which way energy sits. */
+    private record Arm(Direction d, int axis, int step, int lane, int side, float laneSign) {
+        static Arm of(Direction d) {
+            int axis = d.getAxis().ordinal();
+            return new Arm(d, axis, d.getAxisDirection().getStep(), axis == 1 ? 2 : 1, axis == 0 ? 2 : 0, d == Direction.DOWN ? -1 : 1);
         }
+
+        /** Where strand {@code t} (0 energy, 1 item, 2 fluid) is along the lane axis, in blocks from the middle. */
+        float laneOffset(int t) { return laneSign * (1 - t) * LANE_STEP; }
     }
 
-    /**
-     * A flat shape on each of the four faces of the arm on side {@code d}, from {@code from} to {@code to} out from the centre: an edge
-     * of half-width {@code halfFrom} at the first and one of {@code halfTo} at the second (an arrowhead has a point at one end, so a
-     * half-width of 0 there; a shaft has the same at both).
-     */
-    private static void decal(PoseStack.Pose p, VertexConsumer b, Direction d, float from, float to, float halfFrom, float halfTo, int light) {
-        int axis = d.getAxis().ordinal();
-        int step = d.getAxisDirection().getStep();
-        int u = (axis + 1) % 3, v = (axis + 2) % 3;
-        float[] along = {0.5f + step * from, 0.5f + step * from, 0.5f + step * to, 0.5f + step * to};
-        float[] wide = {-halfFrom, halfFrom, halfTo, -halfTo};
-        // Each face has its outward normal along u or v; the shape lies in the plane of the arm face, its width along the other one.
-        for (int face = 0; face < 4; face++) {
-            int normalAxis = face < 2 ? u : v, widthAxis = face < 2 ? v : u;
-            int sign = face % 2 == 0 ? 1 : -1;
-            float plane = 0.5f + sign * (ARM_HALF + ARROW_LIFT);
-            float[][] pts = new float[4][3];
-            for (int i = 0; i < 4; i++) {
-                pts[i][axis] = along[i];
-                pts[i][widthAxis] = 0.5f + wide[i];
-                pts[i][normalAxis] = plane;
+    private static int channelColor(int c) {
+        return 0xFF000000 | ConduitConfigScreen.CHANNEL_COLORS[c & 15];
+    }
+
+    /** The plate on one arm with, per strand, the direction mark and the insert and extract colours. */
+    private static void plate(PoseStack.Pose p, VertexConsumer b, Arm a, FacadeState st, int light) {
+        float na = 0.5f + a.step * PLATE_NEAR, fa = 0.5f + a.step * PLATE_FAR;
+        float[] min = new float[3], max = new float[3];
+        min[a.axis] = Math.min(na, fa);
+        max[a.axis] = Math.max(na, fa);
+        min[a.lane] = 0.5f - PLATE_HALF; max[a.lane] = 0.5f + PLATE_HALF;
+        min[a.side] = 0.5f - PLATE_HALF; max[a.side] = 0.5f + PLATE_HALF;
+        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], st.tier2 ? PLATE_T2 : PLATE_T1, light);
+        // a lighter inner face, with an edge of plate round it
+        float inner = 0.5f + a.step * (PLATE_NEAR - 0.15f / 16);
+        float[] imin = min.clone(), imax = max.clone();
+        imin[a.axis] = Math.min(inner, na); imax[a.axis] = Math.max(inner, na);
+        for (int ax : new int[]{a.lane, a.side}) { imin[ax] += 0.5f / 16; imax[ax] -= 0.5f / 16; }
+        box(p, b, imin[0], imin[1], imin[2], imax[0], imax[1], imax[2], st.tier2 ? PLATE_EDGE_T2 : PLATE_EDGE_T1, light);
+        for (int t = 0; t < 3; t++) {
+            int marker = st.channels[LANE_TYPE[t]][a.d.get3DDataValue()];
+            boolean on = marker >= 0;
+            SideConfig.Mode mode = on ? SideConfig.Mode.values()[(marker >> 4) & 3] : SideConfig.Mode.DISABLED;
+            float row = 0.5f + a.laneOffset(t);
+            // direction mark and insert pip (the band on one side of the strands)
+            mark(p, b, a, inner, row, mode, light);
+            pip(p, b, a, inner, row, 0.5f - 4.6f / 16, 1.2f / 16, 2.0f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
+            // extract pips (the band on the other side): up to four in a row
+            int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
+            for (int c = 0; c < 16 && shown < 4; c++) {
+                if ((extract >> c & 1) == 0) continue;
+                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, channelColor(c), light);
+                shown++;
             }
-            float[] n = new float[3];
-            n[normalAxis] = sign;
-            quad(p, b, ARROW_COLOR, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
-                    pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
+            for (; shown < 4; shown++) {
+                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, EMPTY_PIP, light);
+            }
         }
     }
 
-    /** A box around the arm on side {@code d}, from {@code near} to {@code far} out from the centre. */
-    private static void ring(PoseStack.Pose p, VertexConsumer b, Direction d, float near, float far, int color, int light) {
-        float[] min = {RING_MIN, RING_MIN, RING_MIN}, max = {RING_MAX, RING_MAX, RING_MAX};
-        int axis = d.getAxis().ordinal(); // X=0, Y=1, Z=2
-        int step = d.getAxisDirection().getStep();
-        float a = 0.5f + step * near, c = 0.5f + step * far;
-        min[axis] = Math.min(a, c);
-        max[axis] = Math.max(a, c);
+    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float side, float laneSize, float sideSize, int color, int light) {
+        float raise = 0.2f / 16;
+        float[] min = new float[3], max = new float[3];
+        float na = plane - a.step * raise;
+        min[a.axis] = Math.min(na, plane); max[a.axis] = Math.max(na, plane);
+        min[a.lane] = lane - laneSize / 2; max[a.lane] = lane + laneSize / 2;
+        min[a.side] = side - sideSize / 2; max[a.side] = side + sideSize / 2;
         box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
+    }
+
+    /**
+     * The direction mark of a strand, flat on the plate beside its insert pip: a triangle pointing in toward the strand when the side
+     * inserts (the energy goes in to the machine), out and away from it when it extracts, and one of each for Both. Nothing when off.
+     */
+    private static void mark(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, SideConfig.Mode mode, int light) {
+        float centre = 0.5f - 7.0f / 16;
+        float half = 0.6f / 16;
+        float base = 0.55f / 16;
+        if (mode.inserts() && mode.extracts()) {
+            triangle(p, b, a, plane, lane, centre - base, centre - base - 1.0f / 16, half, light);
+            triangle(p, b, a, plane, lane, centre + base, centre + base + 1.0f / 16, half, light);
+        } else if (mode.inserts()) {
+            triangle(p, b, a, plane, lane, centre - 0.6f / 16, centre + 0.6f / 16, half, light);
+        } else if (mode.extracts()) {
+            triangle(p, b, a, plane, lane, centre + 0.6f / 16, centre - 0.6f / 16, half, light);
+        }
+    }
+
+    /** A flat triangle on the plate: base at {@code fromSide}, point at {@code toSide}, {@code half} either way along the lane. */
+    private static void triangle(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float fromSide, float toSide, float half, int light) {
+        float z = plane - a.step * 0.05f / 16;
+        float[][] pts = new float[4][3];
+        float[] ln = {lane - half, lane + half, lane, lane};
+        float[] sd = {fromSide, fromSide, toSide, toSide};
+        for (int i = 0; i < 4; i++) { pts[i][a.axis] = z; pts[i][a.lane] = ln[i]; pts[i][a.side] = sd[i]; }
+        float[] n = new float[3];
+        n[a.axis] = -a.step;
+        quad(p, b, WHITE, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
+                pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
     }
 
     private static void box(PoseStack.Pose p, VertexConsumer b, float x0, float y0, float z0, float x1, float y1, float z1,

@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "nexium:item_conduit"
+      "id": "nexium:conduit"
     },
     "title": {
       "translate": "advancement.nexium.conduit.title"

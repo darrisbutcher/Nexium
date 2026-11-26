@@ -92,6 +92,7 @@
       "net.nexium.gametest.CableGameTest",
       "net.nexium.gametest.CompactingCapacityGameTest",
       "net.nexium.gametest.ConduitGameTest",
+      "net.nexium.gametest.ConduitUnifiedGameTest",
       "net.nexium.gametest.ControllerGameTest",
       "net.nexium.gametest.DrawerRecipeGameTest",
       "net.nexium.gametest.NexusFurnaceGameTest",

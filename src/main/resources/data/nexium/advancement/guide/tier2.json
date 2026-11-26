@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "nexium:ender_fluid_conduit"
+      "id": "nexium:advanced_conduit_upgrade"
     },
     "title": {
       "translate": "advancement.nexium.tier2.title"
