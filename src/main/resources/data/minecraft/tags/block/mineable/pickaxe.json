@@ -123,6 +123,9 @@
     "nexium:enchanted_grindstone",
     "nexium:hostile_mob_switch",
     "nexium:trash_can",
-    "nexium:charging_station"
+    "nexium:charging_station",
+    "nexium:iron_fluid_tank",
+    "nexium:gold_fluid_tank",
+    "nexium:diamond_fluid_tank"
   ]
 }

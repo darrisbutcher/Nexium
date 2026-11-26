@@ -70,6 +70,7 @@ public class NexiumClient implements ClientModInitializer {
         // Front displays and labels. If any of these fail to compile on a newer 26.x build,
         // the mod still works without them: delete the line and the matching renderer class.
         BlockEntityRenderers.register(ModBlockEntities.DRAWER, DrawerRenderer::new);
+        BlockEntityRenderers.register(ModBlockEntities.FLUID_TANK, net.nexium.client.render.FluidTankRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.DISK_DRIVE, net.nexium.client.render.DiskDriveRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.COMPACTING_DRAWER, CompactingDrawerRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.FLUID_DRAWER, FluidDrawerRenderer::new);

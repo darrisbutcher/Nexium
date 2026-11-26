@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OGO",
+    "GTG",
+    "OGO"
+  ],
+  "key": {
+    "O": "minecraft:gold_ingot",
+    "G": "minecraft:glass",
+    "T": "nexium:iron_fluid_tank"
+  },
+  "result": {
+    "id": "nexium:gold_fluid_tank"
+  }
+}

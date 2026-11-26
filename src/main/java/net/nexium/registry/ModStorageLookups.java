@@ -13,6 +13,10 @@ public final class ModStorageLookups {
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.DRAWER_CONTROLLER);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.FLUID_DRAWER);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.FLUID_INTAKE);
+        FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank(), ModBlockEntities.FLUID_TANK);
+        // The tank items hold their fluid like buckets do, so buckets' partners (tanks, machines, conduits' Fluid Intake) can fill and empty them
+        FluidStorage.ITEM.registerForItems((stack, context) -> new net.nexium.fluid.FluidTankItem.Storage(context, ((net.nexium.fluid.FluidTankItem) stack.getItem()).capacity()),
+                ModItems.IRON_FLUID_TANK, ModItems.GOLD_FLUID_TANK, ModItems.DIAMOND_FLUID_TANK);
         ItemStorage.SIDED.registerForBlockEntity((be, dir) -> be.getItemStorage(), ModBlockEntities.DIMENSIONAL_INPUT);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.getFluidStorage(), ModBlockEntities.DIMENSIONAL_INPUT);
         FluidStorage.SIDED.registerForBlockEntity((be, dir) -> be.tank(), ModBlockEntities.FREEZER);

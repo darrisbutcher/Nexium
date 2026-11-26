@@ -136,6 +136,11 @@ public final class ModComponents {
             b -> b.persistent(FluidDrawerBlockEntity.SlotData.CODEC.listOf())
                     .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(FluidDrawerBlockEntity.SlotData.CODEC.listOf())));
 
+    /** What a Fluid Tank holds: its fluid and how much, kept when it is broken and carried by the item. */
+    public static final DataComponentType<net.nexium.fluid.FluidTankBlockEntity.Contents> TANK_FLUID = register("tank_fluid",
+            b -> b.persistent(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)));
+
     /** Water (in Fabric droplets) a Freezer held when it was broken. */
     public static final DataComponentType<Long> FREEZER_WATER = register("freezer_water",
             b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
