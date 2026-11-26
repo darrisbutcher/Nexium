@@ -102,9 +102,15 @@ public final class ModBlocks {
     /** Makes Nexus Energy from daylight. */
     public static final net.nexium.energy.SolarPanelBlock SOLAR_PANEL = register("solar_panel", net.nexium.energy.SolarPanelBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
-    /** Burns lava into Nexus Energy. */
-    public static final net.nexium.energy.ThermalGeneratorBlock THERMAL_GENERATOR = register("thermal_generator", net.nexium.energy.ThermalGeneratorBlock::new,
+    /** Burns lava into Nexus Energy: 80 NE/t at Tier 1, 320 at Tier 2 and 1,280 at Tier 3. */
+    public static final net.nexium.energy.ThermalGeneratorBlock THERMAL_GENERATOR = register("thermal_generator", p -> new net.nexium.energy.ThermalGeneratorBlock(p, 1),
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> s.getValue(net.nexium.energy.ThermalGeneratorBlock.LIT) ? 15 : 4).requiresCorrectToolForDrops(), true);
+    public static final net.nexium.energy.ThermalGeneratorBlock ADVANCED_THERMAL_GENERATOR = register("advanced_thermal_generator", p -> new net.nexium.energy.ThermalGeneratorBlock(p, 2),
+            BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0f, 6.0f).sound(SoundType.METAL)
+                    .lightLevel(s -> s.getValue(net.nexium.energy.ThermalGeneratorBlock.LIT) ? 15 : 4).requiresCorrectToolForDrops(), true);
+    public static final net.nexium.energy.ThermalGeneratorBlock NEXIUM_THERMAL_GENERATOR = register("nexium_thermal_generator", p -> new net.nexium.energy.ThermalGeneratorBlock(p, 3),
+            BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(3.0f, 6.0f).sound(SoundType.METAL)
                     .lightLevel(s -> s.getValue(net.nexium.energy.ThermalGeneratorBlock.LIT) ? 15 : 4).requiresCorrectToolForDrops(), true);
     /** Shows the power dashboard of the Energy Conduit network it sits against. */
     public static final net.nexium.energy.PowerMeterBlock POWER_METER = register("power_meter", net.nexium.energy.PowerMeterBlock::new,

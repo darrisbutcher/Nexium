@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GCG",
+    "RTR",
+    "GCG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "C": "minecraft:copper_block",
+    "R": "minecraft:redstone_block",
+    "T": "nexium:thermal_generator"
+  },
+  "result": {
+    "id": "nexium:advanced_thermal_generator"
+  }
+}

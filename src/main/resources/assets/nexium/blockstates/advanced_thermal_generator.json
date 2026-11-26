@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nexium:block/advanced_thermal_generator"
+    },
+    "lit=true": {
+      "model": "nexium:block/advanced_thermal_generator"
+    }
+  }
+}

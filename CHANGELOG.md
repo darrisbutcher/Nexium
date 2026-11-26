@@ -3,6 +3,16 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.28.0
+
+* **Thermal Generators come in three tiers**: the Thermal Generator (80 NE/t, a bucket lasts about eight minutes, 4-bucket tank), the
+  **Advanced Thermal Generator** (320 NE/t, a bucket in 100 seconds, 8-bucket tank, 320,000 NE buffer) and the **Nexium Thermal Generator**
+  (1,280 NE/t, a bucket in 25 seconds, 16-bucket tank, 1,280,000 NE buffer). The higher tiers get a little less energy from each bucket
+  (640,000 NE instead of 800,000), so they are for when you have plenty of lava. Each is its own block, made from the one before.
+* **An output button on every Thermal Generator**: beside the Inventory label of its screen, it steps through Off, 25%, 50%, 75% and 100%
+  of the tier's output (shift-click goes back). The lava burns exactly as slowly as the output is turned down, so a bucket always gives
+  the same energy, and Off uses no lava. The setting is saved with the block.
+
 ## 1.27.0
 
 * **One Conduit**: the six conduit items (Item, Fluid and Energy, Tier 1 and 2) are now a single **Conduit** that carries items, fluids and

@@ -27,6 +27,8 @@
     "nexium:nexus_furnace",
     "nexium:combustion_generator",
     "nexium:thermal_generator",
+    "nexium:advanced_thermal_generator",
+    "nexium:nexium_thermal_generator",
     "nexium:solar_panel",
     "nexium:redstone_reactor",
     "nexium:freezer",

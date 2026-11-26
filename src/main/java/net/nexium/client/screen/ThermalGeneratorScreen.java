@@ -2,6 +2,8 @@ package net.nexium.client.screen;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,6 +29,41 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
         inventoryLabelY = ThermalGeneratorMenu.INVENTORY_TOP - 11;
     }
 
+    private Button throttleButton;
+
+    @Override
+    protected void init() {
+        super.init();
+        throttleButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
+            if (minecraft != null && minecraft.gameMode != null) {
+                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, minecraft.hasShiftDown() ? ThermalGeneratorMenu.BTN_THROTTLE_BACK : ThermalGeneratorMenu.BTN_THROTTLE);
+            }
+        }).bounds(leftPos + imageWidth - 8 - 52, topPos + ThermalGeneratorMenu.INVENTORY_TOP - 14, 52, 13)
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.thermal.throttle.tip"))).build());
+        refreshThrottle();
+    }
+
+    private void refreshThrottle() {
+        int steps = menu.throttle();
+        throttleButton.setMessage(steps == 0 ? Component.translatable("screen.nexium.switch.off").withStyle(ChatFormatting.RED)
+                : Component.literal(steps * 25 + "%").withStyle(steps == ThermalGeneratorBlockEntity.THROTTLE_STEPS ? ChatFormatting.GREEN : ChatFormatting.GOLD));
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        refreshThrottle();
+    }
+
+    /** The middle of the output button in GUI pixels (for the client test). */
+    public int[] throttleCentre() {
+        return new int[]{throttleButton.getX() + throttleButton.getWidth() / 2, throttleButton.getY() + throttleButton.getHeight() / 2};
+    }
+
+    private long capacity() {
+        return ThermalGeneratorBlockEntity.capacity(menu.tier());
+    }
+
     private static String number(long value) {
         return NumberFormat.getIntegerInstance(Locale.ROOT).format(value);
     }
@@ -35,11 +72,11 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, title, titleLabelX, titleLabelY, TEXT, false);
         g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
-        g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
+        g.text(font, Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(capacity())),
                 BAR_X, BAR_Y + BAR_H + 4, TEXT, false);
         Component status = menu.burning()
-                ? Component.translatable("screen.nexium.generator.making", ThermalGeneratorBlockEntity.OUTPUT)
-                : menu.energy() >= ThermalGeneratorBlockEntity.CAPACITY
+                ? Component.translatable("screen.nexium.generator.making", ThermalGeneratorBlockEntity.output(menu.tier()) * menu.throttle() / ThermalGeneratorBlockEntity.THROTTLE_STEPS)
+                : menu.energy() >= capacity()
                 ? Component.translatable("screen.nexium.generator.full")
                 : Component.translatable("screen.nexium.thermal.no_lava");
         g.text(font, status, BAR_X, BAR_Y + BAR_H + 16, MUTED, false);
@@ -60,7 +97,7 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
         int tx = leftPos + TANK_X, ty = topPos + TANK_Y;
         g.fill(tx - 1, ty - 1, tx + TANK_W + 1, ty + TANK_H + 1, SLOT_DARK);
         g.fill(tx, ty, tx + TANK_W, ty + TANK_H, SLOT_FILL);
-        int filled = Math.round(TANK_H * Math.min(1.0F, menu.lavaMilli() / 4000.0F));
+        int filled = Math.round(TANK_H * Math.min(1.0F, menu.lavaMilli() / (ThermalGeneratorBlockEntity.tankCapacity(menu.tier()) * 1000.0F / net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET)));
         if (filled > 0) {
             g.fill(tx, ty + TANK_H - filled, tx + TANK_W, ty + TANK_H, LAVA);
             g.fill(tx, ty + TANK_H - filled, tx + TANK_W, ty + TANK_H - filled + 1, LAVA_SURFACE);
@@ -68,7 +105,7 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
         int bx = leftPos + BAR_X, by = topPos + BAR_Y;
         g.fill(bx - 1, by - 1, bx + BAR_W + 1, by + BAR_H + 1, SLOT_DARK);
         g.fill(bx, by, bx + BAR_W, by + BAR_H, SLOT_FILL);
-        int full = Math.round(BAR_W * Math.min(1.0F, (float) menu.energy() / ThermalGeneratorBlockEntity.CAPACITY));
+        int full = Math.round(BAR_W * Math.min(1.0F, (float) menu.energy() / capacity()));
         if (full > 0) {
             g.fill(bx, by, bx + full, by + BAR_H, ENERGY);
             g.fill(bx, by, bx + full, by + 2, ENERGY_TOP);
@@ -84,7 +121,7 @@ public class ThermalGeneratorScreen extends AbstractContainerScreen<ThermalGener
                     Component.translatable("screen.nexium.thermal.tank").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         } else if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             net.nexium.client.Tooltips.show(g, font, List.of(
-                    Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(ThermalGeneratorBlockEntity.CAPACITY)),
+                    Component.translatable("screen.nexium.generator.stored", number(menu.energy()), number(capacity())),
                     Component.translatable("screen.nexium.generator.tooltip").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
     }
