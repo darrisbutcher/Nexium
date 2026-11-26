@@ -11,27 +11,28 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.nexium.drawer.DrawerInteraction;
 import net.nexium.registry.ModBlocks;
-import net.nexium.registry.ModItems;
-
 
 /**
- * Places a conduit. Clicking an existing conduit bundle adds this conduit type to it (several
- * types share one block), or upgrades the tier and gives the old conduit back.
+ * The Conduit: one item that carries items, fluids and Nexus Energy together. It places a Tier 1 conduit that has all three; an
+ * {@link ConduitUpgradeItem Advanced Conduit Upgrade} makes it Tier 2. Used on a conduit from before the three became one (which can
+ * have only some of them), it adds the ones that are missing.
  */
 public class ConduitItem extends Item {
-    private final ConduitType type;
-    private final int tier;
-
-    public ConduitItem(Properties properties, ConduitType type, int tier) {
+    public ConduitItem(Properties properties) {
         super(properties);
-        this.type = type;
-        this.tier = tier;
     }
 
-    public ConduitType type() { return type; }
-    public int tier() { return tier; }
+    /** Gives a conduit every type it lacks at Tier 1. Returns whether anything was added. */
+    public static boolean complete(ConduitBundleBlockEntity be) {
+        boolean added = false;
+        for (ConduitType t : ConduitType.VALUES) {
+            if (be.has(t)) continue;
+            be.addConduit(t, 1);
+            added = true;
+        }
+        return added;
+    }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -39,10 +40,10 @@ public class ConduitItem extends Item {
         Player player = context.getPlayer();
         ItemStack stack = context.getItemInHand();
 
-        if (level.getBlockEntity(context.getClickedPos()) instanceof ConduitBundleBlockEntity be && be.tier(type) < tier) {
+        // A conduit that lacks some type (placed before the Conduit became one item) gets the missing ones
+        if (level.getBlockEntity(context.getClickedPos()) instanceof ConduitBundleBlockEntity be && be.typeMask() != 7) {
             if (!level.isClientSide()) {
-                int old = be.addConduit(type, tier);
-                if (old > 0 && player != null) DrawerInteraction.give(player, new ItemStack(ModItems.conduitFor(type, old)));
+                complete(be);
                 if (player == null || !player.getAbilities().instabuild) stack.shrink(1);
                 level.playSound(null, context.getClickedPos(), SoundEvents.METAL_PLACE, SoundSource.BLOCKS, 1f, 1.2f);
             }
@@ -52,10 +53,9 @@ public class ConduitItem extends Item {
         BlockPlaceContext place = new BlockPlaceContext(context);
         BlockPos pos = place.getClickedPos();
         if (level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity existing) {
-            if (existing.tier(type) >= tier) return InteractionResult.FAIL;
+            if (existing.typeMask() == 7) return InteractionResult.FAIL;
             if (!level.isClientSide()) {
-                int old = existing.addConduit(type, tier);
-                if (old > 0 && player != null) DrawerInteraction.give(player, new ItemStack(ModItems.conduitFor(type, old)));
+                complete(existing);
                 if (player == null || !player.getAbilities().instabuild) stack.shrink(1);
             }
             return InteractionResult.SUCCESS;
@@ -65,11 +65,10 @@ public class ConduitItem extends Item {
         if (!level.isUnobstructed(state, pos, net.minecraft.world.phys.shapes.CollisionContext.empty())) return InteractionResult.FAIL;
         if (!level.isClientSide()) {
             level.setBlock(pos, state, 3);
-            if (level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity be) be.addConduit(type, tier);
+            if (level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity be) complete(be);
             if (player == null || !player.getAbilities().instabuild) stack.shrink(1);
             level.playSound(null, pos, SoundEvents.METAL_PLACE, SoundSource.BLOCKS, 1f, 1f);
         }
         return InteractionResult.SUCCESS;
     }
-
 }

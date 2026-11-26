@@ -2,17 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "NNN",
-    "RCR",
-    "NNN"
+    "NCN",
+    "RHB",
+    "NGN"
   ],
   "key": {
     "N": "minecraft:iron_nugget",
+    "C": "minecraft:copper_ingot",
     "R": "minecraft:redstone",
-    "C": "minecraft:copper_ingot"
+    "H": "minecraft:hopper",
+    "B": "minecraft:bucket",
+    "G": "minecraft:glass"
   },
   "result": {
-    "id": "nexium:energy_conduit",
+    "id": "nexium:conduit",
     "count": 8
   }
 }

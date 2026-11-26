@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RIR",
+    "IPI",
+    "RIR"
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "nexium:advanced_conduit_upgrade",
+    "count": 4
+  }
+}

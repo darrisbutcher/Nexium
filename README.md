@@ -164,7 +164,12 @@ place it or right-click it to outline those chunks for a minute.
   filter so one Input splits items by type. A Transfer Speed Upgrade moves 16 items (1) or full stacks (2).
 
 ### Conduits
-* Item and Fluid conduits (Tier 1 and 2) share one block. Fluid: 100 mB/tick (Tier 1), 2000 mB/tick (Tier 2).
+* **One Conduit** carries items, fluids and Nexus Energy together (`N C N / R H B / N G N`: iron nuggets, a copper ingot,
+  redstone, a hopper, a bucket and glass make 8). Every side has its own mode, colours, filter and redstone setting for each of
+  the three. Tier 1: 4 items every half second, 100 mB/tick, 2,500 NE/tick. An **Advanced Conduit Upgrade** (`R I R / I P I / R I R`:
+  redstone, iron ingots, an ender pearl; makes 4), right-clicked on a conduit, makes it Tier 2: 16 items every half second,
+  2000 mB/tick, 50,000 NE/tick. Conduits placed before the Conduit became one item keep working; carrying an old one swaps it for
+  a Conduit (and an Advanced Conduit Upgrade for a Tier 2 one), and a Conduit used on one that lacks a type adds it.
 * Every side has an **insert** colour and one or more **extract** colours; what a side extracts goes to insert sides
   of any of its extract colours. In the side's settings the **Out** row is a grid of the 16 colours: click one to switch
   it on or off (at least one stays on). A side has one filter, shared by all its colours.
@@ -802,7 +807,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 | **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
 | **Redstone Reactor** | up to 2,700 NE/t | Stores 1,000,000 NE; see below |
 
-* **Energy Conduit**: Tier 1 moves 2,500 NE/t a side, the Ender Energy Conduit (Tier 2) 50,000 NE/t. Touching Energy Conduits
+* **Conduit**: Tier 1 moves 2,500 NE/t a side, Tier 2 (an Advanced Conduit Upgrade on it) 50,000 NE/t. Touching conduits
   form one network with a **shared pool**: each segment holds 10,000 NE (Tier 1) or 200,000 (Tier 2), added together, so a
   long run keeps a reserve. Generators on its sides fill the pool and machines draw from it, highest priority first
   and equal priorities evenly. **Batteries are the backup**: they give only what the generators leave short of what the machines

@@ -45,7 +45,7 @@
     },
     {
       "id": "transport",
-      "icon": "nexium:item_conduit",
+      "icon": "nexium:conduit",
       "topics": [
         "conduits",
         "wrench",
@@ -654,23 +654,23 @@
         "links.channels",
         "links.settings"
       ],
-      "icon": "nexium:item_conduit",
+      "icon": "nexium:conduit",
       "recipes": [
-        "c_item",
-        "c_fluid",
-        "c_item2",
-        "c_fluid2"
+        "c_conduit",
+        "c_upgrade"
       ],
       "items": [
-        "nexium:item_conduit",
-        "nexium:fluid_conduit",
-        "nexium:ender_item_conduit",
-        "nexium:ender_fluid_conduit"
+        "nexium:conduit",
+        "nexium:advanced_conduit_upgrade"
       ],
       "aliases": [
         "conduit",
         "conduits",
         "Conduits",
+        "Item Conduit",
+        "Fluid Conduit",
+        "Energy Conduit",
+        "Advanced Conduit Upgrade",
         "Ender conduits"
       ],
       "see": [
@@ -2370,15 +2370,15 @@
         "gold_cell",
         "diamond_cell",
         "charging_station",
-        "energy_conduit",
-        "ender_energy_conduit",
+        "c_conduit",
+        "c_upgrade",
         "power_meter"
       ],
       "items": [
         "nexium:combustion_generator",
         "nexium:nexus_furnace",
-        "nexium:energy_conduit",
-        "nexium:ender_energy_conduit",
+        "nexium:conduit",
+        "nexium:advanced_conduit_upgrade",
         "nexium:solar_panel",
         "nexium:power_meter",
         "nexium:thermal_generator",

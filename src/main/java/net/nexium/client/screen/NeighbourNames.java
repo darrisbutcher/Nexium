@@ -28,6 +28,9 @@ final class NeighbourNames {
         BlockState state = level.getBlockState(n);
         if (state.isAir()) return Component.translatable("screen.nexium.nothing");
         if (level.getBlockEntity(n) instanceof ConduitBundleBlockEntity bundle) {
+            if (bundle.typeMask() == 7) {
+                return Component.translatable("item.nexium.conduit").append(Component.translatable(bundle.tier(ConduitType.ITEM) >= 2 ? "conduit.nexium.tier2" : "conduit.nexium.tier1"));
+            }
             MutableComponent out = Component.empty();
             for (ConduitType t : ConduitType.VALUES) {
                 if (!bundle.has(t)) continue;
