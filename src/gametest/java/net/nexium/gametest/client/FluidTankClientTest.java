@@ -49,6 +49,20 @@ public class FluidTankClientTest implements FabricClientGameTest {
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
             System.out.println("[nexus] fluid tanks: " + ctx.takeScreenshot("nexus_fluid_tanks"));
 
+            // The fill bar on tanks in the hotbar
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                ItemStack half = new ItemStack(ModItems.GOLD_FLUID_TANK), full = new ItemStack(ModItems.IRON_FLUID_TANK), low = new ItemStack(ModItems.DIAMOND_FLUID_TANK);
+                FluidTankItem.setContents(half, new FluidTankBlockEntity.Contents(FluidVariant.of(Fluids.LAVA), 32 * FluidConstants.BUCKET));
+                FluidTankItem.setContents(full, new FluidTankBlockEntity.Contents(FluidVariant.of(Fluids.WATER), 16 * FluidConstants.BUCKET));
+                FluidTankItem.setContents(low, new FluidTankBlockEntity.Contents(FluidVariant.of(Fluids.WATER), 20 * FluidConstants.BUCKET));
+                player.getInventory().setItem(1, half);
+                player.getInventory().setItem(2, full);
+                player.getInventory().setItem(3, low);
+            });
+            ctx.waitTicks(10);
+            System.out.println("[nexus] fluid tank bars: " + ctx.takeScreenshot("nexus_fluid_tank_bars"));
+
             // A held, empty tank scoops a water source and pours it back, with real right-clicks
             BlockPos pond = at[0].south(4).below();
             BlockPos[] pondAt = {pond};

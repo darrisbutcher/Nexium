@@ -60,6 +60,24 @@ public class FluidTankItem extends BlockItem {
         else stack.set(ModComponents.TANK_FLUID, contents);
     }
 
+    // ---- The fill bar (like a durability bar): shown in the hotbar and inventory while the tank holds fluid, in the fluid's colour ---
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return !contents(stack).isEmpty();
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        return Math.max(1, Math.min(13, Math.round(13.0F * contents(stack).amount() / capacity())));
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        FluidTankBlockEntity.Contents c = contents(stack);
+        return c.isEmpty() ? 0xFF55A0FF : 0xFF000000 | FluidVariantAttributes.getAssociatedColor(c.variant());
+    }
+
     // ---- Bucket behaviour ---------------------------------------------------------------------
 
     /** Scoops the fluid source the player is looking at into the tank. Returns whether it did. */

@@ -157,6 +157,16 @@ Sneak + right-click a Crafting Terminal with a **Crafting Storage Tablet** to li
 dimension, as long as the terminal's chunk is loaded. A **Dimensional Anchor** keeps the 3x3 chunks around it loaded;
 place it or right-click it to outline those chunks for a minute.
 
+### Fluid Tanks
+* **Iron** (16 buckets), **Gold** (64) and **Diamond** (256) **Fluid Tank**: a glass cube with a tier-coloured frame that holds one fluid and
+  shows it inside, filled to its level (lava glows). Iron: `IGI / GCG / IGI` (iron ingots, glass, a cauldron); Gold: gold ingots and glass
+  around an Iron tank; Diamond: diamonds and glass around a Gold tank.
+* Every side is open to conduits, Fluid Intakes and machines (thermal generators, the Dimensional Input/Output). Right-click with a bucket, or
+  another tank in your hand, to fill or empty it; a comparator reads how full it is. Broken, it keeps its fluid in the item, which shows a
+  **fill bar** in the fluid's colour.
+* **In the hand it is a big bucket**: right-click a fluid source to scoop a bucket in (an empty tank takes any fluid, a filled one only the
+  same), right-click a block to pour a bucket out. Sneak + right-click places the tank, fluid and all; an empty tank places on a plain right-click.
+
 ### Dimensional Input / Output
 * Click an Input with a **Dimensional Link Card**, then click Outputs. Each link has a name (rename the card in an
   anvil first, or rename later in the block's screen).

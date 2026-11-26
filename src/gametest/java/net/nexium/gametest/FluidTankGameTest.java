@@ -121,4 +121,18 @@ public class FluidTankGameTest {
         h.assertTrue(FluidTankItem.contents(stack).isEmpty(), "and the tank is empty again");
         h.succeed();
     }
+
+    @GameTest
+    public void theItemShowsAFillBar(GameTestHelper h) {
+        ItemStack stack = new ItemStack(ModItems.GOLD_FLUID_TANK);
+        h.assertFalse(stack.isBarVisible(), "no bar while empty");
+        FluidTankItem.setContents(stack, new FluidTankBlockEntity.Contents(LAVA, 32 * FluidConstants.BUCKET));
+        h.assertTrue(stack.isBarVisible(), "a bar once it holds fluid");
+        h.assertValueEqual(stack.getBarWidth(), 7, "half of 64 buckets is about half of 13 pixels");
+        FluidTankItem.setContents(stack, new FluidTankBlockEntity.Contents(WATER, 64 * FluidConstants.BUCKET));
+        h.assertValueEqual(stack.getBarWidth(), 13, "a full tank fills the bar");
+        FluidTankItem.setContents(stack, new FluidTankBlockEntity.Contents(WATER, 1));
+        h.assertValueEqual(stack.getBarWidth(), 1, "and a drop still shows one pixel");
+        h.succeed();
+    }
 }

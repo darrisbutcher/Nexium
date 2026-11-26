@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.29.0
+
+* **Fluid Tanks**: the **Iron** (16 buckets), **Gold** (64) and **Diamond** (256) Fluid Tank, each a glass cube with a tier-coloured frame that
+  shows its fluid, filled to its level, in the fluid's own texture (lava glows). A tank holds one fluid, every side lets conduits, Fluid
+  Intakes and machines fill or empty it, a bucket (or another tank in your hand) fills or empties it by right-click, and a comparator reads how
+  full it is. Iron: iron ingots, glass and a cauldron; Gold and Diamond are made around the tank before.
+* **The tank item works like a big bucket**: a broken tank keeps its fluid in the item, which shows a **fill bar** in the fluid's colour in the
+  hotbar and inventory. In your hand, right-click a fluid source to scoop a bucket in (an empty tank takes any, a filled one only the same
+  fluid), right-click a block to pour a bucket out, and sneak + right-click to place the tank with its fluid (an empty one places on a plain
+  right-click).
+
 ## 1.28.0
 
 * **Thermal Generators come in three tiers**: the Thermal Generator (80 NE/t, a bucket lasts about eight minutes, 4-bucket tank), the
