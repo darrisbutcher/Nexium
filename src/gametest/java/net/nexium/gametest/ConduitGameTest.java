@@ -17,6 +17,22 @@ import net.nexium.registry.ModBlocks;
 /** Conduit tiers, channel markers. */
 public class ConduitGameTest {
     @GameTest
+    public void anEmptyHandOpensTheSideMenu(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.CONDUIT_BUNDLE);
+        h.getBlockEntity(pos, ConduitBundleBlockEntity.class).addConduit(ConduitType.ITEM, 1);
+        var player = h.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+        BlockPos abs = h.absolutePos(pos);
+        var state = h.getLevel().getBlockState(abs);
+        var result = state.useWithoutItem(h.getLevel(), player, new net.minecraft.world.phys.BlockHitResult(
+                net.minecraft.world.phys.Vec3.atCenterOf(abs), Direction.UP, abs, false));
+        h.assertTrue(result.consumesAction(), "an empty-handed right-click is used");
+        h.assertTrue(player.containerMenu instanceof net.nexium.conduit.ConduitConfigMenu, "and opens the conduit menu, got " + player.containerMenu.getClass().getSimpleName());
+        h.succeed();
+    }
+
+    @GameTest
     public void tiersShowInBlockState(GameTestHelper h) {
         BlockPos pos = new BlockPos(1, 1, 1);
         h.setBlock(pos, ModBlocks.CONDUIT_BUNDLE);
