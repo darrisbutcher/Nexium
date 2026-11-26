@@ -110,6 +110,37 @@ public class NexusFurnaceGameTest {
     }
 
     @GameTest
+    public void stacksSplitAsRoomOpensUp(GameTestHelper h) {
+        placed = 0;
+        // A stack put in one slot by hand is shared out over the empty slots, a few times a second
+        NexusFurnaceBlockEntity f = furnace(h);
+        f.setItem(0, new ItemStack(Items.RAW_IRON, 64));
+        tick(h, f, 40);
+        int min = 99, max = 0;
+        for (int i = 0; i < 8; i++) { min = Math.min(min, f.getItem(i).getCount()); max = Math.max(max, f.getItem(i).getCount()); }
+        h.assertTrue(min >= 7 && max <= 9 && count(f, 0, 8, Items.RAW_IRON) == 64, "64 raw iron spread over all 8 slots without losing any: " + min + " to " + max);
+        // A slot whose output is full cannot cook: it hands its items to slots that can
+        NexusFurnaceBlockEntity g = furnace(h);
+        g.setItem(0, new ItemStack(Items.RAW_IRON, 10));
+        g.setItem(8, new ItemStack(Items.IRON_INGOT, 64));
+        g.setItem(1, new ItemStack(Items.RAW_IRON, 2));
+        tick(h, g, 40);
+        h.assertValueEqual(g.getItem(0).getCount(), 0, "the blocked slot gave up its raw iron");
+        h.assertValueEqual(count(g, 0, 8, Items.RAW_IRON), 12, "and none of it was lost");
+        h.assertValueEqual(g.getItem(8).getCount(), 64, "its full output is untouched");
+        h.succeed();
+    }
+
+    @GameTest
+    public void theGlisteringMelonSliceIsFood(GameTestHelper h) {
+        ItemStack slice = new ItemStack(Items.GLISTERING_MELON_SLICE);
+        net.minecraft.world.food.FoodProperties food = slice.get(net.minecraft.core.component.DataComponents.FOOD);
+        h.assertTrue(food != null && food.nutrition() == 6, "it feeds 6 hunger");
+        h.assertTrue(slice.get(net.minecraft.core.component.DataComponents.CONSUMABLE) != null, "and can be eaten");
+        h.succeed();
+    }
+
+    @GameTest
     public void aStackIsSharedOutEvenly(GameTestHelper h) {
         placed = 0;
         NexusFurnaceBlockEntity f = furnace(h);
@@ -175,9 +206,10 @@ public class NexusFurnaceGameTest {
         f.setItem(8, new ItemStack(Items.IRON_INGOT, 64)); // slot 0's output is full
         f.setItem(1, new ItemStack(Items.RAW_IRON, 4));
         tick(h, f, NexusFurnaceBlockEntity.COOK_TICKS);
-        h.assertValueEqual(f.getItem(0).getCount(), 4, "the slot with a full output waits");
-        h.assertValueEqual(f.getItem(9).getCount(), 1, "the next slot cooks on");
-        h.assertValueEqual(f.working(), 1, "one slot working");
+        h.assertValueEqual(f.getItem(8).getCount(), 64, "the full output is never added to");
+        h.assertValueEqual(f.getItem(0).getCount(), 0, "the slot that cannot cook hands its raw iron to slots that can");
+        h.assertTrue(f.getItem(9).getCount() >= 1, "the next slot cooks on");
+        h.assertValueEqual(count(f, 0, 8, Items.RAW_IRON) + count(f, 9, 16, Items.IRON_INGOT), 8, "and all 8 are still there, raw or cooked");
         h.succeed();
     }
 

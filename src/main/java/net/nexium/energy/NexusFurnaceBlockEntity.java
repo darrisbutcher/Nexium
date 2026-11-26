@@ -110,7 +110,15 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         if (level instanceof ServerLevel server) furnace.work(server);
     }
 
+    /** How often (in ticks) the input slots are shared out again. */
+    private static final int REBALANCE_TICKS = 5;
+    private int rebalanceClock;
+
     private void work(ServerLevel level) {
+        if (++rebalanceClock >= REBALANCE_TICKS) {
+            rebalanceClock = 0;
+            rebalance(level);
+        }
         int[] want = new int[SLOTS];
         int n = 0;
         for (int i = 0; i < SLOTS; i++) {
@@ -144,6 +152,83 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         if (state.hasProperty(NexusFurnaceBlock.LIT) && state.getValue(NexusFurnaceBlock.LIT) != lit) {
             level.setBlock(worldPosition, state.setValue(NexusFurnaceBlock.LIT, lit), Block.UPDATE_ALL);
         }
+    }
+
+    /** Whether an item of this stack, put in input slot {@code slot}, could cook there: it has a recipe and its output slot has room for the result. */
+    private boolean canCookIn(ServerLevel level, int slot, ItemStack stack) {
+        var recipe = recipeFor(level, stack);
+        if (recipe.isEmpty()) return false;
+        ItemStack result = recipe.get().assemble(new SingleRecipeInput(stack));
+        ItemStack out = items.get(SLOTS + slot);
+        return out.isEmpty() || (ItemStack.isSameItemSameComponents(out, result) && out.getCount() + result.getCount() <= out.getMaxStackSize());
+    }
+
+    /**
+     * Shares the input slots out again as room opens up, a few times a second:
+     * <ul>
+     * <li>a slot that cannot cook (its output is full or holds something else) hands its items to slots that can, the emptiest first;</li>
+     * <li>an empty input slot takes half of the biggest stack, and slots holding the same item level out (never more than one apart).</li>
+     * </ul>
+     * Items only ever move between input slots, one at a time, so nothing is lost; a slot that gets items starts its cooking from nothing.
+     */
+    private void rebalance(ServerLevel level) {
+        boolean changed = false;
+        int limit = getMaxStackSize();
+        // Blocked slots first: move what they hold to slots that can cook it
+        for (int from = 0; from < SLOTS; from++) {
+            ItemStack in = items.get(from);
+            if (in.isEmpty() || recipeFor(level, in).isEmpty() || canCookIn(level, from, in)) continue;
+            while (!in.isEmpty()) {
+                int best = -1;
+                for (int to = 0; to < SLOTS; to++) {
+                    if (to == from) continue;
+                    ItemStack there = items.get(to);
+                    if (!there.isEmpty() && !ItemStack.isSameItemSameComponents(there, in)) continue;
+                    if (there.getCount() >= Math.min(limit, in.getMaxStackSize()) || !canCookIn(level, to, in)) continue;
+                    if (best < 0 || there.getCount() < items.get(best).getCount()) best = to;
+                }
+                if (best < 0) break;
+                ItemStack target = items.get(best);
+                if (target.isEmpty()) { items.set(best, in.copyWithCount(1)); progress[best] = 0; }
+                else target.grow(1);
+                in.shrink(1);
+                changed = true;
+            }
+            if (in.isEmpty()) { items.set(from, ItemStack.EMPTY); progress[from] = 0; }
+        }
+        // Empty input slots take half of the biggest stack
+        for (int to = 0; to < SLOTS; to++) {
+            if (!items.get(to).isEmpty()) continue;
+            int from = -1;
+            for (int i = 0; i < SLOTS; i++) {
+                ItemStack in = items.get(i);
+                if (in.getCount() >= 2 && canCookIn(level, i, in) && (from < 0 || in.getCount() > items.get(from).getCount())) from = i;
+            }
+            if (from < 0) break;
+            ItemStack donor = items.get(from);
+            if (!canCookIn(level, to, donor)) continue;
+            int half = donor.getCount() / 2;
+            items.set(to, donor.copyWithCount(half));
+            donor.shrink(half);
+            progress[to] = 0;
+            changed = true;
+        }
+        // The same item in several slots levels out
+        for (int a = 0; a < SLOTS; a++) {
+            ItemStack high = items.get(a);
+            if (high.isEmpty()) continue;
+            for (int b = 0; b < SLOTS; b++) {
+                ItemStack low = items.get(b);
+                if (a == b || low.isEmpty() || !ItemStack.isSameItemSameComponents(high, low)) continue;
+                int gap = high.getCount() - low.getCount();
+                if (gap < 2 || !canCookIn(level, b, high) || !canCookIn(level, a, high)) continue;
+                int move = gap / 2;
+                high.shrink(move);
+                low.grow(move);
+                changed = true;
+            }
+        }
+        if (changed) setChanged();
     }
 
     private void finish(ServerLevel level, int i) {

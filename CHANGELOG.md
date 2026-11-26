@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.32.0
+
+* **The Nexus Furnace shares its stacks out as room opens up.** Besides sharing a stack out when it goes in, it now moves items between its
+  input slots a few times a second: an empty input slot takes half of the biggest stack, slots holding the same item level out (never more than
+  one apart), and a slot that cannot cook because its output slot is full (or holds something else) hands its items to the slots that can. Nothing is
+  lost and a slot that is given items starts cooking from the beginning.
+* **The Glistering Melon Slice is food.** It feeds 6 hunger with 14.4 saturation, like a golden carrot, and can be eaten like any food (the Backpack's
+  Feeding module eats it too).
+
 ## 1.31.2
 
 * **Restocking stays out of the hotbar for half a second after any click in a menu.** A shift-click or a Space + click (which sends a click for every

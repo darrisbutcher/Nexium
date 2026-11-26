@@ -51,6 +51,10 @@ public final class NexiumEssentials {
         net.nexium.essentials.backpack.BackpackFeeding.init();
         net.nexium.essentials.backpack.BackpackCompacting.init();
         net.nexium.essentials.backpack.BackpackRestocking.init();
+        // The Glistering Melon Slice is food: as good as a golden carrot (6 hunger, 14.4 saturation)
+        net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents.MODIFY.register(context -> context.modify(net.minecraft.world.item.Items.GLISTERING_MELON_SLICE,
+                builder -> builder.set(net.minecraft.core.component.DataComponents.FOOD, new net.minecraft.world.food.FoodProperties(6, 14.4f, false))
+                        .set(net.minecraft.core.component.DataComponents.CONSUMABLE, net.minecraft.world.item.component.Consumables.DEFAULT_FOOD)));
         MagnetLogic.init();
         MobCapture.init();
         ElytraEnchanting.init();
