@@ -76,6 +76,35 @@ public class TooltipsClientTest implements FabricClientGameTest {
             check(panel != null, "with a Crafting module on, the screen reports the crafting panel's area");
             int mainRight = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).slotCentre(((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0))[0]);
             check(panel[0] > mainRight && panel[2] > 0 && panel[3] > 0, "it is to the right of the first slot, with a size: " + java.util.Arrays.toString(panel));
+            // Shift-click in the real client (the click packet the screen sends) moves a Fluid Intake from the inventory into the Backpack, like anything else
+            int[] total = {0};
+            for (int container : new int[]{0, 12}) {
+                total[0] += 16;
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    player.getInventory().clearContent();
+                    player.getInventory().setItem(container, new ItemStack(net.nexium.registry.ModBlocks.FLUID_INTAKE.asItem(), 16));
+                });
+                ctx.waitTicks(5);
+                ctx.runOnClient(mc -> {
+                    var screen = (BackpackScreen) mc.gui.screen();
+                    for (var slot : screen.getMenu().slots) {
+                        if (slot.container == mc.player.getInventory() && slot.getContainerSlot() == container) {
+                            mc.gameMode.handleContainerInput(screen.getMenu().containerId, slot.index, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, mc.player);
+                        }
+                    }
+                });
+                ctx.waitTicks(10);
+                boolean[] moved = new boolean[1];
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    moved[0] = player.getInventory().getItem(container).isEmpty()
+                            && BackpackContents.count(ExtraSlots.of(player).backpack(), net.nexium.registry.ModBlocks.FLUID_INTAKE.asItem()) == total[0];
+                });
+                check(moved[0], "a shift-click sends 16 Fluid Intakes from inventory slot " + container + " into the Backpack (" + total[0] + " in all)");
+            }
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory().clearContent());
+
             // A tooltip too tall for the screen (a helmet with every enchantment): its enchantments are joined so the top is not cut off
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
@@ -104,13 +133,34 @@ public class TooltipsClientTest implements FabricClientGameTest {
             });
             RealMouse.moveTo(ctx, helmetSlot);
             ctx.waitTicks(5);
-            int[] tall = ctx.computeOnClient(mc -> {
-                ItemStack helmet = mc.player.getInventory().getItem(0);
-                var lines = helmet.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(mc.level), mc.player, net.minecraft.world.item.TooltipFlag.ADVANCED);
-                return new int[]{lines.size(), mc.getWindow().getGuiScaledHeight()};
-            });
-            System.out.println("[nexus] helmet tooltip: " + tall[0] + " lines on a screen " + tall[1] + " high: " + ctx.takeScreenshot("nexus_tooltip_helmet_all_enchants"));
-            check(tall[0] * 10 + 12 <= tall[1], "an item with every enchantment still has a tooltip that fits the screen: " + tall[0] + " lines, screen " + tall[1]);
+            // The same for other items with every enchantment: gear, tools, a book (the Nexium ones have long descriptions too)
+            java.util.List<net.minecraft.world.item.Item> tallItems = java.util.List.of(net.nexium.registry.ModItems.NEXIUM_HELMET,
+                    net.nexium.registry.ModItems.NEXIUM_CHESTPLATE, net.nexium.registry.ModItems.NEXIUM_PICKAXE, net.nexium.registry.ModItems.NEXIUM_SWORD,
+                    net.nexium.registry.ModItems.AIOTS.get(net.nexium.aiot.AiotTier.NEXIUM), net.nexium.registry.ModItems.AIOTS.get(net.nexium.aiot.AiotTier.DIAMOND), Items.NETHERITE_CHESTPLATE, Items.NETHERITE_SWORD, Items.ENCHANTED_BOOK);
+            for (net.minecraft.world.item.Item item : tallItems) {
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    ItemStack stack = new ItemStack(item);
+                    var enchantments = server.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                    net.minecraft.world.item.enchantment.ItemEnchantments.Mutable all = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+                    enchantments.listElements().forEach(e -> {
+                        if (item == Items.ENCHANTED_BOOK || e.value().canEnchant(stack)) all.set(e, e.value().getMaxLevel());
+                    });
+                    stack.set(item == Items.ENCHANTED_BOOK ? net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS : net.minecraft.core.component.DataComponents.ENCHANTMENTS, all.toImmutable());
+                    player.getInventory().setItem(0, stack);
+                });
+                ctx.waitTicks(5);
+                RealMouse.moveTo(ctx, helmetSlot);
+                ctx.waitTicks(3);
+                int[] tall = ctx.computeOnClient(mc -> {
+                    ItemStack stack = mc.player.getInventory().getItem(0);
+                    var lines = stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(mc.level), mc.player, net.minecraft.world.item.TooltipFlag.ADVANCED);
+                    return new int[]{lines.size(), mc.getWindow().getGuiScaledHeight()};
+                });
+                String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
+                System.out.println("[nexus] " + id + " tooltip: " + tall[0] + " lines on a screen " + tall[1] + " high: " + ctx.takeScreenshot("nexus_tooltip_all_enchants_" + id));
+                check(tall[0] * 10 + 12 <= tall[1], id + " with every enchantment still has a tooltip that fits the screen: " + tall[0] + " lines, screen " + tall[1]);
+            }
             RealMouse.moveTo(ctx, 4, 4);
             ctx.getInput().resizeWindow(1280, 720);
             ctx.waitTicks(5);
