@@ -27,6 +27,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
     private static final int COLLECT_Y = 76, LEVELS_Y = 92, BUTTON_H = 14;
 
     private Button collectAll, level1, level10, overclockButton;
+    private Button switchButton;
 
     public XpFarmScreen(XpFarmMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, XpFarmMenu.WIDTH, XpFarmMenu.HEIGHT);
@@ -43,6 +44,8 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
         level10 = button(89, LEVELS_Y, 79, Component.translatable("screen.nexium.xp_farm.level_10"),
                 XpFarmMenu.BTN_LEVEL_10, "screen.nexium.xp_farm.level.tip");
         overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, XpFarmMenu.BTN_OVERCLOCK, XpFarmMenu.BTN_OVERCLOCK_BACK));
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId, XpFarmMenu.BTN_SWITCH, XpFarmMenu.INVENTORY_TOP));
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         updateButtons();
     }
 
@@ -57,6 +60,7 @@ public class XpFarmScreen extends AbstractContainerScreen<XpFarmMenu> {
     private void updateButtons() {
         if (collectAll == null) return;
         OverclockUi.refresh(overclockButton, menu.overclock(), XpFarmBlockEntity.ENERGY_PER_TICK);
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         collectAll.setMessage(Component.translatable("screen.nexium.xp_farm.collect_all", number(menu.experience())));
         boolean any = menu.experience() > 0;
         collectAll.active = any;

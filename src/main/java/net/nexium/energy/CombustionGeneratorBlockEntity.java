@@ -25,7 +25,7 @@ import net.nexium.registry.ModBlockEntities;
  * for nothing. What it makes goes to the machines touching it, and Energy Conduits take it further.
  */
 public class CombustionGeneratorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider<BlockPos> {
-    public static final int OUTPUT = 20;
+    public static final int OUTPUT = 40;
     public static final long CAPACITY = 20_000;
     private static final int[] FUEL_SLOT = {0};
 

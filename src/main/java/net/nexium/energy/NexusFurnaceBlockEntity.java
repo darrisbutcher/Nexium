@@ -93,9 +93,20 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         return found;
     }
 
+    /** Switched off from its screen: no work and no power use (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     // ---------------------------------------------------------------- working
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, NexusFurnaceBlockEntity furnace) {
+        if (furnace.off) return;
         if (level instanceof ServerLevel server) furnace.work(server);
     }
 
@@ -303,6 +314,7 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        output.putBoolean("off", off);
         ContainerHelper.saveAllItems(output, items);
         output.putLong("energy", energy.stored());
         output.putIntArray("progress", progress);
@@ -313,6 +325,7 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        off = input.getBooleanOr("off", false);
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         energy.set(input.getLongOr("energy", 0L));
@@ -320,5 +333,23 @@ public class NexusFurnaceBlockEntity extends BaseContainerBlockEntity implements
         for (int i = 0; i < SLOTS; i++) progress[i] = i < saved.length ? Math.max(0, Math.min(COOK_TICKS, saved[i])) : 0;
         experience = Math.max(0, input.getDoubleOr("experience", 0.0));
         rotation = Math.max(0, input.getIntOr("rotation", 0));
+    }
+
+    @Override
+    protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
+    }
+
+    @Override
+    protected void applyImplicitComponents(net.minecraft.core.component.DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("off");
     }
 }

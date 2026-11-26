@@ -31,18 +31,22 @@ public class IronFarmScreen extends AbstractContainerScreen<IronFarmMenu> {
     }
 
     private Button overclockButton;
+    private Button switchButton;
 
     @Override
     protected void init() {
         super.init();
         overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, IronFarmMenu.BTN_OVERCLOCK, IronFarmMenu.BTN_OVERCLOCK_BACK));
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId, IronFarmMenu.BTN_SWITCH, IronFarmMenu.INVENTORY_TOP));
         OverclockUi.refresh(overclockButton, menu.overclock(), IronFarmBlockEntity.ENERGY_PER_TICK);
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
         OverclockUi.refresh(overclockButton, menu.overclock(), IronFarmBlockEntity.ENERGY_PER_TICK);
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
     }
 
     @Override

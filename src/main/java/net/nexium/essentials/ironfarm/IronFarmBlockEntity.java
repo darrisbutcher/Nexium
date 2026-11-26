@@ -79,9 +79,20 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
         super(ModBlockEntities.IRON_FARM, pos, state);
     }
 
+    /** Switched off from its screen: no work and no power use (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     // ---------------------------------------------------------------- working
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, IronFarmBlockEntity farm) {
+        if (farm.off) return;
         farm.work(level.getRandom());
     }
 
@@ -256,6 +267,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        output.putBoolean("off", off);
         ContainerHelper.saveAllItems(output, items);
         output.store("timers", IronFarmTimers.CODEC, timers());
         output.putInt("overclock", overclock);
@@ -265,6 +277,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        off = input.getBooleanOr("off", false);
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         setTimersQuietly(input.read("timers", IronFarmTimers.CODEC).orElse(IronFarmTimers.NONE));
@@ -280,6 +293,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
         IronFarmTimers timers = timers();
         if (!timers.isNone()) components.set(ModComponents.IRON_FARM_TIMERS, timers);
         if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
@@ -288,6 +302,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
         IronFarmTimers timers = components.get(ModComponents.IRON_FARM_TIMERS);
         if (timers != null) setTimersQuietly(timers);
         Integer savedOverclock = components.get(ModComponents.OVERCLOCK);
@@ -297,6 +312,7 @@ public class IronFarmBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
+        output.discard("off");
         output.discard("timers");
         output.discard("overclock");
     }

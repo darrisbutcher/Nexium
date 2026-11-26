@@ -782,6 +782,9 @@ Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Dri
 A farm uses 10 NE a tick (Sugar Cane, Bamboo, Nether Wart, Crop, Gourd and Cactus, Generator, Moss, Tree), 20 (every other
 farm and the Freezer) or 40 (Iron Farm), and keeps 10 seconds' worth in a buffer. Without power it waits and its screen says so.
 
+* **On/Off**: every one-block farm, the Iron Farm, the Experience Farm, the Freezer and the Nexus Furnace has an **On/Off** button beside the
+  Inventory label of its screen. Off, the machine does no work and uses no power. The setting is saved with the machine and kept in the
+  dropped item.
 * **Overclock**: every one-block farm, the Iron Farm, the Experience Farm and the Freezer has an **OC** button at the top right of its screen.
   Click it to step through **off, x2, x4 and x8** (Shift-click goes back). At x4 the farm does 4 ticks of work a tick, so it cycles four
   times as fast, and draws 4 times the NE/t, so **a cycle costs the same energy at any speed**. The buffer grows with the setting to
@@ -792,7 +795,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 
 | Block | Makes | Notes |
 |---|---|---|
-| **Combustion Generator** | 20 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
+| **Combustion Generator** | 40 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
 | **Solar Panel** | 30 NE/t | Daylight with open sky above; 8 NE/t in rain; nothing at night or under a roof; stores 5,000 NE |
 | **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
 | **Redstone Reactor** | up to 2,700 NE/t | Stores 1,000,000 NE; see below |

@@ -33,13 +33,17 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
     }
 
     private Button modeButton, overclockButton;
+    private Button switchButton;
 
     @Override
     protected void init() {
         super.init();
         overclockButton = addRenderableWidget(net.nexium.essentials.client.OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId,
                 FreezerMenu.BTN_OVERCLOCK, FreezerMenu.BTN_OVERCLOCK_BACK));
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId, FreezerMenu.BTN_SWITCH, FreezerMenu.INVENTORY_TOP));
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         net.nexium.essentials.client.OverclockUi.refresh(overclockButton, menu.overclock(), FreezerBlockEntity.ENERGY_PER_TICK);
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
                     if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, FreezerMenu.BTN_MODE);
                 }).bounds(leftPos + BTN_X, topPos + BTN_Y, BTN_W, BTN_H).build());
@@ -54,6 +58,7 @@ public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         modeButton.setMessage(modeLabel(menu.mode()));
         net.nexium.essentials.client.OverclockUi.refresh(overclockButton, menu.overclock(), FreezerBlockEntity.ENERGY_PER_TICK);
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         super.extractRenderState(g, mouseX, mouseY, partialTick);
     }
 

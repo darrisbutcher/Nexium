@@ -33,13 +33,17 @@ public class NexusFurnaceScreen extends AbstractContainerScreen<NexusFurnaceMenu
         collect = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.furnace.collect", menu.experience()), b -> {
             if (minecraft != null && minecraft.gameMode != null) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, NexusFurnaceMenu.BTN_COLLECT);
         }).bounds(leftPos + 88, topPos + 3, 80, 12).build());
+        // Beside the Inventory label
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId, NexusFurnaceMenu.BTN_SWITCH, NexusFurnaceMenu.INVENTORY_TOP));
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
     }
 
-    private Button collect;
+    private Button collect, switchButton;
 
     @Override
     protected void containerTick() {
         super.containerTick();
+        if (switchButton != null) net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         if (collect != null) {
             collect.setMessage(Component.translatable("screen.nexium.furnace.collect", menu.experience()));
             collect.active = menu.experience() > 0;
