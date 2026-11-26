@@ -18,7 +18,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.Nexium;
-import net.nexium.client.screen.ConduitConfigScreen;
 import net.nexium.conduit.SideConfig;
 import net.nexium.conduit.ConduitBundleBlockEntity;
 import net.nexium.conduit.ConduitType;
@@ -26,8 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Draws a conduit bundle's facade, or, without one, a plate on each arm that meets a machine. It spells what each strand's side does (INSERT, EXTRACT, BOTH or OFF) in that strand's own colour (red,
- * green, blue), above and below where the strands pass, with the insert channel as a pip down one side and the extract channels
- * as up to three down the other. Conduit-to-conduit arms have no plate.
+ * green, blue): energy across the top, item up the left edge, fluid up the right. The channel colours are not drawn here; they show in the conduit's menu. Conduit-to-conduit arms have no plate.
  */
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
@@ -39,7 +37,7 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
     /** Which conduit type each strand carries, top lane first. */
     private static final int[] LANE_TYPE = {ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()};
-    private static final int EMPTY_PIP = 0xFF2A2A32, WORD_OFF = 0xFF70707C;
+    private static final int WORD_OFF = 0xFF70707C;
     /** The colour of each strand's word, by conduit type: item green, fluid blue, energy red. */
     private static final int[] STRAND_COLOR = new int[3];
     static {
@@ -47,14 +45,15 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         STRAND_COLOR[ConduitType.FLUID.ordinal()] = 0xFF4D8CFF;
         STRAND_COLOR[ConduitType.ENERGY.ordinal()] = 0xFFFF4040;
     }
-    /** The height of each strand's word (energy, item, fluid), in sixteenths from the middle: two above the strands, one below. */
-    private static final float[] TEXT_V = {6.3f, 4.1f, -6.3f};
+    /** Where each strand's word goes, in sixteenths from the middle: energy across the top, item up the left edge, fluid up the right. */
+    private static final float[] TEXT_POS = {6.2f, -5.95f, 5.95f};
+    private static final float PIXEL = 0.42f;
 
     public static class FacadeState extends BlockEntityRenderState {
         /** Whether the conduit is Tier 2 (silver plates). */
         public boolean tier2;
         public final BlockModelRenderState facade = new BlockModelRenderState();
-        /** [type][side] colour channel, -1 for none. */
+        /** [type][side] packed mode, -1 for none. */
         public final int[][] channels = new int[ConduitType.VALUES.length][6];
     }
 
@@ -110,10 +109,6 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         float laneOffset(int t) { return laneSign * (1 - t) * LANE_STEP; }
     }
 
-    private static int channelColor(int c) {
-        return 0xFF000000 | ConduitConfigScreen.CHANNEL_COLORS[c & 15];
-    }
-
     /** The plate on one arm with, per strand, the direction mark and the insert and extract colours. */
     private static void plate(PoseStack.Pose p, VertexConsumer b, Arm a, FacadeState st, int light) {
         float na = 0.5f + a.step * PLATE_NEAR, fa = 0.5f + a.step * PLATE_FAR;
@@ -140,21 +135,11 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             int marker = st.channels[type][a.d.get3DDataValue()];
             boolean on = marker >= 0;
             SideConfig.Mode mode = on ? SideConfig.Mode.values()[(marker >> 4) & 3] : SideConfig.Mode.DISABLED;
-            float row = (1 - t) * 2.0f;
             String word = !on || mode == SideConfig.Mode.DISABLED ? "OFF" : mode.inserts() && mode.extracts() ? "BOTH" : mode.inserts() ? "INSERT" : "EXTRACT";
             int colour = on && mode != SideConfig.Mode.DISABLED ? STRAND_COLOR[type] : WORD_OFF;
             // the words sit above and below the strands, which hide the middle of the plate
             int lit = net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
-            text(p, b, a, inner, rightSign, TEXT_V[t], word, colour, lit);
-            // beside the strands: the insert channel on one side, up to three extract channels on the other
-            pip(p, b, a, inner, rightSign, -5.4f, row, 2.2f, 1.7f, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, lit);
-            int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
-            for (int c = 0; c < 16 && shown < 3; c++) {
-                if ((extract >> c & 1) == 0) continue;
-                pip(p, b, a, inner, rightSign, 4.3f + shown * 1.2f, row, 1.0f, 1.7f, channelColor(c), lit);
-                shown++;
-            }
-            for (; shown < 3; shown++) pip(p, b, a, inner, rightSign, 4.3f + shown * 1.2f, row, 1.0f, 1.7f, EMPTY_PIP, lit);
+            text(p, b, a, inner, rightSign, t > 0, TEXT_POS[t], word, colour, lit);
         }
     }
 
@@ -167,15 +152,17 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         float[] sd = {s0, s1, s1, s0};
         float[] ln = {l0, l0, l1, l1};
         for (int i = 0; i < 4; i++) { pts[i][a.axis] = z; pts[i][a.lane] = ln[i]; pts[i][a.side] = sd[i]; }
-        float[] n = new float[3];
-        n[a.axis] = -a.step;
-        quad(p, b, color, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
+        // an upward normal, so the letters are lit like a top face whichever way the plate faces
+        quad(p, b, color, light, 0, 1, 0, pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
                 pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
     }
 
-    /** {@code word} in 3x5 pixel letters, each pixel 0.4 of a sixteenth, centred across the plate with its middle at height {@code v}. */
-    private static void text(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float rightSign, float v, String word, int color, int light) {
-        float px = 0.4f;
+    /**
+     * {@code word} in 3x5 pixel letters. Horizontal: centred across the plate with its middle at height {@code pos}. Vertical: reading
+     * upward in the column {@code pos} from the middle, starting at the bottom edge.
+     */
+    private static void text(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float rightSign, boolean vertical, float pos, String word, int color, int light) {
+        float px = PIXEL;
         float left = -(word.length() * 4 - 1) * px / 2;
         for (int i = 0; i < word.length(); i++) {
             String[] g = GLYPHS.get(word.charAt(i));
@@ -184,10 +171,16 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
                 for (int col = 0; col < 3; ) {
                     if (bits.charAt(col) != '1') { col++; continue; }
                     int end = col;
-                    while (end < 3 && bits.charAt(end) == '1') end++;
-                    float u = left + (i * 4 + col) * px;
-                    float top = v + 2.5f * px - row * px;
-                    rect(p, b, a, plane, rightSign, u, top - px, u + (end - col) * px, top, color, light);
+                    while (!vertical && end < 3 && bits.charAt(end) == '1') end++;
+                    if (vertical) end = col + 1;
+                    if (vertical) {
+                        float v = -7.0f + (i * 4 + col) * px, u = pos - 2.5f * px + row * px;
+                        rect(p, b, a, plane, rightSign, u, v, u + px, v + px, color, light);
+                    } else {
+                        float u = left + (i * 4 + col) * px;
+                        float top = pos + 2.5f * px - row * px;
+                        rect(p, b, a, plane, rightSign, u, top - px, u + (end - col) * px, top, color, light);
+                    }
                     col = end;
                 }
             }
@@ -208,10 +201,6 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             java.util.Map.entry('O', new String[]{"111", "101", "101", "101", "111"}),
             java.util.Map.entry('H', new String[]{"101", "101", "111", "101", "101"}),
             java.util.Map.entry('F', new String[]{"111", "100", "110", "100", "100"}));
-
-    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float rightSign, float u, float v, float w, float h, int color, int light) {
-        rect(p, b, a, plane, rightSign, u - w / 2, v - h / 2, u + w / 2, v + h / 2, color, light);
-    }
 
     private static void box(PoseStack.Pose p, VertexConsumer b, float x0, float y0, float z0, float x1, float y1, float z1,
                             int color, int light) {

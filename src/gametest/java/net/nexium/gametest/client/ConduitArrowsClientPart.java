@@ -89,14 +89,6 @@ public class ConduitArrowsClientPart {
                 fluid.extractChannels = 1 << LIME;
             });
 
-            // The plate head on, from the far side of the conduit looking along the arm
-            world.getServer().runCommand("tp @p " + (at[0].getX() - 2.2) + " " + (at[0].getY() + 0.3) + " " + (at[0].getZ() + 0.5) + " -90 12");
-            ctx.waitTicks(20);
-            System.out.println("[nexus] conduit arrows plate_head_on: " + ctx.takeScreenshot("nexus_arrows_plate_head_on"));
-            world.getServer().runCommand("tp @p " + (at[0].getX() - 1.2) + " " + at[0].getY() + " " + (at[0].getZ() + 0.5) + " -90 40");
-            ctx.waitTicks(20);
-            System.out.println("[nexus] conduit arrows plate_close: " + ctx.takeScreenshot("nexus_arrows_plate_close"));
-
             // The other directions, on two more conduits with three barrels each, seen from the side: the arrows must point the same way
             // (out to the block for inserting, in to the conduit for extracting) whichever way the arm points
             scene(ctx, world, at[0].offset(0, 0, -6), new Direction[]{Direction.EAST, Direction.UP, Direction.SOUTH},
@@ -123,8 +115,53 @@ public class ConduitArrowsClientPart {
             world.getServer().runCommand("tp @p " + (run.getX() + 2.5) + " " + (run.getY() + 3.0) + " " + (run.getZ() + 5.5) + " 180 0");
             ctx.waitTicks(25);
             System.out.println("[nexus] conduit arrows runs: " + ctx.takeScreenshot("nexus_arrows_runs"));
+            gallery(ctx, world, at[0].offset(0, 12, 12));
             ctx.getInput().pressKey(options -> options.keyToggleGui);
         }
+    }
+
+    private static final SideConfig.Mode OFF = SideConfig.Mode.DISABLED, IN = SideConfig.Mode.INSERT,
+            OUT = SideConfig.Mode.EXTRACT, BOTH = SideConfig.Mode.BOTH;
+
+    /** Every look of the plate and every arm, each seen from the far side of the hub looking along the arm; spectator, up in the air. */
+    private static void gallery(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos base) {
+        world.getServer().runCommand("gamemode spectator @a");
+        // modes are energy, item, fluid
+        plate(ctx, world, base, 0, "t1_energy_in_item_out_fluid_both", 1, Direction.EAST, IN, OUT, BOTH);
+        plate(ctx, world, base, 1, "t1_energy_both_item_in_fluid_out", 1, Direction.EAST, BOTH, IN, OUT);
+        plate(ctx, world, base, 2, "t1_energy_out_item_both_fluid_in", 1, Direction.EAST, OUT, BOTH, IN);
+        plate(ctx, world, base, 3, "t1_energy_off_item_in_fluid_off", 1, Direction.EAST, OFF, IN, OFF);
+        plate(ctx, world, base, 4, "t2_energy_in_item_out_fluid_both", 2, Direction.EAST, IN, OUT, BOTH);
+        plate(ctx, world, base, 5, "t2_energy_both_item_in_fluid_out", 2, Direction.EAST, BOTH, IN, OUT);
+        int i = 6;
+        for (Direction d : Direction.values()) {
+            plate(ctx, world, base, i++, "arm_" + d.getName() + "_t1", 1, d, IN, OUT, BOTH);
+        }
+        plate(ctx, world, base, i++, "arm_up_t2", 2, Direction.UP, IN, OUT, BOTH);
+        plate(ctx, world, base, i, "arm_down_t2", 2, Direction.DOWN, IN, OUT, BOTH);
+    }
+
+    private static void plate(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos base, int n, String name, int tier,
+                              Direction d, SideConfig.Mode energy, SideConfig.Mode item, SideConfig.Mode fluid) {
+        BlockPos c = base.offset(n * 6, 0, 0);
+        world.getServer().runOnServer(server -> {
+            var level = server.overworld();
+            level.setBlockAndUpdate(c.relative(d), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(c, ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+            var be = (ConduitBundleBlockEntity) level.getBlockEntity(c);
+            for (ConduitType t : ConduitType.VALUES) be.addConduit(t, tier);
+            be.config(ConduitType.ENERGY, d).mode = energy;
+            be.config(ConduitType.ITEM, d).mode = item;
+            be.config(ConduitType.FLUID, d).mode = fluid;
+            be.changed();
+        });
+        double dist = 2.2;
+        double ex = c.getX() + 0.5 - d.getStepX() * dist, ey = c.getY() + 0.5 - d.getStepY() * dist, ez = c.getZ() + 0.5 - d.getStepZ() * dist;
+        float yaw = d.getAxis().isHorizontal() ? d.toYRot() : 0;
+        int pitch = d == Direction.UP ? -90 : d == Direction.DOWN ? 90 : 0;
+        world.getServer().runCommand("tp @p " + ex + " " + (ey - 1.62) + " " + ez + " " + yaw + " " + pitch);
+        ctx.waitTicks(30);
+        System.out.println("[nexus] plate " + name + ": " + ctx.takeScreenshot("nexus_plate_" + name));
     }
 
     /** A conduit with a barrel on each of three sides, set to the modes given, seen from {@code dx, dz} away. */
