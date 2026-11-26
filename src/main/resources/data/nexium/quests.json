@@ -70,7 +70,7 @@
         {
           "id": "conduit",
           "goal": "get",
-          "item": "nexium:energy_conduit",
+          "item": "nexium:conduit",
           "count": 4
         },
         {

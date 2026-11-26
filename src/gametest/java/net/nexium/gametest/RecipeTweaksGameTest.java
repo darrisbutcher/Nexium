@@ -194,15 +194,9 @@ public class RecipeTweaksGameTest {
         return grid;
     }
 
-    /** 1.21.11: the Tier 1 item and fluid conduits make 8, the Infinite Lava Source takes an eye of ender, the Elevator chiseled deepslate. */
+    /** 1.21.11: the Infinite Lava Source takes an eye of ender, the Elevator chiseled deepslate. (1.26.10: the Conduit is one item; see ConduitUnifiedGameTest.) */
     @GameTest
     public void conduitLavaSourceAndElevatorRecipes(GameTestHelper h) {
-        var nugget = Items.IRON_NUGGET;
-        var item = grid("NNNGHGNNN", java.util.Map.of('N', nugget, 'G', Items.GLASS, 'H', Items.HOPPER));
-        h.assertTrue(makesItem(craft(h, 3, 3, item), net.nexium.registry.ModItems.ITEM_CONDUIT, 8), "the Item Conduit makes 8");
-        var fluid = grid("NNNGBGNNN", java.util.Map.of('N', nugget, 'G', Items.GLASS, 'B', Items.BUCKET));
-        h.assertTrue(makesItem(craft(h, 3, 3, fluid), net.nexium.registry.ModItems.FLUID_CONDUIT, 8), "the Fluid Conduit makes 8");
-
         var lava = java.util.Map.<Character, Item>of('O', Items.OBSIDIAN, 'L', Items.LAVA_BUCKET, 'E', Items.ENDER_EYE, 'S', Items.NETHER_STAR);
         h.assertTrue(makesItem(craft(h, 3, 3, grid("OLOLELOLO", lava)), net.nexium.registry.ModBlocks.LAVA_SPRING.asItem(), 1),
                 "obsidian, lava buckets and an eye of ender make the Infinite Lava Source");

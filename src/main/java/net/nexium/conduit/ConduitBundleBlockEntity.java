@@ -429,8 +429,10 @@ public class ConduitBundleBlockEntity extends SyncedBlockEntity {
         super.preRemoveSideEffects(pos, state);
         if (level == null) return;
         List<ItemStack> drops = new ArrayList<>();
+        // One Conduit for the block (whatever it carries), and an Advanced Conduit Upgrade if it was raised to Tier 2
+        if (typeMask() != 0) drops.add(new ItemStack(ModItems.CONDUIT));
+        for (ConduitType t : ConduitType.VALUES) if (tier(t) >= 2) { drops.add(new ItemStack(ModItems.ADVANCED_CONDUIT_UPGRADE)); break; }
         for (ConduitType t : ConduitType.VALUES) {
-            if (has(t)) drops.add(new ItemStack(ModItems.conduitFor(t, tier(t))));
             for (SideConfig c : configs[t.ordinal()]) {
                 if (!c.filter.isEmpty()) drops.add(c.filter);
                 if (!c.upgrades.isEmpty()) drops.add(c.upgrades);

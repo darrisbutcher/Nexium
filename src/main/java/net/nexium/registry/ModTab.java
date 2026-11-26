@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The mod's three creative tabs: Storage (drawers, barrels, the network, disks, upgrades, item and fluid conduits; the
+ * The mod's three creative tabs: Storage (drawers, barrels, the network, disks, upgrades, the Conduit and its Advanced Upgrade; the
  * guide comes first), Tools (AIOTs, modules, Construction Builders, Nexium gear and armor, the magnet, the elixir, the
  * Elevator and the Dimensional Anchor) and Farms and Power (every farm, the Farm Assembler, the Freezer, generators,
- * Batteries, the Reactor and its rods, Energy Conduits). An item that isn't named below goes in Storage.
+ * Batteries, the Reactor and its rods). An item that isn't named below goes in Storage.
  */
 public final class ModTab {
     public enum Group { STORAGE, TOOLS, FARMS_AND_POWER }
@@ -27,7 +27,7 @@ public final class ModTab {
 
     private static final Set<String> POWER = Set.of("freezer", "solar_panel", "thermal_generator", "combustion_generator",
             "iron_battery", "gold_battery", "diamond_battery", "iron_cell", "gold_cell", "diamond_cell", "charging_station", "jetpack", "redstone_reactor", "redstone_fuel_rod", "spent_fuel_rod",
-            "energy_conduit", "ender_energy_conduit", "farm_assembler", "hostile_mob_switch", "nexus_furnace", "power_meter");
+            "farm_assembler", "hostile_mob_switch", "nexus_furnace", "power_meter");
 
     /** Which tab an item belongs to. */
     public static Group groupOf(Item item) {
