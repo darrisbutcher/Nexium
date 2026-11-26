@@ -36,12 +36,10 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** The plate sits on the machine's face: from {@code PLATE_NEAR} to the block edge, 14 px square. */
     private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 7.0f / 16;
     /** How far apart the strands are (their height), measured along the lane axis. */
-    private static final float LANE_STEP = 2.5f / 16;
+    private static final float LANE_STEP = 2.0f / 16;
     private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
     /** Which conduit type each strand carries, top lane first. */
     private static final int[] LANE_TYPE = {ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()};
-    /** TEMPORARY: preview of design 6 (light bar on the collar, plain arrows on the strands) instead of the plate matrix. */
-    public static volatile boolean design6 = false;
     private static final int EMPTY_PIP = 0xFF2A2A32, WHITE = 0xFFE9EEF5;
 
     public static class FacadeState extends BlockEntityRenderState {
@@ -88,8 +86,7 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             for (Direction d : Direction.values()) {
                 boolean connected = false;
                 for (int t = 0; t < 3; t++) connected |= state.channels[t][d.get3DDataValue()] >= 0;
-                if (connected && design6) design6(p, buffer, Arm.of(d), state, light);
-                else if (connected) plate(p, buffer, Arm.of(d), state, light);
+                if (connected) plate(p, buffer, Arm.of(d), state, light);
             }
         });
     }
@@ -131,96 +128,27 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             float row = 0.5f + a.laneOffset(t);
             // direction mark and insert pip (the band on one side of the strands)
             mark(p, b, a, inner, row, mode, light);
-            pip(p, b, a, inner, row, 0.5f - 4.55f / 16, 1.7f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
+            pip(p, b, a, inner, row, 0.5f - 4.5f / 16, 1.6f / 16, 1.6f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
             // extract pips (the band on the other side): up to four, two by two
             int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
             for (int c = 0; c < 16 && shown < 4; c++) {
                 if ((extract >> c & 1) == 0) continue;
-                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.63f : -0.63f) / 16, 0.5f + (4.45f + (shown % 2) * 1.45f) / 16, 1.15f / 16, channelColor(c), light);
+                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.5f : -0.5f) / 16, 0.5f + (4.05f + (shown % 2) * 1.9f) / 16, 0.9f / 16, 1.6f / 16, channelColor(c), light);
                 shown++;
             }
             for (; shown < 4; shown++) {
-                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.63f : -0.63f) / 16, 0.5f + (4.45f + (shown % 2) * 1.45f) / 16, 1.15f / 16, EMPTY_PIP, light);
+                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.5f : -0.5f) / 16, 0.5f + (4.05f + (shown % 2) * 1.9f) / 16, 0.9f / 16, 1.6f / 16, EMPTY_PIP, light);
             }
         }
     }
 
-    // ---- design 6 preview: the settings shown on the collar's side faces, plain arrows on the strands ---------------
-
-    private static void design6(PoseStack.Pose p, VertexConsumer b, Arm a, FacadeState st, int light) {
-        // a plain plate on the machine
-        float half = 5.0f / 16;
-        float na = 0.5f + a.step * PLATE_NEAR, fa = 0.5f + a.step * PLATE_FAR;
-        float[] min = new float[3], max = new float[3];
-        min[a.axis] = Math.min(na, fa); max[a.axis] = Math.max(na, fa);
-        min[a.lane] = 0.5f - half; max[a.lane] = 0.5f + half;
-        min[a.side] = 0.5f - half; max[a.side] = 0.5f + half;
-        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], st.tier2 ? PLATE_T2 : PLATE_T1, light);
-        for (int t = 0; t < 3; t++) {
-            int marker = st.channels[LANE_TYPE[t]][a.d.get3DDataValue()];
-            boolean on = marker >= 0;
-            SideConfig.Mode mode = on ? SideConfig.Mode.values()[(marker >> 4) & 3] : SideConfig.Mode.DISABLED;
-            float row = 0.5f + a.laneOffset(t);
-            for (int sign = -1; sign <= 1; sign += 2) {
-                float face = 0.5f + sign * 4.25f / 16;
-                // in pip then up to four extract pips, along the arm from the middle of the collar outward
-                collarPip(p, b, a, face, sign, row, 0.9f, 1.2f, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
-                int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
-                for (int c = 0; c < 16 && shown < 4; c++) {
-                    if ((extract >> c & 1) == 0) continue;
-                    collarPip(p, b, a, face, sign, row + a.laneSign * (shown / 2 == 0 ? 0.63f : -0.63f) / 16, 2.3f + (shown % 2) * 1.2f, 1.0f, channelColor(c), light);
-                    shown++;
-                }
-                for (; shown < 4; shown++) {
-                    collarPip(p, b, a, face, sign, row + a.laneSign * (shown / 2 == 0 ? 0.63f : -0.63f) / 16, 2.3f + (shown % 2) * 1.2f, 1.0f, EMPTY_PIP, light);
-                }
-            }
-            // plain arrows on the strand's side faces
-            if (on) {
-                if (mode.inserts() && mode.extracts()) {
-                    laneArrow(p, b, a, t, 6.0f, 5.0f, light);
-                    laneArrow(p, b, a, t, 6.1f, 7.1f, light);
-                } else if (mode.inserts()) laneArrow(p, b, a, t, 5.2f, 6.9f, light);
-                else if (mode.extracts()) laneArrow(p, b, a, t, 6.9f, 5.2f, light);
-            }
-        }
-    }
-
-    /** A pip on the collar's side face: {@code along} px from the middle toward the arm, {@code size} px square. */
-    private static void collarPip(PoseStack.Pose p, VertexConsumer b, Arm a, float face, int sign, float lane, float along, float size, int color, int light) {
-        float[] min = new float[3], max = new float[3];
-        float s0 = face, s1 = face + sign * 0.2f / 16;
-        min[a.side] = Math.min(s0, s1); max[a.side] = Math.max(s0, s1);
-        float c = 0.5f + a.step * (along + size / 2 - 0.0f) / 16;
-        min[a.axis] = c - size / 32; max[a.axis] = c + size / 32;
-        float c0 = 0.5f + a.step * (along) / 16, c1 = 0.5f + a.step * (along + size) / 16;
-        min[a.axis] = Math.min(c0, c1); max[a.axis] = Math.max(c0, c1);
-        min[a.lane] = lane - size / 32; max[a.lane] = lane + size / 32;
-        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
-    }
-
-    private static void laneArrow(PoseStack.Pose p, VertexConsumer b, Arm a, int t, float from, float to, int light) {
-        float centre = 0.5f + a.laneOffset(t), half = 0.9f / 16;
-        for (int sign = -1; sign <= 1; sign += 2) {
-            float plane = 0.5f + sign * (3.75f / 16 + 0.03f / 16);
-            float[][] pts = new float[4][3];
-            float[] along = {0.5f + a.step * from / 16, 0.5f + a.step * from / 16, 0.5f + a.step * to / 16, 0.5f + a.step * to / 16};
-            float[] lane = {centre - half, centre + half, centre, centre};
-            for (int i = 0; i < 4; i++) { pts[i][a.axis] = along[i]; pts[i][a.lane] = lane[i]; pts[i][a.side] = plane; }
-            float[] n = new float[3];
-            n[a.side] = sign;
-            quad(p, b, WHITE, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
-                    pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
-        }
-    }
-
-    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float side, float size, int color, int light) {
+    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float side, float laneSize, float sideSize, int color, int light) {
         float raise = 0.2f / 16;
         float[] min = new float[3], max = new float[3];
         float na = plane - a.step * raise;
         min[a.axis] = Math.min(na, plane); max[a.axis] = Math.max(na, plane);
-        min[a.lane] = lane - size / 2; max[a.lane] = lane + size / 2;
-        min[a.side] = side - size / 2; max[a.side] = side + size / 2;
+        min[a.lane] = lane - laneSize / 2; max[a.lane] = lane + laneSize / 2;
+        min[a.side] = side - sideSize / 2; max[a.side] = side + sideSize / 2;
         box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
     }
 
@@ -229,8 +157,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
      * inserts (the energy goes in to the machine), out and away from it when it extracts, and one of each for Both. Nothing when off.
      */
     private static void mark(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, SideConfig.Mode mode, int light) {
-        float centre = 0.5f - 6.2f / 16;
-        float half = 0.75f / 16;
+        float centre = 0.5f - 6.3f / 16;
+        float half = 0.7f / 16;
         float base = 0.55f / 16;
         if (mode.inserts() && mode.extracts()) {
             triangle(p, b, a, plane, lane, centre - base, centre - base - 1.0f / 16, half, light);
