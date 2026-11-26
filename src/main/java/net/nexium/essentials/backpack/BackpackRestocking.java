@@ -48,7 +48,7 @@ public final class BackpackRestocking {
     /** What each item packs into, found from the recipes the first time it is seen and kept until they are reloaded. */
     private static final Map<Item, Optional<CompactingRecipes.Pack>> RULES = new HashMap<>();
 
-    /** The game time of each player's last click in a menu: what changed in the hotbar that tick was moved by hand, not used up. */
+    /** The game time of each player's last click in a menu: what changed in the hotbar just after was moved by hand, not used up. */
     private static final Map<UUID, Long> LAST_CLICK = new HashMap<>();
 
     /** A click in a menu (the inventory included) just happened; see {@link #LAST_CLICK}. */
@@ -56,9 +56,12 @@ public final class BackpackRestocking {
         LAST_CLICK.put(player.getUUID(), player.level().getGameTime());
     }
 
-    private static boolean clickedThisTick(ServerPlayer player) {
+    /** How long after a click in a menu (in ticks, half a second) the hotbar is left alone: a Space + click sends one click for every stack of an item. */
+    private static final int CLICK_QUIET_TICKS = 10;
+
+    private static boolean clickedRecently(ServerPlayer player) {
         Long at = LAST_CLICK.get(player.getUUID());
-        return at != null && player.level().getGameTime() - at <= 1;
+        return at != null && player.level().getGameTime() - at <= CLICK_QUIET_TICKS;
     }
 
     public static void init() {
@@ -101,7 +104,7 @@ public final class BackpackRestocking {
             LAST.put(player.getUUID(), last);
         } else {
             // A click in a menu this tick moved things by hand (a shift-click of the last one or two of a stack, say): nothing was used up
-            if (!clickedThisTick(player)) for (int slot = 0; slot < WATCHED; slot++) restockSlot(player, backpack, slot, last[slot]);
+            if (!clickedRecently(player)) for (int slot = 0; slot < WATCHED; slot++) restockSlot(player, backpack, slot, last[slot]);
         }
         // Remember the slots for next tick, copying a stack only when it is a different one
         for (int slot = 0; slot < WATCHED; slot++) {

@@ -433,7 +433,7 @@ vanilla. Endermen never pick up blocks.
 * **Restocking Module** (iron ingots in the corners, 2 hoppers, 2 chests and a diamond in the middle: `IHI / CDC / IHI`): tops up
   what you are using. A stack in the hotbar or the offhand that is being used up (blocks you place, arrows you shoot) is refilled
   to a full stack from the Backpack when it gets down to 8 (the same setting as the Nexus Restock armor bonus), or when the last
-  one is used. Only use counts: a stack you move or throw away whole is left alone, and it does nothing in creative mode. When the
+  one is used. Only use counts: a stack you move or throw away whole is left alone (as is the hotbar for half a second after any click in a menu, such as a shift-click or Space + click), and it does nothing in creative mode. When the
   Backpack has none of the item left but holds a **bigger form** of it, it unpacks just enough: Triple Compressed stone becomes
   Double Compressed, then Compressed, then stone, an iron block becomes ingots, and what was not needed stays in the Backpack.
   Which block unpacks into what comes from the crafting recipes, as for the Compacting Module (only packs that craft straight

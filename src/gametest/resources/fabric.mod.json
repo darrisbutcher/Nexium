@@ -11,6 +11,7 @@
     ],
     "nexium-client-test": [
       "net.nexium.gametest.client.AdvancementTabClientTest",
+      "net.nexium.gametest.client.RestockShiftClickClientTest",
       "net.nexium.gametest.client.CreativeTabsClientTest",
       "net.nexium.gametest.client.NexusFurnaceClientTest",
       "net.nexium.gametest.client.AllTransferClientTest",

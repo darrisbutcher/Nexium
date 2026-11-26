@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.31.2
+
+* **Restocking stays out of the hotbar for half a second after any click in a menu.** A shift-click or a Space + click (which sends a click for every
+  stack of an item) moves things by hand, and the module must not mistake a stack of one or two that you just moved for blocks you had used up and
+  hand it back. 1.31.0 covered the click itself; this also covers the clicks that follow it.
+* **Space + click is steadier**: the Space bar counts as held for a tenth of a second after you let go of it, so a click that lands just as you
+  release Space still moves every stack of that item instead of picking one stack up.
+
 ## 1.31.1
 
 * **Upgrading a Cell or a Battery keeps its charge.** The Gold, Diamond and Nexium Cell and Battery recipes (a lower tier in the middle) give the new
