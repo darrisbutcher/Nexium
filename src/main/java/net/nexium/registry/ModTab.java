@@ -25,7 +25,7 @@ public final class ModTab {
             "nexus_link_module", "nexium_nugget", "nexium_ingot", "nexium_block", "reinforced_glass", "nexium_sword", "nexium_pickaxe", "nexium_axe",
             "nexium_shovel", "nexium_hoe", "nexium_spear", "nexium_helmet", "nexium_chestplate", "nexium_leggings", "nexium_boots", "nexium_dog_armor");
 
-    private static final Set<String> POWER = Set.of("freezer", "solar_panel", "thermal_generator", "combustion_generator",
+    private static final Set<String> POWER = Set.of("freezer", "solar_panel", "thermal_generator", "advanced_thermal_generator", "nexium_thermal_generator", "combustion_generator",
             "iron_battery", "gold_battery", "diamond_battery", "iron_cell", "gold_cell", "diamond_cell", "charging_station", "jetpack", "redstone_reactor", "redstone_fuel_rod", "spent_fuel_rod",
             "farm_assembler", "hostile_mob_switch", "nexus_furnace", "power_meter");
 

@@ -804,9 +804,16 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
 |---|---|---|
 | **Combustion Generator** | 40 NE/t | Burns anything a furnace burns, for as long as the furnace would (a piece of coal: 80 s) |
 | **Solar Panel** | 30 NE/t | Daylight with open sky above; 8 NE/t in rain; nothing at night or under a roof; stores 5,000 NE |
-| **Thermal Generator** | 80 NE/t | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes |
+| **Thermal Generator** | 80 NE/t (Advanced 320, Nexium 1,280) | Burns lava from a bucket, a Fluid Intake or a fluid conduit; a bucket lasts about 8 minutes (Advanced 100 s, Nexium 25 s); see below |
 | **Redstone Reactor** | up to 2,700 NE/t | Stores 1,000,000 NE; see below |
 
+* **Thermal Generator tiers**: the Thermal Generator (`III / NLN / ICI`: iron ingots, nether bricks, a lava bucket, a copper block) is
+  Tier 1: 80 NE/t, a bucket lasts about 8 minutes (800,000 NE), 4-bucket tank, 80,000 NE buffer. The **Advanced Thermal Generator**
+  (`GCG / RTR / GCG`: gold ingots, copper blocks, redstone blocks, a Thermal Generator in the middle) makes 320 NE/t, burns a bucket in
+  100 seconds (640,000 NE), holds 8 buckets and 320,000 NE. The **Nexium Thermal Generator** (`NDN / RAR / NDN`: Nexium ingots, diamond
+  blocks, redstone blocks, an Advanced one in the middle) makes 1,280 NE/t, burns a bucket in 25 seconds (640,000 NE), holds 16 buckets and
+  1,280,000 NE. The button beside the Inventory label sets the output: Off, 25%, 50%, 75% or 100% (shift-click goes back); lava burns
+  exactly as slowly as the output is turned down, and Off uses no lava.
 * **Conduit**: Tier 1 moves 2,500 NE/t a side, Tier 2 (an Advanced Conduit Upgrade on it) 50,000 NE/t. Touching conduits
   form one network with a **shared pool**: each segment holds 10,000 NE (Tier 1) or 200,000 (Tier 2), added together, so a
   long run keeps a reserve. Generators on its sides fill the pool and machines draw from it, highest priority first

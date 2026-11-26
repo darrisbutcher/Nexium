@@ -26,14 +26,19 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.nexium.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
-/** The Thermal Generator: burns lava (a bucket, or from a Fluid Intake or fluid conduit) into 80 NE a tick. */
+/** The Thermal Generator, in three tiers: burns lava (a bucket, or from a Fluid Intake or fluid conduit) into 80, 320 or 1,280 NE a tick. */
 public class ThermalGeneratorBlock extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    public ThermalGeneratorBlock(Properties properties) {
+    private final int tier;
+
+    public ThermalGeneratorBlock(Properties properties, int tier) {
         super(properties);
+        this.tier = tier;
         registerDefaultState(stateDefinition.any().setValue(LIT, false));
     }
+
+    public int tier() { return tier; }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

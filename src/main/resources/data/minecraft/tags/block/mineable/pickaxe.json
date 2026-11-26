@@ -52,6 +52,8 @@
     "nexium:solar_panel",
     "nexium:power_meter",
     "nexium:thermal_generator",
+    "nexium:advanced_thermal_generator",
+    "nexium:nexium_thermal_generator",
     "nexium:iron_battery",
     "nexium:gold_battery",
     "nexium:diamond_battery",
