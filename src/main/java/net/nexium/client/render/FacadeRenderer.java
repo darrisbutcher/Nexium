@@ -33,13 +33,13 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
     private static final RenderType MARKER = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
     /** Ring cross-section, just wider than an arm (6.75-9.25 px). */
-    private static final float RING_MIN = 6.6f / 16, RING_MAX = 9.4f / 16;
+    private static final float RING_MIN = 6.4f / 16, RING_MAX = 9.6f / 16;
     /** Distance from the block centre along the arm, per conduit type (px). */
     /** How much further out the extract ring sits than the insert ring. */
     private static final float EXTRACT_OFFSET = 2.6f / 16;
     /** Each further extract colour is another ring this much farther out, as long as it still fits on the arm. */
-    private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.9f / 16;
-    private static final float[][] RING_SPAN = {{2.0f / 16, 2.6f / 16}, {3.0f / 16, 3.6f / 16}, {4.0f / 16, 4.6f / 16}};
+    private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.4f / 16;
+    private static final float[][] RING_SPAN = {{2.1f / 16, 2.7f / 16}, {3.1f / 16, 3.7f / 16}, {4.1f / 16, 4.7f / 16}};
     /**
      * The direction arrow, one for each arm: a flat arrowhead on each of the arm's four faces, light so it stands out from the dark arm,
      * that points the way the items go: out to the block when the arm inserts, in to the conduit when it extracts, and a double arrow
@@ -49,9 +49,22 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** A double arrow's heads and shaft as fractions of its length, half the width of a head's base and of the shaft, in blocks. */
     private static final float HEAD_PART = 0.353f, SHAFT_PART = 0.294f, HEAD_HALF = 0.85f / 16, SHAFT_HALF = 0.25f / 16;
     /** Half the width of a single arrow's base, the arm's half-width, and how far the arrow floats off the arm's face (blocks). */
-    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 1.25f / 16, ARROW_LIFT = 0.02f / 16;
+    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 1.5f / 16, ARROW_LIFT = 0.02f / 16;
+
+    /**
+     * The plate where an arm meets a machine: a flat square on the machine's face (from {@code PLATE_NEAR} to the block edge, half a block
+     * wide at {@code PLATE_HALF}) with three small lights down one side, one per strand in the strands' own order (energy, item, fluid):
+     * lit in the strand's colour where that type connects, dark where it doesn't.
+     */
+    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 3.0f / 16;
+    private static final float LIGHT_SIZE = 0.8f / 16, LIGHT_SIDE = -2.25f / 16, LIGHT_RAISE = 0.25f / 16, LANE_STEP = 1.0f / 16;
+    private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
+    /** Lit and dark light colours for energy, item and fluid (the strand order, top lane first). */
+    private static final int[] LIT = {0xFFFF4646, 0xFF50EB64, 0xFF5A96FF}, DARK = {0xFF4A2222, 0xFF1F4426, 0xFF202E50};
 
     public static class FacadeState extends BlockEntityRenderState {
+        /** Whether the conduit is Tier 2 (silver plates). */
+        public boolean tier2;
         public final BlockModelRenderState facade = new BlockModelRenderState();
         /** [type][side] colour channel, -1 for none. */
         public final int[][] channels = new int[ConduitType.VALUES.length][6];
@@ -76,6 +89,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         if (facade != null) blockModels.update(state.facade, facade, DISPLAY_CONTEXT);
         else state.facade.clear();
         long now = be.getLevel() != null ? be.getLevel().getGameTime() : 0;
+        state.tier2 = false;
+        for (ConduitType t : ConduitType.VALUES) state.tier2 |= be.tier(t) >= 2;
         int[][] markers = be.channelMarkers(now);
         for (int t = 0; t < markers.length; t++) System.arraycopy(markers[t], 0, state.channels[t], 0, 6);
     }
@@ -121,7 +136,10 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
                         extracts = true;
                     }
                 }
-                if (inserts || extracts) arrow(p, buffer, d, ArrowPlacement.zone(rings, ringCount, inserts && extracts), inserts, extracts, light);
+                if (inserts || extracts) {
+                    arrow(p, buffer, d, ArrowPlacement.zone(rings, ringCount, inserts && extracts), inserts, extracts, light);
+                    plate(p, buffer, d, state, light);
+                }
             }
         });
     }
@@ -172,6 +190,50 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             n[normalAxis] = sign;
             quad(p, b, ARROW_COLOR, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
                     pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
+        }
+    }
+
+    /** The plate on the arm on side {@code d} with its three lights (see {@link #PLATE_NEAR}). */
+    private static void plate(PoseStack.Pose p, VertexConsumer b, Direction d, FacadeState state, int light) {
+        int axis = d.getAxis().ordinal();
+        int step = d.getAxisDirection().getStep();
+        // The strands lie one above the other (energy on top) on a horizontal arm and one behind the other on a vertical one
+        int lane = axis == 1 ? 2 : 1, side = axis == 0 ? 2 : 0;
+        float laneSign = d == Direction.DOWN ? -1 : 1;
+        float a = 0.5f + step * PLATE_NEAR, c = 0.5f + step * PLATE_FAR;
+        float[] min = new float[3], max = new float[3];
+        min[axis] = Math.min(a, c);
+        max[axis] = Math.max(a, c);
+        min[lane] = 0.5f - PLATE_HALF;
+        max[lane] = 0.5f + PLATE_HALF;
+        min[side] = 0.5f - PLATE_HALF;
+        max[side] = 0.5f + PLATE_HALF;
+        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], state.tier2 ? PLATE_T2 : PLATE_T1, light);
+        // a lighter inner face so the plate has an edge
+        float e = 0.12f / 16;
+        float inner = 0.5f + step * (PLATE_NEAR - e);
+        float[] imin = min.clone(), imax = max.clone();
+        imin[axis] = Math.min(inner, a);
+        imax[axis] = Math.max(inner, a);
+        imin[lane] += e;
+        imax[lane] -= e;
+        imin[side] += e;
+        imax[side] -= e;
+        box(p, b, imin[0], imin[1], imin[2], imax[0], imax[1], imax[2], state.tier2 ? PLATE_EDGE_T2 : PLATE_EDGE_T1, light);
+        // the lights, raised off the inner face
+        for (int t = 0; t < 3; t++) {
+            int type = new int[]{ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()}[t];
+            boolean lit = state.channels[type][d.get3DDataValue()] >= 0;
+            float centre = 0.5f + laneSign * (1 - t) * LANE_STEP;
+            float na = 0.5f + step * (PLATE_NEAR - e - LIGHT_RAISE);
+            float[] lmin = new float[3], lmax = new float[3];
+            lmin[axis] = Math.min(na, inner);
+            lmax[axis] = Math.max(na, inner);
+            lmin[lane] = centre - LIGHT_SIZE / 2;
+            lmax[lane] = centre + LIGHT_SIZE / 2;
+            lmin[side] = 0.5f + LIGHT_SIDE - LIGHT_SIZE / 2;
+            lmax[side] = 0.5f + LIGHT_SIDE + LIGHT_SIZE / 2;
+            box(p, b, lmin[0], lmin[1], lmin[2], lmax[0], lmax[1], lmax[2], lit ? LIT[t] : DARK[t], light);
         }
     }
 

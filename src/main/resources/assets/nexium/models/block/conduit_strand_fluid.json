@@ -1,0 +1,50 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "nexium:block/conduit_strand_fluid",
+    "all": "nexium:block/conduit_strand_fluid"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        6.5,
+        0
+      ],
+      "to": [
+        9.5,
+        7.5,
+        6
+      ],
+      "faces": {
+        "east": {
+          "texture": "#all",
+          "uv": [
+            0,
+            0,
+            6,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#all",
+          "uv": [
+            0,
+            0,
+            6,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#all",
+          "uv": [
+            0,
+            4,
+            3,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}
