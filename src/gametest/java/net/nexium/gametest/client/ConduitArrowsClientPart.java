@@ -73,14 +73,136 @@ public class ConduitArrowsClientPart {
                 fluid.channel = LIGHT_BLUE;
             });
 
+            // All three strands on a block that takes items, fluids and energy, each doing something different
+            shot(ctx, world, at[0], "all_three", be -> {
+                be.getLevel().setBlockAndUpdate(at[0].east(), ModBlocks.NEXUS_FURNACE.defaultBlockState());
+                be.addConduit(ConduitType.ENERGY, 1);
+                SideConfig energy = be.config(ConduitType.ENERGY, Direction.EAST);
+                energy.mode = SideConfig.Mode.INSERT;
+                energy.channel = ORANGE;
+                SideConfig item = be.config(ConduitType.ITEM, Direction.EAST);
+                item.mode = SideConfig.Mode.BOTH;
+                item.channel = LIME;
+                item.extractChannels = 1 << ORANGE | 1 << LIGHT_BLUE;
+                SideConfig fluid = be.config(ConduitType.FLUID, Direction.EAST);
+                fluid.mode = SideConfig.Mode.EXTRACT;
+                fluid.extractChannels = 1 << LIME;
+            });
+
             // The other directions, on two more conduits with three barrels each, seen from the side: the arrows must point the same way
             // (out to the block for inserting, in to the conduit for extracting) whichever way the arm points
             scene(ctx, world, at[0].offset(0, 0, -6), new Direction[]{Direction.EAST, Direction.UP, Direction.SOUTH},
                     new SideConfig.Mode[]{SideConfig.Mode.BOTH, SideConfig.Mode.EXTRACT, SideConfig.Mode.INSERT}, -1.6, -2.0, -39, "positive_sides");
             scene(ctx, world, at[0].offset(0, 0, -12), new Direction[]{Direction.WEST, Direction.DOWN, Direction.NORTH},
                     new SideConfig.Mode[]{SideConfig.Mode.BOTH, SideConfig.Mode.EXTRACT, SideConfig.Mode.INSERT}, 1.6, 2.0, 141, "negative_sides");
+            // Straight runs up and across: the three strands must keep the same order along each run
+            BlockPos run = at[0].offset(4, 0, -4);
+            world.getServer().runOnServer(server -> {
+                var level = server.overworld();
+                for (int i = 0; i < 4; i++) {
+                    level.setBlockAndUpdate(run.above(i), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                    level.setBlockAndUpdate(run.relative(Direction.EAST, i).above(4), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                }
+                level.setBlockAndUpdate(run.above(4), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                for (int i = 0; i < 4; i++) {
+                    for (BlockPos q : new BlockPos[]{run.above(i), run.relative(Direction.EAST, i).above(4)}) {
+                        var be = (ConduitBundleBlockEntity) level.getBlockEntity(q);
+                        for (ConduitType t : ConduitType.VALUES) be.addConduit(t, 1);
+                    }
+                }
+                ((ConduitBundleBlockEntity) level.getBlockEntity(run.above(4))).changed();
+            });
+            world.getServer().runCommand("tp @p " + (run.getX() + 2.5) + " " + (run.getY() + 3.0) + " " + (run.getZ() + 5.5) + " 180 0");
+            ctx.waitTicks(25);
+            System.out.println("[nexus] conduit arrows runs: " + ctx.takeScreenshot("nexus_arrows_runs"));
+            gallery(ctx, world, at[0].offset(0, 12, 12));
             ctx.getInput().pressKey(options -> options.keyToggleGui);
         }
+    }
+
+    private static final SideConfig.Mode OFF = SideConfig.Mode.DISABLED, IN = SideConfig.Mode.INSERT,
+            OUT = SideConfig.Mode.EXTRACT, BOTH = SideConfig.Mode.BOTH;
+
+    /** Every look of the plate and every arm, each seen from the far side of the hub looking along the arm; spectator, up in the air. */
+    private static void gallery(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos base) {
+        world.getServer().runCommand("gamemode spectator @a");
+        // modes are energy, item, fluid
+        plate(ctx, world, base, 0, "t1_energy_in_item_out_fluid_both", 1, Direction.EAST, IN, OUT, BOTH);
+        plate(ctx, world, base, 1, "t1_energy_both_item_in_fluid_out", 1, Direction.EAST, BOTH, IN, OUT);
+        plate(ctx, world, base, 2, "t1_energy_out_item_both_fluid_in", 1, Direction.EAST, OUT, BOTH, IN);
+        plate(ctx, world, base, 3, "t1_energy_off_item_in_fluid_off", 1, Direction.EAST, OFF, IN, OFF);
+        plate(ctx, world, base, 4, "t2_energy_in_item_out_fluid_both", 2, Direction.EAST, IN, OUT, BOTH);
+        plate(ctx, world, base, 5, "t2_energy_both_item_in_fluid_out", 2, Direction.EAST, BOTH, IN, OUT);
+        int i = 6;
+        for (Direction d : Direction.values()) {
+            plate(ctx, world, base, i++, "arm_" + d.getName() + "_t1", 1, d, IN, OUT, BOTH);
+        }
+        plate(ctx, world, base, i++, "arm_up_t2", 2, Direction.UP, IN, OUT, BOTH);
+        plate(ctx, world, base, i, "arm_down_t2", 2, Direction.DOWN, IN, OUT, BOTH);
+        network(ctx, world, base.offset(0, 0, 14), 1, "t1");
+        network(ctx, world, base.offset(0, 0, 34), 2, "t2");
+    }
+
+    private static void set(ConduitBundleBlockEntity be, Direction d, SideConfig.Mode energy, SideConfig.Mode item, SideConfig.Mode fluid) {
+        be.config(ConduitType.ENERGY, d).mode = energy;
+        be.config(ConduitType.ITEM, d).mode = item;
+        be.config(ConduitType.FLUID, d).mode = fluid;
+    }
+
+    /** Several bundles joined into a run with two branches, machines on the ends and the branches, seen from a few angles. */
+    private static void network(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos o, int tier, String name) {
+        world.getServer().runOnServer(server -> {
+            var level = server.overworld();
+            BlockPos[] bundles = {o, o.east(), o.east(2), o.east(3), o.east(4), o.east(2).above(), o.east(2).above(2), o.east(3).south()};
+            for (BlockPos b : bundles) {
+                level.setBlockAndUpdate(b, ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                var be = (ConduitBundleBlockEntity) level.getBlockEntity(b);
+                for (ConduitType t : ConduitType.VALUES) be.addConduit(t, tier);
+            }
+            level.setBlockAndUpdate(o.west(), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(5), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(2).above(3), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(3).south(2), ModBlocks.FREEZER.defaultBlockState());
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o), Direction.WEST, IN, OUT, BOTH);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(4)), Direction.EAST, BOTH, IN, OUT);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(2).above(2)), Direction.UP, OUT, BOTH, IN);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(3).south()), Direction.SOUTH, IN, IN, OFF);
+            for (BlockPos b : bundles) ((ConduitBundleBlockEntity) level.getBlockEntity(b)).changed();
+        });
+        look(ctx, world, o.east(2).above(), o.getX() + 5.5, o.getY() + 3.0, o.getZ() + 6.5, name + "_network_overview");
+        look(ctx, world, o, o.getX() + 2.2, o.getY() + 1.4, o.getZ() + 2.4, name + "_network_west_machine");
+        look(ctx, world, o.east(4), o.getX() + 2.4, o.getY() + 1.4, o.getZ() - 2.4, name + "_network_east_machine");
+        look(ctx, world, o.east(2).above(2), o.getX() + 3.8, o.getY() + 1.3, o.getZ() + 2.4, name + "_network_top_machine");
+        look(ctx, world, o.east(3).south(), o.getX() + 5.2, o.getY() + 1.4, o.getZ() - 1.2, name + "_network_south_machine");
+    }
+
+    private static void look(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos at, double x, double y, double z, String name) {
+        world.getServer().runCommand("tp @p " + x + " " + y + " " + z + " facing " + (at.getX() + 0.5) + " " + (at.getY() + 0.5) + " " + (at.getZ() + 0.5));
+        ctx.waitTicks(30);
+        System.out.println("[nexus] plate " + name + ": " + ctx.takeScreenshot("nexus_scene_" + name));
+    }
+
+    private static void plate(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos base, int n, String name, int tier,
+                              Direction d, SideConfig.Mode energy, SideConfig.Mode item, SideConfig.Mode fluid) {
+        BlockPos c = base.offset(n * 6, 0, 0);
+        world.getServer().runOnServer(server -> {
+            var level = server.overworld();
+            level.setBlockAndUpdate(c.relative(d), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(c, ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+            var be = (ConduitBundleBlockEntity) level.getBlockEntity(c);
+            for (ConduitType t : ConduitType.VALUES) be.addConduit(t, tier);
+            be.config(ConduitType.ENERGY, d).mode = energy;
+            be.config(ConduitType.ITEM, d).mode = item;
+            be.config(ConduitType.FLUID, d).mode = fluid;
+            be.changed();
+        });
+        double dist = 2.2;
+        double ex = c.getX() + 0.5 - d.getStepX() * dist, ey = c.getY() + 0.5 - d.getStepY() * dist, ez = c.getZ() + 0.5 - d.getStepZ() * dist;
+        float yaw = d.getAxis().isHorizontal() ? d.toYRot() : 0;
+        int pitch = d == Direction.UP ? -90 : d == Direction.DOWN ? 90 : 0;
+        world.getServer().runCommand("tp @p " + ex + " " + (ey - 1.62) + " " + ez + " " + yaw + " " + pitch);
+        ctx.waitTicks(30);
+        System.out.println("[nexus] plate " + name + ": " + ctx.takeScreenshot("nexus_plate_" + name));
     }
 
     /** A conduit with a barrel on each of three sides, set to the modes given, seen from {@code dx, dz} away. */

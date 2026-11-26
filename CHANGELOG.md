@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.30.1
+
+* **Cleaner conduit plates**: the plate where a conduit meets a machine now just spells **INSERT**, **EXTRACT**, **BOTH** or **OFF** for each strand,
+  in the strand's colour (energy red across the top, item green up the left edge, fluid blue up the right). The small channel pips and
+  arrows are gone from the plate; channel colours show in the side's settings menu.
+* **Conduit strand colours line up**: the energy, item and fluid strands keep the same order on the up and down arms (the down arm used to be
+  flipped), so a straight run no longer swaps colours at a hub.
+
 ## 1.30.0
 
 * **Advanced Conduit**: Tier 2 is now its own item. Put an Advanced Conduit Upgrade in the middle of a crafting grid with 8 Conduits around it

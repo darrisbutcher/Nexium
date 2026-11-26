@@ -18,17 +18,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.Nexium;
-import net.nexium.client.screen.ConduitConfigScreen;
 import net.nexium.conduit.SideConfig;
 import net.nexium.conduit.ConduitBundleBlockEntity;
 import net.nexium.conduit.ConduitType;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Draws a conduit bundle's facade, or, without one, a plate on each arm that meets a machine. The plate shows, for each of the three
- * strands (energy, item, fluid, top lane first), what that side does: a direction mark (a triangle pointing in toward the strand for
- * Insert, out for Extract, one each way for Both), the insert colour as one pip, and the extract colours as up to four pips.
- * Conduit-to-conduit arms have no plate.
+ * Draws a conduit bundle's facade, or, without one, a plate on each arm that meets a machine. It spells what each strand's side does (INSERT, EXTRACT, BOTH or OFF) in that strand's own colour (red,
+ * green, blue): energy across the top, item up the left edge, fluid up the right. The channel colours are not drawn here; they show in the conduit's menu. Conduit-to-conduit arms have no plate.
  */
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
@@ -40,13 +37,23 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
     /** Which conduit type each strand carries, top lane first. */
     private static final int[] LANE_TYPE = {ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()};
-    private static final int EMPTY_PIP = 0xFF2A2A32, WHITE = 0xFFE9EEF5;
+    private static final int WORD_OFF = 0xFF70707C;
+    /** The colour of each strand's word, by conduit type: item green, fluid blue, energy red. */
+    private static final int[] STRAND_COLOR = new int[3];
+    static {
+        STRAND_COLOR[ConduitType.ITEM.ordinal()] = 0xFF48E060;
+        STRAND_COLOR[ConduitType.FLUID.ordinal()] = 0xFF4D8CFF;
+        STRAND_COLOR[ConduitType.ENERGY.ordinal()] = 0xFFFF4040;
+    }
+    /** Where each strand's word goes, in sixteenths from the middle: energy across the top, item up the left edge, fluid up the right. */
+    private static final float[] TEXT_POS = {6.2f, -5.95f, 5.95f};
+    private static final float PIXEL = 0.42f;
 
     public static class FacadeState extends BlockEntityRenderState {
         /** Whether the conduit is Tier 2 (silver plates). */
         public boolean tier2;
         public final BlockModelRenderState facade = new BlockModelRenderState();
-        /** [type][side] colour channel, -1 for none. */
+        /** [type][side] packed mode, -1 for none. */
         public final int[][] channels = new int[ConduitType.VALUES.length][6];
     }
 
@@ -95,15 +102,11 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     private record Arm(Direction d, int axis, int step, int lane, int side, float laneSign) {
         static Arm of(Direction d) {
             int axis = d.getAxis().ordinal();
-            return new Arm(d, axis, d.getAxisDirection().getStep(), axis == 1 ? 2 : 1, axis == 0 ? 2 : 0, d == Direction.DOWN ? -1 : 1);
+            return new Arm(d, axis, d.getAxisDirection().getStep(), axis == 1 ? 2 : 1, axis == 0 ? 2 : 0, 1);
         }
 
         /** Where strand {@code t} (0 energy, 1 item, 2 fluid) is along the lane axis, in blocks from the middle. */
         float laneOffset(int t) { return laneSign * (1 - t) * LANE_STEP; }
-    }
-
-    private static int channelColor(int c) {
-        return 0xFF000000 | ConduitConfigScreen.CHANNEL_COLORS[c & 15];
     }
 
     /** The plate on one arm with, per strand, the direction mark and the insert and extract colours. */
@@ -121,67 +124,83 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
         imin[a.axis] = Math.min(inner, na); imax[a.axis] = Math.max(inner, na);
         for (int ax : new int[]{a.lane, a.side}) { imin[ax] += 0.5f / 16; imax[ax] -= 0.5f / 16; }
         box(p, b, imin[0], imin[1], imin[2], imax[0], imax[1], imax[2], st.tier2 ? PLATE_EDGE_T2 : PLATE_EDGE_T1, light);
+        float[] up = new float[3];
+        up[a.lane] = a.laneSign;
+        float[] fwd = new float[3];
+        fwd[a.axis] = a.step;
+        // text runs to the viewer's right, which is (arm direction) x (up); only the sign along the side axis matters
+        float rightSign = fwd[1] * up[2] - fwd[2] * up[1] + fwd[2] * up[0] - fwd[0] * up[2] + fwd[0] * up[1] - fwd[1] * up[0];
         for (int t = 0; t < 3; t++) {
-            int marker = st.channels[LANE_TYPE[t]][a.d.get3DDataValue()];
+            int type = LANE_TYPE[t];
+            int marker = st.channels[type][a.d.get3DDataValue()];
             boolean on = marker >= 0;
             SideConfig.Mode mode = on ? SideConfig.Mode.values()[(marker >> 4) & 3] : SideConfig.Mode.DISABLED;
-            float row = 0.5f + a.laneOffset(t);
-            // direction mark and insert pip (the band on one side of the strands)
-            mark(p, b, a, inner, row, mode, light);
-            pip(p, b, a, inner, row, 0.5f - 4.6f / 16, 1.2f / 16, 2.0f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
-            // extract pips (the band on the other side): up to four in a row
-            int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
-            for (int c = 0; c < 16 && shown < 4; c++) {
-                if ((extract >> c & 1) == 0) continue;
-                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, channelColor(c), light);
-                shown++;
-            }
-            for (; shown < 4; shown++) {
-                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, EMPTY_PIP, light);
-            }
+            String word = !on || mode == SideConfig.Mode.DISABLED ? "OFF" : mode.inserts() && mode.extracts() ? "BOTH" : mode.inserts() ? "INSERT" : "EXTRACT";
+            int colour = on && mode != SideConfig.Mode.DISABLED ? STRAND_COLOR[type] : WORD_OFF;
+            // the words sit above and below the strands, which hide the middle of the plate
+            int lit = net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
+            text(p, b, a, inner, rightSign, t > 0, TEXT_POS[t], word, colour, lit);
         }
     }
 
-    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float side, float laneSize, float sideSize, int color, int light) {
-        float raise = 0.2f / 16;
-        float[] min = new float[3], max = new float[3];
-        float na = plane - a.step * raise;
-        min[a.axis] = Math.min(na, plane); max[a.axis] = Math.max(na, plane);
-        min[a.lane] = lane - laneSize / 2; max[a.lane] = lane + laneSize / 2;
-        min[a.side] = side - sideSize / 2; max[a.side] = side + sideSize / 2;
-        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
+    /** A flat rectangle on the plate; {@code u} runs along the text (to the viewer's right), {@code v} up, both in sixteenths from the middle. */
+    private static void rect(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float rightSign, float u0, float v0, float u1, float v1, int color, int light) {
+        float z = plane - a.step * 0.12f / 16;
+        float s0 = 0.5f + rightSign * u0 / 16, s1 = 0.5f + rightSign * u1 / 16;
+        float l0 = 0.5f + a.laneSign * v0 / 16, l1 = 0.5f + a.laneSign * v1 / 16;
+        float[][] pts = new float[4][3];
+        float[] sd = {s0, s1, s1, s0};
+        float[] ln = {l0, l0, l1, l1};
+        for (int i = 0; i < 4; i++) { pts[i][a.axis] = z; pts[i][a.lane] = ln[i]; pts[i][a.side] = sd[i]; }
+        // an upward normal, so the letters are lit like a top face whichever way the plate faces
+        quad(p, b, color, light, 0, 1, 0, pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
+                pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
     }
 
     /**
-     * The direction mark of a strand, flat on the plate beside its insert pip: a triangle pointing in toward the strand when the side
-     * inserts (the energy goes in to the machine), out and away from it when it extracts, and one of each for Both. Nothing when off.
+     * {@code word} in 3x5 pixel letters. Horizontal: centred across the plate with its middle at height {@code pos}. Vertical: reading
+     * upward in the column {@code pos} from the middle, starting at the bottom edge.
      */
-    private static void mark(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, SideConfig.Mode mode, int light) {
-        float centre = 0.5f - 7.0f / 16;
-        float half = 0.6f / 16;
-        float base = 0.55f / 16;
-        if (mode.inserts() && mode.extracts()) {
-            triangle(p, b, a, plane, lane, centre - base, centre - base - 1.0f / 16, half, light);
-            triangle(p, b, a, plane, lane, centre + base, centre + base + 1.0f / 16, half, light);
-        } else if (mode.inserts()) {
-            triangle(p, b, a, plane, lane, centre - 0.6f / 16, centre + 0.6f / 16, half, light);
-        } else if (mode.extracts()) {
-            triangle(p, b, a, plane, lane, centre + 0.6f / 16, centre - 0.6f / 16, half, light);
+    private static void text(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float rightSign, boolean vertical, float pos, String word, int color, int light) {
+        float px = PIXEL;
+        float left = -(word.length() * 4 - 1) * px / 2;
+        for (int i = 0; i < word.length(); i++) {
+            String[] g = GLYPHS.get(word.charAt(i));
+            for (int row = 0; row < 5; row++) {
+                String bits = g[row];
+                for (int col = 0; col < 3; ) {
+                    if (bits.charAt(col) != '1') { col++; continue; }
+                    int end = col;
+                    while (!vertical && end < 3 && bits.charAt(end) == '1') end++;
+                    if (vertical) end = col + 1;
+                    if (vertical) {
+                        float v = -7.0f + (i * 4 + col) * px, u = pos - 2.5f * px + row * px;
+                        rect(p, b, a, plane, rightSign, u, v, u + px, v + px, color, light);
+                    } else {
+                        float u = left + (i * 4 + col) * px;
+                        float top = pos + 2.5f * px - row * px;
+                        rect(p, b, a, plane, rightSign, u, top - px, u + (end - col) * px, top, color, light);
+                    }
+                    col = end;
+                }
+            }
         }
     }
 
-    /** A flat triangle on the plate: base at {@code fromSide}, point at {@code toSide}, {@code half} either way along the lane. */
-    private static void triangle(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float fromSide, float toSide, float half, int light) {
-        float z = plane - a.step * 0.05f / 16;
-        float[][] pts = new float[4][3];
-        float[] ln = {lane - half, lane + half, lane, lane};
-        float[] sd = {fromSide, fromSide, toSide, toSide};
-        for (int i = 0; i < 4; i++) { pts[i][a.axis] = z; pts[i][a.lane] = ln[i]; pts[i][a.side] = sd[i]; }
-        float[] n = new float[3];
-        n[a.axis] = -a.step;
-        quad(p, b, WHITE, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
-                pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
-    }
+    private static final java.util.Map<Character, String[]> GLYPHS = java.util.Map.ofEntries(
+            java.util.Map.entry('I', new String[]{"111", "010", "010", "010", "111"}),
+            java.util.Map.entry('N', new String[]{"111", "101", "101", "101", "101"}),
+            java.util.Map.entry('S', new String[]{"111", "100", "111", "001", "111"}),
+            java.util.Map.entry('E', new String[]{"111", "100", "110", "100", "111"}),
+            java.util.Map.entry('R', new String[]{"110", "101", "110", "101", "101"}),
+            java.util.Map.entry('T', new String[]{"111", "010", "010", "010", "010"}),
+            java.util.Map.entry('X', new String[]{"101", "101", "010", "101", "101"}),
+            java.util.Map.entry('A', new String[]{"010", "101", "111", "101", "101"}),
+            java.util.Map.entry('C', new String[]{"111", "100", "100", "100", "111"}),
+            java.util.Map.entry('B', new String[]{"110", "101", "110", "101", "110"}),
+            java.util.Map.entry('O', new String[]{"111", "101", "101", "101", "111"}),
+            java.util.Map.entry('H', new String[]{"101", "101", "111", "101", "101"}),
+            java.util.Map.entry('F', new String[]{"111", "100", "110", "100", "100"}));
 
     private static void box(PoseStack.Pose p, VertexConsumer b, float x0, float y0, float z0, float x1, float y1, float z1,
                             int color, int light) {
