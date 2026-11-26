@@ -42,6 +42,9 @@ public final class ShiftTransferClient {
             ScreenMouseEvents.allowMouseClick(screen).register((s, event) -> !click(container, event));
             ScreenMouseEvents.allowMouseDrag(screen).register((s, event, dx, dy) -> !drag(container, event));
             ScreenMouseEvents.allowMouseRelease(screen).register((s, event) -> !release());
+            net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents.afterKeyRelease(screen).register((s, event) -> {
+                if (event.key() == InputConstants.KEY_SPACE) spaceLetGoAt = System.nanoTime();
+            });
         });
     }
 
@@ -84,10 +87,14 @@ public final class ShiftTransferClient {
         mc.gameMode.handleContainerInput(screen.getMenu().containerId, slot.index, 0, ContainerInput.QUICK_MOVE, mc.player);
     }
 
-    /** Whether the Space bar is held. */
+    /** Whether the Space bar is held, or was let go of a moment ago (a click often comes just as Space is released). */
     private static boolean spaceDown() {
-        return InputConstants.isKeyDown(InputConstants.KEY_SPACE);
+        return InputConstants.isKeyDown(InputConstants.KEY_SPACE) || System.nanoTime() - spaceLetGoAt < SPACE_GRACE_NANOS;
     }
+
+    /** When Space last came up, and how long after that it still counts as held: a tenth of a second. */
+    private static long spaceLetGoAt = System.nanoTime() - 3_600_000_000_000L;
+    private static final long SPACE_GRACE_NANOS = 100_000_000L;
 
     /**
      * Space + left press: sends every stack of the clicked item to the other inventory. Shift + left press: the ordinary
