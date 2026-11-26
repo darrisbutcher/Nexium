@@ -112,6 +112,7 @@
       "net.nexium.gametest.JetpackGameTest",
       "net.nexium.gametest.BatteryCellGameTest",
       "net.nexium.gametest.DiamondNuggetGameTest",
+      "net.nexium.gametest.NexiumNuggetGameTest",
       "net.nexium.gametest.IronFarmGameTest",
       "net.nexium.gametest.KeepContentsGameTest",
       "net.nexium.gametest.SortGameTest",

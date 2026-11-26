@@ -1030,16 +1030,21 @@
       "recipes": [
         "n_ingot",
         "n_ingot9",
+        "n_nugget9",
+        "n_ingot_nuggets",
         "n_block"
       ],
       "items": [
         "nexium:nexium_ingot",
+        "nexium:nexium_nugget",
         "nexium:nexium_block"
       ],
       "aliases": [
         "Nexium",
         "Nexium Ingot",
         "Nexium Ingots",
+        "Nexium Nugget",
+        "Nexium Nuggets",
         "Block of Nexium"
       ],
       "see": [

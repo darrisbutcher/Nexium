@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget",
+    "nexium:nexium_nugget"
+  ],
+  "result": {
+    "id": "nexium:nexium_ingot"
+  }
+}

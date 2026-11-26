@@ -103,6 +103,21 @@ public class PowerMeterGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 300)
+    public void plentyOfPowerIsNotReportedAsADeficit(GameTestHelper h) {
+        // A generator (its conduit side is Both by default, so it counts as something the conduit could feed) that is emptied every tick
+        // must not look like a machine going without
+        build(h);
+        BlockPos meter = h.absolutePos(METER);
+        FarmBlockEntity farm = h.getBlockEntity(FARM, FarmBlockEntity.class);
+        h.succeedWhen(() -> {
+            h.assertTrue(h.getTick() > 90, "waiting for a few full seconds to be counted");
+            EnergyNetwork.Report r = PowerMeter.networkOf(h.getLevel(), meter).report(h.getLevel());
+            h.assertTrue(r.produced() > r.used() && farm.energy().stored() > 0, "the farm has power and more is made than used: " + r.produced() + " / " + r.used());
+            h.assertFalse(r.deficit(), "so the meter must not say there is not enough power");
+        });
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 300)
     public void theMeterListsAChargingStationAsAConsumer(GameTestHelper h) {
         build(h);
         h.setBlock(FARM, ModBlocks.CHARGING_STATION);

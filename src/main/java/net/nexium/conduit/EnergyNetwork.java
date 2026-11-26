@@ -338,10 +338,11 @@ public final class EnergyNetwork {
             i = j;
         }
 
-        // A machine still empty after being served means there was not enough for everyone
+        // A machine still empty after being served means there was not enough for everyone. Only something that takes energy in counts:
+        // a generator on a Both side is emptied by the pull every tick and would otherwise always look like a machine going without.
         for (Side s : machines) {
             NexusEnergy dest = NexusEnergy.SIDED.find(level, s.pos, s.dir.getOpposite());
-            if (dest != null && dest.capacity() > 0 && dest.stored() == 0) {
+            if (dest != null && dest.takesIn() && dest.capacity() > 0 && dest.stored() == 0) {
                 starvedTicks++;
                 break;
             }
