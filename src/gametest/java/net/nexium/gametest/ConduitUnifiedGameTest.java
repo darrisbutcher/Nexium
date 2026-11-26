@@ -46,6 +46,9 @@ public class ConduitUnifiedGameTest {
         h.assertTrue(upgrades.is(ModItems.ADVANCED_CONDUIT_UPGRADE) && upgrades.getCount() == 4, "the Advanced Conduit Upgrade makes 4: " + upgrades);
         var old = Map.<Character, Item>of('N', Items.IRON_NUGGET, 'G', Items.GLASS, 'H', Items.HOPPER);
         h.assertTrue(craft(h, "NNNGHGNNN", old).isEmpty(), "the old Item Conduit recipe is gone");
+        var adv = Map.<Character, Item>of('C', ModItems.CONDUIT, 'U', ModItems.ADVANCED_CONDUIT_UPGRADE);
+        ItemStack advanced = craft(h, "CCCCUCCCC", adv);
+        h.assertTrue(advanced.is(ModItems.ADVANCED_CONDUIT) && advanced.getCount() == 8, "eight Conduits around an upgrade make 8 Advanced Conduits: " + advanced);
         h.succeed();
     }
 
@@ -89,8 +92,9 @@ public class ConduitUnifiedGameTest {
             else if (s.is(ModItems.ADVANCED_CONDUIT_UPGRADE)) upgrades += s.getCount();
             else if (s.is(ModItems.ENDER_FLUID_CONDUIT)) old += s.getCount();
         }
-        h.assertValueEqual(conduits, 3, "three Conduits");
-        h.assertValueEqual(upgrades, 3, "and three Advanced Conduit Upgrades for the Tier 2 ones");
+        h.assertValueEqual(conduits, 0, "no plain Conduits for Tier 2 ones");
+        h.assertValueEqual(upgrades, 0, "and no upgrades");
+        h.assertValueEqual(advancedCount(player), 3, "but three Advanced Conduits");
         h.assertValueEqual(old, 0, "and none of the old item left");
 
         ItemStack plain = new ItemStack(ModItems.ITEM_CONDUIT, 2);
@@ -107,8 +111,24 @@ public class ConduitUnifiedGameTest {
         h.succeed();
     }
 
+    private static int advancedCount(net.minecraft.world.entity.player.Player player) {
+        int n = 0;
+        for (ItemStack s : player.getInventory().getNonEquipmentItems()) if (s.is(ModItems.ADVANCED_CONDUIT)) n += s.getCount();
+        return n;
+    }
+
     @GameTest
-    public void breakingAConduitGivesOneConduitAndAnUpgradeForTierTwo(GameTestHelper h) {
+    public void anAdvancedConduitPlacesAsTierTwo(GameTestHelper h) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        h.setBlock(pos, ModBlocks.CONDUIT_BUNDLE);
+        ConduitBundleBlockEntity be = h.getBlockEntity(pos, ConduitBundleBlockEntity.class);
+        h.assertTrue(ModItems.ADVANCED_CONDUIT.fill(be), "it fills a new conduit");
+        for (ConduitType t : ConduitType.VALUES) h.assertValueEqual(be.tier(t), 2, t + " is Tier 2 straight away");
+        h.succeed();
+    }
+
+    @GameTest
+    public void breakingAConduitGivesOneItemAndAnAdvancedOneForTierTwo(GameTestHelper h) {
         BlockPos pos = new BlockPos(2, 2, 2);
         h.setBlock(pos, ModBlocks.CONDUIT_BUNDLE);
         ConduitBundleBlockEntity be = h.getBlockEntity(pos, ConduitBundleBlockEntity.class);
@@ -121,8 +141,13 @@ public class ConduitUnifiedGameTest {
             if (e.getItem().is(ModItems.CONDUIT)) conduits += e.getItem().getCount();
             if (e.getItem().is(ModItems.ADVANCED_CONDUIT_UPGRADE)) upgrades += e.getItem().getCount();
         }
-        h.assertValueEqual(conduits, 1, "one Conduit drops, not three");
-        h.assertValueEqual(upgrades, 1, "and one Advanced Conduit Upgrade");
+        int advanced = 0;
+        for (ItemEntity e : h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(abs).inflate(2))) {
+            if (e.getItem().is(ModItems.ADVANCED_CONDUIT)) advanced += e.getItem().getCount();
+        }
+        h.assertValueEqual(advanced, 1, "a Tier 2 conduit drops one Advanced Conduit");
+        h.assertValueEqual(conduits, 0, "not a Conduit");
+        h.assertValueEqual(upgrades, 0, "and no upgrade");
         h.succeed();
     }
 }

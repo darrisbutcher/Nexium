@@ -67,6 +67,8 @@ public final class ModItems {
 
     /** The Conduit: one item that carries items, fluids and energy together. */
     public static final ConduitItem CONDUIT = register("conduit", ConduitItem::new, new Item.Properties());
+    /** The Tier 2 conduit: eight Conduits around an Advanced Conduit Upgrade make eight. */
+    public static final ConduitItem ADVANCED_CONDUIT = register("advanced_conduit", p -> new ConduitItem(p, 2), new Item.Properties());
     /** Makes a placed conduit Tier 2. */
     public static final net.nexium.conduit.ConduitUpgradeItem ADVANCED_CONDUIT_UPGRADE = register("advanced_conduit_upgrade",
             net.nexium.conduit.ConduitUpgradeItem::new, new Item.Properties());

@@ -589,7 +589,7 @@ public class ModuleGameTest {
     }
 
     @GameTest
-    public void veinMiningTakesStoneButNotContainers(GameTestHelper h) {
+    public void veinMiningTakesStoneAndContainersToo(GameTestHelper h) {
         // Rows along x: dirt (z = 1), stone and cobblestone (z = 3), two chests (z = 5)
         for (int x = 1; x <= 4; x++) {
             h.setBlock(new BlockPos(x, 1, 1), Blocks.DIRT);
@@ -607,7 +607,7 @@ public class ModuleGameTest {
         mine(h, player, new BlockPos(3, 1, 3));
         h.assertBlockPresent(Blocks.AIR, new BlockPos(4, 1, 3));
         mine(h, player, new BlockPos(1, 1, 5));
-        h.assertBlockPresent(Blocks.CHEST, new BlockPos(2, 1, 5));
+        h.assertBlockPresent(Blocks.AIR, new BlockPos(2, 1, 5)); // chests vein mine too (what they hold drops)
         h.succeed();
     }
 

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CUC",
+    "CCC"
+  ],
+  "key": {
+    "C": "nexium:conduit",
+    "U": "nexium:advanced_conduit_upgrade"
+  },
+  "result": {
+    "id": "nexium:advanced_conduit",
+    "count": 8
+  }
+}
