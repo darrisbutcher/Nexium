@@ -3,17 +3,24 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
-## 1.26.10
+## 1.27.0
 
-* **Nexium Nugget**: a ninth of a Nexium Ingot. Nine make an ingot and an ingot makes nine.
-* **Redstone Fuel Rods need a Nexium Nugget** in the middle instead of an ingot (8 Redstone Blocks around a nugget), so a rod costs a ninth
-  of the Nexium it did. A Spent Fuel Rod still makes a fresh one with 8 Redstone Blocks.
 * **One Conduit**: the six conduit items (Item, Fluid and Energy, Tier 1 and 2) are now a single **Conduit** that carries items, fluids and
   Nexus Energy together (`N C N / R H B / N G N`: iron nuggets, a copper ingot, redstone, a hopper, a bucket and glass make 8). Every side
   keeps its own mode, colours, filter and redstone setting for each of the three. An **Advanced Conduit Upgrade** (`R I R / I P I / R I R`:
   redstone, iron ingots, an ender pearl; makes 4), used on a conduit, makes it Tier 2 for all three. Breaking a conduit gives one Conduit
   (and an upgrade if it was Tier 2). Conduits already placed keep working; carrying an old conduit item swaps it for a Conduit (and an
   upgrade for a Tier 2 one), and a Conduit used on an old conduit adds any type it lacks.
+* **A new look for conduits**: each conduit shows three strands (energy red on top, item green, fluid blue) in a slimmer bundle with a
+  collar that is dark at Tier 1 and silver with cyan trim at Tier 2. Where a conduit meets a machine there is a plate that shows, for each
+  strand, what that side does: a triangle for the direction, a pip in its insert colour and up to four pips in its extract colours. The old
+  colour rings and arrows are gone.
+
+## 1.26.10
+
+* **Nexium Nugget**: a ninth of a Nexium Ingot. Nine make an ingot and an ingot makes nine.
+* **Redstone Fuel Rods need a Nexium Nugget** in the middle instead of an ingot (8 Redstone Blocks around a nugget), so a rod costs a ninth
+  of the Nexium it did. A Spent Fuel Rod still makes a fresh one with 8 Redstone Blocks.
 * **Fix: the Power Meter no longer says "Not enough power!" when there is plenty.** Generators on a Both conduit side were counted as machines
   going without power, so a network with several generators always showed a deficit.
 

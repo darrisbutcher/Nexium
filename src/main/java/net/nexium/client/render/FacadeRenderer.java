@@ -33,10 +33,10 @@ import org.jetbrains.annotations.Nullable;
 public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEntity, FacadeRenderer.FacadeState> {
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
     private static final RenderType MARKER = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
-    /** The plate sits on the machine's face: from {@code PLATE_NEAR} to the block edge, 14 px square. */
-    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 7.0f / 16;
+    /** The plate sits on the machine's face: from {@code PLATE_NEAR} to the block edge, covering the whole face. */
+    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 7.9f / 16;
     /** How far apart the strands are (their height), measured along the lane axis. */
-    private static final float LANE_STEP = 2.0f / 16;
+    private static final float LANE_STEP = 1.5f / 16;
     private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
     /** Which conduit type each strand carries, top lane first. */
     private static final int[] LANE_TYPE = {ConduitType.ENERGY.ordinal(), ConduitType.ITEM.ordinal(), ConduitType.FLUID.ordinal()};
@@ -128,16 +128,16 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             float row = 0.5f + a.laneOffset(t);
             // direction mark and insert pip (the band on one side of the strands)
             mark(p, b, a, inner, row, mode, light);
-            pip(p, b, a, inner, row, 0.5f - 4.5f / 16, 1.6f / 16, 1.6f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
-            // extract pips (the band on the other side): up to four, two by two
+            pip(p, b, a, inner, row, 0.5f - 4.6f / 16, 1.2f / 16, 2.0f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
+            // extract pips (the band on the other side): up to four in a row
             int extract = mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
             for (int c = 0; c < 16 && shown < 4; c++) {
                 if ((extract >> c & 1) == 0) continue;
-                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.5f : -0.5f) / 16, 0.5f + (4.05f + (shown % 2) * 1.9f) / 16, 0.9f / 16, 1.6f / 16, channelColor(c), light);
+                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, channelColor(c), light);
                 shown++;
             }
             for (; shown < 4; shown++) {
-                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.5f : -0.5f) / 16, 0.5f + (4.05f + (shown % 2) * 1.9f) / 16, 0.9f / 16, 1.6f / 16, EMPTY_PIP, light);
+                pip(p, b, a, inner, row, 0.5f + (3.15f + shown * 1.35f) / 16, 1.2f / 16, 1.2f / 16, EMPTY_PIP, light);
             }
         }
     }
@@ -157,8 +157,8 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
      * inserts (the energy goes in to the machine), out and away from it when it extracts, and one of each for Both. Nothing when off.
      */
     private static void mark(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, SideConfig.Mode mode, int light) {
-        float centre = 0.5f - 6.3f / 16;
-        float half = 0.7f / 16;
+        float centre = 0.5f - 7.0f / 16;
+        float half = 0.6f / 16;
         float base = 0.55f / 16;
         if (mode.inserts() && mode.extracts()) {
             triangle(p, b, a, plane, lane, centre - base, centre - base - 1.0f / 16, half, light);
