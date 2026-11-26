@@ -102,12 +102,14 @@ public class QuestGameTest {
         player.getInventory().add(new ItemStack(q.item(), q.count()));
         Quests.check(player);
         Set<Item> allowed = new java.util.HashSet<>(Quests.rewardPool());
-        int rewards = 0;
+        // A roll can be the very item the quest asks for (it then joins that stack), so count everything held beyond what the test put in
+        int held = 0;
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
-            if (stack.isEmpty() || stack.getItem() == q.item()) continue;
-            h.assertTrue(allowed.contains(stack.getItem()), "only items from the mod are given, found " + stack);
-            rewards += stack.getCount();
+            if (stack.isEmpty()) continue;
+            if (stack.getItem() != q.item()) h.assertTrue(allowed.contains(stack.getItem()), "only items from the mod are given, found " + stack);
+            held += stack.getCount();
         }
+        int rewards = held - q.count();
         h.assertTrue(rewards >= c.tier(), "at least one item per roll was given: " + rewards);
         h.succeed();
     }
