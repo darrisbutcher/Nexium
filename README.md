@@ -815,6 +815,8 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   for a dashboard of that conduit's whole network: what it makes and uses, what is stored and how long it lasts, a minute of history,
   and every generator, machine and battery on it with its rate (a machine that only a Battery touches is listed too, marked "fed by a Battery", without the priority and switch). Each machine has a **priority** (High, Normal, Low: Low goes without
   first when power runs short) and an **On/Off** switch, which set the conduit sides that feed it.
+  Used as a conduit **facade**, it works the same: right-click the conduit with an empty hand for the dashboard (its own network when it
+  carries Energy, else an Energy Conduit beside it); sneak + right-click or the wrench opens the conduit's side menu.
   A generator's row shows everything it makes, including what it hands straight to a Battery or machine touching it (not only what the
   conduit takes from it), and a machine's row everything it takes in, however it arrives.
 * **Redstone Reactor**: nine Redstone Fuel Rod slots, three coolant slots (ice, packed ice, blue ice). Each rod makes 200 NE/t at
