@@ -73,12 +73,56 @@ public class ConduitArrowsClientPart {
                 fluid.channel = LIGHT_BLUE;
             });
 
+            // All three strands on a block that takes items, fluids and energy, each doing something different
+            shot(ctx, world, at[0], "all_three", be -> {
+                be.getLevel().setBlockAndUpdate(at[0].east(), ModBlocks.NEXUS_FURNACE.defaultBlockState());
+                be.addConduit(ConduitType.ENERGY, 1);
+                SideConfig energy = be.config(ConduitType.ENERGY, Direction.EAST);
+                energy.mode = SideConfig.Mode.INSERT;
+                energy.channel = ORANGE;
+                SideConfig item = be.config(ConduitType.ITEM, Direction.EAST);
+                item.mode = SideConfig.Mode.BOTH;
+                item.channel = LIME;
+                item.extractChannels = 1 << ORANGE | 1 << LIGHT_BLUE;
+                SideConfig fluid = be.config(ConduitType.FLUID, Direction.EAST);
+                fluid.mode = SideConfig.Mode.EXTRACT;
+                fluid.extractChannels = 1 << LIME;
+            });
+
+            // The plate head on, from the far side of the conduit looking along the arm
+            world.getServer().runCommand("tp @p " + (at[0].getX() - 2.2) + " " + (at[0].getY() + 0.3) + " " + (at[0].getZ() + 0.5) + " -90 12");
+            ctx.waitTicks(20);
+            System.out.println("[nexus] conduit arrows plate_head_on: " + ctx.takeScreenshot("nexus_arrows_plate_head_on"));
+            world.getServer().runCommand("tp @p " + (at[0].getX() - 1.2) + " " + at[0].getY() + " " + (at[0].getZ() + 0.5) + " -90 40");
+            ctx.waitTicks(20);
+            System.out.println("[nexus] conduit arrows plate_close: " + ctx.takeScreenshot("nexus_arrows_plate_close"));
+
             // The other directions, on two more conduits with three barrels each, seen from the side: the arrows must point the same way
             // (out to the block for inserting, in to the conduit for extracting) whichever way the arm points
             scene(ctx, world, at[0].offset(0, 0, -6), new Direction[]{Direction.EAST, Direction.UP, Direction.SOUTH},
                     new SideConfig.Mode[]{SideConfig.Mode.BOTH, SideConfig.Mode.EXTRACT, SideConfig.Mode.INSERT}, -1.6, -2.0, -39, "positive_sides");
             scene(ctx, world, at[0].offset(0, 0, -12), new Direction[]{Direction.WEST, Direction.DOWN, Direction.NORTH},
                     new SideConfig.Mode[]{SideConfig.Mode.BOTH, SideConfig.Mode.EXTRACT, SideConfig.Mode.INSERT}, 1.6, 2.0, 141, "negative_sides");
+            // Straight runs up and across: the three strands must keep the same order along each run
+            BlockPos run = at[0].offset(4, 0, -4);
+            world.getServer().runOnServer(server -> {
+                var level = server.overworld();
+                for (int i = 0; i < 4; i++) {
+                    level.setBlockAndUpdate(run.above(i), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                    level.setBlockAndUpdate(run.relative(Direction.EAST, i).above(4), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                }
+                level.setBlockAndUpdate(run.above(4), ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                for (int i = 0; i < 4; i++) {
+                    for (BlockPos q : new BlockPos[]{run.above(i), run.relative(Direction.EAST, i).above(4)}) {
+                        var be = (ConduitBundleBlockEntity) level.getBlockEntity(q);
+                        for (ConduitType t : ConduitType.VALUES) be.addConduit(t, 1);
+                    }
+                }
+                ((ConduitBundleBlockEntity) level.getBlockEntity(run.above(4))).changed();
+            });
+            world.getServer().runCommand("tp @p " + (run.getX() + 2.5) + " " + (run.getY() + 3.0) + " " + (run.getZ() + 5.5) + " 180 0");
+            ctx.waitTicks(25);
+            System.out.println("[nexus] conduit arrows runs: " + ctx.takeScreenshot("nexus_arrows_runs"));
             ctx.getInput().pressKey(options -> options.keyToggleGui);
         }
     }

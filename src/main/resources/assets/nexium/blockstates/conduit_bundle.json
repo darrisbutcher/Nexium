@@ -84,7 +84,8 @@
       },
       "apply": {
         "model": "nexium:block/conduit_strand_energy",
-        "x": 90
+        "x": 90,
+        "y": 180
       }
     },
     {
@@ -143,7 +144,8 @@
       },
       "apply": {
         "model": "nexium:block/conduit_strand_item",
-        "x": 90
+        "x": 90,
+        "y": 180
       }
     },
     {
@@ -202,7 +204,8 @@
       },
       "apply": {
         "model": "nexium:block/conduit_strand_fluid",
-        "x": 90
+        "x": 90,
+        "y": 180
       }
     }
   ]
