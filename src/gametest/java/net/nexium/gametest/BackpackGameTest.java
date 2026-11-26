@@ -300,6 +300,27 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void everyItemShiftClicksIntoTheBackpack(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, backpackWith());
+        BackpackMenu menu = openEquipped(player);
+        int hotbar = -1;
+        for (Slot s : menu.slots) if (s.container == player.getInventory() && s.getContainerSlot() == 0) hotbar = s.index;
+        java.util.List<String> failed = new java.util.ArrayList<>();
+        for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            if (item == Items.AIR || item instanceof net.nexium.essentials.backpack.BackpackItem || item instanceof net.nexium.essentials.backpack.BackpackModuleItem) continue;
+            for (int i = 0; i < BackpackContents.SIZE; i++) menu.getSlot(BackpackModules.SLOTS + i).set(ItemStack.EMPTY);
+            ItemStack stack = new ItemStack(item);
+            player.getInventory().setItem(0, stack);
+            menu.quickMoveStack(player, hotbar);
+            if (!player.getInventory().getItem(0).isEmpty()) failed.add(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).toString());
+            player.getInventory().setItem(0, ItemStack.EMPTY);
+        }
+        h.assertTrue(failed.isEmpty(), "these did not shift-click into the backpack: " + failed);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void theRetiredTorchStackModuleDoesNothingAndStillLoads(GameTestHelper h) {
         ServerPlayer player = player(h);
         // A backpack saved with the old module in it: it opens, keeps the module in its slot, and stacks as every backpack does

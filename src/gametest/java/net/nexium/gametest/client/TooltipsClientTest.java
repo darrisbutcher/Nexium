@@ -76,6 +76,45 @@ public class TooltipsClientTest implements FabricClientGameTest {
             check(panel != null, "with a Crafting module on, the screen reports the crafting panel's area");
             int mainRight = ctx.computeOnClient(mc -> ((BackpackScreen) mc.gui.screen()).slotCentre(((BackpackScreen) mc.gui.screen()).getMenu().getSlot(0))[0]);
             check(panel[0] > mainRight && panel[2] > 0 && panel[3] > 0, "it is to the right of the first slot, with a size: " + java.util.Arrays.toString(panel));
+            // A tooltip too tall for the screen (a helmet with every enchantment): its enchantments are joined so the top is not cut off
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                ItemStack helmet = new ItemStack(net.nexium.registry.ModItems.NEXIUM_HELMET);
+                var enchantments = server.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                net.minecraft.world.item.enchantment.ItemEnchantments.Mutable all = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+                enchantments.listElements().forEach(e -> {
+                    if (e.value().canEnchant(helmet)) all.set(e, e.value().getMaxLevel());
+                });
+                helmet.set(net.minecraft.core.component.DataComponents.ENCHANTMENTS, all.toImmutable());
+                player.getInventory().setItem(0, helmet);
+            });
+            ctx.waitTicks(5);
+            int[] helmetSlot = ctx.computeOnClient(mc -> {
+                var screen = (BackpackScreen) mc.gui.screen();
+                for (var slot : screen.getMenu().slots) if (slot.container == mc.player.getInventory() && slot.getContainerSlot() == 0) return screen.slotCentre(slot);
+                return null;
+            });
+            // On a 1080p window (GUI scale 3, so 360 GUI pixels high) the helmet's tooltip has to fit; on the 720p one used elsewhere it is too tall for anything
+            ctx.getInput().resizeWindow(1920, 1080);
+            ctx.waitTicks(5);
+            helmetSlot = ctx.computeOnClient(mc -> {
+                var screen = (BackpackScreen) mc.gui.screen();
+                for (var slot : screen.getMenu().slots) if (slot.container == mc.player.getInventory() && slot.getContainerSlot() == 0) return screen.slotCentre(slot);
+                return null;
+            });
+            RealMouse.moveTo(ctx, helmetSlot);
+            ctx.waitTicks(5);
+            int[] tall = ctx.computeOnClient(mc -> {
+                ItemStack helmet = mc.player.getInventory().getItem(0);
+                var lines = helmet.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(mc.level), mc.player, net.minecraft.world.item.TooltipFlag.ADVANCED);
+                return new int[]{lines.size(), mc.getWindow().getGuiScaledHeight()};
+            });
+            System.out.println("[nexus] helmet tooltip: " + tall[0] + " lines on a screen " + tall[1] + " high: " + ctx.takeScreenshot("nexus_tooltip_helmet_all_enchants"));
+            check(tall[0] * 10 + 12 <= tall[1], "an item with every enchantment still has a tooltip that fits the screen: " + tall[0] + " lines, screen " + tall[1]);
+            RealMouse.moveTo(ctx, 4, 4);
+            ctx.getInput().resizeWindow(1280, 720);
+            ctx.waitTicks(5);
+
             if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("jei")) {
                 System.out.println("[nexus] JEI is not installed in this run (-PwithJei to check it)");
             } else {
