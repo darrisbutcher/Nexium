@@ -1,6 +1,0 @@
-{
-  "parent": "nexium:block/conduit_trim_fluid",
-  "textures": {
-    "all": "nexium:block/conduit_trim_top"
-  }
-}

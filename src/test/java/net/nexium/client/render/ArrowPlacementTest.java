@@ -17,18 +17,18 @@ class ArrowPlacementTest {
 
     @Test
     void anInsertRingLeavesTheOuterArmForTheArrow() {
-        // An item insert ring at 2.0-2.6: the free stretch past it is 2.6-7.9, and the arrow sits in its middle
+        // An item insert ring at 2.0-2.6: the free stretch past it runs to the end of the arm, and the arrow sits in its middle
         float[] z = zone(false, 2.0f, 2.6f);
         assertNotNull(z);
         assertEquals(ArrowPlacement.SINGLE, z[1] - z[0], EPS);
-        assertEquals((2.6f + 7.9f) / 2, (z[0] + z[1]) / 2, EPS);
+        assertEquals((2.6f + ArrowPlacement.ARM_END) / 2, (z[0] + z[1]) / 2, EPS);
     }
 
     @Test
     void anExtractRingWithRoomBeyondItTakesTheOuterStretch() {
         float[] z = zone(false, 4.6f, 5.2f);
         assertNotNull(z);
-        assertEquals((5.2f + 7.9f) / 2, (z[0] + z[1]) / 2, EPS);
+        assertEquals((5.2f + ArrowPlacement.ARM_END) / 2, (z[0] + z[1]) / 2, EPS);
     }
 
     @Test

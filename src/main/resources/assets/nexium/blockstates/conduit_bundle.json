@@ -1,109 +1,208 @@
 {
   "multipart": [
     {
+      "when": {
+        "OR": [
+          {
+            "item_tier": "2"
+          },
+          {
+            "fluid_tier": "2"
+          },
+          {
+            "energy_tier": "2"
+          }
+        ]
+      },
       "apply": {
-        "model": "nexium:block/conduit_core"
+        "model": "nexium:block/conduit_hub_t2"
       }
     },
     {
       "when": {
-        "north": "true"
+        "item_tier": "0|1",
+        "fluid_tier": "0|1",
+        "energy_tier": "0|1"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm"
+        "model": "nexium:block/conduit_hub_t1"
       }
     },
     {
       "when": {
-        "east": "true"
+        "north": "true",
+        "energy_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm",
+        "model": "nexium:block/conduit_strand_energy"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "energy_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_energy",
         "y": 90
       }
     },
     {
       "when": {
-        "south": "true"
+        "south": "true",
+        "energy_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm",
+        "model": "nexium:block/conduit_strand_energy",
         "y": 180
       }
     },
     {
       "when": {
-        "west": "true"
+        "west": "true",
+        "energy_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm",
+        "model": "nexium:block/conduit_strand_energy",
         "y": 270
       }
     },
     {
       "when": {
-        "up": "true"
+        "up": "true",
+        "energy_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm",
+        "model": "nexium:block/conduit_strand_energy",
         "x": 270
       }
     },
     {
       "when": {
-        "down": "true"
+        "down": "true",
+        "energy_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_arm",
+        "model": "nexium:block/conduit_strand_energy",
         "x": 90
       }
     },
     {
       "when": {
+        "north": "true",
         "item_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_band_item"
+        "model": "nexium:block/conduit_strand_item"
       }
     },
     {
       "when": {
-        "item_tier": "2"
+        "east": "true",
+        "item_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_trim_item_top"
+        "model": "nexium:block/conduit_strand_item",
+        "y": 90
       }
     },
     {
       "when": {
+        "south": "true",
+        "item_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_item",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "item_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_item",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "item_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_item",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "item_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_item",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "north": "true",
         "fluid_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_band_fluid"
+        "model": "nexium:block/conduit_strand_fluid"
       }
     },
     {
       "when": {
-        "fluid_tier": "2"
+        "east": "true",
+        "fluid_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_trim_fluid_top"
+        "model": "nexium:block/conduit_strand_fluid",
+        "y": 90
       }
     },
     {
       "when": {
-        "energy_tier": "1|2"
+        "south": "true",
+        "fluid_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_band_energy"
+        "model": "nexium:block/conduit_strand_fluid",
+        "y": 180
       }
     },
     {
       "when": {
-        "energy_tier": "2"
+        "west": "true",
+        "fluid_tier": "1|2"
       },
       "apply": {
-        "model": "nexium:block/conduit_trim_energy_top"
+        "model": "nexium:block/conduit_strand_fluid",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "fluid_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_fluid",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "fluid_tier": "1|2"
+      },
+      "apply": {
+        "model": "nexium:block/conduit_strand_fluid",
+        "x": 90
       }
     }
   ]
