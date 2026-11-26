@@ -139,6 +139,47 @@ public class ConduitArrowsClientPart {
         }
         plate(ctx, world, base, i++, "arm_up_t2", 2, Direction.UP, IN, OUT, BOTH);
         plate(ctx, world, base, i, "arm_down_t2", 2, Direction.DOWN, IN, OUT, BOTH);
+        network(ctx, world, base.offset(0, 0, 14), 1, "t1");
+        network(ctx, world, base.offset(0, 0, 34), 2, "t2");
+    }
+
+    private static void set(ConduitBundleBlockEntity be, Direction d, SideConfig.Mode energy, SideConfig.Mode item, SideConfig.Mode fluid) {
+        be.config(ConduitType.ENERGY, d).mode = energy;
+        be.config(ConduitType.ITEM, d).mode = item;
+        be.config(ConduitType.FLUID, d).mode = fluid;
+    }
+
+    /** Several bundles joined into a run with two branches, machines on the ends and the branches, seen from a few angles. */
+    private static void network(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos o, int tier, String name) {
+        world.getServer().runOnServer(server -> {
+            var level = server.overworld();
+            BlockPos[] bundles = {o, o.east(), o.east(2), o.east(3), o.east(4), o.east(2).above(), o.east(2).above(2), o.east(3).south()};
+            for (BlockPos b : bundles) {
+                level.setBlockAndUpdate(b, ModBlocks.CONDUIT_BUNDLE.defaultBlockState());
+                var be = (ConduitBundleBlockEntity) level.getBlockEntity(b);
+                for (ConduitType t : ConduitType.VALUES) be.addConduit(t, tier);
+            }
+            level.setBlockAndUpdate(o.west(), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(5), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(2).above(3), ModBlocks.FREEZER.defaultBlockState());
+            level.setBlockAndUpdate(o.east(3).south(2), ModBlocks.FREEZER.defaultBlockState());
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o), Direction.WEST, IN, OUT, BOTH);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(4)), Direction.EAST, BOTH, IN, OUT);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(2).above(2)), Direction.UP, OUT, BOTH, IN);
+            set((ConduitBundleBlockEntity) level.getBlockEntity(o.east(3).south()), Direction.SOUTH, IN, IN, OFF);
+            for (BlockPos b : bundles) ((ConduitBundleBlockEntity) level.getBlockEntity(b)).changed();
+        });
+        look(ctx, world, o.east(2).above(), o.getX() + 5.5, o.getY() + 3.0, o.getZ() + 6.5, name + "_network_overview");
+        look(ctx, world, o, o.getX() + 2.2, o.getY() + 1.4, o.getZ() + 2.4, name + "_network_west_machine");
+        look(ctx, world, o.east(4), o.getX() + 2.4, o.getY() + 1.4, o.getZ() - 2.4, name + "_network_east_machine");
+        look(ctx, world, o.east(2).above(2), o.getX() + 3.8, o.getY() + 1.3, o.getZ() + 2.4, name + "_network_top_machine");
+        look(ctx, world, o.east(3).south(), o.getX() + 5.2, o.getY() + 1.4, o.getZ() - 1.2, name + "_network_south_machine");
+    }
+
+    private static void look(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos at, double x, double y, double z, String name) {
+        world.getServer().runCommand("tp @p " + x + " " + y + " " + z + " facing " + (at.getX() + 0.5) + " " + (at.getY() + 0.5) + " " + (at.getZ() + 0.5));
+        ctx.waitTicks(30);
+        System.out.println("[nexus] plate " + name + ": " + ctx.takeScreenshot("nexus_scene_" + name));
     }
 
     private static void plate(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos base, int n, String name, int tier,
