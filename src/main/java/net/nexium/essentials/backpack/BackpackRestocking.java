@@ -48,14 +48,31 @@ public final class BackpackRestocking {
     /** What each item packs into, found from the recipes the first time it is seen and kept until they are reloaded. */
     private static final Map<Item, Optional<CompactingRecipes.Pack>> RULES = new HashMap<>();
 
+    /** The game time of each player's last click in a menu: what changed in the hotbar that tick was moved by hand, not used up. */
+    private static final Map<UUID, Long> LAST_CLICK = new HashMap<>();
+
+    /** A click in a menu (the inventory included) just happened; see {@link #LAST_CLICK}. */
+    public static void noteMenuClick(ServerPlayer player) {
+        LAST_CLICK.put(player.getUUID(), player.level().getGameTime());
+    }
+
+    private static boolean clickedThisTick(ServerPlayer player) {
+        Long at = LAST_CLICK.get(player.getUUID());
+        return at != null && player.level().getGameTime() - at <= 1;
+    }
+
     public static void init() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) tick(player);
         });
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> LAST.remove(handler.getPlayer().getUUID()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            LAST.remove(handler.getPlayer().getUUID());
+            LAST_CLICK.remove(handler.getPlayer().getUUID());
+        });
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resources, success) -> RULES.clear());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             LAST.clear();
+            LAST_CLICK.clear();
             RULES.clear();
         });
     }
@@ -83,7 +100,8 @@ public final class BackpackRestocking {
             java.util.Arrays.fill(last, ItemStack.EMPTY);
             LAST.put(player.getUUID(), last);
         } else {
-            for (int slot = 0; slot < WATCHED; slot++) restockSlot(player, backpack, slot, last[slot]);
+            // A click in a menu this tick moved things by hand (a shift-click of the last one or two of a stack, say): nothing was used up
+            if (!clickedThisTick(player)) for (int slot = 0; slot < WATCHED; slot++) restockSlot(player, backpack, slot, last[slot]);
         }
         // Remember the slots for next tick, copying a stack only when it is a different one
         for (int slot = 0; slot < WATCHED; slot++) {

@@ -159,6 +159,7 @@ public class EnergyGameTest {
         h.assertValueEqual(ModBlocks.IRON_BATTERY.capacity(), 250_000L, "iron");
         h.assertValueEqual(ModBlocks.GOLD_BATTERY.capacity(), 1_000_000L, "gold");
         h.assertValueEqual(ModBlocks.DIAMOND_BATTERY.capacity(), 10_000_000L, "diamond");
+        h.assertValueEqual(ModBlocks.NEXIUM_BATTERY.capacity(), 1_000_000_000L, "nexium");
         BlockPos pos = new BlockPos(2, 2, 2);
         h.setBlock(pos, ModBlocks.IRON_BATTERY);
         net.nexium.energy.BatteryBlockEntity b = h.getBlockEntity(pos, net.nexium.energy.BatteryBlockEntity.class);

@@ -302,6 +302,8 @@ public class SaveLoadGameTest {
                 part(net.nexium.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(654_321)))));
         cases.add(new Case("Diamond Battery", ModBlocks.DIAMOND_BATTERY, List.of(
                 part(net.nexium.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(9_999_999)))));
+        cases.add(new Case("Nexium Battery", ModBlocks.NEXIUM_BATTERY, List.of(
+                part(net.nexium.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(999_999_999L)))));
         cases.add(new Case("Charging Station", ModBlocks.CHARGING_STATION, List.of(
                 part(net.nexium.energy.ChargingStationBlockEntity.class, "energy", be -> be.energy().set(12_345)),
                 part(net.nexium.energy.ChargingStationBlockEntity.class, "cell", be -> be.slots().setItem(2, new ItemStack(ModItems.IRON_CELL))))));

@@ -28,9 +28,9 @@ import java.util.List;
 public class ChargingStationBlockEntity extends BlockEntity implements ExtendedMenuProvider<BlockPos> {
     public static final int SLOTS = 4;
     /** NE a tick for each slot with all four slots charging; with fewer, the same total is shared out, up to {@value #TOTAL} for one. */
-    public static final long RATE = 1_000;
+    public static final long RATE = 10_000;
     public static final long TOTAL = RATE * SLOTS;
-    public static final long BUFFER = 20_000;
+    public static final long BUFFER = 10_000_000;
 
     private final EnergyBuffer energy = EnergyBuffer.machine(BUFFER, this::setChanged);
     private final SimpleContainer slots = new SimpleContainer(SLOTS) {

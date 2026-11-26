@@ -62,9 +62,9 @@ public class EnergyClientTest implements FabricClientGameTest {
                 var thermal = (net.nexium.energy.ThermalGeneratorBlockEntity) level.getBlockEntity(row.east(2));
                 thermal.tank().variant = net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.LAVA);
                 thermal.tank().amount = 3 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
-                net.nexium.energy.BatteryBlock[] batteries = {ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY};
-                double[] fill = {0.3, 0.6, 0.95};
-                for (int i = 0; i < 3; i++) {
+                net.nexium.energy.BatteryBlock[] batteries = {ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY, ModBlocks.NEXIUM_BATTERY};
+                double[] fill = {0.3, 0.6, 0.95, 0.5};
+                for (int i = 0; i < 4; i++) {
                     BlockPos p = row.east(4 + i * 2);
                     level.setBlockAndUpdate(p, batteries[i].defaultBlockState());
                     var battery = (net.nexium.energy.BatteryBlockEntity) level.getBlockEntity(p);

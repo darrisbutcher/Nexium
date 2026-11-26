@@ -2396,9 +2396,11 @@
         "iron_battery",
         "gold_battery",
         "diamond_battery",
+        "nexium_battery",
         "iron_cell",
         "gold_cell",
         "diamond_cell",
+        "nexium_cell",
         "charging_station",
         "c_conduit",
         "c_upgrade",
@@ -2421,9 +2423,11 @@
         "nexium:iron_battery",
         "nexium:gold_battery",
         "nexium:diamond_battery",
+        "nexium:nexium_battery",
         "nexium:iron_cell",
         "nexium:gold_cell",
         "nexium:diamond_cell",
+        "nexium:nexium_cell",
         "nexium:charging_station"
       ],
       "aliases": [
