@@ -33,13 +33,13 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
     private static final RenderType MARKER = RenderTypes.entitySolid(Nexium.id("textures/misc/white.png"));
     /** Ring cross-section, just wider than an arm (6.75-9.25 px). */
-    private static final float RING_MIN = 6.4f / 16, RING_MAX = 9.6f / 16;
+    private static final float RING_MIN = 4.1f / 16, RING_MAX = 11.9f / 16;
     /** Distance from the block centre along the arm, per conduit type (px). */
     /** How much further out the extract ring sits than the insert ring. */
-    private static final float EXTRACT_OFFSET = 2.6f / 16;
+    private static final float EXTRACT_OFFSET = 0.6f / 16;
     /** Each further extract colour is another ring this much farther out, as long as it still fits on the arm. */
     private static final float EXTRACT_STEP = 0.9f / 16, ARM_END = 7.4f / 16;
-    private static final float[][] RING_SPAN = {{2.1f / 16, 2.7f / 16}, {3.1f / 16, 3.7f / 16}, {4.1f / 16, 4.7f / 16}};
+    private static final float[][] RING_SPAN = {{4.6f / 16, 5.1f / 16}, {5.4f / 16, 5.9f / 16}, {6.2f / 16, 6.7f / 16}};
     /**
      * The direction arrow, one for each arm: a flat arrowhead on each of the arm's four faces, light so it stands out from the dark arm,
      * that points the way the items go: out to the block when the arm inserts, in to the conduit when it extracts, and a double arrow
@@ -49,18 +49,22 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
     /** A double arrow's heads and shaft as fractions of its length, half the width of a head's base and of the shaft, in blocks. */
     private static final float HEAD_PART = 0.353f, SHAFT_PART = 0.294f, HEAD_HALF = 0.85f / 16, SHAFT_HALF = 0.25f / 16;
     /** Half the width of a single arrow's base, the arm's half-width, and how far the arrow floats off the arm's face (blocks). */
-    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 1.5f / 16, ARROW_LIFT = 0.02f / 16;
+    private static final float ARROW_HALF = 1.0f / 16, ARM_HALF = 3.75f / 16, ARROW_LIFT = 0.02f / 16;
 
     /**
      * The plate where an arm meets a machine: a flat square on the machine's face (from {@code PLATE_NEAR} to the block edge, half a block
      * wide at {@code PLATE_HALF}) with three small lights down one side, one per strand in the strands' own order (energy, item, fluid):
      * lit in the strand's colour where that type connects, dark where it doesn't.
      */
-    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 3.0f / 16;
-    private static final float LIGHT_SIZE = 0.8f / 16, LIGHT_SIDE = -2.25f / 16, LIGHT_RAISE = 0.25f / 16, LANE_STEP = 1.0f / 16;
+    private static final float PLATE_NEAR = 7.4f / 16, PLATE_FAR = 8.0f / 16, PLATE_HALF = 4.75f / 16;
+    private static final float LIGHT_SIZE = 0.8f / 16, LIGHT_SIDE = -4.25f / 16, LIGHT_RAISE = 0.25f / 16, LANE_STEP = 2.5f / 16;
     private static final int PLATE_T1 = 0xFF3C3C46, PLATE_T2 = 0xFFB4BAC4, PLATE_EDGE_T1 = 0xFF6A6A78, PLATE_EDGE_T2 = 0xFFE6EBF2;
     /** Lit and dark light colours for energy, item and fluid (the strand order, top lane first). */
     private static final int[] LIT = {0xFFFF4646, 0xFF50EB64, 0xFF5A96FF}, DARK = {0xFF4A2222, 0xFF1F4426, 0xFF202E50};
+
+    /** TEMPORARY while the designs are compared: 3 is the plate matrix, 5 the sleeves, anything else the old rings. */
+    public static volatile int design = 3;
+    private static final int BODY = 0xFF3A3A44, EMPTY_PIP = 0xFF2A2A32, WHITE = 0xFFE9EEF5;
 
     public static class FacadeState extends BlockEntityRenderState {
         /** Whether the conduit is Tier 2 (silver plates). */
@@ -106,6 +110,10 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             // The stretches of one arm that the rings cover, in pixels from the centre: at most an insert ring and 16 extract rings per type
             float[] rings = new float[2 * state.channels.length * 17];
             for (Direction d : Direction.values()) {
+                if (design == 3 || design == 5) {
+                    newDesign(p, buffer, d, state, light);
+                    continue;
+                }
                 int ringCount = 0;
                 boolean inserts = false, extracts = false;
                 for (int t = 0; t < state.channels.length; t++) {
@@ -235,6 +243,157 @@ public class FacadeRenderer implements BlockEntityRenderer<ConduitBundleBlockEnt
             lmax[side] = 0.5f + LIGHT_SIDE + LIGHT_SIZE / 2;
             box(p, b, lmin[0], lmin[1], lmin[2], lmax[0], lmax[1], lmax[2], lit ? LIT[t] : DARK[t], light);
         }
+    }
+
+
+    // ---- the two designs under comparison -----------------------------------------------------------------
+
+    private static boolean connected(FacadeState st, Direction d) {
+        for (int t = 0; t < 3; t++) if (st.channels[t][d.get3DDataValue()] >= 0) return true;
+        return false;
+    }
+
+    /** Axis bookkeeping for one arm: the arm axis, the axis the strands stack along, the other one, and which way energy sits. */
+    private record Arm(Direction d, int axis, int step, int lane, int side, float laneSign) {
+        static Arm of(Direction d) {
+            int axis = d.getAxis().ordinal();
+            return new Arm(d, axis, d.getAxisDirection().getStep(), axis == 1 ? 2 : 1, axis == 0 ? 2 : 0, d == Direction.DOWN ? -1 : 1);
+        }
+
+        /** Where strand {@code t} (0 energy, 1 item, 2 fluid) is along the lane axis, in blocks from the middle. */
+        float laneOffset(int t) { return laneSign * (1 - t) * LANE_STEP; }
+    }
+
+    private static void newDesign(PoseStack.Pose p, VertexConsumer b, Direction d, FacadeState st, int light) {
+        if (!connected(st, d)) return;
+        Arm a = Arm.of(d);
+        if (design == 3) {
+            matrixPlate(p, b, a, st, light);
+            for (int t = 0; t < 3; t++) strandArrows(p, b, a, t, st.channels[t][d.get3DDataValue()], light);
+        } else {
+            plate(p, b, d, st, light);
+            for (int t = 0; t < 3; t++) sleeves(p, b, a, t, st.channels[t][d.get3DDataValue()], light);
+        }
+    }
+
+    private static int channelColor(int c) {
+        return 0xFF000000 | ConduitConfigScreen.CHANNEL_COLORS[c & 15];
+    }
+
+    /** Design 3: a 14 px plate with, per strand, the insert pip on one side and up to four extract pips on the other. */
+    private static void matrixPlate(PoseStack.Pose p, VertexConsumer b, Arm a, FacadeState st, int light) {
+        float half = 7.0f / 16;
+        float na = 0.5f + a.step * PLATE_NEAR, fa = 0.5f + a.step * PLATE_FAR;
+        float[] min = new float[3], max = new float[3];
+        min[a.axis] = Math.min(na, fa);
+        max[a.axis] = Math.max(na, fa);
+        min[a.lane] = 0.5f - half; max[a.lane] = 0.5f + half;
+        min[a.side] = 0.5f - half; max[a.side] = 0.5f + half;
+        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], st.tier2 ? PLATE_T2 : PLATE_T1, light);
+        float e = 0.15f / 16;
+        float[] imin = min.clone(), imax = max.clone();
+        float inner = 0.5f + a.step * (PLATE_NEAR - e);
+        imin[a.axis] = Math.min(inner, na); imax[a.axis] = Math.max(inner, na);
+        for (int ax : new int[]{a.lane, a.side}) { imin[ax] += 0.5f / 16; imax[ax] -= 0.5f / 16; }
+        box(p, b, imin[0], imin[1], imin[2], imax[0], imax[1], imax[2], st.tier2 ? PLATE_EDGE_T2 : PLATE_EDGE_T1, light);
+        for (int t = 0; t < 3; t++) {
+            int marker = st.channels[t][a.d.get3DDataValue()];
+            boolean on = marker >= 0;
+            SideConfig.Mode mode = on ? SideConfig.Mode.values()[(marker >> 4) & 3] : SideConfig.Mode.DISABLED;
+            float row = 0.5f + a.laneOffset(t);
+            // insert pip (left band)
+            pip(p, b, a, inner, row, 0.5f - 5.3f / 16, 1.5f / 16, mode.inserts() ? channelColor(marker & 15) : EMPTY_PIP, light);
+            // extract pips (right band): up to four, two by two
+            int extract = on && mode.extracts() ? marker >>> 6 & 0xFFFF : 0, shown = 0;
+            for (int c = 0; c < 16 && shown < 4; c++) {
+                if ((extract >> c & 1) == 0) continue;
+                pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.65f : -0.65f) / 16, 0.5f + (4.7f + (shown % 2) * 1.3f) / 16, 1.0f / 16, channelColor(c), light);
+                shown++;
+            }
+            for (; shown < 4; shown++) {
+                if (!(on && mode.extracts())) {
+                    pip(p, b, a, inner, row + a.laneSign * (shown / 2 == 0 ? 0.65f : -0.65f) / 16, 0.5f + (4.7f + (shown % 2) * 1.3f) / 16, 1.0f / 16, EMPTY_PIP, light);
+                }
+            }
+        }
+    }
+
+    private static void pip(PoseStack.Pose p, VertexConsumer b, Arm a, float plane, float lane, float side, float size, int color, int light) {
+        float raise = 0.2f / 16;
+        float[] min = new float[3], max = new float[3];
+        float na = plane - a.step * raise;
+        min[a.axis] = Math.min(na, plane); max[a.axis] = Math.max(na, plane);
+        min[a.lane] = lane - size / 2; max[a.lane] = lane + size / 2;
+        min[a.side] = side - size / 2; max[a.side] = side + size / 2;
+        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
+    }
+
+    /** A small arrow on both sides of a strand: out to the block when it inserts, in to the conduit when it extracts, both ways for both. */
+    private static void strandArrows(PoseStack.Pose p, VertexConsumer b, Arm a, int t, int marker, int light) {
+        if (marker < 0) return;
+        SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 4) & 3];
+        float h = 0.9f / 16;
+        if (mode.inserts() && mode.extracts()) {
+            laneArrow(p, b, a, t, 5.9f, 4.9f, h, light);
+            laneArrow(p, b, a, t, 6.1f, 7.1f, h, light);
+        } else if (mode.inserts()) laneArrow(p, b, a, t, 5.2f, 6.9f, h, light);
+        else if (mode.extracts()) laneArrow(p, b, a, t, 6.9f, 5.2f, h, light);
+    }
+
+    /** A flat triangle on the two side faces of strand {@code t}: base at {@code from}, point at {@code to} (px out from the middle). */
+    private static void laneArrow(PoseStack.Pose p, VertexConsumer b, Arm a, int t, float from, float to, float half, int light) {
+        float centre = 0.5f + a.laneOffset(t);
+        for (int sign = -1; sign <= 1; sign += 2) {
+            float plane = 0.5f + sign * (3.75f / 16 + 0.03f / 16);
+            float[][] pts = new float[4][3];
+            float[] along = {0.5f + a.step * from / 16, 0.5f + a.step * from / 16, 0.5f + a.step * to / 16, 0.5f + a.step * to / 16};
+            float[] lane = {centre - half, centre + half, centre, centre};
+            for (int i = 0; i < 4; i++) { pts[i][a.axis] = along[i]; pts[i][a.lane] = lane[i]; pts[i][a.side] = plane; }
+            float[] n = new float[3];
+            n[a.side] = sign;
+            quad(p, b, WHITE, light, n[0], n[1], n[2], pts[0][0], pts[0][1], pts[0][2], pts[1][0], pts[1][1], pts[1][2],
+                    pts[2][0], pts[2][1], pts[2][2], pts[3][0], pts[3][1], pts[3][2]);
+        }
+    }
+
+    /** Design 5: on each connected strand an insert sleeve (stripe in the In colour) and an extract sleeve (a stripe per Out colour), with arrows. */
+    private static void sleeves(PoseStack.Pose p, VertexConsumer b, Arm a, int t, int marker, int light) {
+        if (marker < 0) return;
+        SideConfig.Mode mode = SideConfig.Mode.values()[(marker >> 4) & 3];
+        float start = 4.45f;
+        if (mode.inserts()) {
+            sleeveBox(p, b, a, t, start, start + 1.4f, BODY, light);
+            sleeveBox(p, b, a, t, start + 0.95f, start + 1.4f, channelColor(marker & 15), light);
+            laneArrow(p, b, a, t, start + 0.2f, start + 0.8f, 0.8f / 16, light);
+            start += 1.5f;
+        }
+        if (mode.extracts()) {
+            sleeveBox(p, b, a, t, start, start + 1.4f, BODY, light);
+            int extract = marker >>> 6 & 0xFFFF, shown = 0;
+            for (int c = 0; c < 16 && shown < 3; c++) {
+                if ((extract >> c & 1) == 0) continue;
+                sleeveBox(p, b, a, t, start + 0.5f + shown * 0.27f, start + 0.5f + shown * 0.27f + 0.2f, channelColor(c), light);
+                shown++;
+            }
+            laneArrow(p, b, a, t, start + 0.5f, start + 0.1f, 0.8f / 16, light);
+        }
+    }
+
+    private static void sleeveBox(PoseStack.Pose p, VertexConsumer b, Arm a, int t, float from, float to, int color, int light) {
+        float centre = 0.5f + a.laneOffset(t);
+        float na = 0.5f + a.step * from / 16, fa = 0.5f + a.step * to / 16;
+        float lo = centre - 1.25f / 16, hi = centre + 1.25f / 16;
+        float grow = 0.1f / 16;
+        // The outer strands grow outward (the inner ones touch their neighbours), and every sleeve grows sideways
+        boolean outerPlus = t == 0 ? a.laneSign > 0 : t == 2 && a.laneSign < 0;
+        boolean outerMinus = t == 0 ? a.laneSign < 0 : t == 2 && a.laneSign > 0;
+        if (outerPlus) hi += grow;
+        if (outerMinus) lo -= grow;
+        float[] min = new float[3], max = new float[3];
+        min[a.axis] = Math.min(na, fa); max[a.axis] = Math.max(na, fa);
+        min[a.lane] = lo; max[a.lane] = hi;
+        min[a.side] = 0.5f - 3.75f / 16 - 0.2f / 16; max[a.side] = 0.5f + 3.75f / 16 + 0.2f / 16;
+        box(p, b, min[0], min[1], min[2], max[0], max[1], max[2], color, light);
     }
 
     /** A box around the arm on side {@code d}, from {@code near} to {@code far} out from the centre. */

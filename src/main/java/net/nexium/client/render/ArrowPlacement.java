@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 final class ArrowPlacement {
     /** Where the arm starts (the edge of the core) and ends (the block it connects to). */
-    static final float ARM_START = 2.1f, ARM_END = 7.4f;
+    static final float ARM_START = 4.35f, ARM_END = 7.4f;
     /** Clear space kept either side of the arrow. */
     static final float MARGIN = 0.15f;
     /** The length of a single arrow and of a double one when there is room, and the shortest that still reads as one. */
