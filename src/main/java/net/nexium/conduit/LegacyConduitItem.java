@@ -18,8 +18,8 @@ import net.nexium.registry.ModItems;
 
 /**
  * The six conduit items from before the Conduit became one item (Item, Fluid and Energy, Tier 1 and 2). They are no longer made or shown,
- * but they still place what they always did, and a player carrying one is handed a {@link ConduitItem} instead (and an Advanced Conduit
- * Upgrade for a Tier 2 one), so nothing is lost.
+ * but they still place what they always did, and a player carrying one is handed a {@link ConduitItem} instead (an Advanced Conduit for a
+ * Tier 2 one), so nothing is lost.
  */
 public class LegacyConduitItem extends Item {
     private final ConduitType type;
@@ -34,7 +34,7 @@ public class LegacyConduitItem extends Item {
     public ConduitType type() { return type; }
     public int tier() { return tier; }
 
-    /** Swaps a carried stack of this item for the same number of Conduits (and Advanced Conduit Upgrades when it was Tier 2). */
+    /** Swaps a carried stack of this item for the same number of Conduits (Advanced Conduits when it was Tier 2). */
     @Override
     public void inventoryTick(ItemStack stack, net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity owner,
                               net.minecraft.world.entity.EquipmentSlot slot) {
@@ -42,8 +42,7 @@ public class LegacyConduitItem extends Item {
         if (stack.isEmpty() || !(owner instanceof Player player)) return;
         int count = stack.getCount();
         stack.shrink(count);
-        DrawerInteraction.give(player, new ItemStack(ModItems.CONDUIT, count));
-        if (tier >= 2) DrawerInteraction.give(player, new ItemStack(ModItems.ADVANCED_CONDUIT_UPGRADE, count));
+        DrawerInteraction.give(player, new ItemStack(tier >= 2 ? ModItems.ADVANCED_CONDUIT : ModItems.CONDUIT, count));
     }
 
     @Override

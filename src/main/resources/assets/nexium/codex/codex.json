@@ -683,10 +683,12 @@
       "icon": "nexium:conduit",
       "recipes": [
         "c_conduit",
-        "c_upgrade"
+        "c_upgrade",
+        "c_advanced"
       ],
       "items": [
         "nexium:conduit",
+        "nexium:advanced_conduit",
         "nexium:advanced_conduit_upgrade"
       ],
       "aliases": [
@@ -2400,6 +2402,7 @@
         "charging_station",
         "c_conduit",
         "c_upgrade",
+        "c_advanced",
         "power_meter"
       ],
       "items": [

@@ -29,8 +29,8 @@ import java.util.List;
  * protection and the like respected. Sneaking mines just the one block.
  * <ul>
  *   <li><b>Vein mining</b>, with any tool or an empty hand, for any block the tool is right for, stone included, and for grasses,
- *       ferns, bushes and leaf litter ({@code #nexium:vein_plants}, which vein together as one kind); never blocks with contents,
- *       those in {@code #nexium:vein_excluded} (empty unless a data pack fills it) or those on the config's {@code veinBlacklist}:
+ *       ferns, bushes and leaf litter ({@code #nexium:vein_plants}, which vein together as one kind), blocks with contents too (chests,
+ *       hoppers, conduits, machines: they drop what they hold as usual); never those in {@code #nexium:vein_excluded} (empty unless a data pack fills it) or those on the config's {@code veinBlacklist}:
  *       every block of the same kind touching it, corners included, up to the size set in an AIOT's tool menu (any other tool: the
  *       config's limit), never above the config's limit, in all. Only while the player holds the Vein Mine key; needs no module.</li>
  *   <li><b>3x3 mining</b>, for anything else the AIOT is made for: the 3x3 around it, facing the player (a wall when
@@ -106,13 +106,14 @@ public final class AiotMining {
     }
 
     /**
-     * Whether vein mining takes this block: not a block with contents, one that can't be broken, or one on the blacklist, and either
+     * Whether vein mining takes this block: not one that can't be broken or one on the blacklist (blocks with contents, chests, hoppers,
+     * conduits and machines included: they break and drop what they hold as usual), and either
      * a grass, fern, bush or leaf litter ({@link #VEIN_PLANTS}), or one the tool is right for: it mines it faster (or, for a tool
      * with no speed bonus on it and an empty hand, it is a block that needs no tool at all, such as dirt), and where the block
      * needs a tool to drop anything (obsidian), the tool is strong enough to.
      */
     private static boolean veinable(Level level, BlockPos pos, BlockState state, ItemStack tool) {
-        if (blocked(state) || state.hasBlockEntity() || state.getDestroySpeed(level, pos) < 0) return false;
+        if (blocked(state) || state.getDestroySpeed(level, pos) < 0) return false;
         if (state.is(VEIN_PLANTS)) return true;
         boolean rightTool = !state.requiresCorrectToolForDrops() || tool.isCorrectToolForDrops(state);
         if (tool.getItem() instanceof AiotItem) return tool.getDestroySpeed(state) > 1.0F && rightTool;

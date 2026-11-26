@@ -47,6 +47,30 @@ public class VeinAnyToolGameTest {
     }
 
     @GameTest
+    public void blocksWithContentsAreVeinMinedAndDropWhatTheyHold(GameTestHelper h) {
+        for (Block block : new Block[]{Blocks.CHEST, Blocks.HOPPER, net.nexium.registry.ModBlocks.CONDUIT_BUNDLE, net.nexium.registry.ModBlocks.IRON_FLUID_TANK}) {
+            line(h, block, 4);
+            ServerPlayer player = miner(h, new ItemStack(Items.IRON_PICKAXE), true);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+            if (block != Blocks.CHEST) player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
+            mine(h, player);
+            h.assertValueEqual(left(h, block, 4), 0, "the whole line of " + block + " is vein mined");
+        }
+        // A chest's items drop when it is vein mined
+        line(h, Blocks.CHEST, 2);
+        ((net.minecraft.world.level.block.entity.ChestBlockEntity) h.getBlockEntity(new BlockPos(2, 1, 1), net.minecraft.world.level.block.entity.ChestBlockEntity.class))
+                .setItem(0, new ItemStack(Items.DIAMOND, 3));
+        mine(h, miner(h, new ItemStack(Items.IRON_AXE), true));
+        int diamonds = 0;
+        for (var e : h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(h.absolutePos(new BlockPos(2, 1, 1))).inflate(3))) {
+            if (e.getItem().is(Items.DIAMOND)) diamonds += e.getItem().getCount();
+        }
+        h.assertValueEqual(diamonds, 3, "the chest's three diamonds dropped");
+        h.succeed();
+    }
+
+    @GameTest
     public void aPickaxeMinesOneBlockWithoutTheKey(GameTestHelper h) {
         line(h, Blocks.COAL_ORE, 5);
         mine(h, miner(h, new ItemStack(Items.IRON_PICKAXE), false));

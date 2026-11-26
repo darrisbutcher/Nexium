@@ -177,8 +177,9 @@ place it or right-click it to outline those chunks for a minute.
 * **One Conduit** carries items, fluids and Nexus Energy together (`N C N / R H B / N G N`: iron nuggets, a copper ingot,
   redstone, a hopper, a bucket and glass make 8). Every side has its own mode, colours, filter and redstone setting for each of
   the three. Tier 1: 4 items every half second, 100 mB/tick, 2,500 NE/tick. An **Advanced Conduit Upgrade** (`R I R / I P I / R I R`:
-  redstone, iron ingots, an ender pearl; makes 4), right-clicked on a conduit, makes it Tier 2: 16 items every half second,
-  2000 mB/tick, 50,000 NE/tick. Conduits placed before the Conduit became one item keep working; carrying an old one swaps it for
+  redstone, iron ingots, an ender pearl; makes 4) makes a conduit Tier 2 (16 items every half second, 2000 mB/tick, 50,000 NE/tick) two
+  ways: right-click it on a placed conduit, or put it in the middle of a crafting grid with **8 Conduits** around it (`C C C / C U C / C C C`) to
+  make 8 separate **Advanced Conduits**, which place as Tier 2 (and are what a Tier 2 conduit drops when broken). Conduits placed before the Conduit became one item keep working; carrying an old one swaps it for
   a Conduit (and an Advanced Conduit Upgrade for a Tier 2 one), and a Conduit used on one that lacks a type adds it.
 * Every side has an **insert** colour and one or more **extract** colours; what a side extracts goes to insert sides
   of any of its extract colours. In the side's settings the **Out** row is a grid of the 16 colours: click one to switch
@@ -263,7 +264,8 @@ place it or right-click it to outline those chunks for a minute.
 * **Vein mining** (no module, **any tool or an empty hand**): mining any block, stone included, mines every block of the same
   kind touching it, up to the size set in an AIOT's tool menu (any other tool or a bare hand takes up to `aiotVeinMaxBlocks`).
   Grasses, ferns, bushes, dead bushes, azaleas and leaf litter (the `#nexium:vein_plants` tag) count as one kind, so a mixed
-  patch clears in one swing, and cost no durability. Blocks with contents, such as chests, are never vein mined, and the tool
+  patch clears in one swing, and cost no durability. Blocks with contents (chests, hoppers, furnaces, conduits, drawers, machines) are vein
+  mined too and drop what they hold as usual (the 3x3 module still leaves them alone), and the tool
   must be right for the block (obsidian needs a diamond-grade pickaxe or AIOT; a bare hand takes only what it can break, such as
   dirt, sand or logs). Other tools and AIOTs pay 1 durability per block, and a tool that breaks stops the vein.
   **Hold the Vein Mine key** (**Left Control** by default; change it under Key Binds) while mining; without it, you mine one
