@@ -146,6 +146,7 @@ public class ConduitBundleBlock extends BaseEntityBlock {
                 return InteractionResult.SUCCESS;
             }
         }
-        return InteractionResult.PASS;
+        // Only an empty hand falls through to useWithoutItem (the side menu); PASS would end the interaction here
+        return stack.isEmpty() ? InteractionResult.TRY_WITH_EMPTY_HAND : InteractionResult.PASS;
     }
 }

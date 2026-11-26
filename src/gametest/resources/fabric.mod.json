@@ -17,6 +17,7 @@
       "net.nexium.gametest.client.NetworkBusClientTest",
       "net.nexium.gametest.client.XpFarmClientTest",
       "net.nexium.gametest.client.DrawerKeyClientTest",
+      "net.nexium.gametest.client.ConduitEmptyHandClientTest",
       "net.nexium.gametest.client.OverclockClientTest",
       "net.nexium.gametest.client.TunnelScrollClientTest",
       "net.nexium.gametest.client.CapturedMobTooltipClientTest",
