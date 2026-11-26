@@ -29,13 +29,60 @@ public final class Tooltips {
     /** Runs after the callbacks that add the lines (the default phase), so it sees all of them. */
     private static final net.minecraft.resources.Identifier LATE = Nexium.id("tooltip_wrap");
 
+    /** Runs after {@link #LATE}: squeezes a tooltip that is taller than the screen. */
+    private static final net.minecraft.resources.Identifier COMPACT = Nexium.id("tooltip_compact");
+    /** Pixels one tooltip line takes, and the least of the screen left clear. */
+    private static final int LINE_HEIGHT = 10, SCREEN_MARGIN = 12;
+    /** Fewest enchantments in a row that are worth joining into one paragraph. */
+    private static final int MIN_RUN = 4;
+
     public static void init() {
+        ItemTooltipCallback.EVENT.addPhaseOrdering(LATE, COMPACT);
+        ItemTooltipCallback.EVENT.register(COMPACT, (stack, context, flag, lines) -> compactEnchantments(stack, lines));
         ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, LATE);
         ItemTooltipCallback.EVENT.register(LATE, (stack, context, flag, lines) -> {
             if (BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(Nexium.MOD_ID)) {
                 wrapAll(Minecraft.getInstance().font, lines, MAX_WIDTH, 1);
             }
         });
+    }
+
+    /**
+     * A tooltip taller than the screen has its top cut off (a helmet with every enchantment, say). So when it would be, the enchantment
+     * lines, one to a line, are joined into a comma separated paragraph as wide as the screen allows (up to 330 pixels), colours kept
+     * (curses stay red). Nothing changes when the tooltip already fits.
+     */
+    static void compactEnchantments(net.minecraft.world.item.ItemStack stack, List<Component> lines) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getWindow() == null || lines.size() * LINE_HEIGHT + SCREEN_MARGIN <= mc.getWindow().getGuiScaledHeight()) return;
+        java.util.Set<String> names = new java.util.HashSet<>();
+        for (var type : List.of(net.minecraft.core.component.DataComponents.ENCHANTMENTS, net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS)) {
+            net.minecraft.world.item.enchantment.ItemEnchantments enchantments = stack.getOrDefault(type, net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+            for (var entry : enchantments.entrySet()) {
+                names.add(net.minecraft.world.item.enchantment.Enchantment.getFullname(entry.getKey(), entry.getIntValue()).getString());
+            }
+        }
+        if (names.isEmpty()) return;
+        int start = -1, end = -1;
+        for (int i = 0; i < lines.size(); i++) {
+            if (!names.contains(lines.get(i).getString())) continue;
+            int j = i;
+            while (j < lines.size() && names.contains(lines.get(j).getString())) j++;
+            if (j - i >= MIN_RUN) { start = i; end = j; break; }
+            i = j;
+        }
+        if (start < 0) return;
+        MutableComponent joined = Component.empty();
+        for (int i = start; i < end; i++) {
+            if (i > start) joined.append(Component.literal(", ").withStyle(net.minecraft.ChatFormatting.GRAY));
+            joined.append(lines.get(i));
+        }
+        int width = Math.max(MAX_WIDTH, Math.min(330, mc.getWindow().getGuiScaledWidth() - 60));
+        List<Component> paragraph = wrap(mc.font, joined, width);
+        lines.subList(start, end).clear();
+        lines.addAll(start, paragraph);
+        // Still too tall: the blank lines between the parts go too
+        if (lines.size() * LINE_HEIGHT + SCREEN_MARGIN > mc.getWindow().getGuiScaledHeight()) lines.removeIf(line -> line.getString().isEmpty());
     }
 
     /** One line as lines no wider than {@code maxWidth}: the line itself if it fits. Colours and styles stay. */

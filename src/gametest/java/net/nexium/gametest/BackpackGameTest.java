@@ -300,6 +300,36 @@ public class BackpackGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID)
+    public void everyItemShiftClicksIntoTheBackpack(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        // With every module in, so the Crafting grid and the others are there too, and a full click (not just the menu's own method)
+        ItemStack worn = backpackWith(BackpackModuleType.CRAFTING, BackpackModuleType.RESTOCKING, BackpackModuleType.COMPACTING, BackpackModuleType.FEEDING);
+        ExtraSlots.of(player).setItem(ExtraSlots.BACKPACK, worn);
+        BackpackMenu menu = openEquipped(player);
+        java.util.List<String> failed = new java.util.ArrayList<>();
+        for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            if (item == Items.AIR || item instanceof net.nexium.essentials.backpack.BackpackItem || item instanceof net.nexium.essentials.backpack.BackpackModuleItem) continue;
+            for (int container : new int[]{0, 8, 9, 20, 35}) {
+                for (int count : new int[]{1, 64}) {
+                    for (int i = 0; i < BackpackContents.SIZE; i++) menu.getSlot(BackpackModules.SLOTS + i).set(ItemStack.EMPTY);
+                    ItemStack stack = new ItemStack(item, Math.min(count, item.getDefaultMaxStackSize()));
+                    player.getInventory().clearContent();
+                    player.getInventory().setItem(container, stack);
+                    int index = -1;
+                    for (Slot s : menu.slots) if (s.container == player.getInventory() && s.getContainerSlot() == container) index = s.index;
+                    menu.clicked(index, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+                    if (!player.getInventory().getItem(container).isEmpty()) {
+                        failed.add(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item) + " x" + stack.getCount() + " from " + container);
+                    }
+                }
+            }
+        }
+        player.getInventory().clearContent();
+        h.assertTrue(failed.isEmpty(), "these did not shift-click into the backpack: " + failed);
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID)
     public void theRetiredTorchStackModuleDoesNothingAndStillLoads(GameTestHelper h) {
         ServerPlayer player = player(h);
         // A backpack saved with the old module in it: it opens, keeps the module in its slot, and stacks as every backpack does

@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.30.2
+
+* **Tall tooltips keep their top**: an item with a lot of enchantments (a Nexium helmet with all of them, an AIOT, an enchanted book) made a tooltip
+  taller than the screen, so its name and first lines were cut off. When a tooltip would be too tall, its enchantments are now joined into one
+  comma-separated paragraph (curses stay red) and the blank lines between its parts are dropped. This applies to every item, not just Nexium's.
+
 ## 1.30.1
 
 * **Cleaner conduit plates**: the plate where a conduit meets a machine now just spells **INSERT**, **EXTRACT**, **BOTH** or **OFF** for each strand,
