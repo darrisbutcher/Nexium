@@ -18,7 +18,7 @@ public class BatteryCellGameTest {
         h.assertValueEqual(ItemEnergy.capacity(iron), 250_000L, "an Iron Cell holds 250,000 NE");
         h.assertValueEqual(ItemEnergy.capacity(new ItemStack(ModItems.GOLD_CELL)), 1_000_000L, "a Gold Cell 1,000,000");
         h.assertValueEqual(ItemEnergy.capacity(new ItemStack(ModItems.DIAMOND_CELL)), 10_000_000L, "a Diamond Cell 10,000,000");
-        h.assertValueEqual(ItemEnergy.capacity(new ItemStack(ModItems.NEXIUM_CELL)), 1_000_000_000L, "a Nexium Cell 1,000,000,000");
+        h.assertValueEqual(ItemEnergy.capacity(new ItemStack(ModItems.NEXIUM_CELL)), 100_000_000L, "a Nexium Cell 100,000,000");
         h.assertValueEqual(ItemEnergy.insert(iron, 300_000, false), 250_000L, "it takes no more than its size");
         h.assertValueEqual(ItemEnergy.insert(iron, 1, false), 0L, "and nothing once full");
         h.assertValueEqual(ItemEnergy.extract(iron, 100_000, true), 100_000L, "a simulated draw changes nothing");
@@ -93,6 +93,41 @@ public class BatteryCellGameTest {
         station.charge();
         h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(0)), half + 500, "with little left, the first slot takes it all");
         h.assertValueEqual(ItemEnergy.stored(station.slots().getItem(1)), half, "and the second gets nothing more");
+        h.succeed();
+    }
+
+    private static ItemStack craft(GameTestHelper h, java.util.List<ItemStack> items) {
+        java.util.List<ItemStack> grid = new java.util.ArrayList<>(items);
+        while (grid.size() < 9) grid.add(ItemStack.EMPTY);
+        net.minecraft.world.item.crafting.CraftingInput input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, grid);
+        return h.getLevel().recipeAccess().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, h.getLevel())
+                .map(holder -> holder.value().assemble(input)).orElse(ItemStack.EMPTY);
+    }
+
+    @GameTest
+    public void upgradingACellOrABatteryKeepsItsCharge(GameTestHelper h) {
+        ItemStack redstone = new ItemStack(net.minecraft.world.item.Items.REDSTONE_BLOCK), diamond = new ItemStack(net.minecraft.world.item.Items.DIAMOND),
+                nexium = new ItemStack(ModItems.NEXIUM_INGOT), empty = ItemStack.EMPTY;
+        // Gold Cell to Diamond Cell: the pattern is  D / DCD / DRD
+        ItemStack gold = new ItemStack(ModItems.GOLD_CELL);
+        gold.set(net.nexium.registry.ModComponents.BATTERY_CHARGE, 750_000L);
+        ItemStack diamondCell = craft(h, java.util.List.of(empty, diamond, empty, diamond, gold, diamond, diamond, redstone, diamond));
+        h.assertTrue(diamondCell.is(ModItems.DIAMOND_CELL), "a Gold Cell, diamonds and a redstone block make a Diamond Cell");
+        h.assertValueEqual(ItemEnergy.stored(diamondCell), 750_000L, "and the Diamond Cell keeps the 750,000 NE the Gold Cell held");
+        // Diamond Cell to Nexium Cell, past what a cell took in before
+        diamondCell.set(net.nexium.registry.ModComponents.BATTERY_CHARGE, 9_000_000L);
+        ItemStack nexiumCell = craft(h, java.util.List.of(empty, nexium, empty, nexium, diamondCell, nexium, nexium, redstone, nexium));
+        h.assertTrue(nexiumCell.is(ModItems.NEXIUM_CELL), "a Diamond Cell, Nexium ingots and a redstone block make a Nexium Cell");
+        h.assertValueEqual(ItemEnergy.stored(nexiumCell), 9_000_000L, "with its 9,000,000 NE");
+        // An empty one gives an empty one
+        ItemStack fresh = craft(h, java.util.List.of(empty, diamond, empty, diamond, new ItemStack(ModItems.GOLD_CELL), diamond, diamond, redstone, diamond));
+        h.assertValueEqual(ItemEnergy.stored(fresh), 0L, "an empty Gold Cell gives an empty Diamond Cell");
+        // Batteries: Gold to Diamond  DRD / RBR / DRD
+        ItemStack goldBattery = new ItemStack(ModBlocks.GOLD_BATTERY);
+        goldBattery.set(net.nexium.registry.ModComponents.BATTERY_CHARGE, 900_000L);
+        ItemStack diamondBattery = craft(h, java.util.List.of(diamond, redstone, diamond, redstone, goldBattery, redstone, diamond, redstone, diamond));
+        h.assertTrue(diamondBattery.is(ModBlocks.DIAMOND_BATTERY.asItem()), "a Gold Battery makes a Diamond Battery");
+        h.assertValueEqual(diamondBattery.get(net.nexium.registry.ModComponents.BATTERY_CHARGE), 900_000L, "keeping its 900,000 NE");
         h.succeed();
     }
 }

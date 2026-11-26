@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.31.1
+
+* **Upgrading a Cell or a Battery keeps its charge.** The Gold, Diamond and Nexium Cell and Battery recipes (a lower tier in the middle) give the new
+  one the energy the old one held, up to what the new one can hold.
+* **The Nexium Cell holds 100,000,000 NE** (it was 1,000,000,000). The Nexium Battery still holds 1,000,000,000. A Nexium Cell that held more
+  than 100,000,000 is cut down to the new limit.
+
 ## 1.31.0
 
 * **Nexium Battery and Nexium Cell**: a fourth tier that holds **1,000,000,000 NE** (a hundred Diamond ones). Same pattern as the Gold and Diamond

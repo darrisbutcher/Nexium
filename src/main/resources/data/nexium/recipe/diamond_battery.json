@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "nexium:charge_keeping_shaped",
   "category": "misc",
   "pattern": [
     "DRD",
