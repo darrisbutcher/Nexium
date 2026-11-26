@@ -38,6 +38,25 @@ public class PowerMeterGameTest {
     }
 
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
+    public void aMeterFacadeOnAConduitWorksLikeAMeterAgainstIt(GameTestHelper h) {
+        BlockPos face = new BlockPos(2, 2, 3), energy = new BlockPos(3, 2, 3);
+        h.setBlock(face, ModBlocks.CONDUIT_BUNDLE);
+        h.setBlock(energy, ModBlocks.CONDUIT_BUNDLE);
+        var faced = h.getBlockEntity(face, ConduitBundleBlockEntity.class);
+        faced.addConduit(ConduitType.ITEM, 1);
+        faced.setFacade(ModBlocks.POWER_METER.defaultBlockState());
+        h.assertTrue(PowerMeter.isMeter(h.getLevel(), h.absolutePos(face)), "a conduit wearing the meter is a meter");
+        h.assertTrue(PowerMeter.networkOf(h.getLevel(), h.absolutePos(face)) == null, "with no Energy Conduit in reach it has no network");
+        h.getBlockEntity(energy, ConduitBundleBlockEntity.class).addConduit(ConduitType.ENERGY, 1);
+        h.assertTrue(PowerMeter.networkOf(h.getLevel(), h.absolutePos(face)) != null, "an Energy Conduit beside it gives it a network");
+        faced.addConduit(ConduitType.ENERGY, 1);
+        h.assertTrue(PowerMeter.networkOf(h.getLevel(), h.absolutePos(face)) == EnergyNetwork.of(faced), "carrying Energy itself, it reports its own network");
+        faced.setFacade(null);
+        h.assertFalse(PowerMeter.isMeter(h.getLevel(), h.absolutePos(face)), "without the facade it is just a conduit");
+        h.succeed();
+    }
+
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 40)
     public void aMeterAwayFromConduitsHasNoNetwork(GameTestHelper h) {
         h.setBlock(METER, ModBlocks.POWER_METER);
         h.assertTrue(PowerMeter.networkOf(h.getLevel(), h.absolutePos(METER)) == null, "no Energy Conduit beside it, no network");

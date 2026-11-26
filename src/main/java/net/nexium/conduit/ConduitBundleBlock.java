@@ -124,6 +124,11 @@ public class ConduitBundleBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity be)) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
+        // Wearing a Power Meter as its facade, a plain click opens the dashboard; sneaking opens the side menu
+        if (be.facade() != null && be.facade().is(net.nexium.registry.ModBlocks.POWER_METER) && !player.isSecondaryUseActive()) {
+            net.nexium.energy.PowerMeter.open((net.minecraft.server.level.ServerPlayer) player, pos);
+            return InteractionResult.SUCCESS;
+        }
         net.minecraft.core.Direction side = ConduitWrenchItem.targetSide(hit.getLocation(), pos, hit.getDirection(), mask(state));
         net.nexium.util.Menus.open((net.minecraft.server.level.ServerPlayer) player,
                 net.minecraft.network.chat.Component.translatable("screen.nexium.conduit_config"),

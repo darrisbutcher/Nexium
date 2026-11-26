@@ -32,9 +32,16 @@ public class PowerMeterScreen extends Screen {
     private static final int GREEN = 0xFF55D86B, ORANGE = 0xFFFFA23C, RED = 0xFFFF5555, TEXT = 0xFFE0E0E0, DIM = 0xFF8C8C98, GOLD = 0xFFFFBE3C;
     private static final int BAR_BG = 0xFF1A1A22, EDGE = 0xFF50505F, PANEL = 0xE0101016;
 
+    /** The tabs of the list, left to right: what makes power, the batteries, what uses it. */
+    private static final EnergyNetwork.Role[] TAB_ROLE = {EnergyNetwork.Role.PRODUCER, EnergyNetwork.Role.BATTERY, EnergyNetwork.Role.CONSUMER};
+    private static final String[] TAB_KEY = {"generation", "batteries", "consumers"};
+    /** The tab last used, so the next dashboard opens on it. */
+    private static int lastTab;
+
     private BlockPos meter;
     private EnergyNetwork.Report report;
-    private int left, top, panelH, scroll, sinceRequest;
+    private int left, top, panelH, scroll, sinceRequest, tab = lastTab;
+    private final Button[] tabButtons = new Button[TAB_ROLE.length];
     private final Button[] priority = new Button[ROWS], power = new Button[ROWS];
     private final Endpoint[] shown = new Endpoint[ROWS];
 
@@ -59,6 +66,32 @@ public class PowerMeterScreen extends Screen {
         refresh();
     }
 
+    /** The tab shown: 0 generation, 1 batteries, 2 consumers. */
+    public int tab() {
+        return tab;
+    }
+
+    /** The middle of a tab's button in GUI pixels (for the client test). */
+    public int[] tabCentre(int index) {
+        return new int[]{tabButtons[index].getX() + tabButtons[index].getWidth() / 2, tabButtons[index].getY() + tabButtons[index].getHeight() / 2};
+    }
+
+    /** Switches to a tab, as a click on it would. */
+    public void selectTab(int index) {
+        tab = Mth.clamp(index, 0, TAB_ROLE.length - 1);
+        lastTab = tab;
+        scroll = 0;
+        refresh();
+    }
+
+    /** The blocks of the tab shown, in report order. */
+    private List<Endpoint> tabbed() {
+        List<Endpoint> out = new ArrayList<>();
+        if (report == null) return out;
+        for (Endpoint e : report.endpoints()) if (e.role() == TAB_ROLE[tab]) out.add(e);
+        return out;
+    }
+
     /** The rows shown now, top first (for tests). */
     public List<Endpoint> rows() {
         List<Endpoint> out = new ArrayList<>();
@@ -80,7 +113,12 @@ public class PowerMeterScreen extends Screen {
         panelH = 40 + ROWS * ROW + 12;
         left = (width - PANEL_W) / 2;
         top = Math.max(4, (height - panelH) / 2);
-        int listX = left + 150;
+        int listX = left + 150, tabW = 78, tabGap = 3;
+        for (int t = 0; t < TAB_ROLE.length; t++) {
+            final int index = t;
+            tabButtons[t] = addRenderableWidget(Button.builder(Component.translatable("screen.nexium.power.tab." + TAB_KEY[t]), b -> selectTab(index))
+                    .bounds(listX + t * (tabW + tabGap), top + 22, tabW, 14).build());
+        }
         for (int i = 0; i < ROWS; i++) {
             final int row = i;
             int y = top + 40 + i * ROW;
@@ -106,12 +144,18 @@ public class PowerMeterScreen extends Screen {
     }
 
     private void refresh() {
-        List<Endpoint> all = report == null ? List.of() : report.endpoints();
+        List<Endpoint> all = tabbed();
         scroll = Mth.clamp(scroll, 0, Math.max(0, all.size() - ROWS));
+        for (int t = 0; t < tabButtons.length; t++) {
+            Component name = Component.translatable("screen.nexium.power.tab." + TAB_KEY[t]);
+            tabButtons[t].setMessage(t == tab ? name.copy().withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD) : name.copy().withStyle(ChatFormatting.WHITE));
+        }
         for (int i = 0; i < ROWS; i++) {
             Endpoint e = scroll + i < all.size() ? all.get(scroll + i) : null;
             shown[i] = e;
-            priority[i].visible = power[i].visible = e != null;
+            power[i].visible = e != null;
+            // Priority only means something for what uses power
+            priority[i].visible = e != null && TAB_ROLE[tab] == EnergyNetwork.Role.CONSUMER;
             if (e == null) continue;
             priority[i].active = e.role() == EnergyNetwork.Role.CONSUMER && !e.direct();
             power[i].active = !e.direct();
@@ -135,8 +179,9 @@ public class PowerMeterScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (report != null && report.endpoints().size() > ROWS) {
-            scroll = Mth.clamp(scroll - (int) Math.signum(scrollY), 0, report.endpoints().size() - ROWS);
+        int count = tabbed().size();
+        if (count > ROWS) {
+            scroll = Mth.clamp(scroll - (int) Math.signum(scrollY), 0, count - ROWS);
             refresh();
             return true;
         }
@@ -154,6 +199,10 @@ public class PowerMeterScreen extends Screen {
         g.fill(left, top, left + PANEL_W, top + panelH, EDGE);
         g.fill(left + 1, top + 1, left + PANEL_W - 1, top + panelH - 1, PANEL);
         g.fill(left + 146, top + 24, left + 147, top + panelH - 6, EDGE);
+        // A bar under the tab in use, and a line under all of them
+        int listX = left + 150;
+        g.fill(listX, top + 37, left + PANEL_W - 10, top + 38, EDGE);
+        g.fill(listX + tab * 81, top + 36, listX + tab * 81 + 78, top + 38, GOLD);
     }
 
     @Override
@@ -200,7 +249,10 @@ public class PowerMeterScreen extends Screen {
 
         // Column heads of the list
         int listX = left + 150;
-        g.text(font, Component.translatable("screen.nexium.power.blocks", r.endpoints().size()), listX, top + 28, DIM, false);
+        List<Endpoint> tabbed = tabbed();
+        if (tabbed.isEmpty()) {
+            g.text(font, Component.translatable("screen.nexium.power.empty." + TAB_KEY[tab]), listX, top + 46, DIM, false);
+        }
         for (int i = 0; i < ROWS; i++) {
             Endpoint e = shown[i];
             if (e == null) continue;
@@ -218,12 +270,12 @@ public class PowerMeterScreen extends Screen {
             };
             int color = e.paused() ? DIM : e.role() == EnergyNetwork.Role.PRODUCER ? GREEN : e.role() == EnergyNetwork.Role.CONSUMER ? ORANGE : 0xFF3FB8FF;
             g.text(font, rateText, listX + 20, ry + 11, color, false);
-            Component roleName = Component.translatable("screen.nexium.power.role." + e.role().name().toLowerCase(Locale.ROOT));
-            g.text(font, e.direct() ? Component.translatable("screen.nexium.power.role.direct") : roleName, listX + 20 + font.width(rateText) + 6, ry + 11, DIM, false);
+            // The tab already says what it is; only a machine fed straight by a Battery needs a note
+            if (e.direct()) g.text(font, Component.translatable("screen.nexium.power.role.direct"), listX + 20 + font.width(rateText) + 6, ry + 11, DIM, false);
         }
-        if (r.endpoints().size() > ROWS) {
-            int trackH = ROWS * ROW, thumb = Math.max(10, trackH * ROWS / r.endpoints().size());
-            int thumbY = top + 40 + (trackH - thumb) * scroll / Math.max(1, r.endpoints().size() - ROWS);
+        if (tabbed.size() > ROWS) {
+            int trackH = ROWS * ROW, thumb = Math.max(10, trackH * ROWS / tabbed.size());
+            int thumbY = top + 40 + (trackH - thumb) * scroll / Math.max(1, tabbed.size() - ROWS);
             g.fill(left + PANEL_W - 8, top + 40, left + PANEL_W - 5, top + 40 + trackH, 0xFF2A2A36);
             g.fill(left + PANEL_W - 8, thumbY, left + PANEL_W - 5, thumbY + thumb, 0xFF8C8CAA);
         }

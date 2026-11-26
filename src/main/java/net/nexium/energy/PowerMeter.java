@@ -14,9 +14,20 @@ import net.nexium.registry.ModBlocks;
 public final class PowerMeter {
     private static final double REACH_SQR = 12 * 12;
 
-    /** The energy network the meter at {@code pos} is against, or null (not a meter, or no Energy Conduit beside it). */
+    /** A Power Meter block, or a conduit wearing one as its facade (which works just like a meter against the conduit). */
+    public static boolean isMeter(Level level, BlockPos pos) {
+        if (level.getBlockState(pos).is(ModBlocks.POWER_METER)) return true;
+        return level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity bundle
+                && bundle.facade() != null && bundle.facade().is(ModBlocks.POWER_METER);
+    }
+
+    /**
+     * The energy network the meter at {@code pos} is against, or null (not a meter, or no Energy Conduit beside it). A conduit
+     * wearing the meter as its facade reports on its own network when it carries Energy, else on an Energy Conduit beside it.
+     */
     public static EnergyNetwork networkOf(Level level, BlockPos pos) {
-        if (!level.getBlockState(pos).is(ModBlocks.POWER_METER)) return null;
+        if (!isMeter(level, pos)) return null;
+        if (level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity own && own.has(ConduitType.ENERGY)) return EnergyNetwork.of(own);
         for (Direction d : Direction.values()) {
             if (level.getBlockEntity(pos.relative(d)) instanceof ConduitBundleBlockEntity bundle && bundle.has(ConduitType.ENERGY)) {
                 return EnergyNetwork.of(bundle);
@@ -44,7 +55,7 @@ public final class PowerMeter {
     }
 
     private static boolean reachable(ServerPlayer player, BlockPos pos) {
-        return player.level().getBlockState(pos).is(ModBlocks.POWER_METER)
+        return isMeter(player.level(), pos)
                 && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= REACH_SQR;
     }
 

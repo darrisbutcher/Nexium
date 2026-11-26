@@ -65,15 +65,27 @@ public class PowerMeterClientTest implements FabricClientGameTest {
             world.getServer().runOnServer(server -> PowerMeter.open(server.getPlayerList().getPlayers().get(0), meter));
             ctx.waitTicks(5);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof PowerMeterScreen), "the meter opens the dashboard");
+            // Three tabs: what makes power, the batteries, what uses it
+            ctx.runOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).selectTab(0));
+            ctx.waitTicks(2);
             List<EnergyNetwork.Endpoint> rows = ctx.computeOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).rows());
-            check(rows.size() == 4, "four blocks on the network: generator, two farms, battery; got " + rows);
-            check(rows.getFirst().role() == EnergyNetwork.Role.PRODUCER && rows.getLast().role() == EnergyNetwork.Role.BATTERY,
-                    "producers first, batteries last: " + rows);
+            check(rows.size() == 1 && rows.getFirst().role() == EnergyNetwork.Role.PRODUCER, "the Generation tab lists only the generator: " + rows);
+            System.out.println("[nexus] power meter generation tab: " + ctx.takeScreenshot("nexus_power_meter_tab_generation"));
+            ctx.runOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).selectTab(1));
+            ctx.waitTicks(2);
+            rows = ctx.computeOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).rows());
+            check(rows.size() == 1 && rows.getFirst().role() == EnergyNetwork.Role.BATTERY, "the Batteries tab lists only the battery: " + rows);
+            System.out.println("[nexus] power meter batteries tab: " + ctx.takeScreenshot("nexus_power_meter_tab_batteries"));
+            // ... and the tab buttons answer a real click
+            RealMouse.leftClick(ctx, ctx.computeOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).tabCentre(2)));
+            ctx.waitTicks(3);
+            check(ctx.computeOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).tab()) == 2, "clicking the third tab opens it");
+            rows = ctx.computeOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).rows());
+            check(rows.size() == 2 && rows.stream().allMatch(e -> e.role() == EnergyNetwork.Role.CONSUMER), "the tab for what uses power lists the two farms: " + rows);
             System.out.println("[nexus] power meter dashboard: " + ctx.takeScreenshot("nexus_power_meter_screen"));
 
             // The first consumer's priority button: Normal -> High, reaching the conduit side that feeds it
             int consumer = 0;
-            for (int i = 0; i < rows.size(); i++) if (rows.get(i).role() == EnergyNetwork.Role.CONSUMER) { consumer = i; break; }
             final int row = consumer;
             BlockPos machine = rows.get(row).pos();
             ctx.runOnClient(mc -> ((PowerMeterScreen) mc.gui.screen()).pressPriority(row));

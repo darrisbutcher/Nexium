@@ -56,6 +56,33 @@ public class ConduitEmptyHandClientTest implements FabricClientGameTest {
                     "an empty-handed right-click opens the conduit menu");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
             System.out.println("[nexus] conduit empty hand menu: " + ctx.takeScreenshot("nexus_conduit_empty_hand_menu"));
+            ctx.getInput().pressKey(options -> options.keyInventory);
+            ctx.waitFor(mc -> mc.gui.screen() == null);
+
+            // Wearing a Power Meter as its facade, the same click opens the dashboard, and sneaking opens the side menu
+            world.getServer().runOnServer(server -> {
+                var be = (ConduitBundleBlockEntity) server.overworld().getBlockEntity(at[0]);
+                be.addConduit(ConduitType.ENERGY, 1);
+                be.setFacade(ModBlocks.POWER_METER.defaultBlockState());
+            });
+            ctx.waitTicks(5);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
+            ctx.waitFor(mc -> mc.gui.screen() != null);
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof net.nexium.client.screen.PowerMeterScreen),
+                    "a conduit wearing the Power Meter opens the dashboard on a right-click");
+            ctx.runOnClient(mc -> mc.gui.toastManager().clear());
+            System.out.println("[nexus] meter facade dashboard: " + ctx.takeScreenshot("nexus_meter_facade_dashboard"));
+            ctx.getInput().pressKey(options -> options.keyInventory);
+            ctx.waitFor(mc -> mc.gui.screen() == null);
+            ctx.getInput().holdKey(options -> options.keyShift);
+            ctx.waitTicks(3);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
+            ctx.waitFor(mc -> mc.gui.screen() != null);
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> sc && sc.getMenu() instanceof ConduitConfigMenu),
+                    "sneaking opens the conduit menu instead");
+            ctx.getInput().releaseKey(options -> options.keyShift);
         }
     }
 
