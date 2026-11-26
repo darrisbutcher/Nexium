@@ -317,6 +317,7 @@ is placed as one and uses two slabs.
 ### Nexium
 * **Nexium Ingot**: a diamond, an emerald and a netherite ingot in a crafting table make
   **3 ingots**. Nine make a **Block of Nexium** (a beacon base).
+* **Nexium Nugget**: nine make a Nexium Ingot and an ingot makes nine. A nugget is the centre of a Redstone Fuel Rod.
 * **Gear**: at a smithing table, the netherite piece and a Nexium ingot (leave the template slot empty). There is a
   Nexium **sword, pickaxe, axe, shovel, hoe, spear, helmet, chestplate, leggings and boots**, and the Nexium AIOT.
   Everything Nexium survives fire and lava.
@@ -829,7 +830,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   blue ice and water, nine rods at +2 settle at 59.9% heat and make the full 2,700 NE/t. Output is full to 60% heat, falls steadily to 10% at 90%, and
   at 90% the reactor shuts off until it is under 50%. It never explodes. A rod lasts 96 hours at the default depth and
   leaves a **Spent Fuel Rod**.
-* **Recipes**: Redstone Fuel Rod: 8 redstone blocks around a Nexium ingot; a Spent Fuel Rod with 8 redstone blocks around it
+* **Recipes**: Redstone Fuel Rod: 8 redstone blocks around a Nexium Nugget; a Spent Fuel Rod with 8 redstone blocks around it
   gives a fresh one. Reactor: nexium ingots in the corners, iron blocks above and below the middle, redstone blocks
   beside it and a diamond block in the centre.
 

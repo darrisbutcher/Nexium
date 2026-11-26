@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.10
+
+* **Nexium Nugget**: a ninth of a Nexium Ingot. Nine make an ingot and an ingot makes nine.
+* **Redstone Fuel Rods need a Nexium Nugget** in the middle instead of an ingot (8 Redstone Blocks around a nugget), so a rod costs a ninth
+  of the Nexium it did. A Spent Fuel Rod still makes a fresh one with 8 Redstone Blocks.
+* **Fix: the Power Meter no longer says "Not enough power!" when there is plenty.** Generators on a Both conduit side were counted as machines
+  going without power, so a network with several generators always showed a deficit.
+
 ## 1.26.9
 
 * **Power Meter tabs**: the dashboard's list now has three tabs, **Generation**, **Batteries** and **Using power**, each listing only its own

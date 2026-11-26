@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nexium:nexium_ingot"
+  ],
+  "result": {
+    "id": "nexium:nexium_nugget",
+    "count": 9
+  }
+}
