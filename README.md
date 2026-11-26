@@ -171,6 +171,7 @@ place it or right-click it to outline those chunks for a minute.
 * A conduit arm shows an **arrow** for what its side does: out to the block when it inserts, in to the conduit when it
   extracts, and a double arrow when it does both (whichever conduit types the arm carries). It sits in the room the colour
   rings leave on the arm, and is left out only when item, fluid and energy conduits all insert and extract on that one arm.
+* **Empty hand**: right-click a conduit with nothing in your hand to open the full settings of the side you clicked.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
   facade.

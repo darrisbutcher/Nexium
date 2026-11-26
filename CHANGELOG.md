@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.7
+
+* **Right-click a conduit with an empty hand** to open the same side settings the wrench opens with sneak + right-click.
+* **Nexium Sword texture**: removed two stray dark pixel marks in the corners that showed as a floating L beside the blade in first person.
+* **Conduit caps**: the red energy cap and its rings sit flush on the dark part instead of floating above it.
+
 ## 1.26.6
 
 * **The Combustion Generator makes twice the power**: 40 NE a tick (was 20), for the same burn time, so a piece of coal is now 64,000 NE.
