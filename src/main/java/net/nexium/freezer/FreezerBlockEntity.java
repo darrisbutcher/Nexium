@@ -97,9 +97,20 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
 
     public SingleVariantStorage<FluidVariant> tank() { return tank; }
 
+    /** Switched off from its screen: no work and no power use (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     // ---------------------------------------------------------------- working
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FreezerBlockEntity freezer) {
+        if (freezer.off) return;
         freezer.work();
     }
 
@@ -258,6 +269,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        output.putBoolean("off", off);
         ContainerHelper.saveAllItems(output, items);
         output.store("fluid", FluidVariant.CODEC, tank.variant);
         output.putLong("amount", tank.amount);
@@ -271,6 +283,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        off = input.getBooleanOr("off", false);
         items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         tank.variant = input.read("fluid", FluidVariant.CODEC).orElse(FluidVariant.blank());
@@ -301,6 +314,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
         if (color >= 0) components.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
         if (tank.amount > 0) components.set(ModComponents.FREEZER_WATER, tank.amount);
         if (mode != FreezerMode.ICE) components.set(ModComponents.FREEZER_MODE, mode.ordinal());
@@ -310,6 +324,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
         DyedItemColor dyed = components.get(DataComponents.DYED_COLOR);
         color = dyed == null ? -1 : dyed.rgb() & 0xFFFFFF;
         Long water = components.get(ModComponents.FREEZER_WATER);
@@ -323,6 +338,7 @@ public class FreezerBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
+        output.discard("off");
         output.discard("color");
         output.discard("amount");
         output.discard("fluid");

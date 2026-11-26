@@ -33,12 +33,15 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     }
 
     private Button modeButton, overclockButton;
+    private Button switchButton;
 
     @Override
     protected void init() {
         super.init();
         overclockButton = addRenderableWidget(OverclockUi.create(leftPos, topPos, imageWidth, menu.containerId, FarmMenu.BTN_OVERCLOCK, FarmMenu.BTN_OVERCLOCK_BACK));
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId, FarmMenu.BTN_SWITCH, FarmMenu.INVENTORY_TOP));
         OverclockUi.refresh(overclockButton, menu.overclock(), menu.kind().energyPerTick());
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
         if (!menu.kind().modes().isEmpty()) {
             // Right of the status line: click to step through what the farm makes
             modeButton = addRenderableWidget(Button.builder(Component.empty(), b -> {
@@ -59,6 +62,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         super.containerTick();
         if (modeButton != null) refreshModeButton();
         OverclockUi.refresh(overclockButton, menu.overclock(), menu.kind().energyPerTick());
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
     }
 
     @Override

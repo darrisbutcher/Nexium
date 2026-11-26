@@ -3,6 +3,13 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.6
+
+* **The Combustion Generator makes twice the power**: 40 NE a tick (was 20), for the same burn time, so a piece of coal is now 64,000 NE.
+* **An On/Off button on every powered machine**: each farm, the Iron Farm, the Experience Farm, the Freezer and the Nexus Furnace has a
+  button beside the Inventory label of its screen. Off, the machine does no work and uses no power (it just keeps what it already has).
+  The setting is saved with the machine and kept in the dropped item, like Overclock.
+
 ## 1.26.5
 
 * **The Charging Station charges faster with fewer cells.** It charges 4,000 NE a tick in all, shared by the cells that are charging: one

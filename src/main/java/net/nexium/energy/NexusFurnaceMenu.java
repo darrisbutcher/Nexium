@@ -16,13 +16,15 @@ import org.jspecify.annotations.Nullable;
 /** The Nexus Furnace's screen: eight inputs over eight outputs, a progress bar for each, the energy bar, the banked experience. */
 public class NexusFurnaceMenu extends AbstractContainerMenu {
     public static final int WIDTH = 176, HEIGHT = 190;
+    /** Switches the machine off or on. */
+    public static final int BTN_SWITCH = 9;
     public static final int INPUT_X = 16, INPUT_Y = 18, OUTPUT_Y = 44;
     public static final int INVENTORY_TOP = 108;
     public static final int BTN_COLLECT = 0;
     private static final int SLOTS = NexusFurnaceBlockEntity.SLOTS;
     private static final int FIRST_PLAYER_SLOT = NexusFurnaceBlockEntity.SIZE;
     /** Screen values travel as 16-bit numbers, so the energy and the experience are each sent as two halves of 15 bits. */
-    private static final int D_PROGRESS = 0, D_ENERGY = SLOTS, D_XP = SLOTS + 2, D_WORKING = SLOTS + 4, D_WANTING = SLOTS + 5, D_COUNT = SLOTS + 6;
+    private static final int D_PROGRESS = 0, D_ENERGY = SLOTS, D_XP = SLOTS + 2, D_WORKING = SLOTS + 4, D_WANTING = SLOTS + 5, D_OFF = SLOTS + 6, D_COUNT = SLOTS + 7;
     private static final long MAX_XP_SHOWN = 0x3FFF_FFFFL;
 
     private final Container container;
@@ -69,6 +71,7 @@ public class NexusFurnaceMenu extends AbstractContainerMenu {
                     case D_XP + 1 -> (int) (xpShown() >> 15);
                     case D_WORKING -> furnace.working();
                     case D_WANTING -> furnace.wanting();
+                    case D_OFF -> furnace.isOff() ? 1 : 0;
                     default -> 0;
                 };
             }
@@ -96,8 +99,15 @@ public class NexusFurnaceMenu extends AbstractContainerMenu {
     public int working() { return data.get(D_WORKING); }
     public int wanting() { return data.get(D_WANTING); }
 
+    /** Whether the machine is switched off. */
+    public boolean off() { return data.get(D_OFF) != 0; }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BTN_SWITCH && furnace != null) {
+            furnace.setOff(!furnace.isOff());
+            return true;
+        }
         if (id == BTN_COLLECT && furnace != null) {
             furnace.takeExperience(player);
             return true;

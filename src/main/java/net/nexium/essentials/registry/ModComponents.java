@@ -40,6 +40,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> FARM_MODE = register("farm_mode",
             b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a machine (farm, Iron Farm, Experience Farm, Freezer, Nexus Furnace): switched off from its screen, kept in the dropped item. */
+    public static final DataComponentType<net.minecraft.util.Unit> MACHINE_OFF = register("machine_off",
+            b -> b.persistent(net.minecraft.util.Unit.CODEC).networkSynchronized(net.minecraft.util.Unit.STREAM_CODEC));
+
     /** A farm's overclock level (1 to 3: 2x, 4x, 8x), kept in the dropped item. Off is not stored. */
     public static final DataComponentType<Integer> OVERCLOCK = register("overclock",
             b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));

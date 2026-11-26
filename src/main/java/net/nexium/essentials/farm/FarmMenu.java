@@ -19,6 +19,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class FarmMenu extends AbstractContainerMenu {
     public static final int WIDTH = 176, HEIGHT = 194;
+    /** Switches the machine off or on. */
+    public static final int BTN_SWITCH = 9;
     public static final int INPUT_X = 8, INPUT_Y = 20;
     public static final int OUTPUT_TOP = 44;
     public static final int INVENTORY_TOP = 112;
@@ -26,7 +28,7 @@ public class FarmMenu extends AbstractContainerMenu {
     public static final int BTN_OVERCLOCK = 2, BTN_OVERCLOCK_BACK = 3;
 
     private static final int FIRST_PLAYER_SLOT = FarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_OVERCLOCK = 5, D_COUNT = 6;
+    private static final int D_PROGRESS = 0, D_FLAGS = 1, D_CYCLE = 2, D_MODE = 4, D_OVERCLOCK = 5, D_OFF = 6, D_COUNT = 7;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_STARVED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
@@ -88,6 +90,7 @@ public class FarmMenu extends AbstractContainerMenu {
                     case D_CYCLE + 1 -> farm.cycleTicks() >> 15;
                     case D_MODE -> farm.mode();
                     case D_OVERCLOCK -> farm.overclock();
+                    case D_OFF -> farm.isOff() ? 1 : 0;
                     default -> 0;
                 };
             }
@@ -123,8 +126,15 @@ public class FarmMenu extends AbstractContainerMenu {
 
 
     /** Button 0 steps the mode of the farms that have modes. */
+    /** Whether the machine is switched off. */
+    public boolean off() { return data.get(D_OFF) != 0; }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BTN_SWITCH && farm != null) {
+            farm.setOff(!farm.isOff());
+            return true;
+        }
         if (id == 0 && farm != null && !kind.modes().isEmpty()) {
             farm.cycleMode();
             return true;

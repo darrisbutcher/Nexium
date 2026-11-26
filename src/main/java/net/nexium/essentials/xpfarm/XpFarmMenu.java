@@ -19,13 +19,15 @@ import org.jspecify.annotations.Nullable;
  */
 public class XpFarmMenu extends AbstractContainerMenu {
     public static final int WIDTH = 176, HEIGHT = 204;
+    /** Switches the machine off or on. */
+    public static final int BTN_SWITCH = 9;
     public static final int INVENTORY_TOP = 122;
     /** Buttons: collect everything, or just enough for 1 or 10 levels. */
     public static final int BTN_COLLECT_ALL = 0, BTN_LEVEL_1 = 1, BTN_LEVEL_10 = 2;
     /** Menu buttons: step the overclock forward or back. */
     public static final int BTN_OVERCLOCK = 3, BTN_OVERCLOCK_BACK = 4;
 
-    private static final int D_XP = 0, D_ENERGY = 2, D_FLAGS = 4, D_OVERCLOCK = 5, D_COUNT = 6;
+    private static final int D_XP = 0, D_ENERGY = 2, D_FLAGS = 4, D_OVERCLOCK = 5, D_OFF = 6, D_COUNT = 7;
     private static final int FLAG_FULL = 1, FLAG_PAUSED = 2, FLAG_UNPOWERED = 4, FLAG_WORKING = 8;
 
     private final ContainerData data;
@@ -61,6 +63,7 @@ public class XpFarmMenu extends AbstractContainerMenu {
                     case D_FLAGS -> (farm.isFull() ? FLAG_FULL : 0) | (farm.isPaused() ? FLAG_PAUSED : 0)
                             | (farm.isUnpowered() ? FLAG_UNPOWERED : 0) | (farm.isWorking() ? FLAG_WORKING : 0);
                     case D_OVERCLOCK -> farm.overclock();
+                    case D_OFF -> farm.isOff() ? 1 : 0;
                     default -> 0;
                 };
             }
@@ -89,8 +92,15 @@ public class XpFarmMenu extends AbstractContainerMenu {
     /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
     public int overclock() { return Overclock.clamp(data.get(D_OVERCLOCK)); }
 
+    /** Whether the machine is switched off. */
+    public boolean off() { return data.get(D_OFF) != 0; }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BTN_SWITCH && farm != null) {
+            farm.setOff(!farm.isOff());
+            return true;
+        }
         if (farm == null) return false;
         switch (id) {
             case BTN_COLLECT_ALL -> farm.takeAll(player);

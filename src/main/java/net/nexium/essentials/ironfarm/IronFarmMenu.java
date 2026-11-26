@@ -22,6 +22,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class IronFarmMenu extends AbstractContainerMenu {
     public static final int WIDTH = 176, HEIGHT = 194;
+    /** Switches the machine off or on. */
+    public static final int BTN_SWITCH = 9;
     public static final int BREAD_X = 8, BREAD_Y = 20;
     public static final int OUTPUT_TOP = 44;
     public static final int INVENTORY_TOP = 112;
@@ -29,7 +31,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
     public static final int BTN_OVERCLOCK = 2, BTN_OVERCLOCK_BACK = 3;
 
     private static final int FIRST_PLAYER_SLOT = IronFarmBlockEntity.SIZE;
-    private static final int D_PROGRESS = 0, D_BOOST = 1, D_COOLDOWN = 3, D_FLAGS = 5, D_SPEED_UP = 6, D_GOLEM_TICKS = 7, D_OVERCLOCK = 8, D_COUNT = 9;
+    private static final int D_PROGRESS = 0, D_BOOST = 1, D_COOLDOWN = 3, D_FLAGS = 5, D_SPEED_UP = 6, D_GOLEM_TICKS = 7, D_OVERCLOCK = 8, D_OFF = 9, D_COUNT = 10;
     private static final int FLAG_FULL = 1, FLAG_BOOSTING = 2, FLAG_PAUSED = 4, FLAG_UNPOWERED = 8;
 
     private final Container container;
@@ -86,6 +88,7 @@ public class IronFarmMenu extends AbstractContainerMenu {
                             | (farm.isUnpowered() ? FLAG_UNPOWERED : 0);
                     case D_GOLEM_TICKS -> NexusConfig.get().ironFarmGolemTicks;
                     case D_OVERCLOCK -> farm.overclock();
+                    case D_OFF -> farm.isOff() ? 1 : 0;
                     default -> 0;
                 };
             }
@@ -130,8 +133,15 @@ public class IronFarmMenu extends AbstractContainerMenu {
     /** The overclock level: 0 off, 1 is 2x, 2 is 4x, 3 is 8x. */
     public int overclock() { return Overclock.clamp(data.get(D_OVERCLOCK)); }
 
+    /** Whether the machine is switched off. */
+    public boolean off() { return data.get(D_OFF) != 0; }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BTN_SWITCH && farm != null) {
+            farm.setOff(!farm.isOff());
+            return true;
+        }
         if (farm == null) return false;
         if (id == BTN_OVERCLOCK) farm.setOverclock(Overclock.next(farm.overclock()));
         else if (id == BTN_OVERCLOCK_BACK) farm.setOverclock(Overclock.previous(farm.overclock()));
