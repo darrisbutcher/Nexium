@@ -184,9 +184,9 @@ place it or right-click it to outline those chunks for a minute.
 * Every side has an **insert** colour and one or more **extract** colours; what a side extracts goes to insert sides
   of any of its extract colours. In the side's settings the **Out** row is a grid of the 16 colours: click one to switch
   it on or off (at least one stays on). A side has one filter, shared by all its colours.
-* Where a conduit meets a machine it has a **plate** that shows each of the three strands (energy on top, then item, then fluid):
-  a triangle for what the side does (pointing in toward the strand for insert, away for extract, one each way for both), a pip in
-  its insert colour, and up to four pips in its extract colours (dark where there is none).
+* Where a conduit meets a machine it has a **plate** that spells what each strand does there in the strand's own colour: **INSERT**,
+  **EXTRACT**, **BOTH**, or a dim **OFF** (energy red across the top, item green up the left edge, fluid blue up the right). Channel colours are
+  not drawn on the plate; see them in the side's settings. The three strands keep the same order on every arm, up and down included.
 * **Empty hand**: right-click a conduit with nothing in your hand to open the full settings of the side you clicked.
 * **Wrench**: right-click a side to cycle its mode, sneak + right-click for the full settings (colours, redstone
   control, priority, round-robin, filter, speed upgrades). Right-click a conduit with a full block to give it a
