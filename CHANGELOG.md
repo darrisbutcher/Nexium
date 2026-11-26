@@ -3,6 +3,15 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.30.0
+
+* **Advanced Conduit**: Tier 2 is now its own item. Put an Advanced Conduit Upgrade in the middle of a crafting grid with 8 Conduits around it
+  to make 8 Advanced Conduits, which place as Tier 2 (items, fluids and energy). The upgrade still works on a placed Tier 1 conduit too. A Tier 2
+  conduit drops one Advanced Conduit when broken, and old Tier 2 conduit items turn into Advanced Conduits when carried.
+* **Vein mining takes blocks with contents**: chests, hoppers, furnaces, conduits, drawers, tanks, machines and the like now vein mine like any
+  other block the tool is right for, and drop what they hold as usual. The blacklist setting and the `#nexium:vein_excluded` tag still keep
+  blocks out; the 3x3 module still leaves them alone.
+
 ## 1.29.0
 
 * **Fluid Tanks**: the **Iron** (16 buckets), **Gold** (64) and **Diamond** (256) Fluid Tank, each a glass cube with a tier-coloured frame that
