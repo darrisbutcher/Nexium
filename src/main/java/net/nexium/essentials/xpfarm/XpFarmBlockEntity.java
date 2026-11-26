@@ -75,9 +75,20 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
         return getBlockState().hasProperty(XpFarmBlock.POWERED) && getBlockState().getValue(XpFarmBlock.POWERED);
     }
 
+    /** Switched off from its screen: no work and no power use (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     // ---------------------------------------------------------------- working
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, XpFarmBlockEntity farm) {
+        if (farm.off) return;
         farm.work();
     }
 
@@ -166,6 +177,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        output.putBoolean("off", off);
         output.putLong("experience", experience);
         output.putInt("overclock", overclock);
         output.putLong("energy", energy.stored());
@@ -174,6 +186,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        off = input.getBooleanOr("off", false);
         experience = Math.max(0, Math.min(CAPACITY, input.getLongOr("experience", 0L)));
         overclock = Overclock.clamp(input.getIntOr("overclock", 0));
         energy.setCapacity(Overclock.capacity(ENERGY_PER_TICK, overclock));
@@ -184,12 +197,14 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
         if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
     }
 
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
         Integer saved = components.get(ModComponents.OVERCLOCK);
         if (saved != null) setOverclock(saved);
     }
@@ -197,6 +212,7 @@ public class XpFarmBlockEntity extends BlockEntity implements ExtendedMenuProvid
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
+        output.discard("off");
         output.discard("overclock");
     }
 }

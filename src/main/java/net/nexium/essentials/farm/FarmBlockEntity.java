@@ -109,9 +109,20 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         return getBlockState().getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.ZOMBIFIED_PIGLIN;
     }
 
+    /** Switched off from its screen: no work and no power use (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     // ---------------------------------------------------------------- working
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FarmBlockEntity farm) {
+        if (farm.off) return;
         if (level instanceof ServerLevel serverLevel) farm.work(serverLevel);
     }
 
@@ -482,6 +493,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        output.putBoolean("off", off);
         ContainerHelper.saveAllItems(output, items);
         output.putInt("progress", progress);
         output.putInt("mode", mode);
@@ -493,6 +505,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        off = input.getBooleanOr("off", false);
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         progress = Math.max(0, input.getIntOr("progress", 0));
@@ -513,6 +526,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
         if (progress > 0) components.set(ModComponents.FARM_PROGRESS, progress);
         if (mode() > 0) components.set(ModComponents.FARM_MODE, mode());
         if (overclock > 0) components.set(ModComponents.OVERCLOCK, overclock);
@@ -521,6 +535,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
         Integer saved = components.get(ModComponents.FARM_PROGRESS);
         if (saved != null) progress = Math.max(0, saved);
         Integer savedMode = components.get(ModComponents.FARM_MODE);
@@ -532,6 +547,7 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
+        output.discard("off");
         output.discard("progress");
         output.discard("mode");
         output.discard("overclock");

@@ -256,9 +256,11 @@ public class SaveLoadGameTest {
 
         cases.add(new Case("Iron Farm", net.nexium.essentials.registry.ModBlocks.IRON_FARM, List.of(
                 part(IronFarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.IRON_INGOT, 5))),
-                part(IronFarmBlockEntity.class, "timers", be -> be.setTimers(new IronFarmTimers(10, 20, 30, 40))))));
+                part(IronFarmBlockEntity.class, "timers", be -> be.setTimers(new IronFarmTimers(10, 20, 30, 40))),
+                part(IronFarmBlockEntity.class, "switch", be -> be.setOff(true)))));
         cases.add(new Case("Experience Farm", net.nexium.essentials.registry.ModBlocks.XP_FARM, List.of(
                 part(net.nexium.essentials.xpfarm.XpFarmBlockEntity.class, "experience", be -> be.addExperience(12_345)),
+                part(net.nexium.essentials.xpfarm.XpFarmBlockEntity.class, "switch", be -> be.setOff(true)),
                 part(net.nexium.essentials.xpfarm.XpFarmBlockEntity.class, "energy", be -> be.energy().set(1234)))));
         cases.add(new Case("Farm Assembler", net.nexium.essentials.registry.ModBlocks.FARM_ASSEMBLER, List.of(
                 part(net.nexium.essentials.assembler.FarmAssemblerBlockEntity.class, "target", be -> be.select(net.nexium.essentials.assembler.AssemblyTarget.SHULKER, null)),
@@ -289,7 +291,8 @@ public class SaveLoadGameTest {
         cases.add(new Case("Nexus Furnace", ModBlocks.NEXUS_FURNACE, List.of(
                 part(net.nexium.energy.NexusFurnaceBlockEntity.class, "inputs", be -> { be.setItem(2, new ItemStack(Items.IRON_ORE, 12)); be.setItem(5, new ItemStack(Items.SAND, 3)); }),
                 part(net.nexium.energy.NexusFurnaceBlockEntity.class, "outputs", be -> be.setItem(9, new ItemStack(Items.IRON_INGOT, 7))),
-                part(net.nexium.energy.NexusFurnaceBlockEntity.class, "energy", be -> be.energy().set(4321)))));
+                part(net.nexium.energy.NexusFurnaceBlockEntity.class, "energy", be -> be.energy().set(4321)),
+                part(net.nexium.energy.NexusFurnaceBlockEntity.class, "switch", be -> be.setOff(true)))));
         cases.add(new Case("Iron Battery", ModBlocks.IRON_BATTERY, List.of(
                 part(net.nexium.energy.BatteryBlockEntity.class, "energy", be -> be.energy().set(123_456)))));
         cases.add(new Case("Gold Battery", ModBlocks.GOLD_BATTERY, List.of(
@@ -302,10 +305,12 @@ public class SaveLoadGameTest {
         cases.add(new Case("Freezer", ModBlocks.FREEZER, List.of(
                 part(net.nexium.freezer.FreezerBlockEntity.class, "water", be -> be.setWater(3 * FluidConstants.BUCKET)),
                 part(net.nexium.freezer.FreezerBlockEntity.class, "ice", be -> be.setItem(0, new ItemStack(Items.ICE, 5))),
-                part(net.nexium.freezer.FreezerBlockEntity.class, "mode", be -> be.setMode(net.nexium.freezer.FreezerMode.BLUE_ICE)))));
+                part(net.nexium.freezer.FreezerBlockEntity.class, "mode", be -> be.setMode(net.nexium.freezer.FreezerMode.BLUE_ICE)),
+                part(net.nexium.freezer.FreezerBlockEntity.class, "switch", be -> be.setOff(true)))));
         cases.add(new Case("Barter farm", net.nexium.essentials.registry.ModBlocks.FARMS.get(net.nexium.essentials.farm.FarmKind.PIGLIN_BARTER), List.of(
                 part(net.nexium.essentials.farm.FarmBlockEntity.class, "output", be -> be.setItem(0, new ItemStack(Items.ENDER_PEARL, 3))),
-                part(net.nexium.essentials.farm.FarmBlockEntity.class, "progress", be -> be.setProgress(33)))));
+                part(net.nexium.essentials.farm.FarmBlockEntity.class, "progress", be -> be.setProgress(33)),
+                part(net.nexium.essentials.farm.FarmBlockEntity.class, "switch", be -> be.setOff(true)))));
         return cases;
     }
 

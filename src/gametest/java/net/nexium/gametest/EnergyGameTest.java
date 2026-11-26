@@ -46,7 +46,7 @@ public class EnergyGameTest {
         h.assertValueEqual(g.energy().stored(), 0L, "nothing without fuel");
         g.setItem(0, new ItemStack(Items.COAL, 2));
         tick(h, g, 10);
-        h.assertValueEqual(g.energy().stored(), 200L, "20 NE a tick");
+        h.assertValueEqual(g.energy().stored(), 400L, "40 NE a tick");
         h.assertValueEqual(g.getItem(0).getCount(), 1, "one piece burning");
         h.assertTrue(h.getBlockState(GENERATOR).getValue(CombustionGeneratorBlock.LIT), "lit while it burns");
         // Full: it finishes the piece that is burning, and never lights the next

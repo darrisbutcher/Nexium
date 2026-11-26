@@ -56,7 +56,7 @@ public class MoreFarmsClientPart {
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof FarmScreen), "a farm's screen opens");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
             // The only button is the Overclock one at the top right
-            check(ctx.computeOnClient(mc -> mc.gui.screen().children().stream().filter(c -> c instanceof AbstractWidget).count() == 1), "no mode button, only Overclock");
+            check(ctx.computeOnClient(mc -> mc.gui.screen().children().stream().filter(c -> c instanceof AbstractWidget).count() == 2), "no mode button, only Overclock and the On/Off switch");
             ctx.getInput().setCursorPos(0, 0);
             ctx.waitTicks(2);
             System.out.println("[nexus] gourd farm screen: " + ctx.takeScreenshot("nexus_gourd_farm_screen"));
