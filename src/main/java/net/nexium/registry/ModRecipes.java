@@ -17,6 +17,10 @@ public final class ModRecipes {
     public static final RecipeSerializer<net.nexium.recipe.DurabilityBlastingRecipe> DURABILITY_BLASTING = Registry.register(
             BuiltInRegistries.RECIPE_SERIALIZER, Nexium.id("durability_blasting"), net.nexium.recipe.DurabilityBlastingRecipe.SERIALIZER);
 
+    /** {@code nexium:charge_keeping_shaped}: upgrading a Battery or Cell to the next tier keeps its charge. */
+    public static final RecipeSerializer<net.nexium.recipe.ChargeKeepingShapedRecipe> CHARGE_KEEPING_SHAPED = Registry.register(
+            BuiltInRegistries.RECIPE_SERIALIZER, Nexium.id("charge_keeping_shaped"), net.nexium.recipe.ChargeKeepingShapedRecipe.SERIALIZER);
+
     public static void init() {}
 
     private ModRecipes() {}

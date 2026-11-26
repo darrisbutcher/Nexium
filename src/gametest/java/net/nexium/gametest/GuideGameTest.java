@@ -160,7 +160,7 @@ public class GuideGameTest {
 
             switch (card.kind()) {
                 case SHAPED -> {
-                    h.assertTrue(type.equals("minecraft:crafting_shaped"), card.id() + " is shaped but " + verify + " is " + type);
+                    h.assertTrue(type.equals("minecraft:crafting_shaped") || type.equals("nexium:charge_keeping_shaped"), card.id() + " is shaped but " + verify + " is " + type);
                     Map<String, JsonElement> key = real.getAsJsonObject("key").asMap();
                     JsonArray pattern = real.getAsJsonArray("pattern");
                     for (int row = 0; row < 3; row++) {

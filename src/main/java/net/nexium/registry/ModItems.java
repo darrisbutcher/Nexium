@@ -168,7 +168,7 @@ public final class ModItems {
     public static final Item IRON_CELL = register("iron_cell", p -> new net.nexium.energy.BatteryCellItem(p, 250_000), new Item.Properties().stacksTo(1));
     public static final Item GOLD_CELL = register("gold_cell", p -> new net.nexium.energy.BatteryCellItem(p, 1_000_000), new Item.Properties().stacksTo(1));
     public static final Item DIAMOND_CELL = register("diamond_cell", p -> new net.nexium.energy.BatteryCellItem(p, 10_000_000), new Item.Properties().stacksTo(1));
-    public static final Item NEXIUM_CELL = register("nexium_cell", p -> new net.nexium.energy.BatteryCellItem(p, 1_000_000_000), new Item.Properties().stacksTo(1));
+    public static final Item NEXIUM_CELL = register("nexium_cell", p -> new net.nexium.energy.BatteryCellItem(p, 100_000_000), new Item.Properties().stacksTo(1));
     /**
      * Flies on a battery cell kept in its own screen. Worn in the wings slot (or the chest slot): its equipment asset draws it on the back,
      * and it takes the armor enchantments an elytra does.
