@@ -869,8 +869,10 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
   working slots need, it runs as many slots as it can pay for and they take turns, so all of them cook the same amount over
   time. Its screen shows how many are cooking.
 * **A stack you put in is shared out evenly** over the input slots, by hand, shift-click, hopper or pipe: 64 iron ore become
-  8 in each slot, topping up the slots that already hold iron ore.
-* **Hoppers and pipes go in from the top and sides and out from the bottom.** A full output only stops its own slot.
+  8 in each slot, topping up the slots that already hold iron ore. It also **keeps sharing as room opens up**, a few times a second: an
+  empty input slot takes half of the biggest stack, slots holding the same item level out, and a slot that cannot cook because its
+  output is full hands its items to slots that can.
+* **Hoppers and pipes go in from the top and sides and out from the bottom.** A full output only stops its own slot, and that slot hands its items to the others.
 * **Experience** is **ten times** what the recipes give (raw iron 7, a steak 3.5) and is kept in the furnace; the **Collect XP** button
   on its screen shows the whole points banked and gives you exactly that many (the fraction stays). Like an experience orb, it
   **mends first**: a random damaged item you carry or wear with Mending (the elytra in the wings slot too) is repaired, 2 durability
