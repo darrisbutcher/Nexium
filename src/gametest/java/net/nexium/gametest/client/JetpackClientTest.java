@@ -108,7 +108,10 @@ public class JetpackClientTest implements FabricClientGameTest {
                 ItemStack holder = new ItemStack(ModItems.JETPACK);
                 ItemEnergy.setCell(holder, new ItemStack(ModItems.DIAMOND_CELL));
                 station.slots().setItem(2, holder);
-                station.energy().set(20_000);
+                ItemStack nexium = new ItemStack(ModItems.NEXIUM_CELL);
+                nexium.set(ModComponents.BATTERY_CHARGE, 250_000_000L);
+                station.slots().setItem(3, nexium);
+                station.energy().set(6_500_000);
                 Menus.open(player, Component.literal("Charging Station"), at[0], (id, inv, p) -> new net.nexium.energy.ChargingStationMenu(id, inv, station));
             });
             ctx.waitFor(mc -> mc.gui.screen() instanceof ChargingStationScreen);

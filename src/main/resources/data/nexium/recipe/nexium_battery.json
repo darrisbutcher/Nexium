@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NRN",
+    "RBR",
+    "NRN"
+  ],
+  "key": {
+    "N": "nexium:nexium_ingot",
+    "R": "minecraft:redstone_block",
+    "B": "nexium:diamond_battery"
+  },
+  "result": {
+    "id": "nexium:nexium_battery"
+  }
+}

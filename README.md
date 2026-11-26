@@ -318,10 +318,11 @@ is placed as one and uses two slabs.
   chestplate (72) and the AIOT (99) give 64.
 
 ### Jetpack, battery cells and the Charging Station
-* **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, the sizes of the Batteries) keep their charge in the
+* **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, Nexium Cell 1,000,000,000, the sizes of the Batteries) keep their charge in the
   item; a bar under the item shows it. The **Charging Station** holds four of them (or a Jetpack or Tablet with a cell in it) and
-  charges them from what it takes in from touching Energy Conduits and Batteries, 4,000 NE a tick in all, shared by the cells that are
-  charging (one cell gets 4,000, two get 2,000 each, all four 1,000 each).
+  charges them from what it takes in from touching Energy Conduits and Batteries, 40,000 NE a tick in all, shared by the cells that are
+  charging (one cell gets 40,000, two get 20,000 each, all four 10,000 each). It holds 10,000,000 NE itself. The Nexium Cell and Nexium Battery
+  are made from a Diamond one, redstone blocks and Nexium ingots.
 * **Jetpack**: right-click to wear it in the **wings slot** (or the chest slot), so a chestplate can be worn too. Sneak and right-click it
   (or press **J**, Controls > Key Binds > Open Jetpack, while it is worn) to put a battery cell in. Jump in the air to take off; then
   jump rises, letting go **hovers** and sneaking sinks. It uses 8 NE a tick thrusting and 4 hovering, and when the cell runs out the
@@ -834,7 +835,7 @@ Generators give energy to the machines touching them; **Energy Conduits** carry 
   channels. A broken conduit loses its share of the pool.
 * **Jade** (optional): with Jade installed, looking at any of these blocks, or an Energy Conduit (its whole network), shows
   the energy it holds.
-* **Batteries** (iron, gold, diamond) hold 250,000, 1,000,000 and 10,000,000 NE. Six cells on the side show the charge and a
+* **Batteries** (iron, gold, diamond, Nexium) hold 250,000, 1,000,000, 10,000,000 and 1,000,000,000 NE. Six cells on the side show the charge and a
   comparator reads it. A broken Battery keeps its charge in the item.
 * **Power Meter** (`IGI / RCR / III`: iron ingots, glass, redstone, a comparator): put it against an Energy Conduit and right-click it
   for a dashboard of that conduit's whole network (the list has three tabs: **Generation**, **Batteries** and **Using power**): what it makes and uses, what is stored and how long it lasts, a minute of history,

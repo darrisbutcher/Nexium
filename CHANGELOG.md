@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.31.0
+
+* **Nexium Battery and Nexium Cell**: a fourth tier that holds **1,000,000,000 NE** (a hundred Diamond ones). Same pattern as the Gold and Diamond
+  ones, one tier up: the **Nexium Battery** is a Diamond Battery in the middle with redstone blocks and Nexium ingots round it; the **Nexium
+  Cell** is a Diamond Cell with Nexium ingots and a redstone block. It has the same green trim as the rest of Nexium. A broken Nexium Battery keeps its charge.
+* **Bigger Charging Station**: it now holds **10,000,000 NE** itself (it was 20,000) and charges **40,000 NE a tick** in all (it was 4,000),
+  shared by the cells that are charging: one cell takes 40,000, two take 20,000 each, all four 10,000 each.
+* **Fix: shift-clicking the last one or two of a hotbar stack into a Backpack with Restocking no longer hands them back.** The Restocking
+  module took a stack of one or two that you moved by hand for blocks you had just used up, and refilled the hotbar from the Backpack. A click
+  in any menu now counts as moving things by hand, not using them up.
+
 ## 1.30.2
 
 * **Tall tooltips keep their top**: an item with a lot of enchantments (a Nexium helmet with all of them, an AIOT, an enchanted book) made a tooltip

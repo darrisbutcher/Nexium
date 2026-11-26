@@ -122,13 +122,17 @@ public final class ModBlocks {
     /** Shows the power dashboard of the Energy Conduit network it sits against. */
     public static final net.nexium.energy.PowerMeterBlock POWER_METER = register("power_meter", net.nexium.energy.PowerMeterBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
-    /** Batteries: 250,000, 1,000,000 and 10,000,000 NE. */
+    /** Batteries: 250,000, 1,000,000 and 10,000,000 NE (and the Nexium one below). */
     public static final net.nexium.energy.BatteryBlock IRON_BATTERY = register("iron_battery", p -> new net.nexium.energy.BatteryBlock(p, 250_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
     public static final net.nexium.energy.BatteryBlock GOLD_BATTERY = register("gold_battery", p -> new net.nexium.energy.BatteryBlock(p, 1_000_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
     public static final net.nexium.energy.BatteryBlock DIAMOND_BATTERY = register("diamond_battery", p -> new net.nexium.energy.BatteryBlock(p, 10_000_000),
             BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
+
+    /** The top Battery: 1,000,000,000 NE. */
+    public static final net.nexium.energy.BatteryBlock NEXIUM_BATTERY = register("nexium_battery", p -> new net.nexium.energy.BatteryBlock(p, 1_000_000_000),
+            BlockBehaviour.Properties.of().mapColor(MapColor.EMERALD).strength(3.0f, 6.0f).sound(SoundType.METAL).requiresCorrectToolForDrops(), true);
 
     /** Charges battery cells, and the cells in a Jetpack or Tablet, from Nexus Energy. */
     public static final net.nexium.energy.ChargingStationBlock CHARGING_STATION = register("charging_station", net.nexium.energy.ChargingStationBlock::new,

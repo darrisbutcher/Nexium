@@ -104,6 +104,24 @@ public class RestockingGameTest {
         h.succeed();
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aStackMovedByHandIsNotHandedBack(GameTestHelper h) {
+        ServerPlayer player = player(h);
+        // The last two Fluid Intakes shift-clicked from the hotbar into a Backpack that already holds some: they stay in the Backpack
+        wear(player, backpack(true, new ItemStack(net.nexium.registry.ModBlocks.FLUID_INTAKE.asItem(), 5)));
+        player.getInventory().setItem(4, new ItemStack(net.nexium.registry.ModBlocks.FLUID_INTAKE.asItem(), 2));
+        BackpackRestocking.tick(player); // the module sees the stack
+        net.nexium.essentials.backpack.BackpackMenu menu = new net.nexium.essentials.backpack.BackpackMenu(1, player.getInventory(), net.nexium.essentials.backpack.Backpacks.EQUIPPED);
+        player.containerMenu = menu;
+        int index = -1;
+        for (net.minecraft.world.inventory.Slot s : menu.slots) if (s.container == player.getInventory() && s.getContainerSlot() == 4) index = s.index;
+        menu.clicked(index, 0, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE, player);
+        BackpackRestocking.tick(player);
+        h.assertTrue(player.getInventory().getItem(4).isEmpty(), "the hotbar slot stays empty: it was moved, not used up");
+        h.assertValueEqual(stored(player, net.nexium.registry.ModBlocks.FLUID_INTAKE.asItem()), 7, "and all 7 are in the Backpack");
+        h.succeed();
+    }
+
     /** A Backpack with the Restocking module and an Auto Torch module (on or off), and torches in it. */
     private static ItemStack backpackWithAutoTorch(boolean autoTorchOn, int torches) {
         ItemStack backpack = backpack(true, new ItemStack(Items.TORCH, torches));

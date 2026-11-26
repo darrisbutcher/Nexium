@@ -68,7 +68,7 @@ public final class ModBlockEntities {
     public static final BlockEntityType<net.nexium.energy.ChargingStationBlockEntity> CHARGING_STATION = register("charging_station",
             new BlockEntityType<>(net.nexium.energy.ChargingStationBlockEntity::new, Set.of(ModBlocks.CHARGING_STATION)));
     public static final BlockEntityType<net.nexium.energy.BatteryBlockEntity> BATTERY = register("battery",
-            new BlockEntityType<>(net.nexium.energy.BatteryBlockEntity::new, Set.of(ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY)));
+            new BlockEntityType<>(net.nexium.energy.BatteryBlockEntity::new, Set.of(ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY, ModBlocks.NEXIUM_BATTERY)));
     public static final BlockEntityType<net.nexium.energy.RedstoneReactorBlockEntity> REDSTONE_REACTOR = register("redstone_reactor",
             new BlockEntityType<>(net.nexium.energy.RedstoneReactorBlockEntity::new, Set.of(ModBlocks.REDSTONE_REACTOR)));
     public static final BlockEntityType<net.nexium.energy.NexusFurnaceBlockEntity> NEXUS_FURNACE = register("nexus_furnace",
