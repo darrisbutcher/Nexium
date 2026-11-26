@@ -59,6 +59,9 @@ public final class ModBlockEntities {
 
     public static final BlockEntityType<net.nexium.energy.SolarPanelBlockEntity> SOLAR_PANEL = register("solar_panel",
             new BlockEntityType<>(net.nexium.energy.SolarPanelBlockEntity::new, Set.of(ModBlocks.SOLAR_PANEL)));
+    public static final BlockEntityType<net.nexium.fluid.FluidTankBlockEntity> FLUID_TANK = register("fluid_tank",
+            new BlockEntityType<>(net.nexium.fluid.FluidTankBlockEntity::new,
+                    Set.of(ModBlocks.IRON_FLUID_TANK, ModBlocks.GOLD_FLUID_TANK, ModBlocks.DIAMOND_FLUID_TANK)));
     public static final BlockEntityType<net.nexium.energy.ThermalGeneratorBlockEntity> THERMAL_GENERATOR = register("thermal_generator",
             new BlockEntityType<>(net.nexium.energy.ThermalGeneratorBlockEntity::new,
                     Set.of(ModBlocks.THERMAL_GENERATOR, ModBlocks.ADVANCED_THERMAL_GENERATOR, ModBlocks.NEXIUM_THERMAL_GENERATOR)));

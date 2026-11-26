@@ -175,6 +175,13 @@ public final class ModItems {
                     net.minecraft.world.item.equipment.Equippable.builder(net.minecraft.world.entity.EquipmentSlot.CHEST)
                             .setEquipSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON)
                             .setDamageOnHurt(false).build()));
+    /** The Fluid Tanks (16, 64 and 256 buckets): blocks, and big buckets in the hand. */
+    public static final net.nexium.fluid.FluidTankItem IRON_FLUID_TANK = register("iron_fluid_tank",
+            p -> new net.nexium.fluid.FluidTankItem(ModBlocks.IRON_FLUID_TANK, p, 1), new Item.Properties().useBlockDescriptionPrefix());
+    public static final net.nexium.fluid.FluidTankItem GOLD_FLUID_TANK = register("gold_fluid_tank",
+            p -> new net.nexium.fluid.FluidTankItem(ModBlocks.GOLD_FLUID_TANK, p, 2), new Item.Properties().useBlockDescriptionPrefix());
+    public static final net.nexium.fluid.FluidTankItem DIAMOND_FLUID_TANK = register("diamond_fluid_tank",
+            p -> new net.nexium.fluid.FluidTankItem(ModBlocks.DIAMOND_FLUID_TANK, p, 3), new Item.Properties().useBlockDescriptionPrefix());
     /** A ninth of a diamond: what worn diamond tools and armor smelt down to. */
     public static final Item DIAMOND_NUGGET = register("diamond_nugget", Item::new, new Item.Properties());
     /** A ninth of a Nexium Ingot: the centre of a Redstone Fuel Rod. */

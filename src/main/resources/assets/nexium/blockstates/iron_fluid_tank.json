@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nexium:block/iron_fluid_tank"
+    }
+  }
+}

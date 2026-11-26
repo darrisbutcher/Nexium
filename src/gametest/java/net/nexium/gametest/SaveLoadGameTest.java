@@ -270,6 +270,9 @@ public class SaveLoadGameTest {
         cases.add(new Case("Combustion Generator", ModBlocks.COMBUSTION_GENERATOR, List.of(
                 part(net.nexium.energy.CombustionGeneratorBlockEntity.class, "fuel", be -> be.setItem(0, new ItemStack(Items.COAL, 7))),
                 part(net.nexium.energy.CombustionGeneratorBlockEntity.class, "energy", be -> be.energy().set(1234)))));
+        cases.add(new Case("Fluid Tank", ModBlocks.DIAMOND_FLUID_TANK, List.of(
+                part(net.nexium.fluid.FluidTankBlockEntity.class, "fluid", be -> be.setContents(new net.nexium.fluid.FluidTankBlockEntity.Contents(
+                        net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(net.minecraft.world.level.material.Fluids.WATER), 37 * FluidConstants.BUCKET))))));
         cases.add(new Case("Solar Panel", ModBlocks.SOLAR_PANEL, List.of(
                 part(net.nexium.energy.SolarPanelBlockEntity.class, "energy", be -> be.energy().set(321)))));
         cases.add(new Case("Thermal Generator", ModBlocks.THERMAL_GENERATOR, List.of(

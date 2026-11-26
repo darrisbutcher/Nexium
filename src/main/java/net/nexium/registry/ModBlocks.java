@@ -76,6 +76,13 @@ public final class ModBlocks {
     public static final ControllerSlaveBlock CONTROLLER_SLAVE = register("controller_slave", ControllerSlaveBlock::new, stone(), true);
 
     public static final FluidDrawerBlock FLUID_DRAWER_1X1 = register("fluid_drawer_1x1", p -> new FluidDrawerBlock(p, 1), glassy(), true);
+    /** Fluid Tanks: 16, 64 and 256 buckets of one fluid. Their items are the Fluid Tank items (they can scoop and pour). */
+    public static final net.nexium.fluid.FluidTankBlock IRON_FLUID_TANK = register("iron_fluid_tank", p -> new net.nexium.fluid.FluidTankBlock(p, 1),
+            glassy().mapColor(MapColor.METAL).requiresCorrectToolForDrops(), false);
+    public static final net.nexium.fluid.FluidTankBlock GOLD_FLUID_TANK = register("gold_fluid_tank", p -> new net.nexium.fluid.FluidTankBlock(p, 2),
+            glassy().mapColor(MapColor.GOLD).requiresCorrectToolForDrops(), false);
+    public static final net.nexium.fluid.FluidTankBlock DIAMOND_FLUID_TANK = register("diamond_fluid_tank", p -> new net.nexium.fluid.FluidTankBlock(p, 3),
+            glassy().mapColor(MapColor.DIAMOND).requiresCorrectToolForDrops(), false);
     public static final LavaSpringBlock LAVA_SPRING = register("lava_spring", LavaSpringBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.FIRE).strength(5.0f, 1200.0f).sound(SoundType.STONE).lightLevel(s -> 15).requiresCorrectToolForDrops(), true);
     public static final FluidIntakeBlock FLUID_INTAKE = register("fluid_intake", FluidIntakeBlock::new, metal(), true);

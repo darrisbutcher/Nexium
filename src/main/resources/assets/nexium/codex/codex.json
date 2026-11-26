@@ -20,6 +20,7 @@
         "drawer_upgrades",
         "lock_void",
         "fluid_drawer",
+        "fluid_tank",
         "compacting",
         "controller",
         "barrels",
@@ -365,6 +366,31 @@
       ],
       "see": [
         "drawers",
+        "intake"
+      ]
+    },
+    "fluid_tank": {
+      "pages": [
+        "drawers.tank"
+      ],
+      "icon": "nexium:iron_fluid_tank",
+      "recipes": [
+        "iron_fluid_tank",
+        "gold_fluid_tank",
+        "diamond_fluid_tank"
+      ],
+      "items": [
+        "nexium:iron_fluid_tank",
+        "nexium:gold_fluid_tank",
+        "nexium:diamond_fluid_tank"
+      ],
+      "aliases": [
+        "Fluid Tank",
+        "Fluid Tanks",
+        "Bucket tank"
+      ],
+      "see": [
+        "fluid_drawer",
         "intake"
       ]
     },
