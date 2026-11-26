@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.26.8
+
+* **Fix: right-clicking a conduit with an empty hand now opens the side menu.** In 1.26.7 the click was swallowed before it reached the
+  menu. Holding any other item still does nothing special, and the wrench works as before.
+
 ## 1.26.7
 
 * **Right-click a conduit with an empty hand** to open the same side settings the wrench opens with sneak + right-click.
