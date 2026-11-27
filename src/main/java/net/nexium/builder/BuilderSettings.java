@@ -63,6 +63,25 @@ public final class BuilderSettings {
         return next;
     }
 
+    /** The fills the menu steps through, in percent of solid: 0 leaves just the outline. */
+    public static final int[] OPACITY_STEPS = {0, 10, 25, 50, 75, 100};
+    public static final int DEFAULT_OPACITY = 10;
+
+    /** How solid the preview blocks look, in percent (the default shows a faint fill). */
+    public static int opacity(ItemStack builder) {
+        return Math.max(0, Math.min(100, builder.getOrDefault(ModComponents.BUILDER_OPACITY, DEFAULT_OPACITY)));
+    }
+
+    /** Steps the preview fill up to the next one, back to the outline alone after the most solid. */
+    public static int cycleOpacity(ItemStack builder) {
+        int current = opacity(builder), next = OPACITY_STEPS[0];
+        for (int step : OPACITY_STEPS) {
+            if (step > current) { next = step; break; }
+        }
+        builder.set(ModComponents.BUILDER_OPACITY, next);
+        return next;
+    }
+
     /** The module in the builder's one slot, or an empty stack. */
     public static ItemStack module(ItemStack builder) {
         var stored = builder.getOrDefault(ModComponents.MODULES, ItemContainerContents.EMPTY).nonEmptyItemCopyStream().toList();

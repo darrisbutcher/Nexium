@@ -300,7 +300,8 @@ is placed as one and uses two slabs.
 * **Modes**: **Extend** (the whole connected face), **Line** (one row, along the way you look) and **Exchange** (swaps
   the clicked surface for your offhand block and gives you what the old blocks drop when broken, so stone comes back
   as cobblestone and glass as nothing; never containers or unbreakable blocks).
-* A **pale blue outline** shows where the blocks will go before you click; `builderPreview` (client) turns it off. The
+* A **pale blue outline** shows where the blocks will go before you click; `builderPreview` (client) turns it off. The **Ghost fill** button in the
+  tool menu (G) sets how solid the ghost blocks look: 0% (just the outline), 10% (the default faint fill), 25%, 50%, 75% or 100% (nearly solid). The
   readout by the hotbar shows its mode, plane and size.
 * **Tool menu (G)**: Mode; **Plane** (any, flat or upright: which way it may spread); **Size** (steps down from the tier's
   limit); **Undo**, which takes back your last build and returns its blocks (the last 2 builds, until you log out; blocks

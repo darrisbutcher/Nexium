@@ -13,6 +13,7 @@ import net.nexium.aiot.AiotItem;
 import net.nexium.aiot.module.AiotMining;
 import net.nexium.builder.BuilderItem;
 import net.nexium.builder.BuilderPlan;
+import net.nexium.builder.BuilderSettings;
 import net.nexium.essentials.config.NexusConfig;
 
 import java.util.List;
@@ -34,8 +35,11 @@ public final class AiotPreview {
     /** A soft pale green line (about 55% opaque) and a barely-there fill, so a long tunnel does not turn into a wall of colour. */
     private static final GizmoStyle STYLE = GizmoStyle.strokeAndFill(0x8CC4FFD0, 1.2F, 0x087FEFA0);
 
-    /** Pale blue, for the Construction Builder. */
-    private static final GizmoStyle BUILDER_STYLE = GizmoStyle.strokeAndFill(0x9CA8D8FF, 1.2F, 0x1890C0FF);
+    /** The Builder's outline with the fill the Builder is set to: {@code percent} of solid, up to nearly solid at 100. */
+    private static GizmoStyle builderStyle(int percent) {
+        int alpha = Math.round(percent * 0xF0 / 100.0F);
+        return GizmoStyle.strokeAndFill(0x9CA8D8FF, 1.2F, alpha << 24 | 0x90C0FF);
+    }
 
     private static List<BlockPos> blocks = List.of();
     private static GizmoStyle style = STYLE;
@@ -65,7 +69,7 @@ public final class AiotPreview {
         if (tool.getItem() instanceof BuilderItem) {
             if (!NexusConfig.get().builderPreview || client.player.isSecondaryUseActive()) return;
             List<BlockPos> targets = BuilderPlan.of(client.level, client.player, tool, hit.getBlockPos(), hit.getDirection()).targets();
-            style = BUILDER_STYLE;
+            style = builderStyle(BuilderSettings.opacity(tool));
             blocks = targets.size() > MAX_OUTLINED ? targets.subList(0, MAX_OUTLINED) : targets;
             return;
         }

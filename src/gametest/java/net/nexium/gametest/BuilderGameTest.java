@@ -414,4 +414,14 @@ public class BuilderGameTest {
         h.assertValueEqual(BuilderSettings.size(nexium), 128, "and places up to 128");
         h.succeed();
     }
+
+    @GameTest
+    public void theGhostFillStepsThroughItsOpacities(GameTestHelper h) {
+        ItemStack builder = new ItemStack(BuilderItem.of(BuilderTier.IRON));
+        h.assertValueEqual(BuilderSettings.opacity(builder), 10, "the fill starts faint, at 10%");
+        int[] expected = {25, 50, 75, 100, 0, 10};
+        for (int want : expected) h.assertValueEqual(BuilderSettings.cycleOpacity(builder), want, "steps to " + want + "%");
+        h.assertValueEqual(BuilderSettings.opacity(builder), 10, "and is back at the start");
+        h.succeed();
+    }
 }
