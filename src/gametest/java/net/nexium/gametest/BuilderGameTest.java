@@ -30,6 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.aiot.module.ModuleType;
 import net.nexium.builder.BuilderItem;
+import net.nexium.builder.BuilderPlan;
 import net.nexium.builder.BuilderService;
 import net.nexium.builder.BuilderSettings;
 import net.nexium.builder.BuilderTier;
@@ -93,6 +94,27 @@ public class BuilderGameTest {
         h.assertValueEqual(count(h, Blocks.STONE, 2), 9, "a stone on top of every floor block");
         h.assertValueEqual(held(player, Items.STONE), 11, "9 stone used");
         h.assertValueEqual(player.getMainHandItem().getDamageValue(), 9, "1 durability a block");
+        h.succeed();
+    }
+
+    @GameTest
+    public void withAnOffhandBlockItSpreadsOverAnyKindOfBlock(GameTestHelper h) {
+        // A 3x3 floor of mixed blocks: stone in the middle, bricks and deepslate round it
+        floor(h, Blocks.STONE_BRICKS);
+        h.setBlock(CENTER, Blocks.STONE);
+        h.setBlock(CENTER.east(), Blocks.DEEPSLATE);
+        h.setBlock(CENTER.west(), Blocks.BEDROCK);
+        // No offhand block: only the clicked kind (the one stone)
+        ServerPlayer player = builder(h, BuilderTier.IRON);
+        player.getInventory().add(new ItemStack(Items.STONE, 20));
+        h.assertValueEqual(BuilderPlan.of(h.getLevel(), player, player.getMainHandItem(), h.absolutePos(CENTER), Direction.UP).targets().size(), 1,
+                "with an empty offhand it keeps to the clicked kind");
+        // An offhand block: every block of the face
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.OAK_PLANKS, 64));
+        h.assertValueEqual(BuilderPlan.of(h.getLevel(), player, player.getMainHandItem(), h.absolutePos(CENTER), Direction.UP).targets().size(), 9,
+                "with a block in the offhand it covers all 9, whatever they are");
+        h.assertValueEqual(build(h, player, CENTER, Direction.UP), 9, "and builds them");
+        h.assertValueEqual(count(h, Blocks.OAK_PLANKS, 2), 9, "all of them planks");
         h.succeed();
     }
 

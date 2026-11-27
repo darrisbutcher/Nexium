@@ -91,8 +91,7 @@
         "spear",
         "armor",
         "bonuses",
-        "armor_menu",
-        "restock"
+        "armor_menu"
       ]
     },
     {
@@ -950,8 +949,7 @@
       ],
       "see": [
         "modules",
-        "terminal",
-        "restock"
+        "terminal"
       ]
     },
     "area": {
@@ -1146,8 +1144,7 @@
       ],
       "see": [
         "bonuses",
-        "armor_menu",
-        "restock"
+        "armor_menu"
       ]
     },
     "bonuses": {
@@ -1179,21 +1176,6 @@
       "see": [
         "bonuses",
         "tool_menu"
-      ]
-    },
-    "restock": {
-      "pages": [
-        "armor.restock",
-        "armor.restock2"
-      ],
-      "icon": "nexium:nexium_leggings",
-      "aliases": [
-        "Nexus restock",
-        "restock"
-      ],
-      "see": [
-        "armor",
-        "nexus_link"
       ]
     },
     "slots": {

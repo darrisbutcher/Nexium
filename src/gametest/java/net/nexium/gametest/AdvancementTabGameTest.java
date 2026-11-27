@@ -39,7 +39,7 @@ public class AdvancementTabGameTest {
     @GameTest
     public void everyNodeIsThereWithItsText(GameTestHelper h) {
         List<AdvancementHolder> nodes = tab(h);
-        h.assertTrue(nodes.size() == 33, "the tab has 33 nodes, found " + nodes.size());
+        h.assertTrue(nodes.size() == 32, "the tab has 32 nodes, found " + nodes.size());
         JsonObject lang = lang();
         for (AdvancementHolder a : nodes) {
             var display = a.value().display().orElse(null);

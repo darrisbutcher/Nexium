@@ -18,6 +18,14 @@ public class UpgradeScreen extends BaseScreen<UpgradeMenu> {
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(font, Component.translatable("screen.nexium.upgrades"), leftPos + 8, topPos + 24, palette().text(), false);
+        // The Void slot, set apart at the right: a purple frame and its name over it
+        int vx = leftPos + UpgradeMenu.VOID_SLOT_X - 1, vy = topPos + UpgradeMenu.SLOT_Y - 1, purple = 0xFFB04CFF;
+        g.fill(vx - 1, vy - 1, vx + 19, vy, purple);
+        g.fill(vx - 1, vy + 18, vx + 19, vy + 19, purple);
+        g.fill(vx - 1, vy, vx, vy + 18, purple);
+        g.fill(vx + 18, vy, vx + 19, vy + 18, purple);
+        Component voidLabel = Component.translatable("screen.nexium.upgrades.void");
+        g.text(font, voidLabel, vx + 9 - font.width(voidLabel) / 2, topPos + 10, palette().text(), false);
         // Capacity with the upgrades that are in now: each section first, then the whole drawer
         int sections = menu.capacitySlots();
         String unit = menu.holdsFluid() ? "buckets" : "stacks";

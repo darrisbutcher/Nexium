@@ -16,8 +16,6 @@ public enum ArmorBonus implements StringRepresentable {
     NETHER_FORGED("nether_forged", EquipmentSlot.CHEST, true),
     /** Full set: no mining slowdown underwater or off the ground. */
     MINERS_SET("miners_set", EquipmentSlot.CHEST, true),
-    /** Full set: hotbar stacks top up from a linked storage network, and you eat from it when hungry. */
-    NEXUS_RESTOCK("nexus_restock", EquipmentSlot.CHEST, true),
     /** Full set: no knockback. */
     NO_KNOCKBACK("no_knockback", EquipmentSlot.CHEST, true),
     /** The helmet alone: Night Vision. */
@@ -26,6 +24,13 @@ public enum ArmorBonus implements StringRepresentable {
     WATER_BREATHING("water_breathing", EquipmentSlot.CHEST, true);
 
     public static final Codec<ArmorBonus> CODEC = StringRepresentable.fromEnum(ArmorBonus::values);
+    /**
+     * What is saved on an item: a list of ids, where one this version no longer has (the removed Nexus restock) is skipped,
+     * so an older chestplate still loads.
+     */
+    public static final Codec<java.util.List<ArmorBonus>> SAVED_CODEC = Codec.STRING.listOf().xmap(
+            ids -> ids.stream().map(ArmorBonus::byId).filter(java.util.Objects::nonNull).toList(),
+            bonuses -> bonuses.stream().map(ArmorBonus::id).toList());
     public static final StreamCodec<ByteBuf, ArmorBonus> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Enum::ordinal);
 
     private final String id;
@@ -36,6 +41,12 @@ public enum ArmorBonus implements StringRepresentable {
         this.id = id;
         this.slot = slot;
         this.needsFullSet = needsFullSet;
+    }
+
+    /** The bonus with this id, or null if there is none (any more). */
+    public static @org.jspecify.annotations.Nullable ArmorBonus byId(String id) {
+        for (ArmorBonus bonus : values()) if (bonus.id.equals(id)) return bonus;
+        return null;
     }
 
     /** Lang key part. */

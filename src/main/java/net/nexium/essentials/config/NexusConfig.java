@@ -183,13 +183,9 @@ public final class NexusConfig {
     /** The Nexus Link module works (drops go to the linked storage network). */
     public boolean aiotNexusLink = true;
 
-    // --- Nexium armor (server-side only)
-    /** The Nexus restock set bonus works (top-ups and eating from the linked network). */
-    public boolean nexusRestock = true;
-    /** A hotbar stack that is being used up is topped up when it gets down to this many. */
+    // --- Backpack (server-side only)
+    /** A hotbar stack that is being used up is topped up from the Backpack's Restocking module when it gets down to this many. */
     public int restockTopUpAt = 8;
-    /** The wearer eats from the network when the hunger bar is down by this many points. */
-    public int restockEatWhenMissing = 6;
 
     public static NexusConfig get() {
         return instance;

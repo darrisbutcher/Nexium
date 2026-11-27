@@ -24,7 +24,6 @@ import net.nexium.conduit.ConduitWrenchItem;
 import net.nexium.dimension.DimensionalLinkCardItem;
 import net.nexium.filter.FilterItem;
 import net.nexium.guide.GuideBookItem;
-import net.nexium.gear.NexiumChestplateItem;
 import net.nexium.gear.NexiumMaterials;
 import net.nexium.tablet.StorageTabletItem;
 import net.nexium.upgrade.CapacityUpgradeItem;
@@ -214,8 +213,8 @@ public final class ModItems {
             new Item.Properties().spear(NexiumMaterials.TOOL, 1.25F, 1.325F, 0.3F, 2.0F, 8.0F, 4.5F, 5.1F, 7.5F, 4.6F).fireResistant());
     public static final Item NEXIUM_HELMET = register("nexium_helmet", Item::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.HELMET).fireResistant());
-    /** Also carries the set bonuses' settings and the Nexus Restock link. */
-    public static final Item NEXIUM_CHESTPLATE = register("nexium_chestplate", NexiumChestplateItem::new,
+    /** Carries the set bonuses' settings. */
+    public static final Item NEXIUM_CHESTPLATE = register("nexium_chestplate", Item::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.CHESTPLATE).fireResistant());
     public static final Item NEXIUM_LEGGINGS = register("nexium_leggings", Item::new,
             new Item.Properties().humanoidArmor(NexiumMaterials.ARMOR, ArmorType.LEGGINGS).fireResistant());

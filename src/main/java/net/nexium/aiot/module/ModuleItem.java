@@ -43,7 +43,7 @@ public class ModuleItem extends Item {
 
     /**
      * Sneak + right-click on a Crafting Terminal: links to it, with {@code messageKey} above the hotbar. Shared with the
-     * AIOT, which relinks its installed Nexus Link the same way, and the Nexium chestplate (Nexus Restock). Returns
+     * AIOT, which relinks its installed Nexus Link the same way. Returns
      * whether the click was a link.
      */
     public static boolean linkTo(UseOnContext context, Consumer<GlobalPos> setLink, String messageKey) {

@@ -108,7 +108,7 @@ public final class ModComponents {
 
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
-            b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
+            b -> b.persistent(ArmorBonus.SAVED_CODEC).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
 
     /** On a Nexium tool: its Haste II is turned off in the tool menu. */
     public static final DataComponentType<Unit> HASTE_OFF = register("haste_off",

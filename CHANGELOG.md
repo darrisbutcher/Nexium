@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.33.0
+
+* **The Construction Builder spreads over any block when you hold one in your offhand.** Extend and Line used to cover only blocks of the same kind as the
+  one you clicked, so they skipped the stone bricks next to the stone. With a block in the offhand they now cover every solid block on that face,
+  whatever its kind (still only where the new block can be placed). With an empty offhand they work as before, because the builder copies the clicked block.
+* **A slot of its own for the Void Upgrade** on drawers, compacting drawers, fluid drawers and tanks: a fifth upgrade slot, at the right and framed in purple,
+  takes only the Void Upgrade, and the four others only capacity upgrades. A Void Upgrade installed in an older drawer moves into the new slot.
+* **Nexus Restock is gone** (the Nexium armor bonus that topped up the hotbar and fed you from a linked storage network): the bonus and its switch in the armor menu, linking the
+  chestplate to a Crafting Terminal, the `nexusRestock` and `restockEatWhenMissing` settings, its Codex page and its advancement. The Backpack's Restocking Module is unchanged
+  (its `restockTopUpAt` setting is under Items and world now). A chestplate that had the bonus switched off loads as before.
+
 ## 1.32.1
 
 * **Ghost fill for the Construction Builder.** The Builder's tool menu (G) has a **Ghost fill** button that sets how solid the ghost blocks look where the

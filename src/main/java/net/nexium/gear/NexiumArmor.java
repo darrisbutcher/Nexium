@@ -26,7 +26,6 @@ import java.util.List;
  *   <li>Nether-forged: Fire Resistance, Night Vision: Night Vision, Water Breathing: Water Breathing (all via {@link HeldEffects});</li>
  *   <li>No knockback: a +1 knockback resistance modifier on top of the armor's own 0.6;</li>
  *   <li>Miner's set: in the player's mining speed (see the Player mixin);</li>
- *   <li>Nexus restock: {@link NexusRestock}.</li>
  * </ul>
  */
 public final class NexiumArmor {

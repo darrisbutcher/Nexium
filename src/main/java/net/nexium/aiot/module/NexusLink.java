@@ -151,7 +151,7 @@ public final class NexusLink {
         }
     }
 
-    /** The linked terminal's network; null if it can't be reached. Also used by the Nexium armor's Nexus Restock. */
+    /** The linked terminal's network; null if it can't be reached. */
     public static @Nullable StorageNetwork network(ServerPlayer player, GlobalPos link) {
         MinecraftServer server = player.level().getServer();
         ServerLevel target = server == null ? null : server.getLevel(link.dimension());

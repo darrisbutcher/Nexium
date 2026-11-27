@@ -17,9 +17,9 @@ import net.nexium.registry.ModMenus;
 import net.nexium.util.BaseMenu;
 import net.nexium.util.SyncedBlockEntity;
 
-/** Upgrade slots for drawers, fluid drawers and tanks: four of them, right-aligned. */
+/** Upgrade slots for drawers, fluid drawers and tanks: four for capacity upgrades and a fifth, set apart, for the Void Upgrade. */
 public class UpgradeMenu extends BaseMenu {
-    public static final int SLOT_Y = 20, TEXT_Y = 42, INVENTORY_Y = 84;
+    public static final int SLOT_Y = 20, TEXT_Y = 42, INVENTORY_Y = 84, VOID_SLOT_X = 152;
 
     private final Upgradeable target;
     private final BlockEntity blockEntity;
@@ -38,9 +38,11 @@ public class UpgradeMenu extends BaseMenu {
         Container container = target != null ? new UpgradeContainer(target) : new SimpleContainer(Upgradeable.UPGRADE_SLOTS);
         for (int i = 0; i < Upgradeable.UPGRADE_SLOTS; i++) {
             final int slotIndex = i;
-            addCustomSlot(new Slot(container, i, 96 + i * 18, SLOT_Y) {
+            addCustomSlot(new Slot(container, i, i == Upgradeable.VOID_SLOT ? VOID_SLOT_X : 78 + i * 18, SLOT_Y) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
+                    // The Void slot takes only the Void Upgrade, the capacity slots only capacity upgrades
+                    if (Upgradeable.isVoid(stack) != (slotIndex == Upgradeable.VOID_SLOT)) return false;
                     return UpgradeMenu.this.target == null
                             ? stack.getItem() instanceof UpgradeItem up && up.kind().isStorageUpgrade()
                             : UpgradeMenu.this.target.acceptsUpgrade(stack);
@@ -101,7 +103,7 @@ public class UpgradeMenu extends BaseMenu {
         if (target != null && input == ContainerInput.PICKUP && slotIndex >= 0 && slotIndex < Upgradeable.UPGRADE_SLOTS) {
             Slot slot = slots.get(slotIndex);
             ItemStack carried = getCarried();
-            if (carried.getCount() > 1 && Upgradeable.isHigherCapacity(carried, slot.getItem())) {
+            if (slotIndex < Upgradeable.CAPACITY_SLOTS && carried.getCount() > 1 && Upgradeable.isHigherCapacity(carried, slot.getItem())) {
                 ItemStack old = slot.getItem();
                 slot.set(carried.split(1));
                 giveBack(player, old);

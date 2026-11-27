@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * <ul>
  *   <li><b>Extend</b>: every block of the clicked kind connected to it across the clicked face (and not covered there)
- *       gets a new block on that face, nearest first.</li>
+ *       gets a new block on that face, nearest first. With a block in the offhand, any solid block on that face counts, whatever its kind.</li>
  *   <li><b>Line</b>: the same, along only the face's axis you are looking along.</li>
  *   <li><b>Exchange</b>: the clicked surface itself (connected blocks of the clicked kind with that face open) is swapped
  *       for the block in your offhand.</li>
@@ -98,14 +98,22 @@ public record BuilderPlan(List<BlockPos> targets, BlockState state, Item item, i
         BlockState state = offBlock != null ? placementState(level, player, offhand, offBlock, clicked, face)
                 : oriented(placementState(level, player, new ItemStack(item), clickedBlock, clicked, face), clickedState);
         if (multiBlock(state)) return NONE;
+        // With a block in the offhand it spreads over any solid block on the face, whatever its kind; with none, over the clicked kind
+        boolean anyKind = offBlock != null;
         List<BlockPos> bases = spread(level, clicked, steps, max, q -> {
-            if (level.getBlockState(q).getBlock() != clickedBlock) return false;
+            BlockState there = level.getBlockState(q);
+            if (there.getBlock() != clickedBlock && !(anyKind && supportsOn(level, q, there, face))) return false;
             BlockPos target = q.relative(face);
             return canPlace(level, player, target, state);
         });
         List<BlockPos> targets = new ArrayList<>(bases.size());
         for (BlockPos q : bases) targets.add(q.relative(face));
         return targets.isEmpty() ? NONE : new BuilderPlan(targets, state, item, perBlock(state), false);
+    }
+
+    /** Whether the block at {@code pos} is a surface blocks can be built on across {@code face}: solid there, and not two-part or fluid. */
+    private static boolean supportsOn(Level level, BlockPos pos, BlockState state, Direction face) {
+        return !state.isAir() && state.getFluidState().isEmpty() && !multiBlock(state) && state.isFaceSturdy(level, pos, face);
     }
 
     /** Whether {@code state} can go at {@code pos}: the space is free (air, water, grass...), it can stand there, and no one is in the way. */

@@ -141,8 +141,24 @@ public class BuilderClientTest implements FabricClientGameTest {
             });
             ctx.waitTicks(10);
             int line = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
-            check(line == 5, "Line outlines one row of 5, got " + line);
+            check(line >= 5, "Line outlines a row along the look: the 5 of the platform and, with a block in the offhand, the ground beyond it, got " + line);
             System.out.println("[nexus] builder line preview: " + ctx.takeScreenshot("nexus_builder_line"));
+
+            // Extend again, over a floor of mixed blocks: with planks in the offhand every block of the face is outlined, whatever its kind
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                ItemStack held = player.getInventory().getItem(0);
+                while (BuilderSettings.mode(held) != BuilderSettings.Mode.EXTEND) BuilderSettings.cycleMode(held);
+                BlockPos base = origin[0];
+                for (int x = -2; x <= 2; x++) for (int z = 1; z <= 5; z++) {
+                    if ((x + z) % 3 == 0) player.level().setBlockAndUpdate(base.offset(x, -1, z), Blocks.STONE_BRICKS.defaultBlockState());
+                    else if ((x + z) % 3 == 1) player.level().setBlockAndUpdate(base.offset(x, -1, z), Blocks.DEEPSLATE_BRICKS.defaultBlockState());
+                }
+            });
+            ctx.waitTicks(10);
+            int mixed = ctx.computeOnClient(mc -> AiotPreview.outlined().size());
+            check(mixed >= 25, "with planks in the offhand all 25 mixed blocks (and the ground round them) are outlined, got " + mixed);
+            System.out.println("[nexus] builder mixed floor: " + ctx.takeScreenshot("nexus_builder_mixed_floor"));
         }
     }
 
