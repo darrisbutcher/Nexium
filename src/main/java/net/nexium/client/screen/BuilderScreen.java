@@ -15,12 +15,12 @@ import net.nexium.client.ToolMenuClient;
 import net.nexium.registry.ModComponents;
 
 /**
- * The Construction Builder's tool menu: Mode, Plane and Size, Undo (with how many builds it can still take back), and
+ * The Construction Builder's tool menu: Mode, Plane and Size, the preview's fill (Ghost), Undo (with how many builds it can still take back), and
  * the Nexus Link slot with its on/off switch. Laid out like the AIOT tool menu, hints beside the panel.
  */
 public class BuilderScreen extends BaseScreen<BuilderMenu> {
     private static final int BUTTON_X = 8, BUTTON_WIDTH = 160, MODULE_BUTTON_X = 28, MODULE_BUTTON_WIDTH = 140;
-    private Button modeButton, planeButton, sizeButton, undoButton, moduleButton;
+    private Button modeButton, planeButton, sizeButton, undoButton, opacityButton, moduleButton;
     private final SideHints hints = new SideHints();
 
     public BuilderScreen(BuilderMenu menu, Inventory inventory, Component title) {
@@ -41,6 +41,8 @@ public class BuilderScreen extends BaseScreen<BuilderMenu> {
                 .bounds(leftPos + BUTTON_X + half + 2, topPos + 40, half, 16).build());
         undoButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(BuilderMenu.BTN_UNDO))
                 .bounds(leftPos + BUTTON_X, topPos + 58, BUTTON_WIDTH, 16).build());
+        opacityButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(BuilderMenu.BTN_OPACITY))
+                .bounds(leftPos + BUTTON_X, topPos + 76, BUTTON_WIDTH, 16).build());
         moduleButton = addRenderableWidget(Button.builder(Component.empty(), b -> click(BuilderMenu.BTN_MODULE))
                 .bounds(leftPos + MODULE_BUTTON_X, topPos + BuilderMenu.MODULE_SLOT_Y, MODULE_BUTTON_WIDTH, 16).build());
         refresh();
@@ -70,6 +72,8 @@ public class BuilderScreen extends BaseScreen<BuilderMenu> {
         int left = menu.undoLeft();
         set(undoButton, left > 0, Component.translatable("screen.nexium.builder.undo", left),
                 Component.translatable(left > 0 ? "screen.nexium.builder.undo.tooltip" : "screen.nexium.builder.undo.none"));
+        set(opacityButton, true, Component.translatable("screen.nexium.builder.opacity", BuilderSettings.opacity(builder)),
+                Component.translatable("screen.nexium.builder.opacity.tooltip"));
         ItemStack module = menu.getSlot(0).getItem();
         if (module.getItem() instanceof ModuleItem) {
             boolean on = !module.has(ModComponents.MODULE_OFF);

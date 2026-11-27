@@ -90,6 +90,10 @@ public final class ModComponents {
     public static final DataComponentType<Integer> BUILDER_PLANE = register("builder_plane",
             b -> b.persistent(Codec.intRange(0, 15)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** On a Construction Builder: how solid the preview blocks look, in percent (0 is the outline alone), set in its tool menu. */
+    public static final DataComponentType<Integer> BUILDER_OPACITY = register("builder_opacity",
+            b -> b.persistent(Codec.intRange(0, 100)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** On a Construction Builder: blocks one click places, set in its tool menu (up to its tier's limit). */
     public static final DataComponentType<Integer> BUILDER_SIZE = register("builder_size",
             b -> b.persistent(Codec.intRange(1, 1024)).networkSynchronized(ByteBufCodecs.VAR_INT));

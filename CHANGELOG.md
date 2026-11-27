@@ -3,6 +3,12 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.32.1
+
+* **Ghost fill for the Construction Builder.** The Builder's tool menu (G) has a **Ghost fill** button that sets how solid the ghost blocks look where the
+  builder would put blocks: 0% (just the outline), 10% (the faint fill it always had, and still the default), 25%, 50%, 75% or 100% (nearly solid). Each click
+  steps it up, and it is kept on that Builder.
+
 ## 1.32.0
 
 * **The Nexus Furnace shares its stacks out as room opens up.** Besides sharing a stack out when it goes in, it now moves items between its

@@ -74,6 +74,17 @@ public class BuilderClientTest implements FabricClientGameTest {
             check(hud.equals("Extend (any) | Size: 128 / 128 | Nexus Link: on"), "the readout shows the builder, got: " + hud);
             System.out.println("[nexus] builder preview: " + ctx.takeScreenshot("nexus_builder_preview"));
 
+            // The ghost blocks' fill, set on the builder: just the outline, then fainter to nearly solid
+            for (int percent : new int[]{0, 25, 50, 100}) {
+                world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory().getItem(0)
+                        .set(net.nexium.registry.ModComponents.BUILDER_OPACITY, percent));
+                ctx.waitTicks(5);
+                System.out.println("[nexus] builder preview at " + percent + "%: " + ctx.takeScreenshot("nexus_builder_preview_" + percent));
+            }
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory().getItem(0)
+                    .remove(net.nexium.registry.ModComponents.BUILDER_OPACITY));
+            ctx.waitTicks(5);
+
             // Right-click builds them
             ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_RIGHT);
             ctx.waitTicks(10);
@@ -93,7 +104,15 @@ public class BuilderClientTest implements FabricClientGameTest {
             // Hover the Mode button for its hint beside the panel
             hover(ctx, 0);
             System.out.println("[nexus] builder menu hint: " + ctx.takeScreenshot("nexus_builder_menu_hint"));
+            // The Ghost fill button steps the opacity: 10% to 25%
+            check(ctx.computeOnClient(mc -> widget(mc, 4).getMessage().getString()).equals("Ghost fill: 10%"), "Ghost fill starts at 10%");
+            hover(ctx, 4);
+            ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            ctx.waitTicks(10);
+            check(ctx.computeOnClient(mc -> BuilderSettings.opacity(mc.player.getMainHandItem()) == 25), "Ghost fill steps to 25%");
+            check(ctx.computeOnClient(mc -> widget(mc, 4).getMessage().getString()).equals("Ghost fill: 25%"), "and the button says so");
             // Mode steps to Line
+            hover(ctx, 0);
             ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
             ctx.waitTicks(10);
             check(ctx.computeOnClient(mc -> BuilderSettings.mode(mc.player.getMainHandItem()) == BuilderSettings.Mode.LINE), "Mode steps to Line");

@@ -22,8 +22,8 @@ import net.nexium.util.BaseMenu;
  * storage network. The slot writes straight back to the builder; the builder is locked in its hotbar slot meanwhile.
  */
 public class BuilderMenu extends BaseMenu {
-    public static final int BTN_MODE = 0, BTN_PLANE = 1, BTN_SIZE = 2, BTN_UNDO = 3, BTN_MODULE = 4;
-    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 88;
+    public static final int BTN_MODE = 0, BTN_PLANE = 1, BTN_SIZE = 2, BTN_UNDO = 3, BTN_MODULE = 4, BTN_OPACITY = 5;
+    public static final int MODULE_SLOT_X = 8, MODULE_SLOT_Y = 106;
     /** Where the "Blocks from" note goes, under the module row. */
     public static final int NOTE_Y = MODULE_SLOT_Y + 21;
     public static final int INVENTORY_Y = NOTE_Y + 30;
@@ -122,6 +122,8 @@ public class BuilderMenu extends BaseMenu {
                     Component.translatable("screen.nexium.builder.plane." + BuilderSettings.cyclePlane(builder).name().toLowerCase())));
             case BTN_SIZE -> serverPlayer.sendOverlayMessage(Component.translatable("message.nexium.builder.size",
                     BuilderSettings.cycleSize(builder)));
+            case BTN_OPACITY -> serverPlayer.sendOverlayMessage(Component.translatable("message.nexium.builder.opacity",
+                    BuilderSettings.cycleOpacity(builder)));
             case BTN_UNDO -> {
                 int undone = BuilderService.undo(serverPlayer);
                 serverPlayer.sendOverlayMessage(undone < 0 ? Component.translatable("message.nexium.builder.nothing_to_undo")
