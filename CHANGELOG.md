@@ -8,6 +8,8 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 * **The Construction Builder spreads over any block when you hold one in your offhand.** Extend and Line used to cover only blocks of the same kind as the
   one you clicked, so they skipped the stone bricks next to the stone. With a block in the offhand they now cover every solid block on that face,
   whatever its kind (still only where the new block can be placed). With an empty offhand they work as before, because the builder copies the clicked block.
+* **The Livestock Farm's sheep give every wool colour, equally often.** The sheep's wool used to be white 82% of the time and only five other colours (black, grey, light
+  grey, brown and pink); now each of the 16 colours is 1 in 16.
 * **A slot of its own for the Void Upgrade** on drawers, compacting drawers, fluid drawers and tanks: a fifth upgrade slot, at the right and framed in purple,
   takes only the Void Upgrade, and the four others only capacity upgrades. A Void Upgrade installed in an older drawer moves into the new slot.
 * **Nexus Restock is gone** (the Nexium armor bonus that topped up the hotbar and fed you from a linked storage network): the bonus and its switch in the armor menu, linking the

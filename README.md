@@ -786,7 +786,7 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Nether Mob Farm** | 1 blaze, 1 ghast, 1 magma cube, 16 nether bricks, 4 lava buckets, 8 magma blocks, netherrack | Every 10 s: blaze rods, ghast tears, gunpowder, magma cream |
 | **Ocean Farm** | 1 guardian, 1 drowned, 1 cod, 16 prismarine bricks, 8 sea lanterns, 4 water buckets, sand | Every 10 s: prismarine shards and crystals, fish, rotten flesh, copper |
 | **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
-| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s: the drops of a cow, a sheep (random wool colour), a chicken (and an egg), a pig and a rabbit |
+| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s: the drops of a cow, a sheep (wool of any of the 16 colours, equally often), a chicken (and an egg), a pig and a rabbit |
 | **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. |
 | **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |

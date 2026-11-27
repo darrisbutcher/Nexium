@@ -305,15 +305,9 @@ public class FarmBlockEntity extends BaseContainerBlockEntity implements Worldly
         }
     }
 
-    /** A sheep colour at the natural spawn odds. */
-    private static DyeColor sheepColour(RandomSource random) {
-        int n = random.nextInt(10000);
-        if (n < 500) return DyeColor.BLACK;
-        if (n < 1000) return DyeColor.GRAY;
-        if (n < 1500) return DyeColor.LIGHT_GRAY;
-        if (n < 1800) return DyeColor.BROWN;
-        if (n < 1816) return DyeColor.PINK;
-        return DyeColor.WHITE;
+    /** A sheep colour: all sixteen, equally likely. */
+    public static DyeColor sheepColour(RandomSource random) {
+        return DyeColor.byId(random.nextInt(DyeColor.values().length));
     }
 
     /** A baby villager of the local kind (by biome), as a Captured Mob. */
