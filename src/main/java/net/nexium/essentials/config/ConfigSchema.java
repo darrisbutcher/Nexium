@@ -98,7 +98,7 @@ public final class ConfigSchema {
     }
 
     /** The groups, in the order the screen lists them. */
-    public static final List<String> GROUPS = List.of("mobs", "items", "tools", "armor", "farms", "freezer");
+    public static final List<String> GROUPS = List.of("mobs", "items", "tools", "farms", "freezer");
 
     public static final List<Entry> ENTRIES = List.of(
         bool("mobs", "creepersBreakBlocks"),
@@ -131,9 +131,7 @@ public final class ConfigSchema {
         bool("tools", "aiotHud", true),
         number("tools", "aiotHudSeconds", 0, 600, true),
         bool("tools", "terminalSearchSync", true),
-        bool("armor", "nexusRestock"),
-        number("armor", "restockTopUpAt", 1, 63),
-        number("armor", "restockEatWhenMissing", 1, 20),
+        number("items", "restockTopUpAt", 1, 63),
         number("farms", "librarianVillagers", 1, 54),
         number("farms", "ironFarmGolemTicks", 1, 24000),
         number("farms", "villagerBreederTicks", 1, 1000000),

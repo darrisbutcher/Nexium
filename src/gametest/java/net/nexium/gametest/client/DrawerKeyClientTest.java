@@ -20,7 +20,7 @@ import net.nexium.registry.ModBlocks;
 import net.nexium.registry.ModItems;
 import net.nexium.upgrade.UpgradeMenu;
 
-/** The Drawer Key in a real game: right-clicks lock and unlock a drawer, the padlock shows on its front, and the upgrade screen has four slots. */
+/** The Drawer Key in a real game: right-clicks lock and unlock a drawer, the padlock shows on its front, and the upgrade screen has five slots (four capacity and the Void one). */
 public class DrawerKeyClientTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext ctx) {
@@ -63,7 +63,7 @@ public class DrawerKeyClientTest implements FabricClientGameTest {
             ctx.waitTicks(6);
             check(locked(world, at[0]), "and a third locks it again");
 
-            // The upgrade screen: four slots, no lock slot (empty hand, the top)
+            // The upgrade screen: five slots (four capacity, one Void), no lock slot (empty hand, the top)
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getInventory().clearContent());
             ctx.waitTicks(3);
             ctx.runOnClient(mc -> mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND,
@@ -71,7 +71,7 @@ public class DrawerKeyClientTest implements FabricClientGameTest {
             ctx.waitFor(mc -> mc.gui.screen() != null);
             ctx.waitTicks(15);
             check(ctx.computeOnClient(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?> sc && sc.getMenu() instanceof UpgradeMenu m
-                    && m.slots.size() == 4 + 36), "the upgrade screen has four slots and the inventory");
+                    && m.slots.size() == 5 + 36), "the upgrade screen has five slots and the inventory");
             ctx.runOnClient(mc -> mc.gui.toastManager().clear());
             ctx.getInput().setCursorPos(0, 0);
             ctx.waitTicks(3);

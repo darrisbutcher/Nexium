@@ -76,6 +76,11 @@ public class TerminalMenu extends AbstractCraftingMenu {
     // Server side
     private final @Nullable ServerLevel networkLevel;
     private final @Nullable BlockPos terminalPos;
+
+    /** The terminal block this menu was opened on (server side only; null for the client copy and for portable terminals). */
+    public @Nullable BlockPos terminalPos() {
+        return terminalPos;
+    }
     private final Predicate<Player> validity;
     private final @Nullable Runnable onClose;
     private int syncTimer;

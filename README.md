@@ -56,7 +56,8 @@ test starting at i (CI runs five shares side by side with `0/5` to `4/5`, on pul
   reads their average. Fluid and Compacting Drawers do the same.
 * Right-click with an upgrade to install it; right-click the side or top with an empty hand to see or remove
   upgrades. Capacity upgrades add together: Iron x2, Gold x4, Diamond x8, Emerald x16, Netherite x32. A higher
-  capacity upgrade swaps out the weakest one. The Void Upgrade destroys overflow. The **Drawer Key** (`SGS / GTG / SGS`:
+  capacity upgrade swaps out the weakest one. The **Void Upgrade** destroys overflow and has a slot of its own (the fifth, set apart and
+  framed in purple), so it never takes a capacity slot; a Void Upgrade from an older drawer moves into it. The **Drawer Key** (`SGS / GTG / SGS`:
   sticks, gold nuggets, a tripwire hook) locks a drawer: right-click any drawer, compacting drawer or fluid drawer with it to lock it
   and again to unlock it. It is never used up, any key fits any drawer, and a locked drawer keeps each slot reserved for its item
   (padlock on the front). An older Lock Upgrade is a Drawer Key now: a drawer that held one stays locked and drops the key.
@@ -289,6 +290,7 @@ place it or right-click it to outline those chunks for a minute.
 
 ### Construction Builder
 Builds out from the block you right-click: every connected block of that kind gets a new block on the face you clicked.
+With a block in your offhand it spreads across **any** solid block on that face, whatever its kind (stone, bricks, deepslate...).
 It places the block in your **offhand**, or else a copy of the one you clicked (facing the same way). Each one is a
 freshly placed block: a crop is planted, not grown, and candles or snow layers are placed one at a time. A double slab
 is placed as one and uses two slabs.
@@ -317,6 +319,15 @@ is placed as one and uses two slabs.
   Nexus Furnace) into nuggets. A whole one gives what its diamonds are worth (pickaxe 27, sword 18, shovel 9, hoe 18, boots 36,
   helmet 45, leggings 63), and wear takes its share off (half worn, about half), never fewer than one. A stack holds 64, so the
   chestplate (72) and the AIOT (99) give 64.
+
+### Autocrafting
+
+* **Pattern Encoder** writes a recipe onto a **Blank Pattern** (paper, redstone, iron nugget). *Crafting* patterns hold a 3x3 recipe; *Processing* patterns hold the
+  items to send to a machine and the items that come back.
+* **Autocrafter**: nine pattern slots, on the storage network, powered by Nexus Energy (20,000 NE buffer, 100 NE per crafting step, 50 NE per push).
+* **Crafting Terminal > Craft**: pick an item and an amount; the plan shows what is crafted, taken from storage and missing, and Start runs it. Ingredients are crafted
+  first from other patterns, and requests run side by side. Processing patterns push into machines next to the Autocrafter.
+* **Autocrafting Monitor**: lists every request with progress and status, and cancels them.
 
 ### Jetpack, battery cells and the Charging Station
 * **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, Nexium Cell 100,000,000; the Batteries are the same up to Diamond, and the Nexium Battery holds 1,000,000,000) keep their charge in the
@@ -352,15 +363,11 @@ is placed as one and uses two slabs.
 | **Nether-forged** | full set | Fire Resistance: no fire or lava damage |
 | **Miner's set** | full set | No mining slowdown underwater or off the ground |
 | **No knockback** | full set | Hits and explosions don't push you back |
-| **Nexus restock** | full set, linked chestplate | Hotbar stacks top up from a storage network; you eat from it when hungry |
 | **Water breathing** | full set | Water Breathing: you can't drown |
 | **Night vision** | helmet | Night Vision |
 
 * **Armor menu**: press **G** with no AIOT or Nexium tool in hand, or click **Armor** in the tool menu. Each bonus has
   an on/off switch, saved on the piece that carries it.
-* **Nexus restock**: link the chestplate by sneak + right-clicking a Crafting Terminal with it. A hotbar stack you use
-  is topped up from the network at 8, or refilled when you use the last one. When your hunger bar is down by 6 or
-  more you eat the most filling plain food in the network.
 
 ## Essentials
 
@@ -433,7 +440,7 @@ vanilla. Endermen never pick up blocks.
   open too: the blocks appear on the screen a moment after the last ingot goes in.
 * **Restocking Module** (iron ingots in the corners, 2 hoppers, 2 chests and a diamond in the middle: `IHI / CDC / IHI`): tops up
   what you are using. A stack in the hotbar or the offhand that is being used up (blocks you place, arrows you shoot) is refilled
-  to a full stack from the Backpack when it gets down to 8 (the same setting as the Nexus Restock armor bonus), or when the last
+  to a full stack from the Backpack when it gets down to 8 (the `restockTopUpAt` setting), or when the last
   one is used. Only use counts: a stack you move or throw away whole is left alone (as is the hotbar for half a second after any click in a menu, such as a shift-click or Space + click), and it does nothing in creative mode. When the
   Backpack has none of the item left but holds a **bigger form** of it, it unpacks just enough: Triple Compressed stone becomes
   Double Compressed, then Compressed, then stone, an iron block becomes ingots, and what was not needed stays in the Backpack.
@@ -788,7 +795,7 @@ The Farm Assembler's list scrolls (mouse wheel) now that it has more than seven 
 | **Nether Mob Farm** | 1 blaze, 1 ghast, 1 magma cube, 16 nether bricks, 4 lava buckets, 8 magma blocks, netherrack | Every 10 s: blaze rods, ghast tears, gunpowder, magma cream |
 | **Ocean Farm** | 1 guardian, 1 drowned, 1 cod, 16 prismarine bricks, 8 sea lanterns, 4 water buckets, sand | Every 10 s: prismarine shards and crystals, fish, rotten flesh, copper |
 | **Slime Farm** | 2 slimes, 4 slime blocks, 8 sticky pistons, 8 hoppers, mud | Every 10 s: slime balls |
-| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s: the drops of a cow, a sheep (random wool colour), a chicken (and an egg), a pig and a rabbit |
+| **Livestock Farm** | 1 each of cow, pig, sheep, chicken, rabbit, 16 hay bales, 16 oak fences, dirt | Every 20 s: the drops of a cow, a sheep (wool of any of the 16 colours, equally often), a chicken (and an egg), a pig and a rabbit |
 | **Crop Farm** | 32 each of wheat, carrots, potatoes, beetroot, 4 water buckets, dirt | Every 20 s: 3 of each crop and seeds. |
 | **Gourd and Cactus Farm** | 16 each of melons, pumpkins, cactus, kelp, 4 water buckets, sand | Every 20 s, all at once: 12 melon slices, 3 pumpkins, 4 cactus and 6 kelp |
 | **Generator** | 4 lava buckets, 4 water buckets, 8 hoppers, 2 diamond pickaxes, cobblestone | Every 10 s, by its mode button: 8 cobblestone, stone, gravel or sand, 4 clay, 2 basalt; obsidian 1 every 20 s |
@@ -946,6 +953,4 @@ nothing you typed is lost; fix it there and copy it back.
 | `aiotHudSeconds` | `20` | Client: seconds that readout and the mining outline stay up after switching to an AIOT or pressing X, Z or the vein key; 0 keeps them up |
 | `aiotDropsAtFirstBlock` | `true` | The extra blocks of a vein, 3x3 or tunnel swing drop their items where you broke the first block, not each where it was |
 | `aiotNexusLink` | `true` | The Nexus Link module works |
-| `nexusRestock` | `true` | The Nexium armor's Nexus restock bonus works |
-| `restockTopUpAt` | `8` | A hotbar stack being used up is topped up when it gets down to this many |
-| `restockEatWhenMissing` | `6` | The wearer eats from the network when the hunger bar is down by this much |
+| `restockTopUpAt` | `8` | A hotbar stack being used up is topped up from the Backpack's Restocking module when it gets down to this many |

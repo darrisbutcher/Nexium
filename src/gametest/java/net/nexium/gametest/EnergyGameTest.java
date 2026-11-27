@@ -188,6 +188,29 @@ public class EnergyGameTest {
         h.succeed();
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aBrokenBatteryDropsWithItsCharge(GameTestHelper h) {
+        BlockPos pos = new BlockPos(2, 2, 2);
+        for (var block : java.util.List.of(ModBlocks.IRON_BATTERY, ModBlocks.GOLD_BATTERY, ModBlocks.DIAMOND_BATTERY, ModBlocks.NEXIUM_BATTERY)) {
+            h.setBlock(pos, block);
+            h.getBlockEntity(pos, net.nexium.energy.BatteryBlockEntity.class).energy().set(123_456);
+            h.getLevel().destroyBlock(h.absolutePos(pos), true);
+            var drops = h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(h.absolutePos(pos)).inflate(2));
+            h.assertValueEqual(drops.size(), 1, "one drop from " + block);
+            var stack = drops.get(0).getItem();
+            h.assertValueEqual(stack.get(net.nexium.registry.ModComponents.BATTERY_CHARGE), 123_456L, "the drop keeps the charge: " + block);
+            drops.get(0).discard();
+        }
+        // The Freezer's loot table had the same fault: it kept nothing either
+        h.setBlock(pos, ModBlocks.FREEZER);
+        h.getBlockEntity(pos, net.nexium.freezer.FreezerBlockEntity.class).setWater(3 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET);
+        h.getLevel().destroyBlock(h.absolutePos(pos), true);
+        var freezer = h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(h.absolutePos(pos)).inflate(2));
+        h.assertValueEqual(freezer.size(), 1, "one Freezer drops");
+        h.assertValueEqual(freezer.get(0).getItem().get(net.nexium.registry.ModComponents.FREEZER_WATER), 3 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET, "the Freezer keeps its water");
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
     public void aSolarPanelChargesABatteryThatPowersAFarmThroughConduits(GameTestHelper h) {
         BlockPos battery = new BlockPos(1, 2, 2), c1 = battery.east(), farmPos = c1.east();

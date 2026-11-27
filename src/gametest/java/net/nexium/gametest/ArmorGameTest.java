@@ -23,12 +23,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.nexium.gear.ArmorBonus;
 import net.nexium.gear.NexiumArmor;
-import net.nexium.gear.NexusRestock;
 import net.nexium.registry.ModBlocks;
 import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModItems;
 
-/** Nexium armor's bonuses: what each gives, the full-set rule, the armor menu's switches and Nexus restock. */
+/** Nexium armor's bonuses: what each gives, the full-set rule and the armor menu's switches. */
 public class ArmorGameTest {
     private static ServerPlayer wearing(GameTestHelper h, boolean fullSet) {
         ServerPlayer player = h.makeMockServerPlayerInLevel();
@@ -122,100 +121,15 @@ public class ArmorGameTest {
         h.succeed();
     }
 
-    private static final BlockPos TERMINAL = new BlockPos(1, 1, 1), CONNECTOR = new BlockPos(2, 1, 1), CHEST = new BlockPos(3, 1, 1);
-
-    private static int count(ChestBlockEntity chest, Item item) {
-        int n = 0;
-        for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(item)) n += chest.getItem(i).getCount();
-        return n;
-    }
-
     @GameTest
-    public void nexusRestockTopsUpTheHotbarAndFeeds(GameTestHelper h) {
-        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
-        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
-        h.setBlock(CHEST, Blocks.CHEST);
-        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
-        chest.setItem(0, new ItemStack(Items.TORCH, 64));
-        chest.setItem(1, new ItemStack(Items.BREAD, 5));
-        chest.setItem(2, new ItemStack(Items.GOLDEN_APPLE, 5));
-        chest.setItem(3, new ItemStack(Items.ROTTEN_FLESH, 5));
-
-        ServerPlayer player = wearing(h, true);
-        player.getItemBySlot(EquipmentSlot.CHEST).set(ModComponents.TERMINAL_LINK,
-                GlobalPos.of(h.getLevel().dimension(), h.absolutePos(TERMINAL)));
-        player.getInventory().setItem(0, new ItemStack(Items.TORCH, 10));
-        player.getInventory().setItem(1, new ItemStack(Items.COBBLESTONE, 40));
-        NexusRestock.tick(player, false);
-
-        // Used down to 9: not low enough yet
-        player.getInventory().getItem(0).shrink(1);
-        NexusRestock.tick(player, false);
-        h.assertValueEqual(player.getInventory().getItem(0).getCount(), 9, "9 torches: no top-up yet");
-        // Used down to 8: topped up to a full stack from the network
-        player.getInventory().getItem(0).shrink(1);
-        NexusRestock.tick(player, false);
-        h.assertValueEqual(player.getInventory().getItem(0).getCount(), 64, "topped up to 64");
-        h.assertValueEqual(count(chest, Items.TORCH), 64 - 56, "56 torches taken from the network");
-
-        // A whole stack moved away is not refilled
-        player.getInventory().setItem(1, ItemStack.EMPTY);
-        NexusRestock.tick(player, false);
-        h.assertTrue(player.getInventory().getItem(1).isEmpty(), "a stack moved away is left alone");
-
-        // Hungry: eats bread, never the golden apple or the rotten flesh
-        player.getFoodData().setFoodLevel(10);
-        NexusRestock.tick(player, true);
-        h.assertTrue(player.getFoodData().getFoodLevel() > 10, "ate something, food " + player.getFoodData().getFoodLevel());
-        h.assertValueEqual(count(chest, Items.BREAD), 4, "one bread eaten");
-        h.assertValueEqual(count(chest, Items.GOLDEN_APPLE), 5, "golden apples left alone");
-        h.assertValueEqual(count(chest, Items.ROTTEN_FLESH), 5, "rotten flesh left alone");
-
-        // Switched off: nothing
-        NexiumArmor.toggle(player, ArmorBonus.NEXUS_RESTOCK);
-        player.getInventory().setItem(0, new ItemStack(Items.TORCH, 10));
-        NexusRestock.tick(player, false);
-        player.getInventory().getItem(0).shrink(2);
-        NexusRestock.tick(player, false);
-        h.assertValueEqual(player.getInventory().getItem(0).getCount(), 8, "no top-up when switched off");
-        h.succeed();
-    }
-
-    @GameTest
-    public void restockLooksAgainLaterWhenThereIsNothingToEat(GameTestHelper h) {
-        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
-        h.setBlock(CONNECTOR, ModBlocks.STORAGE_CONNECTOR);
-        h.setBlock(CHEST, Blocks.CHEST);
-        ChestBlockEntity chest = h.getBlockEntity(CHEST, ChestBlockEntity.class);
-        NexusRestock.reset(null);
-        ServerPlayer player = wearing(h, true);
-        player.getItemBySlot(EquipmentSlot.CHEST).set(ModComponents.TERMINAL_LINK,
-                GlobalPos.of(h.getLevel().dimension(), h.absolutePos(TERMINAL)));
-        player.getFoodData().setFoodLevel(6);
-        NexusRestock.tick(player, true); // nothing to eat in the network
-        chest.setItem(0, new ItemStack(Items.BREAD, 5));
-        net.nexium.network.StorageNetwork.clearCache();
-        NexusRestock.tick(player, true);
-        h.assertValueEqual(player.getFoodData().getFoodLevel(), 6, "still waiting before it looks again");
-        NexusRestock.reset(player.getUUID()); // the wait is forgotten, as when the armor comes off
-        NexusRestock.tick(player, true);
-        h.assertTrue(player.getFoodData().getFoodLevel() > 6, "eats once it looks again");
-        h.succeed();
-    }
-
-    @GameTest
-    public void chestplateLinksToATerminal(GameTestHelper h) {
-        h.setBlock(TERMINAL, ModBlocks.CRAFTING_TERMINAL);
-        ServerPlayer player = h.makeMockServerPlayerInLevel();
-        player.getInventory().clearContent();
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.NEXIUM_CHESTPLATE));
-        player.setShiftKeyDown(true);
-        BlockPos abs = h.absolutePos(TERMINAL);
-        player.gameMode.useItemOn(player, h.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
-                new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false));
-        GlobalPos link = player.getMainHandItem().get(ModComponents.TERMINAL_LINK);
-        h.assertTrue(link != null && link.pos().equals(abs), "sneak + right-click links the chestplate, got " + link);
-        h.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST).isEmpty(), "and doesn't put it on");
+    public void anOldChestplateWithTheRemovedNexusRestockBonusStillLoads(GameTestHelper h) {
+        var json = new com.google.gson.JsonArray();
+        json.add("nexus_restock");
+        json.add("water_breathing");
+        var parsed = ArmorBonus.SAVED_CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, json);
+        h.assertTrue(parsed.result().isPresent(), "a list holding an id this version no longer has still decodes");
+        h.assertValueEqual(parsed.result().get(), java.util.List.of(ArmorBonus.WATER_BREATHING), "and keeps the bonuses it still has");
+        h.assertTrue(ArmorBonus.byId("nexus_restock") == null, "Nexus restock is gone");
         h.succeed();
     }
 }

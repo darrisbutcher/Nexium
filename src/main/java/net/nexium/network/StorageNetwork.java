@@ -80,6 +80,9 @@ public final class StorageNetwork {
     }
 
     public int nodeCount() { return nodeCount; }
+
+    /** The network blocks this network is made of. */
+    public Set<BlockPos> nodes() { return nodes; }
     public int inventoryCount() { return items.size() + fluids.size(); }
 
     /** The network containing the network block at {@code start}, or null if there is none. */

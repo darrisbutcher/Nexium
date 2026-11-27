@@ -127,6 +127,9 @@
     "nexium:charging_station",
     "nexium:iron_fluid_tank",
     "nexium:gold_fluid_tank",
-    "nexium:diamond_fluid_tank"
+    "nexium:diamond_fluid_tank",
+    "nexium:autocrafter",
+    "nexium:pattern_encoder",
+    "nexium:autocraft_monitor"
   ]
 }

@@ -8,12 +8,17 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.nexium.registry.ModComponents;
 
 /**
- * Block entities with four storage-upgrade slots (drawers, fluid drawers, tanks).
- * Capacity upgrades add together: no upgrade = x1, one iron = x2, iron + gold = x6.
+ * Block entities with storage-upgrade slots (drawers, fluid drawers, tanks): four for capacity upgrades and a fifth just for the
+ * Void Upgrade. Capacity upgrades add together: no upgrade = x1, one iron = x2, iron + gold = x6.
  */
 public interface Upgradeable {
-    /** Four upgrade slots. (Older saves had a fifth, just for the Lock Upgrade, which is the Drawer Key now.) */
-    int UPGRADE_SLOTS = 4;
+    /** Four capacity slots, then the Void slot. (Older saves had a fifth, for the Lock Upgrade, which is the Drawer Key now.) */
+    int CAPACITY_SLOTS = 4, VOID_SLOT = 4, UPGRADE_SLOTS = 5;
+
+    /** Whether this upgrade goes in the Void slot (the Void Upgrade) rather than a capacity slot. */
+    static boolean isVoid(ItemStack stack) {
+        return stack.getItem() instanceof UpgradeItem up && up.kind() == UpgradeItem.Kind.VOID;
+    }
 
     NonNullList<ItemStack> getUpgrades();
 
@@ -56,7 +61,14 @@ public interface Upgradeable {
             ItemStack stack = saved.get(i);
             if (stack.isEmpty()) continue;
             if (stack.getItem() instanceof DrawerKeyItem) keys += stack.getCount();
-            else if (i < upgrades.size()) upgrades.set(i, stack);
+            // A Void Upgrade always goes in the Void slot, so one saved in a capacity slot (as before the Void slot) frees that slot
+            else if (isVoid(stack) && upgrades.get(VOID_SLOT).isEmpty()) upgrades.set(VOID_SLOT, stack);
+            else if (i < CAPACITY_SLOTS) upgrades.set(i, stack);
+            else if (i != VOID_SLOT) continue;
+            else {
+                // Something that is no Void Upgrade in the Void slot (not made by this version): into a free capacity slot
+                for (int j = 0; j < CAPACITY_SLOTS; j++) if (upgrades.get(j).isEmpty()) { upgrades.set(j, stack); break; }
+            }
         }
         return keys;
     }
@@ -105,7 +117,9 @@ public interface Upgradeable {
     default boolean tryInstall(ItemStack stack) {
         if (!acceptsUpgrade(stack)) return false;
         NonNullList<ItemStack> list = getUpgrades();
-        for (int i = 0; i < list.size(); i++) {
+        // A Void Upgrade goes in its own slot, anything else in the first free capacity slot
+        int from = isVoid(stack) ? VOID_SLOT : 0, to = isVoid(stack) ? VOID_SLOT + 1 : CAPACITY_SLOTS;
+        for (int i = from; i < to; i++) {
             if (list.get(i).isEmpty()) {
                 list.set(i, stack.copyWithCount(1));
                 stack.shrink(1);
@@ -126,7 +140,7 @@ public interface Upgradeable {
         NonNullList<ItemStack> list = getUpgrades();
         int weakest = -1;
         int weakestMultiplier = held.multiplier();
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < CAPACITY_SLOTS; i++) {
             if (list.get(i).getItem() instanceof CapacityUpgradeItem cap && cap.multiplier() < weakestMultiplier) {
                 weakest = i;
                 weakestMultiplier = cap.multiplier();

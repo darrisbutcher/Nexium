@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.resources.Identifier;
 
 /**
- * The Nexium tab on the real advancements screen: after a moment in a world all 33 nodes are done (the tick
+ * The Nexium tab on the real advancements screen: after a moment in a world all 32 nodes are done (the tick
  * trigger), and the screen opens on the Nexium tab. Takes a screenshot of it.
  */
 public class AdvancementTabClientTest implements FabricClientGameTest {
@@ -25,7 +25,7 @@ public class AdvancementTabClientTest implements FabricClientGameTest {
                                 && e.getKey().id().getPath().startsWith("guide/") && e.getValue().isDone())
                         .count();
             });
-            check(done == 33, "all 33 Nexium nodes are done from the start, got " + done);
+            check(done == 32, "all 32 Nexium nodes are done from the start, got " + done);
 
             ctx.setScreen(() -> {
                 var advancements = ctx.computeOnClient(mc -> mc.player.connection.getAdvancements());

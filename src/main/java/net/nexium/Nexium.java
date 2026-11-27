@@ -15,7 +15,6 @@ import net.nexium.network.ModPayloads;
 import net.nexium.network.StorageNetwork;
 import net.nexium.gear.NexiumArmor;
 import net.nexium.gear.NexiumHaste;
-import net.nexium.gear.NexusRestock;
 import net.nexium.registry.ModBlockEntities;
 import net.nexium.registry.ModBlocks;
 import net.nexium.registry.ModComponents;
@@ -56,7 +55,6 @@ public class Nexium implements ModInitializer {
         AnchorRegistry.init();
         NexiumHaste.init();
         NexiumArmor.init();
-        NexusRestock.init();
         NexusLink.init();
         AiotMining.init();
         net.nexium.builder.BuilderService.init();

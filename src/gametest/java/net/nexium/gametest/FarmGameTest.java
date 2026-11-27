@@ -465,4 +465,17 @@ public class FarmGameTest {
         }
         h.succeed();
     }
+
+    @GameTest
+    public void theLivestockFarmsSheepGiveEveryWoolColourEquallyOften(GameTestHelper h) {
+        var random = net.minecraft.util.RandomSource.create(12345);
+        int[] counts = new int[net.minecraft.world.item.DyeColor.values().length];
+        int rolls = 32_000;
+        for (int i = 0; i < rolls; i++) counts[FarmBlockEntity.sheepColour(random).getId()]++;
+        for (int c = 0; c < counts.length; c++) {
+            h.assertTrue(counts[c] > rolls / 16 * 0.85 && counts[c] < rolls / 16 * 1.15,
+                    net.minecraft.world.item.DyeColor.byId(c) + " came up " + counts[c] + " times of " + rolls + ", about 1 in 16 is " + rolls / 16);
+        }
+        h.succeed();
+    }
 }

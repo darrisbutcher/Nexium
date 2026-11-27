@@ -39,6 +39,9 @@
     "nexium:nexium_battery",
     "nexium:power_meter",
     "nexium:trash_can",
-    "nexium:charging_station"
+    "nexium:charging_station",
+    "nexium:autocrafter",
+    "nexium:pattern_encoder",
+    "nexium:autocraft_monitor"
   ]
 }

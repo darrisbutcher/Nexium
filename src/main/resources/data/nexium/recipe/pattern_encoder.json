@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "B": "nexium:blank_pattern",
+    "T": "minecraft:crafting_table"
+  },
+  "pattern": [
+    "IRI",
+    "BTB",
+    "III"
+  ],
+  "result": {
+    "id": "nexium:pattern_encoder"
+  }
+}

@@ -108,7 +108,7 @@ public final class ModComponents {
 
     /** On a Nexium chestplate or helmet: the bonuses it carries that are switched off in the armor menu. */
     public static final DataComponentType<List<ArmorBonus>> BONUSES_OFF = register("bonuses_off",
-            b -> b.persistent(ArmorBonus.CODEC.listOf()).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
+            b -> b.persistent(ArmorBonus.SAVED_CODEC).networkSynchronized(ArmorBonus.STREAM_CODEC.apply(ByteBufCodecs.list())));
 
     /** On a Nexium tool: its Haste II is turned off in the tool menu. */
     public static final DataComponentType<Unit> HASTE_OFF = register("haste_off",
@@ -144,6 +144,11 @@ public final class ModComponents {
     public static final DataComponentType<net.nexium.fluid.FluidTankBlockEntity.Contents> TANK_FLUID = register("tank_fluid",
             b -> b.persistent(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)
                     .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)));
+
+    /** What an encoded pattern teaches an Autocrafter. */
+    public static final DataComponentType<net.nexium.autocraft.Pattern> PATTERN = register("pattern",
+            b -> b.persistent(net.nexium.autocraft.Pattern.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(net.nexium.autocraft.Pattern.CODEC)));
 
     /** Water (in Fabric droplets) a Freezer held when it was broken. */
     public static final DataComponentType<Long> FREEZER_WATER = register("freezer_water",

@@ -81,13 +81,6 @@ public class ArmorMenuScreen extends Screen {
                 button.setMessage(Component.translatable(NexiumArmor.switchedOn(player, bonus)
                         ? "screen.nexium.armor_menu.on" : "screen.nexium.armor_menu.off", name));
             }
-            if (bonus == ArmorBonus.NEXUS_RESTOCK) {
-                GlobalPos link = player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.NEXIUM_CHESTPLATE)
-                        ? player.getItemBySlot(EquipmentSlot.CHEST).get(ModComponents.TERMINAL_LINK) : null;
-                hint = Component.empty().append(hint).append("\n").append(link == null
-                        ? Component.translatable("tooltip.nexium.nexus_restock.unlinked")
-                        : Component.translatable("tooltip.nexium.nexus_restock.linked", ModuleItem.describe(link)));
-            }
             hints.set(button, hint);
         }
     }

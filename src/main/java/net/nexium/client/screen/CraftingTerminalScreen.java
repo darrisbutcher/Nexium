@@ -36,6 +36,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
     private final TerminalView view;
     private final CraftingRecipeBookComponent recipeBook;
     private Button clearButton;
+    private Button craftButton;
     /** What the terminal's search and the recipe book's last agreed on. */
     private String bookSynced = "";
 
@@ -74,6 +75,11 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         }).bounds(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()), 16, 14)
                 .tooltip(Tooltip.create(Component.translatable("screen.nexium.clear_grid"))).build();
         addRenderableWidget(clearButton);
+        craftButton = Button.builder(Component.translatable("screen.nexium.autocraft.button"), b ->
+                net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new net.nexium.autocraft.AutocraftPayloads.RequestCraftables(net.minecraft.core.BlockPos.ZERO)))
+                .bounds(leftPos + imageWidth - 8 - 34, topPos + TerminalMenu.craftingTop(menu.rows()) + 18, 34, 14)
+                .tooltip(Tooltip.create(Component.translatable("screen.nexium.autocraft.button.tip"))).build();
+        addRenderableWidget(craftButton);
     }
 
     @Override
@@ -87,6 +93,7 @@ public class CraftingTerminalScreen extends AbstractRecipeBookScreen<TerminalMen
         leftPos = panelLeft();
         view.reposition(leftPos, topPos); // the screen slides right when the book opens
         clearButton.setPosition(leftPos + 8, topPos + TerminalMenu.craftingTop(menu.rows()));
+        craftButton.setPosition(leftPos + imageWidth - 8 - 34, topPos + TerminalMenu.craftingTop(menu.rows()) + 18);
     }
 
     /** The search box's place: x, y, width, height in GUI pixels (for the client test). */

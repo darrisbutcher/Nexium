@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TooltipWidthsTest {
     /** These show a real item's tooltip (its lines come from the item, and a Nexium item wraps its own lines). */
-    private static final Set<String> ITEM_TOOLTIPS = Set.of("TerminalView.java", "RecipePainter.java");
+    private static final Set<String> ITEM_TOOLTIPS = Set.of("TerminalView.java", "RecipePainter.java", "AutocraftRequestScreen.java");
 
     private static final Pattern NUMERIC_SPLIT = Pattern.compile("\\.split\\([^;]*,\\s*\\d+\\)");
 

@@ -41,7 +41,8 @@
         "emitter",
         "tablet",
         "disks",
-        "disk_crafting"
+        "disk_crafting",
+        "autocrafting"
       ]
     },
     {
@@ -91,8 +92,7 @@
         "spear",
         "armor",
         "bonuses",
-        "armor_menu",
-        "restock"
+        "armor_menu"
       ]
     },
     {
@@ -950,8 +950,7 @@
       ],
       "see": [
         "modules",
-        "terminal",
-        "restock"
+        "terminal"
       ]
     },
     "area": {
@@ -1146,8 +1145,7 @@
       ],
       "see": [
         "bonuses",
-        "armor_menu",
-        "restock"
+        "armor_menu"
       ]
     },
     "bonuses": {
@@ -1179,21 +1177,6 @@
       "see": [
         "bonuses",
         "tool_menu"
-      ]
-    },
-    "restock": {
-      "pages": [
-        "armor.restock",
-        "armor.restock2"
-      ],
-      "icon": "nexium:nexium_leggings",
-      "aliases": [
-        "Nexus restock",
-        "restock"
-      ],
-      "see": [
-        "armor",
-        "nexus_link"
       ]
     },
     "slots": {
@@ -2497,6 +2480,43 @@
       ],
       "see": [
         "mobs"
+      ]
+    },
+    "autocrafting": {
+      "pages": [
+        "network.autocraft",
+        "network.autocraft2",
+        "network.autocraft3"
+      ],
+      "icon": "nexium:autocrafter",
+      "recipes": [
+        "blank_pattern",
+        "pattern_encoder",
+        "autocrafter",
+        "autocraft_monitor"
+      ],
+      "items": [
+        "nexium:blank_pattern",
+        "nexium:pattern",
+        "nexium:pattern_encoder",
+        "nexium:autocrafter",
+        "nexium:autocraft_monitor"
+      ],
+      "aliases": [
+        "Autocrafting",
+        "Autocrafter",
+        "Pattern",
+        "Patterns",
+        "Pattern Encoder",
+        "Monitor",
+        "Autocrafting Monitor",
+        "autocraft",
+        "crafting request"
+      ],
+      "see": [
+        "terminal",
+        "network",
+        "connector"
       ]
     }
   }

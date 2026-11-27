@@ -56,6 +56,10 @@ public final class ModMenus {
             new ExtendedMenuType<>(net.nexium.energy.RedstoneReactorMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.nexium.energy.NexusFurnaceMenu, BlockPos> NEXUS_FURNACE = register("nexus_furnace",
             new ExtendedMenuType<>(net.nexium.energy.NexusFurnaceMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.nexium.autocraft.AutocrafterMenu, BlockPos> AUTOCRAFTER = register("autocrafter",
+            new ExtendedMenuType<>(net.nexium.autocraft.AutocrafterMenu::new, BlockPos.STREAM_CODEC));
+    public static final ExtendedMenuType<net.nexium.autocraft.PatternEncoderMenu, BlockPos> PATTERN_ENCODER = register("pattern_encoder",
+            new ExtendedMenuType<>(net.nexium.autocraft.PatternEncoderMenu::new, BlockPos.STREAM_CODEC));
     public static final ExtendedMenuType<net.nexium.energy.ChargingStationMenu, BlockPos> CHARGING_STATION = register("charging_station",
             new ExtendedMenuType<>(net.nexium.energy.ChargingStationMenu::new, BlockPos.STREAM_CODEC));
     /** Opening data: where the Jetpack or Tablet sits (see {@code CellSource}). */

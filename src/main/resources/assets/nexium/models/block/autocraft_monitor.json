@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nexium:block/autocraft_monitor_top",
+    "bottom": "nexium:block/autocraft_monitor_bottom",
+    "side": "nexium:block/autocraft_monitor_side"
+  }
+}
