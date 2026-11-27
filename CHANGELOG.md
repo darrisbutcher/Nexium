@@ -5,6 +5,8 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 ## 1.33.0
 
+* **Broken Batteries keep their charge (and so do broken Freezers).** The loot tables of the four Batteries and the Freezer used a field name this game version no longer reads, so a broken Battery dropped empty
+  and a Freezer lost its water, dye and mode. Both keep what they held again.
 * **Autocrafting.** The storage network can now craft for you. A **Blank Pattern** (paper, redstone, iron nugget, two per craft) becomes a **Pattern** in the new
   **Pattern Encoder**: in *Crafting* mode it holds a 3x3 recipe, in *Processing* mode a list of items to send to a machine and the items that come back. Put patterns in an
   **Autocrafter** (nine slots, 20,000 NE of its own, 100 NE per crafting step and 50 NE per push to a machine) on the network. In the **Crafting Terminal** a new

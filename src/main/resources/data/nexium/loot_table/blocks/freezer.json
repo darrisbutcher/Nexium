@@ -7,17 +7,15 @@
         {
           "type": "minecraft:item",
           "name": "nexium:freezer",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "include": [
-                "minecraft:dyed_color",
-                "nexium:freezer_water",
-                "nexium:freezer_mode"
-              ]
-            }
-          ]
+          "modifier": {
+            "source": "block_entity",
+            "include": [
+              "minecraft:dyed_color",
+              "nexium:freezer_water",
+              "nexium:freezer_mode"
+            ],
+            "type": "minecraft:copy_components"
+          }
         }
       ],
       "conditions": [
