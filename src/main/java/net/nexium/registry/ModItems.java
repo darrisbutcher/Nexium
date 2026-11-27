@@ -166,6 +166,9 @@ public final class ModItems {
     /** Small batteries for the Jetpack and the Crafting Storage Tablet, sized like the Iron, Gold and Diamond Battery blocks. */
     public static final Item IRON_CELL = register("iron_cell", p -> new net.nexium.energy.BatteryCellItem(p, 250_000), new Item.Properties().stacksTo(1));
     public static final Item GOLD_CELL = register("gold_cell", p -> new net.nexium.energy.BatteryCellItem(p, 1_000_000), new Item.Properties().stacksTo(1));
+    /** Autocrafting patterns: a blank one is encoded at the Pattern Encoder; an encoded one goes in an Autocrafter. */
+    public static final Item BLANK_PATTERN = register("blank_pattern", net.nexium.autocraft.PatternItem::new, new Item.Properties());
+    public static final Item PATTERN = register("pattern", net.nexium.autocraft.PatternItem::new, new Item.Properties().stacksTo(1));
     public static final Item DIAMOND_CELL = register("diamond_cell", p -> new net.nexium.energy.BatteryCellItem(p, 10_000_000), new Item.Properties().stacksTo(1));
     public static final Item NEXIUM_CELL = register("nexium_cell", p -> new net.nexium.energy.BatteryCellItem(p, 100_000_000), new Item.Properties().stacksTo(1));
     /**

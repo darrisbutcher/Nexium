@@ -5,6 +5,13 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 ## 1.33.0
 
+* **Autocrafting.** The storage network can now craft for you. A **Blank Pattern** (paper, redstone, iron nugget, two per craft) becomes a **Pattern** in the new
+  **Pattern Encoder**: in *Crafting* mode it holds a 3x3 recipe, in *Processing* mode a list of items to send to a machine and the items that come back. Put patterns in an
+  **Autocrafter** (nine slots, 20,000 NE of its own, 100 NE per crafting step and 50 NE per push to a machine) on the network. In the **Crafting Terminal** a new
+  **Craft** button lists everything the network has a pattern for; pick an item and an amount and it shows the plan (what is crafted, what comes from storage,
+  what is missing), and **Start** runs it. The network crafts ingredients first from other patterns, so a chain of recipes is one request, and several requests run at once.
+  A processing pattern pushes its items into any machine touching the Autocrafter (a furnace, a farm, another mod's machine) and waits for the result to reach the network.
+  The **Autocrafting Monitor** block lists every request with progress and status, and cancels them. New Codex topic *Autocrafting*.
 * **The Construction Builder spreads over any block when you hold one in your offhand.** Extend and Line used to cover only blocks of the same kind as the
   one you clicked, so they skipped the stone bricks next to the stone. With a block in the offhand they now cover every solid block on that face,
   whatever its kind (still only where the new block can be placed). With an empty offhand they work as before, because the builder copies the clicked block.

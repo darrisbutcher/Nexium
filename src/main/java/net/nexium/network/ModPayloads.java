@@ -21,6 +21,7 @@ import net.nexium.terminal.TerminalSyncPayload;
 
 public final class ModPayloads {
     public static void init() {
+        net.nexium.autocraft.AutocraftPayloads.init();
         PayloadTypeRegistry.clientboundPlay().register(TerminalSyncPayload.TYPE, TerminalSyncPayload.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(net.nexium.energy.PowerReportPayload.TYPE, net.nexium.energy.PowerReportPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(net.nexium.energy.PowerRequestPayload.TYPE, net.nexium.energy.PowerRequestPayload.STREAM_CODEC);

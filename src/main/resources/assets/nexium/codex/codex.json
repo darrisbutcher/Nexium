@@ -41,7 +41,8 @@
         "emitter",
         "tablet",
         "disks",
-        "disk_crafting"
+        "disk_crafting",
+        "autocrafting"
       ]
     },
     {
@@ -2479,6 +2480,43 @@
       ],
       "see": [
         "mobs"
+      ]
+    },
+    "autocrafting": {
+      "pages": [
+        "network.autocraft",
+        "network.autocraft2",
+        "network.autocraft3"
+      ],
+      "icon": "nexium:autocrafter",
+      "recipes": [
+        "blank_pattern",
+        "pattern_encoder",
+        "autocrafter",
+        "autocraft_monitor"
+      ],
+      "items": [
+        "nexium:blank_pattern",
+        "nexium:pattern",
+        "nexium:pattern_encoder",
+        "nexium:autocrafter",
+        "nexium:autocraft_monitor"
+      ],
+      "aliases": [
+        "Autocrafting",
+        "Autocrafter",
+        "Pattern",
+        "Patterns",
+        "Pattern Encoder",
+        "Monitor",
+        "Autocrafting Monitor",
+        "autocraft",
+        "crafting request"
+      ],
+      "see": [
+        "terminal",
+        "network",
+        "connector"
       ]
     }
   }

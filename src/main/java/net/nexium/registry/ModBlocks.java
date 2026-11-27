@@ -92,6 +92,12 @@ public final class ModBlocks {
     public static final NetworkBusBlock NETWORK_BUS = register("import_export_bus", NetworkBusBlock::new, metal(), true);
     public static final LevelEmitterBlock LEVEL_EMITTER = register("level_emitter", LevelEmitterBlock::new, metal(), true);
     public static final InventoryCableBlock INVENTORY_CABLE = register("inventory_cable", InventoryCableBlock::new, cable(), true);
+    /** Autocrafting: holds patterns and carries them out on Nexus Energy; part of a storage network. */
+    public static final net.nexium.autocraft.AutocrafterBlock AUTOCRAFTER = register("autocrafter", net.nexium.autocraft.AutocrafterBlock::new, metal(), true);
+    /** Writes crafting and processing patterns. */
+    public static final net.nexium.autocraft.PatternEncoderBlock PATTERN_ENCODER = register("pattern_encoder", net.nexium.autocraft.PatternEncoderBlock::new, metal(), true);
+    /** Lists what a network is crafting, cancels jobs and starts requests. */
+    public static final net.nexium.autocraft.AutocraftMonitorBlock AUTOCRAFT_MONITOR = register("autocraft_monitor", net.nexium.autocraft.AutocraftMonitorBlock::new, metal(), true);
     public static final TerminalBlock CRAFTING_TERMINAL = register("crafting_terminal", p -> new TerminalBlock(p, true), metal(), true);
 
     /** Holds 8 storage disks on a storage network. */

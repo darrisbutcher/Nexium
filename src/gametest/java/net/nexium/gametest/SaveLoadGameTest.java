@@ -41,6 +41,7 @@ import net.nexium.network.ConnectorBlockEntity;
 import net.nexium.network.LevelEmitterBlockEntity;
 import net.nexium.network.NetworkBusBlockEntity;
 import net.nexium.registry.ModBlocks;
+import net.nexium.registry.ModComponents;
 import net.nexium.registry.ModItems;
 import net.nexium.upgrade.Upgradeable;
 
@@ -307,6 +308,17 @@ public class SaveLoadGameTest {
         cases.add(new Case("Charging Station", ModBlocks.CHARGING_STATION, List.of(
                 part(net.nexium.energy.ChargingStationBlockEntity.class, "energy", be -> be.energy().set(12_345)),
                 part(net.nexium.energy.ChargingStationBlockEntity.class, "cell", be -> be.slots().setItem(2, new ItemStack(ModItems.IRON_CELL))))));
+        cases.add(new Case("Autocrafter", ModBlocks.AUTOCRAFTER, List.of(
+                part(net.nexium.autocraft.AutocrafterBlockEntity.class, "energy", be -> be.energy().set(4_321)),
+                part(net.nexium.autocraft.AutocrafterBlockEntity.class, "pattern", be -> {
+                    ItemStack pattern = new ItemStack(ModItems.PATTERN);
+                    pattern.set(ModComponents.PATTERN, new net.nexium.autocraft.Pattern(true,
+                            List.of(new ItemStack(Items.COBBLESTONE, 2)), List.of(new ItemStack(Items.STONE))));
+                    be.patterns().setItem(3, pattern);
+                }))));
+        cases.add(new Case("Pattern Encoder", ModBlocks.PATTERN_ENCODER, List.of(
+                part(net.nexium.autocraft.PatternEncoderBlockEntity.class, "blank", be -> be.slots().setItem(net.nexium.autocraft.PatternEncoderBlockEntity.BLANK, new ItemStack(ModItems.BLANK_PATTERN, 5))),
+                part(net.nexium.autocraft.PatternEncoderBlockEntity.class, "mode", be -> be.setProcessing(true)))));
         cases.add(new Case("Freezer", ModBlocks.FREEZER, List.of(
                 part(net.nexium.freezer.FreezerBlockEntity.class, "water", be -> be.setWater(3 * FluidConstants.BUCKET)),
                 part(net.nexium.freezer.FreezerBlockEntity.class, "ice", be -> be.setItem(0, new ItemStack(Items.ICE, 5))),

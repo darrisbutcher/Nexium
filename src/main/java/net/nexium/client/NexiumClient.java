@@ -46,6 +46,8 @@ public class NexiumClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(net.nexium.dog.ModDogs.DOG, net.nexium.client.dog.DogRenderer::new);
         MenuScreens.register(ModMenus.UPGRADES, UpgradeScreen::new);
         MenuScreens.register(ModMenus.CONNECTOR, ConnectorScreen::new);
+        MenuScreens.register(ModMenus.AUTOCRAFTER, net.nexium.client.screen.AutocrafterScreen::new);
+        MenuScreens.register(ModMenus.PATTERN_ENCODER, net.nexium.client.screen.PatternEncoderScreen::new);
         MenuScreens.register(ModMenus.NETWORK_BUS, NetworkBusScreen::new);
         MenuScreens.register(ModMenus.BARREL, BarrelScreen::new);
         MenuScreens.register(ModMenus.LEVEL_EMITTER, LevelEmitterScreen::new);
@@ -109,6 +111,16 @@ public class NexiumClient implements ClientModInitializer {
         net.nexium.essentials.client.Zoom.init();
         AiotHud.init();
 
+        ClientPlayNetworking.registerGlobalReceiver(net.nexium.autocraft.AutocraftPayloads.OpenMonitor.TYPE, (payload, context) ->
+                context.client().gui.setScreen(new net.nexium.client.screen.AutocraftMonitorScreen(payload.anchor())));
+        ClientPlayNetworking.registerGlobalReceiver(net.nexium.autocraft.AutocraftPayloads.OpenRequest.TYPE, (payload, context) ->
+                context.client().gui.setScreen(new net.nexium.client.screen.AutocraftRequestScreen(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(net.nexium.autocraft.AutocraftPayloads.PlanResult.TYPE, (payload, context) -> {
+            if (context.client().gui.screen() instanceof net.nexium.client.screen.AutocraftRequestScreen screen) screen.onPlan(payload);
+        });
+        ClientPlayNetworking.registerGlobalReceiver(net.nexium.autocraft.AutocraftPayloads.Jobs.TYPE, (payload, context) -> {
+            if (context.client().gui.screen() instanceof net.nexium.client.screen.AutocraftMonitorScreen screen) screen.update(payload);
+        });
         ClientPlayNetworking.registerGlobalReceiver(net.nexium.elevator.ElevatorOpenPayload.TYPE, (payload, context) ->
                 context.client().gui.setScreen(new net.nexium.client.screen.ElevatorScreen(payload)));
         ClientPlayNetworking.registerGlobalReceiver(net.nexium.energy.PowerReportPayload.TYPE, (payload, context) -> {

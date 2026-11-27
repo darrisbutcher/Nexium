@@ -145,6 +145,11 @@ public final class ModComponents {
             b -> b.persistent(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)
                     .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(net.nexium.fluid.FluidTankBlockEntity.Contents.CODEC)));
 
+    /** What an encoded pattern teaches an Autocrafter. */
+    public static final DataComponentType<net.nexium.autocraft.Pattern> PATTERN = register("pattern",
+            b -> b.persistent(net.nexium.autocraft.Pattern.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(net.nexium.autocraft.Pattern.CODEC)));
+
     /** Water (in Fabric droplets) a Freezer held when it was broken. */
     public static final DataComponentType<Long> FREEZER_WATER = register("freezer_water",
             b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));

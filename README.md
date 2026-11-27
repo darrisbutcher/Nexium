@@ -320,6 +320,15 @@ is placed as one and uses two slabs.
   helmet 45, leggings 63), and wear takes its share off (half worn, about half), never fewer than one. A stack holds 64, so the
   chestplate (72) and the AIOT (99) give 64.
 
+### Autocrafting
+
+* **Pattern Encoder** writes a recipe onto a **Blank Pattern** (paper, redstone, iron nugget). *Crafting* patterns hold a 3x3 recipe; *Processing* patterns hold the
+  items to send to a machine and the items that come back.
+* **Autocrafter**: nine pattern slots, on the storage network, powered by Nexus Energy (20,000 NE buffer, 100 NE per crafting step, 50 NE per push).
+* **Crafting Terminal > Craft**: pick an item and an amount; the plan shows what is crafted, taken from storage and missing, and Start runs it. Ingredients are crafted
+  first from other patterns, and requests run side by side. Processing patterns push into machines next to the Autocrafter.
+* **Autocrafting Monitor**: lists every request with progress and status, and cancels them.
+
 ### Jetpack, battery cells and the Charging Station
 * **Battery cells** (Iron Cell 250,000 NE, Gold Cell 1,000,000, Diamond Cell 10,000,000, Nexium Cell 100,000,000; the Batteries are the same up to Diamond, and the Nexium Battery holds 1,000,000,000) keep their charge in the
   item; a bar under the item shows it. The **Charging Station** holds four of them (or a Jetpack or Tablet with a cell in it) and

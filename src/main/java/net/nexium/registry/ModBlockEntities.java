@@ -65,6 +65,10 @@ public final class ModBlockEntities {
     public static final BlockEntityType<net.nexium.energy.ThermalGeneratorBlockEntity> THERMAL_GENERATOR = register("thermal_generator",
             new BlockEntityType<>(net.nexium.energy.ThermalGeneratorBlockEntity::new,
                     Set.of(ModBlocks.THERMAL_GENERATOR, ModBlocks.ADVANCED_THERMAL_GENERATOR, ModBlocks.NEXIUM_THERMAL_GENERATOR)));
+    public static final BlockEntityType<net.nexium.autocraft.AutocrafterBlockEntity> AUTOCRAFTER = register("autocrafter",
+            new BlockEntityType<>(net.nexium.autocraft.AutocrafterBlockEntity::new, Set.of(ModBlocks.AUTOCRAFTER)));
+    public static final BlockEntityType<net.nexium.autocraft.PatternEncoderBlockEntity> PATTERN_ENCODER = register("pattern_encoder",
+            new BlockEntityType<>(net.nexium.autocraft.PatternEncoderBlockEntity::new, Set.of(ModBlocks.PATTERN_ENCODER)));
     public static final BlockEntityType<net.nexium.energy.ChargingStationBlockEntity> CHARGING_STATION = register("charging_station",
             new BlockEntityType<>(net.nexium.energy.ChargingStationBlockEntity::new, Set.of(ModBlocks.CHARGING_STATION)));
     public static final BlockEntityType<net.nexium.energy.BatteryBlockEntity> BATTERY = register("battery",
