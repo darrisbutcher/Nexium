@@ -145,6 +145,16 @@ public class AutocraftGameTest {
         h.succeed();
     }
 
+    @GameTest(maxTicks = 40)
+    public void aBatteryTouchingAnAutocrafterPowersIt(GameTestHelper h) {
+        h.setBlock(CRAFTER, ModBlocks.AUTOCRAFTER);
+        BlockPos battery = CRAFTER.north();
+        h.setBlock(battery, ModBlocks.IRON_BATTERY);
+        h.getBlockEntity(battery, net.nexium.energy.BatteryBlockEntity.class).energy().set(100_000);
+        AutocrafterBlockEntity crafter = h.getBlockEntity(CRAFTER, AutocrafterBlockEntity.class);
+        h.succeedWhen(() -> h.assertTrue(crafter.energy().stored() > 0, "the Autocrafter has been given energy"));
+    }
+
     @GameTest
     public void theEncoderWritesPatterns(GameTestHelper h) {
         BlockPos at = new BlockPos(1, 1, 1);

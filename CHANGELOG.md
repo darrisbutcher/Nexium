@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.33.1
+
+* **The Autocrafter holds 27 patterns** (three rows of nine; the nine it had stay in the same slots).
+* **Patterns show what they make.** An encoded Pattern draws the item it is for, small, in the middle of the pattern card, in the hotbar, inventory, Autocrafter and every other slot.
+* **A simple autocrafting setup in the Codex**, with pictures: the Autocrafting topic now has three pages that show four blocks in a row (Disk Drive, Crafting Terminal, Autocrafter,
+  Battery), encoding a recipe, and making a request. Codex pages can now show pictures (a line `[image:name:width:height]`, from `textures/gui/guide`).
+* A game test checks that a Battery touching an Autocrafter powers it, and that a creative player with empty hands opens the Nexus Furnace.
+
 ## 1.33.0
 
 * **Broken Batteries keep their charge (and so do broken Freezers).** The loot tables of the four Batteries and the Freezer used a field name this game version no longer reads, so a broken Battery dropped empty

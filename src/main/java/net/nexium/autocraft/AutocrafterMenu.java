@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 
 /** The Autocrafter's screen: its nine pattern slots, what it holds, and the player inventory. */
 public class AutocrafterMenu extends BaseMenu {
-    public static final int INVENTORY_TOP = 108, GRID_X = 62, GRID_Y = 20;
+    public static final int INVENTORY_TOP = 108, GRID_X = 8, GRID_Y = 20;
     private static final int D_STORED = 0, D_COUNT = 2;
 
     private final ContainerData data;
@@ -32,7 +32,7 @@ public class AutocrafterMenu extends BaseMenu {
         this.crafter = crafter;
         Container patterns = crafter != null ? crafter.patterns() : new SimpleContainer(AutocrafterBlockEntity.SLOTS);
         for (int i = 0; i < AutocrafterBlockEntity.SLOTS; i++) {
-            addCustomSlot(new Slot(patterns, i, GRID_X + (i % 3) * 18, GRID_Y + (i / 3) * 18) {
+            addCustomSlot(new Slot(patterns, i, GRID_X + (i % 9) * 18, GRID_Y + (i / 9) * 18) {
                 @Override public boolean mayPlace(ItemStack stack) { return PatternItem.isEncoded(stack); }
                 @Override public int getMaxStackSize() { return 1; }
             });

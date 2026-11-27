@@ -65,7 +65,7 @@ public class CodexScreen extends Screen {
     /** One line of the sidebar: a category (which opens or closes), a topic, or a plain label. */
     private record SideRow(int depth, String category, String topic, String label, ItemStack icon) {}
 
-    private enum Kind { WORD, HEADING, ICON, RULE_LINE, RECIPE, CHIP }
+    private enum Kind { WORD, HEADING, ICON, RULE_LINE, RECIPE, CHIP, IMAGE }
 
     /** Something drawn on the page, in page coordinates (x from the page's left, y from its top before scrolling). */
     private record Piece(Kind kind, int x, int y, int w, String text, int color, String link, ItemStack icon, GuideData.Recipe recipe) {}
@@ -77,7 +77,7 @@ public class CodexScreen extends Screen {
         List<CodexText.Phrase> all = new ArrayList<>();
         for (GuideData.Topic t : data.topics().values()) {
             StringBuilder body = new StringBuilder();
-            for (String page : t.pages()) body.append(raw(GuideData.Topic.pageKey(page))).append('\n');
+            for (String page : t.pages()) body.append(withoutImages(raw(GuideData.Topic.pageKey(page)))).append('\n');
             String title = body.toString().split("\n", 2)[0];
             titles.put(t.id(), title);
             bodies.put(t.id(), body.toString());
@@ -158,6 +158,11 @@ public class CodexScreen extends Screen {
         if (search != null) search.setValue(text);
         sideScroll = 0;
         rebuildSide();
+    }
+
+    /** Scrolls the page by {@code pixels} (for tests). */
+    public void scrollBy(double pixels) {
+        contentScroll = Math.max(0, contentScroll + pixels);
     }
 
     /** How tall the current page is, and whether any word sticks out past the right edge. For tests. */
@@ -287,6 +292,18 @@ public class CodexScreen extends Screen {
 
     // ---- page layout -----------------------------------------------------------------------------------------------
 
+    /** A line that is just a picture: {@code [image:name:width:height]}. */
+    private static final java.util.regex.Pattern IMAGE_LINE = java.util.regex.Pattern.compile("\\[image:([a-z0-9_]+):(\\d+):(\\d+)]");
+
+    /** The text of a page without its picture lines (for search). */
+    private static String withoutImages(String text) {
+        StringBuilder out = new StringBuilder();
+        for (String line : text.split("\n", -1)) {
+            if (!IMAGE_LINE.matcher(line.trim()).matches()) out.append(line).append('\n');
+        }
+        return out.toString();
+    }
+
     private void layout() {
         int width = contentRight - contentLeft - 6;
         if (topicId.equals(layoutTopic) && width == layoutWidth) return;
@@ -317,6 +334,15 @@ public class CodexScreen extends Screen {
             for (int i = 1; i < lines.length; i++) {
                 if (lines[i].isBlank()) {
                     y += 5;
+                    continue;
+                }
+                java.util.regex.Matcher image = IMAGE_LINE.matcher(lines[i].trim());
+                if (image.matches()) {
+                    // A picture from assets/nexium/textures/gui/guide/, scaled down to the page width; the tag gives its size in pixels
+                    int texW = Integer.parseInt(image.group(2)), texH = Integer.parseInt(image.group(3));
+                    int drawW = Math.min(width, texW), drawH = Math.max(1, texH * drawW / texW);
+                    out.add(new Piece(Kind.IMAGE, 0, y + 2, drawW, image.group(1) + "|" + texW + "|" + texH, drawH, null, null, null));
+                    y += drawH + 8;
                     continue;
                 }
                 y = flow(out, CodexText.links(lines[i], phrases, linked, topicId), width, y);
@@ -465,6 +491,13 @@ public class CodexScreen extends Screen {
                     g.pose().popMatrix();
                 }
                 case RULE_LINE -> g.fill(x, y, x + p.w(), y + 1, p.color());
+                case IMAGE -> {
+                    String[] parts = p.text().split("\\|");
+                    int texW = Integer.parseInt(parts[1]), texH = Integer.parseInt(parts[2]);
+                    g.fill(x - 1, y - 1, x + p.w() + 1, y + p.color() + 1, 0xFF50505F);
+                    g.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                            net.nexium.Nexium.id("textures/gui/guide/" + parts[0] + ".png"), x, y, 0f, 0f, p.w(), p.color(), texW, texH, texW, texH);
+                }
                 case RECIPE -> {
                     boolean mouseIn = mouseY >= top && mouseY < bottom;
                     ItemStack h = RecipePainter.card(g, font, p.recipe(), x + 1, y, NAME_WIDTH, TEXT, DIM,
