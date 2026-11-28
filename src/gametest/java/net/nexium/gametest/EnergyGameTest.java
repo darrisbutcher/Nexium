@@ -211,6 +211,20 @@ public class EnergyGameTest {
         h.succeed();
     }
 
+    @GameTest(environment = EssentialsEnvironment.ID)
+    public void aCreativePlayerWithEmptyHandsOpensTheNexusFurnace(GameTestHelper h) {
+        BlockPos pos = new BlockPos(2, 2, 2);
+        h.setBlock(pos, ModBlocks.NEXUS_FURNACE);
+        var player = h.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        var abs = h.absolutePos(pos);
+        var result = player.gameMode.useItemOn(player, h.getLevel(), player.getMainHandItem(), net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), Direction.UP, abs, false));
+        h.assertTrue(result.consumesAction(), "the click is used: " + result);
+        h.assertTrue(player.containerMenu instanceof net.nexium.energy.NexusFurnaceMenu, "the furnace menu opens: " + player.containerMenu);
+        h.succeed();
+    }
+
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 100)
     public void aSolarPanelChargesABatteryThatPowersAFarmThroughConduits(GameTestHelper h) {
         BlockPos battery = new BlockPos(1, 2, 2), c1 = battery.east(), farmPos = c1.east();

@@ -2486,7 +2486,10 @@
       "pages": [
         "network.autocraft",
         "network.autocraft2",
-        "network.autocraft3"
+        "network.autocraft3",
+        "network.autocraft_setup",
+        "network.autocraft_setup2",
+        "network.autocraft_setup3"
       ],
       "icon": "nexium:autocrafter",
       "recipes": [

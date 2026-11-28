@@ -41,7 +41,7 @@ import java.util.UUID;
  * find its own way back to the network (an Import/Export Bus, a conduit).
  */
 public class AutocrafterBlockEntity extends BlockEntity implements ExtendedMenuProvider<BlockPos> {
-    public static final int SLOTS = 9;
+    public static final int SLOTS = 27;
     public static final long BUFFER = 20_000, CRAFT_COST = 100, PUSH_COST = 50;
     public static final int CRAFT_TICKS = 10, MAX_BATCH = 8;
 

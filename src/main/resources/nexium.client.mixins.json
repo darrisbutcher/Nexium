@@ -22,6 +22,7 @@
     "LightmapRenderStateExtractorMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
+    "PatternIconMixin",
     "WingsLayerMixin"
   ],
   "injectors": {

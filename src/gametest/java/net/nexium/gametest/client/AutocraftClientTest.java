@@ -48,7 +48,7 @@ public class AutocraftClientTest implements FabricClientGameTest {
                 ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                 player.getInventory().clearContent();
                 base[0] = player.blockPosition();
-                for (int x = -3; x <= 5; x++) for (int z = 1; z <= 6; z++) for (int y = 0; y <= 3; y++) {
+                for (int x = -3; x <= 5; x++) for (int z = -8; z <= 6; z++) for (int y = 0; y <= 3; y++) {
                     player.level().setBlockAndUpdate(base[0].offset(x, y, z), Blocks.AIR.defaultBlockState());
                 }
                 var level = player.level();
@@ -63,6 +63,13 @@ public class AutocraftClientTest implements FabricClientGameTest {
                 crafter.patterns().setItem(2, pattern(grid(Items.COBBLESTONE, Items.COBBLESTONE, Items.COBBLESTONE, Items.COBBLESTONE, null, Items.COBBLESTONE,
                         Items.COBBLESTONE, Items.COBBLESTONE, Items.COBBLESTONE), new ItemStack(Items.FURNACE)));
                 crafter.energy().set(AutocrafterBlockEntity.BUFFER);
+                level.setBlockAndUpdate(base[0].offset(1, 0, 4), ModBlocks.IRON_BATTERY.defaultBlockState());
+                // The encoder shows the sticks recipe, as a player would have laid it out
+                var encoder = (net.nexium.autocraft.PatternEncoderBlockEntity) level.getBlockEntity(base[0].offset(-2, 0, 3));
+                encoder.slots().setItem(0, new ItemStack(Items.OAK_PLANKS));
+                encoder.slots().setItem(3, new ItemStack(Items.OAK_PLANKS));
+                encoder.slots().setItem(net.nexium.autocraft.PatternEncoderBlockEntity.INPUTS, new ItemStack(Items.STICK, 4));
+                encoder.slots().setItem(net.nexium.autocraft.PatternEncoderBlockEntity.BLANK, new ItemStack(ModItems.BLANK_PATTERN, 15));
                 DiskDriveBlockEntity drive = (DiskDriveBlockEntity) level.getBlockEntity(base[0].offset(2, 0, 3));
                 drive.disks().setItem(0, new ItemStack(ModItems.STORAGE_DISKS.get(DiskTier.K16)));
                 player.getInventory().setItem(0, new ItemStack(ModItems.BLANK_PATTERN, 16));
@@ -77,7 +84,22 @@ public class AutocraftClientTest implements FabricClientGameTest {
                 }
             });
             ctx.waitTicks(5);
+            // The whole setup from a few blocks back, with no hand and no hotbar in the way
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                player.getInventory().setItem(0, ItemStack.EMPTY);
+                player.snapTo(base[0].getX() + 0.5 + 0.5, base[0].getY(), base[0].getZ() - 6.5, 0.0F, 12.0F);
+            });
+            ctx.getInput().pressKey(options -> options.keyToggleGui);
+            ctx.waitTicks(20);
             System.out.println("[nexium] autocraft blocks: " + shot(ctx, "autocraft_blocks"));
+            ctx.getInput().pressKey(options -> options.keyToggleGui);
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                player.getInventory().setItem(0, new ItemStack(ModItems.BLANK_PATTERN, 16));
+                player.snapTo(base[0].getX() + 0.5, base[0].getY(), base[0].getZ() + 0.5, 0.0F, 25.0F);
+            });
+            ctx.waitTicks(10);
 
             // The Pattern Encoder
             use(world, base[0].offset(-2, 0, 3));
@@ -129,6 +151,15 @@ public class AutocraftClientTest implements FabricClientGameTest {
             check(ctx.computeOnClient(mc -> ((AutocraftMonitorScreen) mc.gui.screen()).jobs().stream().anyMatch(j -> j.finished() && j.status().equals("done"))),
                     "the request finishes");
             System.out.println("[nexium] monitor, done: " + shot(ctx, "autocraft_monitor_done"));
+            // The Codex's Autocrafting topic, with its simple setup and pictures
+            net.nexium.guide.GuideData data = ctx.computeOnClient(mc -> net.nexium.client.guide.GuideScreens.load(mc.getResourceManager()));
+            ctx.runOnClient(mc -> mc.gui.setScreen(new net.nexium.client.guide.CodexScreen(data, "autocrafting", null)));
+            ctx.waitTicks(5);
+            for (int part = 0; part < 4; part++) {
+                System.out.println("[nexium] codex autocrafting " + part + ": " + shot(ctx, "autocraft_codex_" + part));
+                ctx.runOnClient(mc -> ((net.nexium.client.guide.CodexScreen) mc.gui.screen()).scrollBy(190));
+                ctx.waitTicks(3);
+            }
             long sticks = world.getServer().computeOnServer(server -> net.nexium.network.StorageNetwork.find(server.overworld(), base[0].offset(0, 0, 3))
                     .countItem(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(Items.STICK)));
             check(sticks >= 4, "the network holds the sticks: " + sticks);

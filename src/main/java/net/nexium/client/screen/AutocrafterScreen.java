@@ -15,7 +15,6 @@ public class AutocrafterScreen extends BaseScreen<AutocrafterMenu> {
 
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        g.text(font, Component.translatable("screen.nexium.autocrafter.patterns"), leftPos + 8, topPos + 22, palette().text(), false);
         g.text(font, Component.literal(Fmt.compact(menu.stored()) + " / " + Fmt.compact(AutocrafterBlockEntity.BUFFER) + " NE"),
                 leftPos + 8, topPos + 80, 0xFF55D86B, false);
     }
