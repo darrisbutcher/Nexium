@@ -3,6 +3,10 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.7
+
+* **Shift + right-click wipes a Pattern.** Holding an encoded Pattern, sneak and right-click (in the air or on a block) and it turns back into a Blank Pattern. Its tooltip says so.
+
 ## 1.34.6
 
 * **Every quest gives 3 items.** The chapters used to give 1, 2 or 3 items by their tier; now all twelve give 3.

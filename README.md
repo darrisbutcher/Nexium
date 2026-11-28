@@ -324,6 +324,7 @@ is placed as one and uses two slabs.
 
 * **Pattern Encoder** writes a recipe onto a **Blank Pattern** (paper, redstone, iron nugget). *Crafting* patterns hold a 3x3 recipe; *Processing* patterns hold the
   items to send to a machine and the items that come back.
+* **Clearing a Pattern**: sneak and right-click with an encoded Pattern to turn it back into a Blank Pattern.
 * **Autocrafter**: 27 pattern slots, on the storage network, powered by Nexus Energy (20,000 NE buffer, 100 NE per crafting step, 50 NE per push).
 * **Crafting Terminal > Craft**: pick an item and an amount; the plan shows what is crafted, taken from storage and missing, and Start runs it. Ingredients are crafted
   first from other patterns, and requests run side by side. Processing patterns push into machines next to the Autocrafter.
