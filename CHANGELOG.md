@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.4
+
+* **The Power Meter shows a generator that only a Battery touches.** With a Combustion Generator under a Battery, a conduit on the other side of the Battery and the
+  meter against the conduit, the meter did not know the generator was there. Blocks a Battery touches now show up whether they take power from it or give power to it, with
+  what they make, so the generator is listed as a producer beside the Battery.
+* **Five quests that asked for retired items are gone:** Dig wide (Area Mining Module), Follow the vein (Vein Mining Module), and Pipe it, Belt it and Across the world
+  (the old Fluid, Item and Ender Item Conduits, which turn into the one Conduit). That leaves 104 quests. Progress on the others is kept.
+
 ## 1.34.0
 
 * **More quests: 109 in all (67 new), in 12 chapters.** Six new chapters, in the order you would reach them: **Autocrafting** (reward tier 3), **Fluids** (tier 1),

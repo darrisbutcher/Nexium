@@ -284,18 +284,6 @@
           "goal": "get",
           "item": "nexium:netherite_aiot",
           "count": 1
-        },
-        {
-          "id": "area",
-          "goal": "get",
-          "item": "nexium:area_mining_module",
-          "count": 1
-        },
-        {
-          "id": "vein",
-          "goal": "get",
-          "item": "nexium:vein_mining_module",
-          "count": 1
         }
       ]
     },
@@ -397,18 +385,6 @@
       "tier": 1,
       "quests": [
         {
-          "id": "fluid_conduit",
-          "goal": "get",
-          "item": "nexium:fluid_conduit",
-          "count": 4
-        },
-        {
-          "id": "item_conduit",
-          "goal": "get",
-          "item": "nexium:item_conduit",
-          "count": 4
-        },
-        {
           "id": "tank",
           "goal": "get",
           "item": "nexium:iron_fluid_tank",
@@ -448,12 +424,6 @@
           "id": "diamond_tank",
           "goal": "get",
           "item": "nexium:diamond_fluid_tank",
-          "count": 1
-        },
-        {
-          "id": "ender",
-          "goal": "get",
-          "item": "nexium:ender_item_conduit",
           "count": 1
         }
       ]
