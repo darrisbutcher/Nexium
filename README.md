@@ -811,7 +811,7 @@ Every one-block farm and the Freezer runs on **Nexus Energy (NE)**; the Disk Dri
 A farm uses 10 NE a tick (Sugar Cane, Bamboo, Nether Wart, Crop, Gourd and Cactus, Generator, Moss, Tree), 20 (every other
 farm and the Freezer) or 40 (Iron Farm), and keeps 10 seconds' worth in a buffer. Without power it waits and its screen says so.
 
-* **On/Off**: every one-block farm, the Iron Farm, the Experience Farm, the Freezer and the Nexus Furnace has an **On/Off** button beside the
+* **On/Off**: every one-block farm, the Iron Farm, the Experience Farm, the Freezer, the Nexus Furnace and the Charging Station has an **On/Off** button beside the
   Inventory label of its screen. Off, the machine does no work and uses no power. The setting is saved with the machine and kept in the
   dropped item.
 * **Overclock**: every one-block farm, the Iron Farm, the Experience Farm and the Freezer has an **OC** button at the top right of its screen.
