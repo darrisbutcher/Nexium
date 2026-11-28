@@ -187,6 +187,24 @@ public class AutocraftGameTest {
     }
 
     @GameTest
+    public void sneakingWithAPatternWipesIt(GameTestHelper h) {
+        var player = h.makeMockServerPlayerInLevel();
+        ItemStack encoded = patternItem(planksFromLog());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, encoded);
+        // Standing: nothing happens
+        player.setShiftKeyDown(false);
+        encoded.getItem().use(h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        h.assertTrue(PatternItem.isEncoded(player.getMainHandItem()), "right-click alone keeps the pattern");
+        // Sneaking: back to a blank pattern
+        player.setShiftKeyDown(true);
+        var result = encoded.getItem().use(h.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        h.assertTrue(result.consumesAction(), "the click is used");
+        h.assertValueEqual(player.getMainHandItem().getItem(), ModItems.BLANK_PATTERN, "it is a Blank Pattern now");
+        h.assertTrue(!PatternItem.isEncoded(player.getMainHandItem()), "and not encoded");
+        h.succeed();
+    }
+
+    @GameTest
     public void theEncoderWritesPatterns(GameTestHelper h) {
         BlockPos at = new BlockPos(1, 1, 1);
         h.setBlock(at, ModBlocks.PATTERN_ENCODER);
