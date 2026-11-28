@@ -5,6 +5,8 @@ Pull requests are squash merged, so each one is a single commit on `main`.
 
 ## 1.34.5
 
+* **The Power Meter no longer shows a generator a little low.** A Combustion Generator made 40 NE/t but the meter said 38: every second the meter started counting a tick late and missed that tick's output
+  (one tick in twenty). It now counts without a gap, so 40 NE/t shows as 40.
 * **The Gold, Diamond and Nexium Batteries and Cells show up in JEI (and REI) again.** Fabric sends a client only the recipes of the vanilla recipe kinds, and JEI and REI read what the client has: every recipe of ours
   with its own kind (the Battery and Cell upgrades that keep their charge, the five-tool AIOT merges, and the worn-tool smelting and blasting) was never seen by them. They are sent now, and JEI also has the
   extension it needs to draw the charge-keeping recipes. Only the Iron Battery and Iron Cell were showing before.

@@ -66,6 +66,8 @@ public final class EnergyNetwork {
         boolean paused;
         /** Fed by a Battery touching it, not by a conduit side. */
         boolean direct;
+        /** Seen by the network during this window; one that was not is dropped when the window ends. */
+        boolean touched;
         /** What the block had taken in and given out when this second began, to tell how much moved by every route (-1: it does not count). */
         long baseIn = -1, baseOut = -1;
     }
@@ -192,7 +194,11 @@ public final class EnergyNetwork {
     private void addDirect(Level level, BlockPos battery) {
         for (Direction d : Direction.values()) {
             BlockPos next = battery.relative(d);
-            if (seen.containsKey(next)) continue;
+            Seen already = seen.get(next);
+            if (already != null) {
+                already.touched = true;
+                continue;
+            }
             var be = level.getBlockEntity(next);
             if (be instanceof ConduitBundleBlockEntity || be instanceof BatteryBlockEntity) continue;
             NexusEnergy there = NexusEnergy.SIDED.find(level, next, d.getOpposite());
@@ -200,6 +206,7 @@ public final class EnergyNetwork {
             Seen s = new Seen();
             s.dir = d;
             s.direct = true;
+            s.touched = true;
             s.baseIn = there.totalIn();
             s.baseOut = there.totalOut();
             seen.put(next, s);
@@ -271,7 +278,22 @@ public final class EnergyNetwork {
         report = new Report(r.stored(), r.capacity(), r.batteryStored(), r.batteryCapacity(), r.produced(), r.used(), r.batteryNet(),
                 r.deficit(), r.secondsLeft(), r.endpoints(), producedHistory.clone(), usedHistory.clone());
         flow.clear();
-        seen.clear();
+        // The next second is counted from here, with nothing lost between two windows: what a block takes in and gives out is read again now,
+        // not when the network next looks at it (a generator that ticks before the network would otherwise lose a tick's output in every
+        // window, and a 40 NE/t generator would show 38).
+        seen.values().removeIf(s -> !s.touched);
+        for (Map.Entry<BlockPos, Seen> e : seen.entrySet()) {
+            Seen s = e.getValue();
+            s.touched = false;
+            NexusEnergy there = NexusEnergy.SIDED.find(level, e.getKey(), s.dir.getOpposite());
+            if (there != null && there.totalIn() >= 0) {
+                s.baseIn = there.totalIn();
+                s.baseOut = there.totalOut();
+            } else {
+                s.baseIn = -1;
+                s.baseOut = -1;
+            }
+        }
         windowTicks = 0;
         starvedTicks = 0;
     }
@@ -300,6 +322,7 @@ public final class EnergyNetwork {
                 }
                 s.dir = d;
                 s.direct = false;
+                s.touched = true;
                 if (battery) addDirect(level, next);
                 s.priority = cfg.priority;
                 s.paused = cfg.paused;
