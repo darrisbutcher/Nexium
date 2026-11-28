@@ -18,7 +18,9 @@ public class ChargingStationMenu extends BaseMenu {
     public static final int INVENTORY_TOP = 96;
     public static final int SLOT_Y = 24;
     /** Screen values travel as 16-bit numbers, so the stored amount is sent as two halves of 15 bits. */
-    private static final int D_STORED = 0, D_COUNT = 2;
+    private static final int D_STORED = 0, D_OFF = 2, D_COUNT = 3;
+    /** Switches the station off or on. */
+    public static final int BTN_SWITCH = 0;
 
     private final ContainerData data;
     private final @Nullable ChargingStationBlockEntity station;
@@ -43,6 +45,7 @@ public class ChargingStationMenu extends BaseMenu {
         data = station == null ? new SimpleContainerData(D_COUNT) : new ContainerData() {
             @Override
             public int get(int index) {
+                if (index == D_OFF) return station.isOff() ? 1 : 0;
                 return index == D_STORED ? (int) (station.energy().stored() & 0x7FFF) : (int) (station.energy().stored() >> 15);
             }
 
@@ -54,6 +57,18 @@ public class ChargingStationMenu extends BaseMenu {
     }
 
     public static int slotX(int i) { return 26 + i * 36; }
+
+    /** Whether the station is switched off. */
+    public boolean off() { return data.get(D_OFF) != 0; }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == BTN_SWITCH && station != null) {
+            station.setOff(!station.isOff());
+            return true;
+        }
+        return false;
+    }
 
     public int stored() { return data.get(D_STORED) | data.get(D_STORED + 1) << 15; }
 

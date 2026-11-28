@@ -3,6 +3,10 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.8
+
+* **An On/Off switch for the Charging Station.** The same button the farms, the Freezer and the Nexus Furnace have, beside the Inventory label of its screen. Off, the station does not charge its cells; the switch is kept when the station is broken and picked up, and when the world saves.
+
 ## 1.34.7
 
 * **Shift + right-click wipes a Pattern.** Holding an encoded Pattern, sneak and right-click (in the air or on a block) and it turns back into a Blank Pattern. Its tooltip says so.

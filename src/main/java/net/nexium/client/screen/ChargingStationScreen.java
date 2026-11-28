@@ -19,6 +19,22 @@ public class ChargingStationScreen extends BaseScreen<ChargingStationMenu> {
         super(menu, inventory, title, 176, 178, ChargingStationMenu.INVENTORY_TOP);
     }
 
+    private net.minecraft.client.gui.components.Button switchButton;
+
+    @Override
+    protected void init() {
+        super.init();
+        switchButton = addRenderableWidget(net.nexium.essentials.client.PowerSwitchUi.create(leftPos, topPos, imageWidth, menu.containerId,
+                ChargingStationMenu.BTN_SWITCH, ChargingStationMenu.INVENTORY_TOP));
+        net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        if (switchButton != null) net.nexium.essentials.client.PowerSwitchUi.refresh(switchButton, menu.off());
+    }
+
     @Override
     protected void renderExtraBg(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         for (int i = 0; i < ChargingStationBlockEntity.SLOTS; i++) {

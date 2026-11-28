@@ -48,8 +48,18 @@ public class ChargingStationBlockEntity extends BlockEntity implements ExtendedM
 
     public SimpleContainer slots() { return slots; }
 
+    /** Switched off from its screen: the cells are not charged (kept in the dropped item). */
+    private boolean off;
+
+    public boolean isOff() { return off; }
+
+    public void setOff(boolean off) {
+        this.off = off;
+        setChanged();
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, ChargingStationBlockEntity station) {
-        station.charge();
+        if (!station.off) station.charge();
     }
 
     /** How many slots hold something that can still take charge. */
@@ -105,6 +115,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements ExtendedM
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putLong("energy", energy.stored());
+        output.putBoolean("off", off);
         List<ItemStack> list = new ArrayList<>();
         for (int i = 0; i < SLOTS; i++) list.add(slots.getItem(i));
         output.store("slots", ItemStack.OPTIONAL_CODEC.listOf(), list);
@@ -114,7 +125,26 @@ public class ChargingStationBlockEntity extends BlockEntity implements ExtendedM
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         energy.set(input.getLongOr("energy", 0L));
+        off = input.getBooleanOr("off", false);
         List<ItemStack> list = input.read("slots", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         for (int i = 0; i < SLOTS; i++) slots.setItem(i, i < list.size() ? list.get(i) : ItemStack.EMPTY);
+    }
+
+    @Override
+    protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (off) components.set(net.nexium.essentials.registry.ModComponents.MACHINE_OFF, net.minecraft.util.Unit.INSTANCE);
+    }
+
+    @Override
+    protected void applyImplicitComponents(net.minecraft.core.component.DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        if (components.get(net.nexium.essentials.registry.ModComponents.MACHINE_OFF) != null) off = true;
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("off");
     }
 }

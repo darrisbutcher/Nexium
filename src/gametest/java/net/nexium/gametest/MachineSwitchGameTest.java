@@ -81,6 +81,30 @@ public class MachineSwitchGameTest {
     }
 
     @GameTest
+    public void theChargingStationStopsChargingWhenOff(GameTestHelper h) {
+        @SuppressWarnings("removal")
+        ServerPlayer player = h.makeMockServerPlayerInLevel();
+        BlockPos at = new BlockPos(2, 2, 2);
+        h.setBlock(at, net.nexium.registry.ModBlocks.CHARGING_STATION);
+        var station = h.getBlockEntity(at, net.nexium.energy.ChargingStationBlockEntity.class);
+        station.slots().setItem(0, new ItemStack(net.nexium.registry.ModItems.IRON_CELL));
+        station.energy().set(1_000_000);
+        var menu = new net.nexium.energy.ChargingStationMenu(1, player.getInventory(), station);
+        h.assertTrue(menu.clickMenuButton(player, net.nexium.energy.ChargingStationMenu.BTN_SWITCH) && station.isOff() && menu.off(), "the button switches the station off");
+        long before = station.energy().stored();
+        for (int i = 0; i < 10; i++) net.nexium.energy.ChargingStationBlockEntity.serverTick(h.getLevel(), station.getBlockPos(), station.getBlockState(), station);
+        h.assertValueEqual(station.energy().stored(), before, "no energy used while it is off");
+        h.assertValueEqual(net.nexium.energy.ItemEnergy.stored(station.slots().getItem(0)), 0L, "and the cell stays empty");
+        // The switch is kept in the dropped item
+        h.assertTrue(station.collectComponents().get(ModComponents.MACHINE_OFF) != null, "an off station keeps its switch in the item");
+        menu.clickMenuButton(player, net.nexium.energy.ChargingStationMenu.BTN_SWITCH);
+        h.assertTrue(!station.isOff() && !menu.off(), "and on again");
+        for (int i = 0; i < 10; i++) net.nexium.energy.ChargingStationBlockEntity.serverTick(h.getLevel(), station.getBlockPos(), station.getBlockState(), station);
+        h.assertTrue(net.nexium.energy.ItemEnergy.stored(station.slots().getItem(0)) > 0, "it charges the cell once it is on");
+        h.succeed();
+    }
+
+    @GameTest
     public void everyMenuHasTheSwitchButton(GameTestHelper h) {
         @SuppressWarnings("removal")
         ServerPlayer player = h.makeMockServerPlayerInLevel();
