@@ -58,6 +58,16 @@ public final class Quests {
         if (!NOT_REWARDS.contains(path) && !out.contains(item)) out.add(item);
     }
 
+    /**
+     * Whether quests finish and pay out. Always on in the game; the client tests turn it off for every test but the quest ones, because a
+     * random reward landing in a test's inventory (a Fluid Intake, a disk) changes what that test counts.
+     */
+    private static volatile boolean enabled = true;
+
+    public static void setEnabled(boolean on) {
+        enabled = on;
+    }
+
     public static void init() {
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(QuestStatePayload.TYPE, QuestStatePayload.STREAM_CODEC);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(QuestRequestPayload.TYPE, QuestRequestPayload.STREAM_CODEC);
@@ -96,6 +106,7 @@ public final class Quests {
      */
     public static List<Quest> check(ServerPlayer player) {
         List<Quest> finished = new ArrayList<>();
+        if (!enabled) return finished;
         Set<String> done = done(player);
         boolean again = true;
         while (again) {
