@@ -54,8 +54,12 @@ public class QuestClientTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).chapterIndex() == 1), "the second chapter opens with the first unfinished");
             check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).done(chapters.get(1).quests().get(3))), "the item held counts straight away");
+            ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(5));
+            ctx.waitTicks(3);
+            System.out.println("[nexus] quests autocrafting chapter: " + ctx.takeScreenshot("nexus_quests_autocrafting"));
             ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(chapters.size() - 1));
             ctx.waitTicks(3);
+            System.out.println("[nexus] quests last chapter, list scrolled: " + ctx.takeScreenshot("nexus_quests_last"));
             check(ctx.computeOnClient(mc -> ((QuestScreen) mc.gui.screen()).chapterIndex() == chapters.size() - 1), "so does the last");
             ctx.runOnClient(mc -> ((QuestScreen) mc.gui.screen()).showChapter(1));
             ctx.waitTicks(3);

@@ -3,6 +3,14 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.0
+
+* **More quests: 109 in all (67 new), in 12 chapters.** Six new chapters, in the order you would reach them: **Autocrafting** (reward tier 3), **Fluids** (tier 1),
+  **Batteries** (tier 2), **More Farms** (tier 2), **World Tweaks** (tier 1) and **Mobs & Brews** (tier 2). The Nexium chapter stays last. The old chapters have more quests too: Storage (level emitter,
+  cables, compacting drawer, advanced filter, tablet, a 256k disk), Power (thermal generator, fuel rods, gold and diamond batteries), Tools (the Copper, Iron, Golden and Netherite AIOTs, area and vein modules) and Nexium (helmet, leggings, boots,
+  sword, spear, dog armor). Quests you already have the item for count at once, as before.
+* The chapter list in the Quest book scrolls (mouse wheel over it) now that there are more chapters than fit.
+
 ## 1.33.1
 
 * **The Autocrafter holds 27 patterns** (three rows of nine; the nine it had stay in the same slots).

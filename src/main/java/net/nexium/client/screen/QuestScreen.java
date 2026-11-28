@@ -32,7 +32,7 @@ public class QuestScreen extends Screen {
     private static int lastChapter;
 
     private final Map<String, QuestStatePayload.Entry> state = new HashMap<>();
-    private int chapter, scroll, left, top, panelH, rows, sinceRequest;
+    private int chapter, scroll, left, top, panelH, rows, sinceRequest, sideScroll, sideRows;
     private final java.util.List<Button> chapterButtons = new java.util.ArrayList<>();
 
     public QuestScreen(QuestStatePayload data) {
@@ -58,6 +58,7 @@ public class QuestScreen extends Screen {
         chapter = index;
         lastChapter = index;
         scroll = 0;
+        scrollSideTo(index);
         refresh();
     }
 
@@ -79,12 +80,29 @@ public class QuestScreen extends Screen {
         top = Math.max(4, (height - panelH) / 2);
         chapterButtons.clear();
         List<Chapter> chapters = QuestBook.chapters();
+        // The chapter list scrolls when there are more chapters than fit beside the quests
+        sideRows = Math.max(1, (panelH - 34) / 22);
         for (int i = 0; i < chapters.size(); i++) {
             final int index = i;
             chapterButtons.add(addRenderableWidget(Button.builder(Component.empty(), b -> showChapter(index))
-                    .bounds(left + PAD, top + 30 + i * 22, SIDE, 20).build()));
+                    .bounds(left + PAD, top + 30, SIDE, 20).build()));
         }
+        scrollSideTo(chapter);
         refresh();
+    }
+
+    /** Keeps the chapter list scrolled so that chapter {@code index} is in view, and lines the buttons up. */
+    private void scrollSideTo(int index) {
+        int max = Math.max(0, chapterButtons.size() - sideRows);
+        if (index < sideScroll) sideScroll = index;
+        if (index >= sideScroll + sideRows) sideScroll = index - sideRows + 1;
+        sideScroll = Mth.clamp(sideScroll, 0, max);
+        for (int i = 0; i < chapterButtons.size(); i++) {
+            Button b = chapterButtons.get(i);
+            int row = i - sideScroll;
+            b.visible = row >= 0 && row < sideRows;
+            b.setPosition(left + PAD, top + 30 + row * 22);
+        }
     }
 
     private void refresh() {
@@ -111,6 +129,11 @@ public class QuestScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (mouseX < left + PAD + SIDE + 4 && chapterButtons.size() > sideRows) {
+            sideScroll = Mth.clamp(sideScroll - (int) Math.signum(scrollY), 0, chapterButtons.size() - sideRows);
+            scrollSideTo(sideScroll);
+            return true;
+        }
         int total = QuestBook.chapters().get(chapter).quests().size();
         if (total > rows) {
             scroll = Mth.clamp(scroll - (int) Math.signum(scrollY), 0, total - rows);
@@ -145,7 +168,7 @@ public class QuestScreen extends Screen {
         g.text(font, title.copy().withStyle(ChatFormatting.BOLD), left + PAD, top + 10, GOLD, false);
         List<Chapter> chapters = QuestBook.chapters();
         if (chapters.isEmpty()) return;
-        for (int i = 0; i < chapters.size(); i++) g.item(new ItemStack(chapters.get(i).icon()), left + PAD + SIDE - 18, top + 32 + i * 22);
+        for (int i = sideScroll; i < chapters.size() && i < sideScroll + sideRows; i++) g.item(new ItemStack(chapters.get(i).icon()), left + PAD + SIDE - 18, top + 32 + (i - sideScroll) * 22);
 
         Chapter c = chapters.get(chapter);
         int x = left + PAD + SIDE + 12, w = PANEL_W - PAD - SIDE - 12 - PAD - 8;
