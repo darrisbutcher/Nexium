@@ -53,6 +53,42 @@
           "goal": "get",
           "item": "nexium:trash_can",
           "count": 1
+        },
+        {
+          "id": "emitter",
+          "goal": "get",
+          "item": "nexium:level_emitter",
+          "count": 1
+        },
+        {
+          "id": "cable",
+          "goal": "get",
+          "item": "nexium:inventory_cable",
+          "count": 8
+        },
+        {
+          "id": "compacting",
+          "goal": "get",
+          "item": "nexium:compacting_drawer",
+          "count": 1
+        },
+        {
+          "id": "filter",
+          "goal": "get",
+          "item": "nexium:advanced_filter",
+          "count": 1
+        },
+        {
+          "id": "tablet",
+          "goal": "get",
+          "item": "nexium:crafting_storage_tablet",
+          "count": 1
+        },
+        {
+          "id": "bigdisk",
+          "goal": "get",
+          "item": "nexium:256k_storage_disk",
+          "count": 1
         }
       ]
     },
@@ -107,6 +143,30 @@
           "id": "reactor",
           "goal": "get",
           "item": "nexium:redstone_reactor",
+          "count": 1
+        },
+        {
+          "id": "thermal",
+          "goal": "get",
+          "item": "nexium:thermal_generator",
+          "count": 1
+        },
+        {
+          "id": "fuel",
+          "goal": "get",
+          "item": "nexium:redstone_fuel_rod",
+          "count": 9
+        },
+        {
+          "id": "gold_battery",
+          "goal": "get",
+          "item": "nexium:gold_battery",
+          "count": 1
+        },
+        {
+          "id": "diamond_battery",
+          "goal": "get",
+          "item": "nexium:diamond_battery",
           "count": 1
         }
       ]
@@ -200,6 +260,42 @@
           "goal": "get",
           "item": "nexium:enchanted_grindstone",
           "count": 1
+        },
+        {
+          "id": "copper_aiot",
+          "goal": "get",
+          "item": "nexium:copper_aiot",
+          "count": 1
+        },
+        {
+          "id": "iron_aiot",
+          "goal": "get",
+          "item": "nexium:iron_aiot",
+          "count": 1
+        },
+        {
+          "id": "golden_aiot",
+          "goal": "get",
+          "item": "nexium:golden_aiot",
+          "count": 1
+        },
+        {
+          "id": "netherite_aiot",
+          "goal": "get",
+          "item": "nexium:netherite_aiot",
+          "count": 1
+        },
+        {
+          "id": "area",
+          "goal": "get",
+          "item": "nexium:area_mining_module",
+          "count": 1
+        },
+        {
+          "id": "vein",
+          "goal": "get",
+          "item": "nexium:vein_mining_module",
+          "count": 1
         }
       ]
     },
@@ -253,6 +349,318 @@
       ]
     },
     {
+      "id": "autocrafting",
+      "icon": "nexium:autocrafter",
+      "tier": 3,
+      "quests": [
+        {
+          "id": "blank",
+          "goal": "get",
+          "item": "nexium:blank_pattern",
+          "count": 8
+        },
+        {
+          "id": "encoder",
+          "goal": "get",
+          "item": "nexium:pattern_encoder",
+          "count": 1
+        },
+        {
+          "id": "pattern",
+          "goal": "get",
+          "item": "nexium:pattern",
+          "count": 1
+        },
+        {
+          "id": "autocrafter",
+          "goal": "get",
+          "item": "nexium:autocrafter",
+          "count": 1
+        },
+        {
+          "id": "monitor",
+          "goal": "get",
+          "item": "nexium:autocraft_monitor",
+          "count": 1
+        },
+        {
+          "id": "library",
+          "goal": "get",
+          "item": "nexium:pattern",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "id": "fluids",
+      "icon": "nexium:fluid_conduit",
+      "tier": 1,
+      "quests": [
+        {
+          "id": "fluid_conduit",
+          "goal": "get",
+          "item": "nexium:fluid_conduit",
+          "count": 4
+        },
+        {
+          "id": "item_conduit",
+          "goal": "get",
+          "item": "nexium:item_conduit",
+          "count": 4
+        },
+        {
+          "id": "tank",
+          "goal": "get",
+          "item": "nexium:iron_fluid_tank",
+          "count": 1
+        },
+        {
+          "id": "fluid_drawer",
+          "goal": "get",
+          "item": "nexium:fluid_drawer_1x1",
+          "count": 1
+        },
+        {
+          "id": "intake",
+          "goal": "get",
+          "item": "nexium:fluid_intake",
+          "count": 1
+        },
+        {
+          "id": "scanner",
+          "goal": "get",
+          "item": "nexium:conduit_scanner",
+          "count": 1
+        },
+        {
+          "id": "speed",
+          "goal": "get",
+          "item": "nexium:conduit_speed_upgrade",
+          "count": 1
+        },
+        {
+          "id": "advanced",
+          "goal": "get",
+          "item": "nexium:advanced_conduit_upgrade",
+          "count": 1
+        },
+        {
+          "id": "diamond_tank",
+          "goal": "get",
+          "item": "nexium:diamond_fluid_tank",
+          "count": 1
+        },
+        {
+          "id": "ender",
+          "goal": "get",
+          "item": "nexium:ender_item_conduit",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "batteries",
+      "icon": "nexium:iron_cell",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "iron_cell",
+          "goal": "get",
+          "item": "nexium:iron_cell",
+          "count": 1
+        },
+        {
+          "id": "station",
+          "goal": "get",
+          "item": "nexium:charging_station",
+          "count": 1
+        },
+        {
+          "id": "gold_cell",
+          "goal": "get",
+          "item": "nexium:gold_cell",
+          "count": 1
+        },
+        {
+          "id": "diamond_cell",
+          "goal": "get",
+          "item": "nexium:diamond_cell",
+          "count": 1
+        },
+        {
+          "id": "jetpack",
+          "goal": "get",
+          "item": "nexium:jetpack",
+          "count": 1
+        },
+        {
+          "id": "nexium_cell",
+          "goal": "get",
+          "item": "nexium:nexium_cell",
+          "count": 1
+        },
+        {
+          "id": "nexium_battery",
+          "goal": "get",
+          "item": "nexium:nexium_battery",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "morefarms",
+      "icon": "nexium:tree_farm",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "tree",
+          "goal": "get",
+          "item": "nexium:tree_farm",
+          "count": 1
+        },
+        {
+          "id": "livestock",
+          "goal": "get",
+          "item": "nexium:livestock_farm",
+          "count": 1
+        },
+        {
+          "id": "bee",
+          "goal": "get",
+          "item": "nexium:bee_farm",
+          "count": 1
+        },
+        {
+          "id": "slime",
+          "goal": "get",
+          "item": "nexium:slime_farm",
+          "count": 1
+        },
+        {
+          "id": "ocean",
+          "goal": "get",
+          "item": "nexium:ocean_farm",
+          "count": 1
+        },
+        {
+          "id": "nether_mob",
+          "goal": "get",
+          "item": "nexium:nether_mob_farm",
+          "count": 1
+        },
+        {
+          "id": "generator",
+          "goal": "get",
+          "item": "nexium:generator_farm",
+          "count": 1
+        },
+        {
+          "id": "shulker",
+          "goal": "get",
+          "item": "nexium:shulker_farm",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "icon": "nexium:elevator",
+      "tier": 1,
+      "quests": [
+        {
+          "id": "elevator",
+          "goal": "get",
+          "item": "nexium:elevator",
+          "count": 2
+        },
+        {
+          "id": "glass",
+          "goal": "get",
+          "item": "nexium:reinforced_glass",
+          "count": 4
+        },
+        {
+          "id": "sponge",
+          "goal": "get",
+          "item": "nexium:large_sponge",
+          "count": 1
+        },
+        {
+          "id": "freezer",
+          "goal": "get",
+          "item": "nexium:freezer",
+          "count": 1
+        },
+        {
+          "id": "lava",
+          "goal": "get",
+          "item": "nexium:lava_spring",
+          "count": 1
+        },
+        {
+          "id": "anchor",
+          "goal": "get",
+          "item": "nexium:dimensional_anchor",
+          "count": 1
+        },
+        {
+          "id": "giant_sponge",
+          "goal": "get",
+          "item": "nexium:giant_sponge",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "mobs",
+      "icon": "nexium:captured_mob",
+      "tier": 2,
+      "quests": [
+        {
+          "id": "captured",
+          "goal": "get",
+          "item": "nexium:captured_mob",
+          "count": 1
+        },
+        {
+          "id": "breeder",
+          "goal": "get",
+          "item": "nexium:villager_breeder",
+          "count": 1
+        },
+        {
+          "id": "barter",
+          "goal": "get",
+          "item": "nexium:piglin_barter",
+          "count": 1
+        },
+        {
+          "id": "witch",
+          "goal": "get",
+          "item": "nexium:witch_farm",
+          "count": 1
+        },
+        {
+          "id": "wither",
+          "goal": "get",
+          "item": "nexium:wither_skeleton_farm",
+          "count": 1
+        },
+        {
+          "id": "zombified",
+          "goal": "get",
+          "item": "nexium:zombified_piglin_farm",
+          "count": 1
+        },
+        {
+          "id": "elixir",
+          "goal": "get",
+          "item": "nexium:bedrock_breaker_elixir",
+          "count": 1
+        }
+      ]
+    },
+    {
       "id": "nexium",
       "icon": "nexium:nexium_ingot",
       "tier": 3,
@@ -291,6 +699,42 @@
           "id": "chestplate",
           "goal": "get",
           "item": "nexium:nexium_chestplate",
+          "count": 1
+        },
+        {
+          "id": "helmet",
+          "goal": "get",
+          "item": "nexium:nexium_helmet",
+          "count": 1
+        },
+        {
+          "id": "leggings",
+          "goal": "get",
+          "item": "nexium:nexium_leggings",
+          "count": 1
+        },
+        {
+          "id": "boots",
+          "goal": "get",
+          "item": "nexium:nexium_boots",
+          "count": 1
+        },
+        {
+          "id": "sword",
+          "goal": "get",
+          "item": "nexium:nexium_sword",
+          "count": 1
+        },
+        {
+          "id": "spear",
+          "goal": "get",
+          "item": "nexium:nexium_spear",
+          "count": 1
+        },
+        {
+          "id": "dog_armor",
+          "goal": "get",
+          "item": "nexium:nexium_dog_armor",
           "count": 1
         }
       ]

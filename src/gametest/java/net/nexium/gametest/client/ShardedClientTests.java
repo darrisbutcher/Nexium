@@ -36,6 +36,8 @@ public class ShardedClientTests implements FabricClientGameTest {
             // NEXIUM_ONLY=SomeClientTest runs just that test (handy while working on one)
             if (only != null ? !test.getClass().getSimpleName().equals(only) : !selected(i, index, count)) continue;
             System.out.println("[nexium-shard] running " + test.getClass().getSimpleName());
+            // Quest rewards are random items that land in the player's inventory: only the quest test lets them happen
+            net.nexium.quest.Quests.setEnabled(test.getClass().getSimpleName().equals("QuestClientTest"));
             test.runTest(ctx);
             ran++;
         }

@@ -41,7 +41,7 @@ public class QuestGameTest {
     @GameTest
     public void theQuestBookIsCompleteAndHasText(GameTestHelper h) {
         List<Chapter> chapters = QuestBook.chapters();
-        h.assertTrue(chapters.size() == 6, "six chapters, found " + chapters.size());
+        h.assertTrue(chapters.size() == 12, "twelve chapters, found " + chapters.size());
         JsonObject lang = lang();
         Set<String> keys = new HashSet<>();
         for (Chapter c : chapters) {
@@ -78,6 +78,7 @@ public class QuestGameTest {
         // Any other quest, in any order: one from the last chapter, and one from the second
         Quest last = chapters.getLast().quests().get(2);
         Quest second = chapters.get(1).quests().get(3);
+        player.getInventory().clearContent(); // the first check's random rewards may have filled the inventory
         player.getInventory().add(new ItemStack(last.item(), last.count()));
         player.getInventory().add(new ItemStack(second.item(), second.count()));
         List<Quest> more = Quests.check(player);
@@ -86,6 +87,7 @@ public class QuestGameTest {
         h.assertTrue(Quests.done(player).contains(last.key()) && Quests.done(player).contains(second.key()),
                 "quests of the last and the second chapter count too, in any order: " + more + ", done: " + Quests.done(player));
         // A whole chapter, then nothing is done twice (a random reward can finish a quest too, so the check goes round until nothing is left)
+        player.getInventory().clearContent(); // earlier steps (and their rewards) must not crowd out the whole chapter
         give(player, chapters.get(0));
         Quests.check(player);
         for (Quest q : chapters.get(0).quests()) h.assertTrue(Quests.done(player).contains(q.key()), "the first chapter's quest " + q.key() + " is done");
