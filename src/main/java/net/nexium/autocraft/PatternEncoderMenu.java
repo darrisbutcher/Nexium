@@ -116,6 +116,64 @@ public class PatternEncoderMenu extends BaseMenu {
         updateResult();
     }
 
+    /** Whether a recipe can fill this encoder now: a crafting recipe in either mode, any other (smelting, stonecutting) only in processing mode. */
+    public static boolean canFillFrom(net.minecraft.world.item.crafting.display.RecipeDisplay display, boolean processing) {
+        if (display instanceof net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay
+                || display instanceof net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay) return true;
+        return processing && (display instanceof net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay
+                || display instanceof net.minecraft.world.item.crafting.display.StonecutterRecipeDisplay);
+    }
+
+    /**
+     * Fills the template from a recipe a player chose in JEI. A crafting recipe lays its 3x3 grid out as it is (the result follows);
+     * in processing mode the ingredients are added up into inputs and the result is the output. Other recipes (smelting, stonecutting) need
+     * processing mode. Where an ingredient allows several items, the first is used.
+     */
+    public boolean fillFrom(net.minecraft.world.item.crafting.RecipeHolder<?> holder) {
+        if (!(player.level() instanceof ServerLevel level) || holder.value().display().isEmpty()) return false;
+        var display = holder.value().display().getFirst();
+        if (!canFillFrom(display, processing())) return false;
+        var context = net.minecraft.world.item.crafting.display.SlotDisplayContext.fromLevel(level);
+        ItemStack[] grid = new ItemStack[INPUTS];
+        java.util.Arrays.fill(grid, ItemStack.EMPTY);
+        if (display instanceof net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay shaped) {
+            for (int y = 0; y < shaped.height(); y++) for (int x = 0; x < shaped.width(); x++) {
+                grid[y * 3 + x] = shaped.ingredients().get(y * shaped.width() + x).resolveForFirstStack(context).copyWithCount(1);
+            }
+        } else if (display instanceof net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay shapeless) {
+            for (int i = 0; i < Math.min(INPUTS, shapeless.ingredients().size()); i++) grid[i] = shapeless.ingredients().get(i).resolveForFirstStack(context).copyWithCount(1);
+        } else if (display instanceof net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay furnace) {
+            grid[0] = furnace.ingredient().resolveForFirstStack(context).copyWithCount(1);
+        } else if (display instanceof net.minecraft.world.item.crafting.display.StonecutterRecipeDisplay cutter) {
+            grid[0] = cutter.input().resolveForFirstStack(context).copyWithCount(1);
+        }
+        for (int i = 0; i < INPUTS + OUTPUTS; i++) slots.setItem(i, ItemStack.EMPTY);
+        if (processing()) {
+            // The same item twice is one input with a count, like a machine takes it
+            int next = 0;
+            for (ItemStack stack : grid) {
+                if (stack.isEmpty()) continue;
+                boolean merged = false;
+                for (int i = 0; i < next; i++) {
+                    ItemStack there = slots.getItem(i);
+                    if (ItemStack.isSameItemSameComponents(there, stack)) {
+                        there.setCount(Math.min(64, there.getCount() + 1));
+                        merged = true;
+                        break;
+                    }
+                }
+                if (!merged) slots.setItem(next++, stack);
+            }
+            slots.setItem(INPUTS, display.result().resolveForFirstStack(context));
+        } else {
+            for (int i = 0; i < INPUTS; i++) slots.setItem(i, grid[i]);
+        }
+        slots.setChanged();
+        updateResult();
+        broadcastChanges();
+        return true;
+    }
+
     /** In crafting mode the first output is the recipe's result. */
     private void updateResult() {
         if (processing() || !(player.level() instanceof ServerLevel level)) return;

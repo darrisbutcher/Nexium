@@ -155,6 +155,37 @@ public class AutocraftGameTest {
         h.succeedWhen(() -> h.assertTrue(crafter.energy().stored() > 0, "the Autocrafter has been given energy"));
     }
 
+    private static net.minecraft.world.item.crafting.RecipeHolder<?> recipe(GameTestHelper h, String id) {
+        return h.getLevel().recipeAccess().byKey(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+                net.minecraft.resources.Identifier.withDefaultNamespace(id))).orElseThrow();
+    }
+
+    @GameTest
+    public void aRecipeFromJeiFillsTheEncoder(GameTestHelper h) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        h.setBlock(at, ModBlocks.PATTERN_ENCODER);
+        PatternEncoderBlockEntity be = h.getBlockEntity(at, PatternEncoderBlockEntity.class);
+        var player = h.makeMockServerPlayerInLevel();
+        PatternEncoderMenu menu = new PatternEncoderMenu(1, player.getInventory(), be);
+        // Crafting mode: the sticks recipe is laid out and its result follows
+        h.assertTrue(menu.fillFrom(recipe(h, "stick")), "a crafting recipe fills the grid");
+        h.assertValueEqual(be.slots().getItem(0).getItem().toString().contains("planks"), true, "planks in the top left: " + be.slots().getItem(0));
+        h.assertValueEqual(be.slots().getItem(3).getItem().toString().contains("planks"), true, "and below it: " + be.slots().getItem(3));
+        h.assertValueEqual(be.slots().getItem(PatternEncoderBlockEntity.INPUTS).getItem(), Items.STICK, "the result is sticks");
+        h.assertValueEqual(be.slots().getItem(PatternEncoderBlockEntity.INPUTS).getCount(), 4, "four of them");
+        // A smelting recipe needs processing mode
+        h.assertTrue(!menu.fillFrom(recipe(h, "iron_ingot_from_smelting_raw_iron")), "a smelting recipe does not fill a crafting template");
+        be.setProcessing(true);
+        h.assertTrue(menu.fillFrom(recipe(h, "iron_ingot_from_smelting_raw_iron")), "but fills a processing template");
+        h.assertValueEqual(be.slots().getItem(0).getItem(), Items.RAW_IRON, "raw iron in");
+        h.assertValueEqual(be.slots().getItem(PatternEncoderBlockEntity.INPUTS).getItem(), Items.IRON_INGOT, "an iron ingot out");
+        // A crafting recipe in processing mode adds identical ingredients up: the sticks need two planks
+        h.assertTrue(menu.fillFrom(recipe(h, "stick")), "a crafting recipe fills a processing template too");
+        h.assertValueEqual(be.slots().getItem(0).getCount(), 2, "two planks as one input");
+        h.assertTrue(be.slots().getItem(1).isEmpty(), "in one slot");
+        h.succeed();
+    }
+
     @GameTest
     public void theEncoderWritesPatterns(GameTestHelper h) {
         BlockPos at = new BlockPos(1, 1, 1);

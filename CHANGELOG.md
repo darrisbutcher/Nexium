@@ -3,6 +3,17 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.5
+
+* **The Power Meter no longer shows a generator a little low.** A Combustion Generator made 40 NE/t but the meter said 38: every second the meter started counting a tick late and missed that tick's output
+  (one tick in twenty). It now counts without a gap, so 40 NE/t shows as 40.
+* **The Gold, Diamond and Nexium Batteries and Cells show up in JEI (and REI) again.** Fabric sends a client only the recipes of the vanilla recipe kinds, and JEI and REI read what the client has: every recipe of ours
+  with its own kind (the Battery and Cell upgrades that keep their charge, the five-tool AIOT merges, and the worn-tool smelting and blasting) was never seen by them. They are sent now, and JEI also has the
+  extension it needs to draw the charge-keeping recipes. Only the Iron Battery and Iron Cell were showing before.
+* **JEI's + fills the Pattern Encoder.** Press + on a crafting recipe with the encoder open and its grid is laid out and the result shows. In Processing mode the same + also takes crafting recipes (identical
+  ingredients are added up into one input with a count) and smelting, blasting, smoking, campfire and stonecutting recipes (the ingredient goes in, the result comes out). Where an ingredient allows several
+  items, the first is used. In Crafting mode a smelting or stonecutting recipe says to switch to Processing mode.
+
 ## 1.34.4
 
 * **The Power Meter shows a generator that only a Battery touches.** With a Combustion Generator under a Battery, a conduit on the other side of the Battery and the

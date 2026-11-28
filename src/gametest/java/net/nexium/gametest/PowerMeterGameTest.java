@@ -176,7 +176,7 @@ public class PowerMeterGameTest {
             h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
             EnergyNetwork.Endpoint gen = generatorRow(h);
             h.assertTrue(gen != null, "the generator is listed");
-            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 1.5f, "the meter shows about 20 NE/t for the generator, not " + gen.perTick());
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 0.5f, "the meter shows about 20 NE/t for the generator, not " + gen.perTick());
         });
     }
 
@@ -193,7 +193,7 @@ public class PowerMeterGameTest {
             h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
             EnergyNetwork.Endpoint gen = generatorRow(h);
             h.assertTrue(gen != null, "the generator is listed");
-            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 3f, "with a battery touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 40");
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 0.5f, "with a battery touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 40");
         });
     }
 
@@ -232,7 +232,7 @@ public class PowerMeterGameTest {
             h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
             EnergyNetwork.Endpoint gen = generatorRow(h);
             h.assertTrue(gen != null, "the generator is listed");
-            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 3f, "with a machine touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 40");
+            h.assertTrue(Math.abs(gen.perTick() - CombustionGeneratorBlockEntity.OUTPUT) < 0.5f, "with a machine touching it, the meter shows " + gen.perTick() + " NE/t for the generator, not 40");
         });
     }
 

@@ -136,6 +136,12 @@ public final class AutocraftPayloads {
             StorageNetwork net = network(player, p.anchor());
             if (net != null) AutocraftingService.cancel((ServerLevel) player.level(), net, p.job());
         });
+        PayloadTypeRegistry.serverboundPlay().register(EncoderFillPayload.TYPE, EncoderFillPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(EncoderFillPayload.TYPE, (p, ctx) -> {
+            if (ctx.player().containerMenu instanceof PatternEncoderMenu menu && ctx.player().level() instanceof ServerLevel level) {
+                level.recipeAccess().byKey(p.recipe()).ifPresent(menu::fillFrom);
+            }
+        });
         AutocraftingService.init();
     }
 
