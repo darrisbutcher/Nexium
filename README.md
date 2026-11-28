@@ -904,7 +904,7 @@ a blast furnace and a smoker, then a redstone block, an iron ingot and a copper 
 A quest book with twelve chapters and 104 quests (Storage, Power, Farms, Tools, Backpack, Autocrafting, Fluids, Batteries, More Farms, World Tweaks, Mobs & Brews, Nexium), opened with the **Quests** button at the top of the
 Codex or the *Open Quests* key (no key until you pick one). Each quest asks you to make or have an item and counts what you have
 already done (crafting statistics, or what you hold). Nothing is locked: every chapter and quest is open from the start, in any order. Every quest gives
-a random item from the mod, never a Compressed block or a drawer (more of them in later chapters). A quest can take a whole item tag instead of one item (the Drawer
+3 different random items from the mod (each rolled again if it repeats), never a Compressed block or a drawer. A quest can take a whole item tag instead of one item (the Drawer
 quest takes a drawer of any wood or size). No recipe is ever locked, and **every Nexium recipe is put in your recipe book when you join
 a world** (and after a `/reload`). Progress is saved on the player. The quests are in `data/nexium/quests.json` in the mod.
 

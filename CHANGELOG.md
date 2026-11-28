@@ -3,6 +3,11 @@
 All notable changes to Nexium (mod id `nexium`), newest first. The version is `mod_version` in `gradle.properties`.
 Pull requests are squash merged, so each one is a single commit on `main`.
 
+## 1.34.6
+
+* **Every quest gives 3 items.** The chapters used to give 1, 2 or 3 items by their tier; now all twelve give 3.
+* **A reward never has the same item twice.** A roll that lands on an item you already got in that reward used to be added to its stack (two of one thing); it is rolled again instead, so you always get three different items, one of each.
+
 ## 1.34.5
 
 * **The Power Meter no longer shows a generator a little low.** A Combustion Generator made 40 NE/t but the meter said 38: every second the meter started counting a tick late and missed that tick's output

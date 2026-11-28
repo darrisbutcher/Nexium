@@ -3,7 +3,7 @@
     {
       "id": "storage",
       "icon": "nexium:storage_connector",
-      "tier": 1,
+      "tier": 3,
       "quests": [
         {
           "id": "connector",
@@ -95,7 +95,7 @@
     {
       "id": "power",
       "icon": "nexium:combustion_generator",
-      "tier": 1,
+      "tier": 3,
       "quests": [
         {
           "id": "generator",
@@ -174,7 +174,7 @@
     {
       "id": "farms",
       "icon": "nexium:farm_assembler",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "assembler",
@@ -223,7 +223,7 @@
     {
       "id": "tools",
       "icon": "nexium:diamond_aiot",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "magnet",
@@ -290,7 +290,7 @@
     {
       "id": "backpack",
       "icon": "nexium:backpack",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "backpack",
@@ -382,7 +382,7 @@
     {
       "id": "fluids",
       "icon": "nexium:fluid_conduit",
-      "tier": 1,
+      "tier": 3,
       "quests": [
         {
           "id": "tank",
@@ -431,7 +431,7 @@
     {
       "id": "batteries",
       "icon": "nexium:iron_cell",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "iron_cell",
@@ -480,7 +480,7 @@
     {
       "id": "morefarms",
       "icon": "nexium:tree_farm",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "tree",
@@ -535,7 +535,7 @@
     {
       "id": "world",
       "icon": "nexium:elevator",
-      "tier": 1,
+      "tier": 3,
       "quests": [
         {
           "id": "elevator",
@@ -584,7 +584,7 @@
     {
       "id": "mobs",
       "icon": "nexium:captured_mob",
-      "tier": 2,
+      "tier": 3,
       "quests": [
         {
           "id": "captured",

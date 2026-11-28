@@ -133,18 +133,7 @@ public final class Quests {
     /** Gives the random items for a finished quest and says so in chat. */
     private static void reward(ServerPlayer player, Chapter chapter, Quest quest) {
         RandomSource random = player.getRandom();
-        List<ItemStack> given = new ArrayList<>();
-        for (int i = 0; i < chapter.tier(); i++) {
-            ItemStack stack = roll(random);
-            for (ItemStack have : given) {
-                if (ItemStack.isSameItemSameComponents(have, stack)) {
-                    have.grow(stack.getCount());
-                    stack = ItemStack.EMPTY;
-                    break;
-                }
-            }
-            if (!stack.isEmpty()) given.add(stack);
-        }
+        List<ItemStack> given = rollDistinct(random, chapter.tier());
         Component list = Component.empty();
         for (int i = 0; i < given.size(); i++) {
             ItemStack stack = given.get(i);
@@ -156,6 +145,26 @@ public final class Quests {
         player.sendSystemMessage(Component.translatable("quest.nexium.completed", Component.translatable(quest.nameKey())));
         player.sendSystemMessage(Component.translatable("quest.nexium.reward", list));
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6F, 1.2F);
+    }
+
+    /**
+     * {@code count} random items from the pool, all different: a roll that lands on an item already rolled is rolled again (one item each,
+     * never a stack of two).
+     */
+    public static List<ItemStack> rollDistinct(RandomSource random, int count) {
+        List<Item> items = rewardPool();
+        List<ItemStack> out = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, items.size()); i++) {
+            ItemStack stack = roll(random);
+            while (contains(out, stack)) stack = roll(random);
+            out.add(stack);
+        }
+        return out;
+    }
+
+    private static boolean contains(List<ItemStack> stacks, ItemStack stack) {
+        for (ItemStack have : stacks) if (ItemStack.isSameItemSameComponents(have, stack)) return true;
+        return false;
     }
 
     private static ItemStack roll(RandomSource random) {
