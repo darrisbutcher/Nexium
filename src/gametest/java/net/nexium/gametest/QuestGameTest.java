@@ -46,7 +46,7 @@ public class QuestGameTest {
         Set<String> keys = new HashSet<>();
         for (Chapter c : chapters) {
             h.assertTrue(c.icon() != Items.AIR, "chapter " + c.id() + " has a real icon");
-            h.assertTrue(c.tier() >= 1 && c.tier() <= 3, "chapter " + c.id() + " has a reward tier of 1 to 3");
+            h.assertTrue(c.tier() == 3, "chapter " + c.id() + " gives 3 items");
             h.assertTrue(lang.has(c.nameKey()) && lang.has(c.descKey()), "chapter " + c.id() + " has its text");
             h.assertTrue(!c.quests().isEmpty(), "chapter " + c.id() + " has quests");
             for (Quest q : c.quests()) {
@@ -113,6 +113,20 @@ public class QuestGameTest {
         }
         int rewards = held - q.count();
         h.assertTrue(rewards >= c.tier(), "at least one item per roll was given: " + rewards);
+        h.succeed();
+    }
+
+    @GameTest
+    public void aRewardIsThreeDifferentItemsOneOfEach(GameTestHelper h) {
+        net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(7);
+        for (int run = 0; run < 2000; run++) {
+            List<ItemStack> given = Quests.rollDistinct(random, 3);
+            h.assertValueEqual(given.size(), 3, "three items");
+            for (int i = 0; i < given.size(); i++) {
+                h.assertValueEqual(given.get(i).getCount(), 1, "one of each, never combined");
+                for (int j = i + 1; j < given.size(); j++) h.assertTrue(given.get(i).getItem() != given.get(j).getItem(), "no item twice in one reward");
+            }
+        }
         h.succeed();
     }
 
