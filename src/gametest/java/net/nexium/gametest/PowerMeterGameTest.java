@@ -197,6 +197,28 @@ public class PowerMeterGameTest {
         });
     }
 
+    /** A generator that only a Battery touches (generator, Battery, then the conduit and the meter): the meter lists the generator too. */
+    @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 200)
+    public void aGeneratorBehindABatteryIsShownInTheMeter(GameTestHelper h) {
+        BlockPos gen = new BlockPos(1, 1, 2), battery = new BlockPos(1, 2, 2), conduit = new BlockPos(2, 2, 2), meter = new BlockPos(2, 2, 1);
+        h.setBlock(gen, ModBlocks.COMBUSTION_GENERATOR);
+        h.getBlockEntity(gen, CombustionGeneratorBlockEntity.class).setItem(0, new ItemStack(Items.BLAZE_ROD, 8));
+        h.setBlock(battery, ModBlocks.IRON_BATTERY);
+        h.setBlock(conduit, ModBlocks.CONDUIT_BUNDLE);
+        h.getBlockEntity(conduit, ConduitBundleBlockEntity.class).addConduit(ConduitType.ENERGY, 1);
+        h.setBlock(meter, ModBlocks.POWER_METER);
+        BlockPos genAbs = h.absolutePos(gen);
+        h.succeedWhen(() -> {
+            h.assertTrue(h.getTick() > 70, "waiting for a few full seconds to be counted");
+            EnergyNetwork network = PowerMeter.networkOf(h.getLevel(), h.absolutePos(meter));
+            h.assertTrue(network != null, "the meter has a network");
+            EnergyNetwork.Endpoint row = network.report(h.getLevel()).endpoints().stream().filter(e -> e.pos().equals(genAbs)).findFirst().orElse(null);
+            h.assertTrue(row != null, "the generator only the Battery touches is listed");
+            h.assertTrue(row.role() == EnergyNetwork.Role.PRODUCER && row.direct(), "as a producer behind a Battery");
+            h.assertTrue(row.perTick() > 5, "with what it makes: " + row.perTick());
+        });
+    }
+
     /** The same, with a farm touching the generator, which the generator also feeds directly. */
     @GameTest(environment = EssentialsEnvironment.ID, maxTicks = 200)
     public void aGeneratorTouchingAMachineStillShowsWhatItMakes(GameTestHelper h) {

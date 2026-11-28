@@ -185,7 +185,10 @@ public final class EnergyNetwork {
         return found;
     }
 
-    /** The machines a Battery on the network feeds by touching them, for the Power Meter: they are not on a conduit side, so nothing else sees them. */
+    /**
+     * The blocks a Battery on the network touches, for the Power Meter: machines it feeds, and generators that fill it (a generator under a
+     * Battery that a conduit leads away from). They are not on a conduit side, so nothing else sees them.
+     */
     private void addDirect(Level level, BlockPos battery) {
         for (Direction d : Direction.values()) {
             BlockPos next = battery.relative(d);
@@ -193,7 +196,7 @@ public final class EnergyNetwork {
             var be = level.getBlockEntity(next);
             if (be instanceof ConduitBundleBlockEntity || be instanceof BatteryBlockEntity) continue;
             NexusEnergy there = NexusEnergy.SIDED.find(level, next, d.getOpposite());
-            if (there == null || !there.takesIn()) continue;
+            if (there == null || !(there.takesIn() || there.givesOut())) continue;
             Seen s = new Seen();
             s.dir = d;
             s.direct = true;
