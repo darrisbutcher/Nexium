@@ -78,6 +78,7 @@ public class QuestGameTest {
         // Any other quest, in any order: one from the last chapter, and one from the second
         Quest last = chapters.getLast().quests().get(2);
         Quest second = chapters.get(1).quests().get(3);
+        player.getInventory().clearContent(); // the first check's random rewards may have filled the inventory
         player.getInventory().add(new ItemStack(last.item(), last.count()));
         player.getInventory().add(new ItemStack(second.item(), second.count()));
         List<Quest> more = Quests.check(player);
