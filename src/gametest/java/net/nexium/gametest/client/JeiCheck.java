@@ -36,6 +36,42 @@ public class JeiCheck implements IModPlugin {
                 .map(r -> new int[]{r.getX(), r.getY(), r.getWidth(), r.getHeight()}).toList();
     }
 
+    /** The crafting recipe ids (paths) JEI has for these result items, or null without a runtime. */
+    @SuppressWarnings("removal")
+    public static java.util.List<String> craftingRecipesFor(java.util.List<String> resultPaths) {
+        if (runtime == null) return null;
+        java.util.List<String> out = new java.util.ArrayList<>();
+        runtime.getRecipeManager().createRecipeLookup(RecipeTypes.CRAFTING).get().forEach(r -> {
+            String path = r.id().identifier().getPath();
+            if (resultPaths.contains(path)) out.add(path);
+        });
+        long total = runtime.getRecipeManager().createRecipeLookup(RecipeTypes.CRAFTING).get().count();
+        long nexium = runtime.getRecipeManager().createRecipeLookup(RecipeTypes.CRAFTING).get().filter(r -> r.id().identifier().getNamespace().equals("nexium")).count();
+        System.out.println("[nexium] JEI crafting recipes: " + total + ", of them nexium: " + nexium);
+        return out;
+    }
+
+    /** Whether JEI's crafting category handles the given recipe (null without a runtime). */
+    @SuppressWarnings({"removal", "unchecked"})
+    public static Boolean handles(RecipeHolder<?> holder) {
+        if (runtime == null) return null;
+        IRecipeCategory<RecipeHolder<CraftingRecipe>> category = runtime.getRecipeManager().getRecipeCategory(RecipeTypes.CRAFTING);
+        return category.isHandled((RecipeHolder<CraftingRecipe>) holder);
+    }
+
+    /** Presses JEI's "+" for a crafting recipe with the Pattern Encoder open: whether JEI found our handler and took it without an error. */
+    @SuppressWarnings({"removal", "unchecked"})
+    public static String pressPlusOnEncoder(Minecraft mc, RecipeHolder<?> holder) {
+        if (runtime == null) return "no JEI runtime";
+        var menu = (net.nexium.autocraft.PatternEncoderMenu) mc.player.containerMenu;
+        IRecipeCategory<RecipeHolder<CraftingRecipe>> category = runtime.getRecipeManager().getRecipeCategory(RecipeTypes.CRAFTING);
+        Optional<IRecipeTransferHandler<net.nexium.autocraft.PatternEncoderMenu, RecipeHolder<CraftingRecipe>>> handler =
+                runtime.getRecipeTransferManager().getRecipeTransferHandler(menu, category);
+        if (handler.isEmpty()) return "no handler";
+        var error = handler.get().transferRecipe(menu, (RecipeHolder<CraftingRecipe>) holder, null, mc.player, false, true);
+        return error == null ? "ok" : "error " + error.getType();
+    }
+
     /** JEI's search text, or null without a runtime. */
     public static String filterText() {
         return runtime == null ? null : runtime.getIngredientFilter().getFilterText();

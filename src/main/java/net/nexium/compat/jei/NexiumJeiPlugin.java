@@ -72,12 +72,89 @@ public class NexiumJeiPlugin implements IModPlugin {
         });
     }
 
+    /**
+     * JEI only lists a crafting recipe it has an extension for, and it matches the recipe's own class: the charge-keeping Battery and Cell
+     * recipes are a class of ours (a ShapedRecipe underneath), so without this they were missing from JEI.
+     */
+    @Override
+    public void registerVanillaCategoryExtensions(mezz.jei.api.registration.IVanillaCategoryExtensionRegistration registration) {
+        registration.getCraftingCategory().addExtension(net.nexium.recipe.ChargeKeepingShapedRecipe.class,
+                new mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension<net.nexium.recipe.ChargeKeepingShapedRecipe>() {
+                    private net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay display(RecipeHolder<net.nexium.recipe.ChargeKeepingShapedRecipe> holder) {
+                        return (net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay) holder.value().display().getFirst();
+                    }
+
+                    @Override
+                    public List<net.minecraft.world.item.crafting.display.SlotDisplay> getIngredients(RecipeHolder<net.nexium.recipe.ChargeKeepingShapedRecipe> holder) {
+                        return display(holder).ingredients();
+                    }
+
+                    @Override
+                    public int getWidth(RecipeHolder<net.nexium.recipe.ChargeKeepingShapedRecipe> holder) {
+                        return display(holder).width();
+                    }
+
+                    @Override
+                    public int getHeight(RecipeHolder<net.nexium.recipe.ChargeKeepingShapedRecipe> holder) {
+                        return display(holder).height();
+                    }
+
+                    @Override
+                    public void setRecipe(RecipeHolder<net.nexium.recipe.ChargeKeepingShapedRecipe> holder, mezz.jei.api.gui.builder.IRecipeLayoutBuilder builder,
+                                          mezz.jei.api.gui.ingredient.ICraftingGridHelper grid, mezz.jei.api.recipe.IFocusGroup focuses) {
+                        var d = display(holder);
+                        grid.createAndSetIngredientsFromDisplays(builder, d.ingredients(), d.width(), d.height());
+                        grid.createAndSetOutputs(builder, d.result());
+                    }
+                });
+    }
+
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
         registration.addRecipeTransferHandler(new Handler<>(registration.getTransferHelper(), TerminalMenu.class, ModMenus.TERMINAL,
                 TerminalMenu::isCrafting), RecipeTypes.CRAFTING);
         registration.addRecipeTransferHandler(new Handler<>(registration.getTransferHelper(), BackpackMenu.class, net.nexium.essentials.registry.ModMenus.BACKPACK,
                 BackpackMenu::craftingActive), RecipeTypes.CRAFTING);
+        encoderHandler(registration, RecipeTypes.CRAFTING);
+        encoderHandler(registration, RecipeTypes.SMELTING);
+        encoderHandler(registration, RecipeTypes.BLASTING);
+        encoderHandler(registration, RecipeTypes.SMOKING);
+        encoderHandler(registration, RecipeTypes.CAMPFIRE_COOKING);
+        encoderHandler(registration, RecipeTypes.STONECUTTING);
+    }
+
+    /** JEI's "+" for the Pattern Encoder: crafting recipes fill its grid, and in processing mode so do smelting and stonecutting recipes. */
+    private <T extends net.minecraft.world.item.crafting.Recipe<?>> void encoderHandler(IRecipeTransferRegistration registration, IRecipeType<RecipeHolder<T>> type) {
+        registration.addRecipeTransferHandler(new IRecipeTransferHandler<net.nexium.autocraft.PatternEncoderMenu, RecipeHolder<T>>() {
+            private final IRecipeTransferHandlerHelper helper = registration.getTransferHelper();
+
+            @Override
+            public Class<? extends net.nexium.autocraft.PatternEncoderMenu> getContainerClass() {
+                return net.nexium.autocraft.PatternEncoderMenu.class;
+            }
+
+            @Override
+            public Optional<MenuType<net.nexium.autocraft.PatternEncoderMenu>> getMenuType() {
+                return Optional.of(ModMenus.PATTERN_ENCODER);
+            }
+
+            @Override
+            public IRecipeType<RecipeHolder<T>> getRecipeType() {
+                return type;
+            }
+
+            @SuppressWarnings("removal")
+            @Override
+            public @Nullable IRecipeTransferError transferRecipe(net.nexium.autocraft.PatternEncoderMenu menu, RecipeHolder<T> recipe, IRecipeSlotsView slots,
+                                                                 Player player, boolean maxTransfer, boolean doTransfer) {
+                var displays = recipe.value().display();
+                if (displays.isEmpty() || !net.nexium.autocraft.PatternEncoderMenu.canFillFrom(displays.getFirst(), menu.processing())) {
+                    return helper.createUserErrorWithTooltip(Component.translatable("screen.nexium.encoder.jei_processing"));
+                }
+                if (doTransfer) net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new net.nexium.autocraft.EncoderFillPayload(recipe.id()));
+                return null;
+            }
+        }, type);
     }
 
     /** One transfer handler, for a menu with a crafting grid; {@code usable} says whether its grid is there right now. */

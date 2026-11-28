@@ -21,7 +21,17 @@ public final class ModRecipes {
     public static final RecipeSerializer<net.nexium.recipe.ChargeKeepingShapedRecipe> CHARGE_KEEPING_SHAPED = Registry.register(
             BuiltInRegistries.RECIPE_SERIALIZER, Nexium.id("charge_keeping_shaped"), net.nexium.recipe.ChargeKeepingShapedRecipe.SERIALIZER);
 
-    public static void init() {}
+    /**
+     * Fabric sends the client only the recipes of serializers it knows (the vanilla ones), and the client is what JEI and REI read: a recipe
+     * of ours with its own serializer was never seen by them. That left the AIOT merges, the Battery and Cell upgrades and the worn-tool
+     * smelting out of the recipe viewers. These four are sent too.
+     */
+    public static void init() {
+        net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization.synchronizeRecipeSerializer(AIOT_MERGE);
+        net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization.synchronizeRecipeSerializer(DURABILITY_SMELTING);
+        net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization.synchronizeRecipeSerializer(DURABILITY_BLASTING);
+        net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization.synchronizeRecipeSerializer(CHARGE_KEEPING_SHAPED);
+    }
 
     private ModRecipes() {}
 }
