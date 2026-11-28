@@ -10,6 +10,11 @@ import java.util.List;
 public class JeiRecipesClientTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext ctx) {
+        // Without JEI (the usual run) there is nothing to check, and JeiCheck's JEI classes must not be touched
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("jei")) {
+            System.out.println("[nexium] JEI is not installed: skipping");
+            return;
+        }
         ctx.getInput().resizeWindow(1280, 720);
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             ctx.waitTicks(40);
